@@ -1,3 +1,4 @@
+# coding: utf-8
 # this module contains the computation of what node is not needed
 from queue import Queue
 

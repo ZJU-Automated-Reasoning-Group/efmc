@@ -17,6 +17,7 @@ from .utils import is_entail
 
 """
 Generate template-based invariants using EF-SMT solving
+
 NOTE:
 - We assume there is only one invariant to be synthesized
 """

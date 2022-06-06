@@ -10,6 +10,7 @@ from .utils import *
 
 """
 This is an "old-school" version of the predicate abstraction domain.
+
 - A set of predicates is given prior. The element in the domain is the Boolean combination of those predicates
 - Compute the strongest post operation(similar to symbolic abstraction)
 - Compute inductive invariant expressed in the element of the domain 

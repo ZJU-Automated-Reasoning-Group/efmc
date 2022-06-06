@@ -4,11 +4,16 @@ from z3 import *
 from .sts import TransitionSystem
 from .abduction.abduction import dillig_abduce
 
+"""
+Implementation of the following paper:
+
+    Inductive Invariant Generation via Abductive Inference. OOPSLA'13
+    
+(TODO: not finished yet)
+"""
 
 class AbductionProver(object):
-    """
-    Inductive Invariant Generation via Abductive Inference. OOPSLA'13
-    """
+
 
     def __init__(self, system: TransitionSystem):
         """

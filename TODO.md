@@ -2,8 +2,6 @@
 # TODO List
 
 
-
-
 - Bugs
 - Features
 - Optimizations

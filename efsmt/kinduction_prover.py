@@ -6,6 +6,10 @@ from typing import List
 from .sts import TransitionSystem
 from .utils import is_valid
 
+"""
+Based on https://github.com/SRI-CSL/sally/blob/master/src/engine/kind/kind_engine.cpp
+"""
+
 
 class KInductionProver(object):
     """
@@ -35,8 +39,21 @@ class KInductionProver(object):
         """
         self.k = k
 
+    def get_input_variabels(self, n):
+
+        return n
+
+    def get_state_variables(self, n):
+
+        return n
+
+    def get_transition_formula(self, n):
+
+        return
+
     def to_k_induction_system(self):
         """
+        #FIXME: this is not a good idea
         Currently, we maintain another group of variables for k-induction
         (This might no be very elegant)
 
@@ -74,197 +91,91 @@ class KInductionProver(object):
         post_cond = z3.substitute(self.sts.post, vars_to_kinduction_vars)
         return pre_cond, trans_cond, post_cond
 
-    def k_induction_with_while_guard(self, k: int, pre: z3.ExprRef, post: z3.ExprRef, b: z3.ExprRef, encP: z3.ExprRef):
-        """
-        E.g., Consider the Hoare-triple below
-               {pre} while b do P {post}
-               encP encodes P
-
-        FIXME: This function is for testing (we should try to adapt the approach to the next function ....
-        """
-
-        # 1.1 base case (k = 1)
-        #
-        # pre => post
-        if not is_valid(Implies(pre, post)):
-            if self.debug: print("(pre => post) not valid")
-            return "failure"
-
-        # 1.2 base cases (k > 1)
-        #
-        #            itper
-        #         ----   ---                       stop       postper
-        #         |        |                         |         |
-        # (pre /\ b /\ encP /\ ... /\ b /\ encP /\ not(b)) => post
-        #         |                           |
-        #         -------------  --------------
-        #                      it
-        #
-        # itper = b /\ encP, 0, 1, ..., k - 2
-        itper = And(b, encP)
-
-        # it = /\ itper = /\ (b /\ encP), 0 ... k - 2
-        it = And(True)
-
-        stop = Not(b)
-        postper = post
-
-        for i in range(k - 1):
-            # update it
-            it = And(it, itper)
-
-            # update stop
-            stop = z3.substitute(stop, *self.var_map[i])
-
-            # update postper
-            postper = z3.substitute(postper, *self.var_map[i])
-
-            if not is_valid(Implies(And(pre, it, stop), postper)):
-                if self.debug: print("in base cases step", i)
-                return "failure"
-
-            # update itper
-            # rename i + 1 to i + 2
-            itper = z3.substitute(itper, *self.var_map[i + 1])
-            # rename i     to i + 1
-            itper = z3.substitute(itper, *self.var_map[i])
-
-        # 2. induction step (k > 0)
-        #
-        #          itper
-        #     -----    ----------    stop       postper
-        #     |                 |      |           |
-        # [ /\(post /\ b /\ encP) /\ not(b) ] => post
-        #  |                    |
-        #  ----------  ----------
-        #            it
-
-        # reuse the stop and update
-        stop = z3.substitute(stop, *self.var_map[k - 1])
-
-        # reuse the postper and update
-        postper = z3.substitute(postper, *self.var_map[k - 1])
-
-        # redefine itper = post /\ b /\ encP, 0, 1, ... k - 1
-        itper = And(post, b, encP)
-
-        # redefine it = /\ itper = /\(post /\ b /\ encP) , 0 ... k - 1
-        it = And(True, itper)
-
-        # calculate it
-        for i in range(k - 1):
-            # update itper
-            itper = substitute(itper, *self.var_map[i + 1])
-            itper = substitute(itper, *self.var_map[i])
-            it = And(it, itper)
-
-        if self.debug: print(it)
-
-        if not is_valid(Implies(And(it, stop), postper)):
-            if self.debug: print("in induction step")
-            return "failure"
-
-        # no failure return, then return success
-        return "success"
-
     def k_induction(self, k: int, pre: z3.ExprRef, trans: z3.ExprRef, post: z3.ExprRef):
         """
-        E.g., Consider the Hoare-triple below
-               {pre} while b do P {post}
-        We "fuse" the condition "b" to the trans and post. That is, following
-        the SyGuS invariant format, we deal with the following transition system
-               - pre = pre
-               - trans = And(b, P)
-               - post = Implies(Not(b), post)
-               Alternatively, post = Or(b, post)
+         We try to find a k such that:
+        (1) P holds at steps 0, ..., k-1, i.e.
+        I and T_0 and ... and T_{i-1} => P(x_i), for 0 <= i < k
+        (2) P holding at k consecutive step, implies it holds in the next one, i.e.
+        and_{0 <= i < k} (P_i and T_i) => P_k
 
-        FIXME: but, since we "remove" b, how should we adapt the algorithm that uses "b"?
-        Especially, the "stop" condition
-        Can we just regard b as False or True? (but the values of variables in the condition may change...
+        Use two solvers:
+        * solver 1 accumulates the antecedent of (1), i.e. I and T_0 and ... and T_{k-1}
+        * solver 2 accumulates the antecedent of (2), i.e. P_0 and T_0 and ....P_{k-1} and T_{k-1}
+
+        solver1: check (not P). if sat we found a counterexample.
+        solver2: check (not P). if unsat we proved the property.
         """
-        # 1.1 base case (k = 1)
-        #
-        # pre => post
-        if not is_valid(Implies(pre, post)):
-            if self.debug: print("(pre => post) not valid")
-            return "failure"
+        # SMT solver for proving (1)
+        solver1 = z3.Solver()
+        # SMT solver for proving (2)
+        solver2 = z3.Solver()
 
-        # 1.2 base cases (k > 1)
-        #
-        #            itper
-        #         ----   ---                       stop       postper
-        #         |        |                         |         |
-        # (pre /\ b /\ encP /\ ... /\ b /\ encP /\ not(b)) => post
-        #         |                           |
-        #         -------------  --------------
-        #                      it
-        #
-        # itper = b /\ encP, 0, 1, ..., k - 2
-        itper = And(b, encP)
+        # Initial states go to solver 1
+        solver1.add(pre)  # FIXME: is this correct?
 
-        # it = /\ itper = /\ (b /\ encP), 0 ... k - 2
-        it = And(True)
+        property_not_k = BoolVal(True)  # FIXME
 
-        stop = Not(b)
-        postper = post
+        # Induction loop
+        k = 0
+        while True:
+            if k >= self.k:
+                return "unknown"
 
-        for i in range(k - 1):
-            # update it
-            it = And(it, itper)
+            if self.debug: print("K-Induction: checking initialization ", k)
+            # Check the current unrolling (1)
+            solver1.push()
+            solver1.add(property_not_k)
+            r1 = solver1.check()
+            if self.debug: print("K-Induction: got ", r1)
 
-            # update stop
-            stop = z3.substitute(stop, *self.var_map[i])
+            # See what happened
+            if r1 == z3.sat:
+                return "unsafe"
+            elif r1 == z3.unsat:
+                # No counterexample found, continue
+                break
+            elif r1 == z3.unknown:
+                return "unknown"
+            else:
+                assert False
 
-            # update postper
-            postper = z3.substitute(postper, *self.var_map[i])
+            # Pop the solver
+            solve1.pop()
 
-            if not is_valid(Implies(And(pre, it, stop), postper)):
-                if self.debug: print("in base cases step", i)
-                return "failure"
+            # For (2) add property and transition
 
-            # update itper
-            # rename i + 1 to i + 2
-            itper = z3.substitute(itper, *self.var_map[i + 1])
-            # rename i     to i + 1
-            itper = z3.substitute(itper, *self.var_map[i])
+            # Unroll the transition relation once more
 
-        # 2. induction step (k > 0)
-        #
-        #          itper
-        #     -----    ----------    stop       postper
-        #     |                 |      |           |
-        # [ /\(post /\ b /\ encP) /\ not(b) ] => post
-        #  |                    |
-        #  ----------  ----------
-        #            it
+            # For (2) add property and transition
 
-        # reuse the stop and update
-        stop = z3.substitute(stop, *self.var_map[k - 1])
+            # Should we do the check at k
+            check_consection = True
+            if check_consection:
+                if self.debug: print("K-Induction: checking consecution ", k)
 
-        # reuse the postper and update
-        postper = z3.substitute(postper, *self.var_map[k - 1])
+            # Unroll the property once more
+            k = k + 1
 
-        # redefine itper = post /\ b /\ encP, 0, 1, ... k - 1
-        itper = And(post, b, encP)
+            # Check the current unrolling (2)
+            if check_consection:
+                solver1.push()
+                solver2.add(BoolVal(True))  # FIXME
+                r2 = solver2.check()
 
-        # redefine it = /\ itper = /\(post /\ b /\ encP) , 0 ... k - 1
-        it = And(True, itper)
+                if self.debug: print("K-Induction solver2 got ", r2)
 
-        # calculate it
-        for i in range(k - 1):
-            # update itper
-            itper = substitute(itper, *self.var_map[i + 1])
-            itper = substitute(itper, *self.var_map[i])
-            it = And(it, itper)
+                if r2 == z3.unsat:
+                    return "proved"
+                elif r2 == z3.sat or r2 == z3.unknown:
+                    break  # or continue?
+                else:
+                    assert False
 
-        if self.debug: print(it)
+                solver2.pop()
 
-        if not is_valid(Implies(And(it, stop), postper)):
-            if self.debug: print("in induction step")
-            return "failure"
-
-        # no failure return, then return success
-        return "success"
+            # One more transition for solver 1
+            solver1.add()
 
     def solve(self):
         can_prove = False
@@ -282,30 +193,16 @@ class KInductionProver(object):
 
 
 """
-def next_var(v):
-    if z3.is_real(v):
-        return z3.Real("next(%s)" % str(v))
-    elif z3.is_int(v):
-        return z3.Int("next(%s)" % str(v))
-    elif z3.is_bool(v):
-        return z3.Bool("next(%s)" % str(v))
-    elif z3.is_bv(v):
-        return z3.BitVec("next(%s)" % str(v), v.sort().size())
-    else:
-        raise NotImplementedError
+    E.g., Consider the Hoare-triple below
+        {pre} while b do P {post}
+    We "fuse" the condition "b" to the trans and post. That is, following
+    the SyGuS invariant format, we deal with the following transition system
+            - pre = pre
+            - trans = And(b, P)
+            - post = Implies(Not(b), post)
+        Alternatively, post = Or(b, post)
 
-
-def at_time(v, t):
-    # return Symbol("%s@%d" % (v.symbol_name(), t), v.symbol_type())
-
-    if z3.is_real(v):
-        return z3.Real("%s@%d" % (str(v), t))
-    elif z3.is_int(v):
-        return z3.Int("%s@%d" % (str(v), t))
-    elif z3.is_bool(v):
-        return z3.Bool("%s@%d" % (str(v), t))
-    elif z3.is_bv(v):
-        return z3.BitVec("%s@%d" % (str(v), t), v.sort().size())
-    else:
-        raise NotImplementedError
+    FIXME: but, since we "remove" b, how should we adapt the algorithm that uses "b"?
+    Especially, the "stop" condition
+    Can we just regard b as False or True? (but the values of variables in the condition may change...
 """

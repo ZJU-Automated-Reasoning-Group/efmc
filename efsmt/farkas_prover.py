@@ -1,3 +1,4 @@
+# coding: utf-8
 """
 Generate template-based invariants using farkas' lemma and non-linear solving
 NOTE:

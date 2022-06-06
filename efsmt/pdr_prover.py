@@ -3,6 +3,11 @@ import time
 from z3 import *
 from .sts import TransitionSystem
 
+"""
+Property-Directed Reachability (or IC3)
+
+Currently, we use the implementation inside Z3's CHC engine.
+"""
 
 class PDRProver:
     def __init__(self, sts: TransitionSystem):
