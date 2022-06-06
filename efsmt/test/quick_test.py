@@ -1,3 +1,4 @@
+# coding: utf-8
 from z3 import *
 from typing import List
 from copy import deepcopy

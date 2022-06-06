@@ -1,3 +1,4 @@
+# coding: utf-8
 from .frontends.mini_sygus_parser import SyGusInVParser
 from .frontends.chc_parser import CHCParser
 
