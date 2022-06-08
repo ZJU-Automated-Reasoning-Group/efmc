@@ -1,11 +1,10 @@
+tmpbench.py
 .DS_Store
-symabs/intrealabs/.pytest_cache
-independent/efsmt/.pytest_cache
+.pytest_cache
+efsmt/.pytest_cache
 *.qdimacs
 *.dot
-!test
 venv
-.DS_Store
 *__pycache__/
 
 # Directories, log, ..
@@ -25,8 +24,6 @@ doc/html/*
 
 # temporal files
 temp.h
-
-
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
