@@ -275,7 +275,7 @@ class SyGusInVParser:
         return all_vars, init, trans, post
 
 
-def main():
+def test_parser():
     tt = [
         ";\n",
         "(set-logic LIA)",
@@ -318,4 +318,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    test_parser()

@@ -235,7 +235,7 @@ def test_parse3(filename):
         ss = CHCParser(res, to_real=False)
         vars, init, trans, post = ss.get_transition_system()
         print(vars)
-        ss.solve_with_pdr()
+        # ss.solve_with_pdr()
 
 
 if __name__ == "__main__":
