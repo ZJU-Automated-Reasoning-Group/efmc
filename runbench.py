@@ -24,6 +24,7 @@ def terminate(process, is_timeout):
     if process.poll() is None:
         try:
             process.terminate()
+            # process.kill()
             is_timeout[0] = True
         except Exception as es:
             # print("error for interrupting")

@@ -139,7 +139,8 @@ def solve_sygus_file(filename: str, prover="all"):
 if __name__ == "__main__":
     import argparse
 
-    solve_chc_file("./benchmarks/bv/simple.smt2", "efsmt")
+    # solve_chc_file("./benchmarks/bv/simple.smt2", "efsmt")
+    solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/minor1.smt2", "efsmt")
 
     # solve_sygus_file("./benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor1.sl", "symabs")
     # solve_sygus_file("./benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor1.sl", "efsmt")
