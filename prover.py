@@ -106,6 +106,9 @@ def solve_chc_file(filename: str, prover="efsmt"):
     sts.from_z3_cnts([vars, init, trans, post])
     sts.has_bv = True
     solve_with_ef(sts)
+    # s = SolverFor("HORN")
+    # s.add(z3.And(parse_smt2_file(filename)))
+    # print(s.check())
 
 
 def solve_sygus_file(filename: str, prover="all"):
@@ -140,15 +143,13 @@ if __name__ == "__main__":
     import argparse
 
     # solve_chc_file("./benchmarks/bv/simple.smt2", "efsmt")
-    solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/minor1.smt2", "efsmt")
+    solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/fib_44.sl.smt2", "efsmt")
 
     # solve_sygus_file("./benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor1.sl", "symabs")
     # solve_sygus_file("./benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor1.sl", "efsmt")
     # fib_04.sl needs disjunctive?
-    # solve_sygus_file("./benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl","efsmt")
     # solve_sygus_file("/Users/prism/Work/logicbox/independent/efsmt/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl", "efsmt")
     # solve_sygus_file("/Users/prism/Work/logicbox/independent/efsmt/benchmarks/sygus-inv/LIA/2018.NeurIPS_Code2Inv/38.c.sl", "efsmt")
-    # solve_sygus_file("./benchmarks/sygus-inv/LIA/2017.ASE_FiB/vardep.sl")
     # solve_sygus_file("./benchmarks/sygus-inv/LIA/2017.ASE_FiB/vardep.sl")
     # solve_sygus_file("/Users/prism/Work/logicbox/independent/efsmt/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_35.sl", "symabs")
     # solve_sygus_file("/Users/prism/Work/logicbox/independent/efsmt/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_35.sl", "efsmt")

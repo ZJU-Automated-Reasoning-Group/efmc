@@ -2,32 +2,33 @@
 # TODO List
 
 
-- Bugs
-- Features
+Here are a few topics for further exploration.
+
+
+- Bugs and Issues
+- New Features
 - Optimizations
 
 
-## Bugs 
+## 1. Bugs and Issues
 
-### The OMT engine of Z3
++ **The OMT solving engine of Z3**
 
-This bug affects the correctness of `symabs_prover.py`, which relies on 
+    Some versions of Z3's Optimize() has bugs, which affect the correctness of `symabs_prover.py`, which relies on 
 `symabs/symbolic_abstraction.py` (it uses OMT of Z3)
 
-Some versions of Z3's Optimize() has bugs
 Maybe we should be able to choose self-compiled/pre-built python packages for Z3.
 Hopefully, the new version are OK.
 
-## New Features
+## 2. New Features
 
-### Features: K-Induction
+### 2.1 Template-based (Constraint-based) Invariant Inference
 
-Need fixing
+This is the original goal of the project.
 
 
-### Features: Template-based Invariant Inference
+#### For Integer and Real Semantics
 
-We should focus on the template-based invariant inference
 - Add the support of zone and octagon domains
 - Add Farkas' Lemma based reduction 
 - Parallel benchmarking and stats.
@@ -38,7 +39,7 @@ NOTE: to perform the empirical study, we have two choices
 -  QF_NRA: templates + Farkas' lemma (for removing universal quantifiers)
 (For evaluation, we can add UF to NRA/LRA)
 
-### Features: Template-based Invariant Inference over Bit-Vec
+#### For Bit-Vector Semantics
 
 This is important for evaluating EFSMT(BV) and other algorithms.
 It is also important to "beat" many existing tools (as they do not support bit-level precision 
@@ -49,45 +50,48 @@ memory model.)
 For more benchmarks, we may use:
 https://github.com/chc-comp/vmt-chc-benchmarks/tree/master/bv
 
+#### Beyond Invariant
 
-### Features: Abduction-based Invariant Inference
+Currently, the encoding is not very flexible.
+For example, we may use the template-based approach for generating ranking
+functions (to prove termination).
+
+### 2.2 Different Variants of BMC and K-Induction
+
+Need fixing
+
+
+### 2.3 Abduction-based Invariant Inference
 
 - Dillig's abduction algorithm
 - Dillig's abduction-based invariant inference algorithm
 
 
-### Features: K-Induction
+### 2.4 Features: Frontends and Transition System
 
-### Features: Frontends
+
+Currently, we have limited support for the frontends and types of transition systems.
+In particular, the capability of different engines may vary a lot (ALIA, BV, 
+String, Algebraic Datatypes, Container..)
+
+
+Related work:
+
+- The CoSA model checker supports many kinds of inputs (it relies on pySMT, 
+and is not maintained any more?) `https://github.com/cristian-mattarei/CoSA`
+
+Perhaps we can integrate CoSA...
 
 ### Features: More Expressive Programs/Constraints
 
-- ALIA
-- BV
-- String
-- Algebraic Datatypes
-- Container
-- FP
 
-### Features: SyGuS
+## 3. Optimizations
 
-Call SyGuS as a sub-procedure
-- CVC5
+### Various Forms of Simplifications (Slicing, etc.)
 
-
-### Features: Logging
-
-...
-
-
-
-
-## Optimizations
-
-### Optimizations: Irrelevant Variables
-
-The queries from 2018.NeurIPS_Code2Inv may have many variables (e.g., 12). However, most of then are not changed. The final desired invariant may only need 
-very few of them.
+The queries from 2018.NeurIPS_Code2Inv may have many variables (e.g., 12). 
+However, most of them are not changed, and the final desired invariant may only need very few of them.
+Currently, the encoding used by the efsmt_solver is a bit stupid.
 
 
 

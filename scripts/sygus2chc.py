@@ -1,5 +1,9 @@
 """
-Converting SyGuS(Inv) benchmarks to CHC (possibly int 2 bv)
+Converting SyGuS(Inv) benchmarks to CHC
+
+    sygus2chc: preserves the variable types
+
+    sygus2chcbv: translate to bv semantics (not semantic-preserving!)
 """
 
 from efsmt.frontends.mini_sygus_parser import SyGusInVParser, parse
@@ -110,7 +114,7 @@ def ira2bv(tt, width):
     return " ".join(to_bv_sexpr_misc(parse(tt), width))
 
 
-def sygus2chcbv(tt, width=5, signed=True):
+def sygus2chcbv(tt, width, signed=True):
     """
     FIXME: how to convert constants...
     """
@@ -203,14 +207,21 @@ def process_file(filename):
     print("Processing ", filename)
     with open(filename, "r") as f:
         content = f.read()
-        fml_str = sygus2chcbv(content)
-        print(fml_str)
-        s = SolverFor("HORN")
-        s.add(And(parse_smt2_string(fml_str)))
-        s.set("timeout", 1000)
+        fml_str = sygus2chcbv(content, width=32)
+        # print(fml_str)
+        # s = SolverFor("HORN")
+        # s.add(And(parse_smt2_string(fml_str)))
+        # s.set("timeout", 1000)
         # print(s.to_smt2())
-        print(s.check())
+        # print(s.check())
         # print("XXXXXXX")
+        base = os.path.basename(filename)
+        new_file_name = "/Users/prism/Work/eldarica-bin/tests/sygus/" + base + ".smt2"
+        with open(new_file_name, "w") as new_f:
+            new_f.write(fml_str)
+            new_f.close()
+
+        f.close()
 
 
 def process_folder(path):
@@ -228,5 +239,5 @@ if __name__ == '__main__':
     # tt = "(and (<= x! (+ x y)) (< y! (+ x y)))"
     # print(ira2bv(tt))
     # test_main()
-    process_file("/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor3.sl")
-    # process_folder("/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
+    # process_file("/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor3.sl")
+    process_folder("/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
