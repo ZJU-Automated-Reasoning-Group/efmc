@@ -8,7 +8,8 @@ from .symabs import NumericalAbstraction
 from .utils import *
 
 """
-Use symbolic abstraction + iteration to find indcutive invariants!
+Using Symbolic Abstraction to find invariants
+ + symbolic abstraction + iteration to find indcutive invariants!
 """
 
 
