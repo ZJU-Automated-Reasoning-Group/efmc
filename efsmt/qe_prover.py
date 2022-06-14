@@ -1,5 +1,6 @@
 # coding: utf-8
 import time
+import logging
 from z3 import *
 from .sts import TransitionSystem
 from .utils import *
@@ -9,8 +10,10 @@ Use quantifier elimination to compute the strongest inductive invariant?
 - The abstract transformer is strongest
 - The invariant is also?
 
-TODO: this can be very slow; besides, it does not consider the ...
+  TODO: this can be very slow; besides, it does not consider the ...
 """
+
+logger = logging.getLogger(__name__)
 
 
 def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef):

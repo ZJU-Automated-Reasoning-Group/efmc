@@ -1,7 +1,7 @@
 # coding: utf-8
+import logging
 import z3
 from z3.z3util import get_vars
-from typing import List
 
 """
 from .pysmt_solver import PySMTSolver
@@ -12,17 +12,7 @@ def efsmt_solve_with_pysmt(y, phi, maxloops=None):
     pysmt_sol.efsmt(template_vars, self.sts.all_variables, phi)
 """
 
-
-def generalize(exprs: [z3.ExprRef]):
-    # UNSAT core
-    sol = z3.Solver()
-    sol.add(exprs)
-    if sol.check() == z3.unsat:
-        return sol.unsat_core()
-
-
-def abstract(expr):
-    return
+logger = logging.getLogger(__name__)
 
 
 def efsmt_solve_aux(y, phi, maxloops=None):

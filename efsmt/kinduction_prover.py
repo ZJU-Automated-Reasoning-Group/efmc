@@ -1,17 +1,19 @@
 # coding: utf-8
 # import time
+import logging
 from z3 import *
 from typing import List
-
 from .sts import TransitionSystem
-
-# from .utils import is_valid
 
 """
 #  Checking  safety  properties  using  induction  and  a SAT-solver
 #     Sheeran, Singh, Stalmarck @ FMCAD 2000
 #
 """
+
+logger = logging.getLogger(__name__)
+
+# TODO: integrate the one in the kinduction dir
 
 
 class TraceHelper(object):

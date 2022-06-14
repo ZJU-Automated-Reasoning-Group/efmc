@@ -1,5 +1,6 @@
 # coding: utf-8
 # import time
+import logging
 from z3 import *
 from itertools import combinations
 from itertools import chain
@@ -17,6 +18,8 @@ This is an "old-school" version of the predicate abstraction domain.
 Currently we do not explore
 - Lazy abstraction, lazy abstraction with interpolation, etc...
 """
+
+logger = logging.getLogger(__name__)
 
 
 def eval_preds(m: ModelRef, predicates: List[z3.BoolRef]):

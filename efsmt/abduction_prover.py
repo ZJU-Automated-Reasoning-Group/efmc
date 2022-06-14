@@ -1,5 +1,5 @@
 # coding: utf-8
-
+import logging
 from z3 import *
 from .sts import TransitionSystem
 from .abduction.abduction import dillig_abduce
@@ -11,6 +11,9 @@ Implementation of the following paper:
     
 (TODO: not finished yet)
 """
+
+logger = logging.getLogger(__name__)
+
 
 class AbductionProver(object):
 

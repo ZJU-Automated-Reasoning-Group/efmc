@@ -1,7 +1,6 @@
 # coding: utf-8
-
 import time
-# from typing import List
+import logging
 import z3
 from .sts import TransitionSystem
 from .templates import TemplateType, BitVecIntervalTemplate
@@ -11,6 +10,9 @@ from .utils import is_entail
 Sampling (least) inductive invariant via Symbolic Abstraction
 
 """
+
+
+logger = logging.getLogger(__name__)
 
 
 class InvariantSampler(object):
