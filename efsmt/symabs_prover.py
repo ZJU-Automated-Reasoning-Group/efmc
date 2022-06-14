@@ -1,16 +1,17 @@
 # coding: utf-8
 import time
-
+import logging
 from z3 import *
-
 from .sts import TransitionSystem
 from .symabs import NumericalAbstraction
 from .utils import *
 
 """
 Using Symbolic Abstraction to find invariants
- + symbolic abstraction + iteration to find indcutive invariants!
+ + Symbolic abstraction + iteration
 """
+
+logger = logging.getLogger(__name__)
 
 
 def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef):

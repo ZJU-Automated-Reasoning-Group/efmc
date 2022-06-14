@@ -2,6 +2,7 @@
 # import time
 import psutil
 import signal
+import logging
 from efsmt.ef_prover import EFProver
 from efsmt.frontend import parse_sygus, parse_chc
 from efsmt.pdr_prover import PDRProver
@@ -10,6 +11,10 @@ from efsmt.sts import TransitionSystem
 from efsmt.symabs_prover import SymbolicAbstractionProver
 from z3 import *
 from efsmt.utils import is_entail
+
+
+logger = logging.getLogger(__name__)
+
 
 """
 Automated verification
@@ -56,7 +61,6 @@ def solve_with_ef(sts: TransitionSystem):
         # ef_prover.set_template("power_interval")
         # ef_prover.set_template("interval")
     ef_prover.solve()
-    print(" ")
 
 
 def solve_with_symabs(sts: TransitionSystem):

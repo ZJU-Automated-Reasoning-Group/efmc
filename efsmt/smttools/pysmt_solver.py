@@ -1,7 +1,6 @@
 # coding: utf-8
-
+import logging
 import z3
-# from enum import Enum
 from pysmt.logics import AUTO
 from pysmt.oracles import get_logic
 from pysmt.shortcuts import EqualsOrIff
@@ -17,9 +16,10 @@ from pysmt.shortcuts import Bool, get_model, Not, Solver, qelim, ForAll
 Augmenting Z3 using PYSMT
 """
 
+logger = logging.getLogger(__name__)
 
 # NOTE: both pysmt and z3 have a class "Solver"
-# logger = logging.getLogger(__name__)
+
 
 def to_pysmt_vars(z3vars: [z3.ExprRef]):
     return [Symbol(v.decl().name(),

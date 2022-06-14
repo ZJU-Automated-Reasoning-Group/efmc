@@ -1,8 +1,12 @@
 # coding: utf-8
-from typing import List
+# from typing import List
+import logging
 import z3
 from ..sts import TransitionSystem
 from .abstract_template import TemplateType, Template
+
+
+logger = logging.getLogger(__name__)
 
 
 class ArrayTemplate(Template):

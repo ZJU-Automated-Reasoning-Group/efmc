@@ -7,18 +7,18 @@ from ..sts import TransitionSystem
 
 """
 Affine relation domain over bit-vectors
-
-There are several different variants
-Some references
-- Matt elder et al., Abstract domains of affine relations, TOPLAS'14
-- Olm and Seidl, Precise interprocedural analysis through linear algebra, POPL'04
-- King and Sondergaard,
-     Inferring congruence equations using SAT, CAV'08
-     Automatic abstraction for congruences, VMCAI'10
 """
 
 
 class BitVecAffineTemplate(Template):
+    """
+    TODO: There are several different variants. Some references
+      - Matt elder et al., Abstract domains of affine relations, TOPLAS'14
+      - Olm and Seidl, Precise interprocedural analysis through linear algebra, POPL'04
+       - King and Sondergaard,
+         Inferring congruence equations using SAT, CAV'08
+         Automatic abstraction for congruences, VMCAI'10
+    """
 
     def __init__(self, sts: TransitionSystem):
         self.sts = sts

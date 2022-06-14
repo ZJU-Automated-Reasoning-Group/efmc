@@ -1,8 +1,12 @@
 # coding: utf-8
-from typing import List
+# from typing import List
+import logging
 import z3
 from .abstract_template import TemplateType, Template
 from ..sts import TransitionSystem
+
+
+logger = logging.getLogger(__name__)
 
 
 class PolyTemplate(Template):

@@ -1,9 +1,12 @@
 # coding: utf-8
+import logging
 import z3
 from typing import List
-
 from .abstract_template import TemplateType, Template
 from ..sts import TransitionSystem
+
+
+logger = logging.getLogger(__name__)
 
 
 class IntervalTemplate(Template):
@@ -145,10 +148,10 @@ class IntervalTemplateV2(Template):
     """
     Interval domain
     FIXME: The current IntervalTemplate introduces non-linear cnts, which are not elegant.
-    FIXME: However, due to the problem of infinity (?), we cannot use the following kind of templates
-    FIXME:      a <= x <= b,  c <= y <= d (this seems to restrict the values of a, b, c, d)
-    FIXME: The above template leads to incompleteness (?)
-    FIXME: But,can we use a < x < b,  c < y < d (e.g., for integers?)
+      However, due to the problem of infinity (?), we cannot use the following kind of templates
+      a <= x <= b,  c <= y <= d (this seems to restrict the values of a, b, c, d)
+      The above template leads to incompleteness (?)
+      But,can we use a < x < b,  c < y < d (e.g., for integers?)
     """
 
     def __init__(self, sts: TransitionSystem):
@@ -186,6 +189,7 @@ class IntervalTemplateV2(Template):
                 tvars = [z3.Int("l_{}".format(str(var))), z3.Int("u_{}".format(str(var)))]
             self.template_vars.append(tvars)
             self.template_index += 1
+
 
     def get_additional_cnts_for_template_vars(self):
         """

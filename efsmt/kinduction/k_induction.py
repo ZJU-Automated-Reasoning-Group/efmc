@@ -1,4 +1,6 @@
 # coding: utf-8
+import logging
+from z3 import *
 
 """
 Ported from https://github.com/pysmt/pysmt/blob/97c6eda689bbc7707602c2b3a3e1444f9d75166d/examples/model_checking.py
@@ -14,7 +16,7 @@ TODO:
 
 """
 
-from z3 import *
+logger = logging.getLogger(__name__)
 
 
 def is_sat(phi: z3.ExprRef):

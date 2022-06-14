@@ -1,23 +1,17 @@
 # coding: utf-8
 import itertools
+import logging
 from typing import List
-
 from z3 import *
-
 from .common import box_optimize, get_variables
-
-# import logging
-# import random
-# from timeit import default_timer as symabs_timer
-# import argparse
-
-# logging.basicConfig(level=logging.WARNING)
 
 """
 Interval
 Zone
 Octagon
 """
+
+logger = logging.getLogger(__name__)
 
 
 def get_bv_size(x: ExprRef):
@@ -93,7 +87,8 @@ class BiVecSymbolicAbstraction:
         # timeout = n_queries * self.single_query_timeout * 2 # is this reasonable?
         min_res, max_res = box_optimize(self.formula, minimize=multi_queries, maximize=multi_queries, timeout=30000)
         # TODO: the res of handler.xx() is not a BitVec val, but Int?
-        # TODO: what if it is a value large than the biggest integer of the size (is it possible? e.g., due to overflow)
+        #   what if it is a value large than the biggest integer of the size
+        #   (is it possible? e.g., due to overflow)
         cnts = []
         for i in range(len(multi_queries)):
             vmin = min_res[i]

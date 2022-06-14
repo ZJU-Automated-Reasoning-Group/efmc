@@ -8,6 +8,9 @@ The above one uses Sage, which is heavyweight
 
 
 class Farkas(object):
+    """
+    TODO: not implemented yet!
+    """
 
     def myconvert(self):
         """

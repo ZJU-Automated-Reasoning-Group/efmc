@@ -1,9 +1,8 @@
 # coding: utf-8
 import itertools
+import logging
 from timeit import default_timer as symabs_timer
-
 from z3 import *
-
 from .common import OMTEngine, OMTEngineType
 
 """
@@ -13,8 +12,7 @@ As we use this file to test verification idea, but not symabs algo.
 To be independent, I do not import any files in this project,
 """
 
-
-# logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger(__name__)
 
 
 class NumericalAbstraction:

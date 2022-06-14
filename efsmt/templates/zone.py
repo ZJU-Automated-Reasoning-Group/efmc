@@ -1,10 +1,14 @@
 # coding: utf-8
 from typing import List
+import logging
 import itertools
 import z3
 from .abstract_template import TemplateType, Template
 from ..sts import TransitionSystem
 from ..utils import get_variables
+
+
+logger = logging.getLogger(__name__)
 
 
 class ZoneTemplate(Template):

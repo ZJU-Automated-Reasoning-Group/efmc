@@ -2,9 +2,8 @@
 import time
 # from typing import List
 from enum import Enum
-
+import logging
 import z3
-
 from .smttools.efsmt_solver import efsmt_solve_aux
 # from .smttools.pysmt_solver import PySMTSolver
 from .smttools.smtlib_solver import SMTLIBSolver
@@ -13,14 +12,14 @@ from .templates import PolyTemplate, IntervalTemplate, ZoneTemplate, Disjunctive
     DisjunctiveIntervalTemplate, BitVecIntervalTemplate
 from .utils import is_entail
 
-# TODO: add a few simple unit tests
 
 """
 Generate template-based invariants using EF-SMT solving
-
 NOTE:
 - We assume there is only one invariant to be synthesized
 """
+
+logger = logging.getLogger(__name__)
 
 
 class EFSMTSolverType(Enum):

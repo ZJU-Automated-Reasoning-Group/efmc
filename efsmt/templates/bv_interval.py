@@ -5,10 +5,13 @@ from typing import List
 from .abstract_template import TemplateType, Template
 from ..sts import TransitionSystem
 
+"""
+Interval domain over bit-vec
+"""
+
 
 class BitVecIntervalTemplate(Template):
     """
-    Interval domain over bit-vec
     TODO: infer the signess of variables? (or design a domain that is singness-irrelevant?
     """
 
