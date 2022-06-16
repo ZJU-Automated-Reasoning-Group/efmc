@@ -2,12 +2,17 @@
 import os
 import subprocess
 from threading import Timer
-
+import signal
+import psutil
 # import zlib
 
-"""
-Run benchmarks
-"""
+
+def signal_handler(sig, frame):
+    """Captures the shutdown signals and cleans up all child processes of this process."""
+    print("handling signals")
+    parent = psutil.Process(os.getpid())
+    for child in parent.children(recursive=True):
+        child.kill()
 
 
 def find_smt2_files(path):
@@ -42,8 +47,20 @@ def solve_with_bin_solver(cmd, timeout=5):
     is_timeout = [False]
     timer = Timer(timeout, terminate, args=[p, is_timeout])
     timer.start()
-    out = p.stdout.readlines()
-    out = ' '.join([str(element.decode('UTF-8')) for element in out])
+
+    res_out = []
+    for line in iter(p.stdout.readline, "b"):
+        if line:
+            tmp = str(line.decode('UTF-8'))
+            res_out.append(tmp)
+            print(tmp)
+        if p.poll() is None:
+            break
+    out = ' '.join(res_out)
+
+    # NOTE: the following two lines may lead to strange resource leak
+    # out = p.stdout.readlines()
+    # out = ' '.join([str(element.decode('UTF-8')) for element in out])
     p.stdout.close()
     timer.cancel()
     if is_timeout[0]:
@@ -79,8 +96,17 @@ def solve_dir(path):
         cmd2.pop()
 
 
-solve_dir("/Users/prism/Work/logicbox/independent/efsmt/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
-# solve_dir("./benchmarks/sygus-inv/LIA/2018.SV-Comp")
-# solve_dir("/Users/prism/Work/logicbox/independent/efsmt/benchmarks/sygus-inv/LIA/2018.NeurIPS_Code2Inv")
-# solve_dir("./benchmarks/sygus-inv/LIA/2016.SyGuS-Comp")
-# solve_dir("./benchmarks/sygus-inv/LIA/2015.FMCAD_Acceleration")
+if __name__ == "__main__":
+
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGQUIT, signal_handler)
+    signal.signal(signal.SIGABRT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+    solve_dir("/Users/prism/Work/logicbox/independent/efsmt/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
+    # solve_dir("./benchmarks/sygus-inv/LIA/2018.SV-Comp")
+    # solve_dir("/Users/prism/Work/logicbox/independent/efsmt/benchmarks/sygus-inv/LIA/2018.NeurIPS_Code2Inv")
+    # solve_dir("./benchmarks/sygus-inv/LIA/2016.SyGuS-Comp")
+    # solve_dir("./benchmarks/sygus-inv/LIA/2015.FMCAD_Acceleration")
+
+
