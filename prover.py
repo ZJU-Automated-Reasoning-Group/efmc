@@ -6,7 +6,7 @@ import logging
 from efmc.ef_prover import EFProver
 from efmc.frontend import parse_sygus, parse_chc
 from efmc.pdr_prover import PDRProver
-from efmc.qe_prover import QuantifierElminationProver
+from efmc.qe_prover import QuantifierEliminationProver
 from efmc.sts import TransitionSystem
 from efmc.symabs_prover import SymbolicAbstractionProver
 from z3 import *
@@ -35,7 +35,7 @@ def solve_with_qe(sts: TransitionSystem):
     """
     Use QE-based strongest inductive invariant inference
     """
-    qe_prover = QuantifierElminationProver(sts)
+    qe_prover = QuantifierEliminationProver(sts)
     qe_prover.solve()
 
 
@@ -105,9 +105,9 @@ def validate_invariant(sts: TransitionSystem):
 
 def solve_chc_file(filename: str, prover="efsmt"):
     # Currently, CHC is only used for bv
-    vars, init, trans, post = parse_chc(filename, to_real_type=False)
+    all_vars, init, trans, post = parse_chc(filename, to_real_type=False)
     sts = TransitionSystem()
-    sts.from_z3_cnts([vars, init, trans, post])
+    sts.from_z3_cnts([all_vars, init, trans, post])
     sts.has_bv = True
     solve_with_ef(sts)
     # s = SolverFor("HORN")
@@ -122,9 +122,9 @@ def solve_sygus_file(filename: str, prover="all"):
     # FIXME: To use abstract domains and to preserve completeness,
     # FIXME: I cast integer variables to reals (this can be bad?) when parsing.
     # FIXME: A better idea is to transform the transition system after the parsing
-    vars, init, trans, post = parse_sygus(filename, to_real_type=True)
+    all_vars, init, trans, post = parse_sygus(filename, to_real_type=True)
     sts = TransitionSystem()
-    sts.from_z3_cnts([vars, init, trans, post])
+    sts.from_z3_cnts([all_vars, init, trans, post])
     # print(sts)
     if prover == "efsmt":
         solve_with_ef(sts)

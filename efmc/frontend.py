@@ -12,6 +12,7 @@ Wrappers for the frontends
 
 
 def parse_chc(filename: str, to_real_type: bool):
+    """Parse CHC file"""
     with open(filename, "r") as f:
         res = f.read()
         ss = CHCParser(res, to_real_type)
@@ -19,6 +20,7 @@ def parse_chc(filename: str, to_real_type: bool):
 
 
 def parse_sygus(filename: str, to_real_type: bool):
+    """Parse SyGuS file"""
     with open(filename, "r") as f:
         res = f.read()
         ss = SyGusInVParser(res, to_real_type)

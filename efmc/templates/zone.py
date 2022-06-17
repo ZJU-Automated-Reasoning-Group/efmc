@@ -1,5 +1,5 @@
 # coding: utf-8
-from typing import List
+# from typing import List
 import logging
 import itertools
 import z3

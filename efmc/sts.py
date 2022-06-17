@@ -34,9 +34,7 @@ class TransitionSystem(object):
         return " "
 
     def from_z3_cnts(self, ts: List):
-        """
-        A trick for initializing sts
-        """
+        """A trick for initializing sts"""
         self.all_variables, self.init, self.trans, self.post = ts[0], ts[1], ts[2], ts[3]
         # print(self.all_variables)
         for var in self.all_variables:
@@ -52,7 +50,6 @@ class TransitionSystem(object):
         # exit(0)
 
     def analyze_and_simplify(self):
-        """
-        Simplify the problem?
+        """Simplify the problem?
         """
         self.trans = ctx_simplify(self.trans)

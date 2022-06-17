@@ -6,7 +6,7 @@ Converting SyGuS(Inv) benchmarks to CHC
     sygus2chcbv: translate to bv semantics (not semantic-preserving!)
 """
 
-from efsmt.frontends.mini_sygus_parser import SyGusInVParser, parse
+from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse
 # from ..efsmt.frontends.mini_sygus_parser import test_main
 from z3 import *
 from z3.z3util import get_vars

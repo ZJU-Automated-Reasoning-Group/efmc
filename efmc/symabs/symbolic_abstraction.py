@@ -30,6 +30,9 @@ class NumericalAbstraction:
         self.omt_engine.engine_type = ty
 
     def do_simplification(self):
+        """
+        Simplify self.formula before the optimization
+        """
         if self.initialized:
             simp_start = symabs_timer()
             tac = Then(Tactic("simplify"), Tactic("propagate-values"))
@@ -46,7 +49,7 @@ class NumericalAbstraction:
             self.formula = fml
             # for var in get_variables(self.formula):
             #    if is_int(var) or is_real(var): self.vars.append(var)
-            # For verification, we may only care about the primed variables
+            # TODO: For verification, we may only care about the primed variables
             for var in vars: self.vars.append(var)
 
             self.initialized = True
@@ -55,7 +58,7 @@ class NumericalAbstraction:
 
         except Z3Exception as ex:
             print("error when initialization")
-            print(ex)
+            print(ex) # TODO: should throw ex?
 
     def to_omt_file(self, abs_type: str):
         s = Solver()
@@ -71,23 +74,25 @@ class NumericalAbstraction:
             return omt_str
 
     def interval_abs(self):
+        """Interval abstraction"""
         if self.omt_engine.compact_opt:
             multi_queries = []
             for var in self.vars:
                 multi_queries.append(var)
             return self.omt_engine.min_max_many(multi_queries)
-        else:
-            cnts = []
-            for i in range(len(self.vars)):
-                vmin = self.omt_engine.min_once(self.vars[i])
-                vmax = self.omt_engine.max_once((self.vars[i]))
-                # print(self.vars[i], "[", vmin, ", ", vmax, "]")
-                cnts.append(And(self.vars[i] >= vmin, self.vars[i] <= vmax))
+        # Begin of "else"
+        cnts = []
+        for i in range(len(self.vars)):
+            vmin = self.omt_engine.min_once(self.vars[i])
+            vmax = self.omt_engine.max_once((self.vars[i]))
+            # print(self.vars[i], "[", vmin, ", ", vmax, "]")
+            cnts.append(And(self.vars[i] >= vmin, self.vars[i] <= vmax))
 
-            return And(cnts)
+        return And(cnts)
         # return simplify(And(cnts))
 
     def zone_abs(self):
+        """Zone abstraction"""
         zones = list(itertools.combinations(self.vars, 2))
         if self.omt_engine.compact_opt:
             multi_queries = []
@@ -95,42 +100,41 @@ class NumericalAbstraction:
                 multi_queries.append(v1 - v2)
 
             return simplify(self.omt_engine.min_max_many(multi_queries))
-        else:
-            zone_cnts = []
-            objs = []
-            for v1, v2 in zones:
-                objs.append(v1 - v2)
-            for exp in objs:
-                exmin = self.omt_engine.min_once(exp)
-                exmax = self.omt_engine.max_once(exp)
-                zone_cnts.append(And(exp >= exmin, exp <= exmax))
-            return And(zone_cnts)
-        # return simplify(And(zone_cnts))
+        # Begin of "else"
+        zone_cnts = []
+        objs = []
+        for v1, v2 in zones:
+            objs.append(v1 - v2)
+        for exp in objs:
+            exmin = self.omt_engine.min_once(exp)
+            exmax = self.omt_engine.max_once(exp)
+            zone_cnts.append(And(exp >= exmin, exp <= exmax))
+        return And(zone_cnts)
 
     def octagon_abs(self):
+        """Octagon abstraction"""
         octagons = list(itertools.combinations(self.vars, 2))
         if self.omt_engine.compact_opt:
             multi_queries = []
             for v1, v2 in octagons:
                 multi_queries.append(v1 - v2)
                 multi_queries.append(v1 + v2)
-
             return self.omt_engine.min_max_many(multi_queries)
-        else:
-            oct_cnts = []
-            objs = []
-            for v1, v2 in octagons:
-                objs.append(v1 - v2)
-                objs.append(v1 + v2)
+        # Begin of "else"
+        oct_cnts = []
+        objs = []
+        for v1, v2 in octagons:
+            objs.append(v1 - v2)
+            objs.append(v1 + v2)
 
-            for exp in objs:
-                exmin = self.omt_engine.min_once(exp)
-                exmax = self.omt_engine.max_once(exp)
-                # TODO: this is not elegant (OptiMathSAT already returns an assertion)
-                oct_cnts.append(And(exp >= exmin, exp <= exmax))
+        for exp in objs:
+            exmin = self.omt_engine.min_once(exp)
+            exmax = self.omt_engine.max_once(exp)
+            # TODO: this is not elegant (OptiMathSAT already returns an assertion)
+            oct_cnts.append(And(exp >= exmin, exp <= exmax))
 
-            return And(oct_cnts)
-            # return simplify(And(oct_cnts))
+        return And(oct_cnts)
+        # return simplify(And(oct_cnts))
 
 
 def feat_test_counting():

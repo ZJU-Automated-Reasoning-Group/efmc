@@ -20,7 +20,7 @@ def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef):
     return is_valid(Implies(inv, old_inv))
 
 
-class QuantifierElminationProver:
+class QuantifierEliminationProver:
     def __init__(self, system: TransitionSystem):
         self.sts = system
         """
@@ -74,5 +74,5 @@ if __name__ == '__main__':
     sts = TransitionSystem()
     sts.from_z3_cnts([vars, init, trans, post])
 
-    pp = QuantifierElminationProver(sts)
+    pp = QuantifierEliminationProver(sts)
     pp.solve()

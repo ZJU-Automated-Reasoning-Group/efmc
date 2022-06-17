@@ -8,10 +8,12 @@ from z3.z3util import get_vars
 
 
 def get_variables(exp: z3.ExprRef):
+    """Get variables of exp"""
     return get_vars(exp)
 
 
 def optimize(fml: z3.ExprRef, obj: z3.ExprRef, minimize=False, timeout: int = 0):
+    """Optimize obj subject to fml"""
     s = z3.Optimize()
     s.add(fml)
     if timeout > 0:
@@ -25,6 +27,7 @@ def optimize(fml: z3.ExprRef, obj: z3.ExprRef, minimize=False, timeout: int = 0)
 
 
 def box_optimize(fml: z3.ExprRef, minimize: List, maximize: List, timeout: int = 0):
+    """Box multi-objective opt"""
     s = z3.Optimize()
     s.set("opt.priority", "box")
     s.add(fml)
@@ -66,9 +69,7 @@ class OMTEngine:
             print(ex)
 
     def min_once(self, exp: z3.ExprRef):
-        """
-        Minimize the objective exp
-        """
+        """Minimize the objective exp"""
         if self.engine_type == OMTEngineType.Z3OPT:
             # FIXME: - can be understood as negative
             return -self.maximize_with_z3opt(-exp)
@@ -76,19 +77,14 @@ class OMTEngine:
             raise NotImplementedError
 
     def max_once(self, exp: z3.ExprRef):
-        """
-        Maximize the objective exp
-        """
+        """Maximize the objective exp"""
         if self.engine_type == OMTEngineType.Z3OPT:
             return self.maximize_with_z3opt(exp)
         else:
             raise NotImplementedError
 
     def min_max_many(self, multi_queries: List):
-        """
-        Boxed-OMT: compute the maximum AND minimum of queries in multi_queries
-
-        """
+        """Boxed-OMT: compute the maximum AND minimum of queries in multi_queries"""
         if self.engine_type == OMTEngineType.Z3OPT:
             print("fml: ", self.formula)
             print("objs: ", multi_queries, multi_queries)
