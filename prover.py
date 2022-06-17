@@ -6,9 +6,9 @@ import logging
 from efmc.ef_prover import EFProver
 from efmc.frontend import parse_sygus, parse_chc
 from efmc.pdr_prover import PDRProver
-from efmc.qe_prover import QuantifierEliminationProver
+from efmc.qe.qe_prover import QuantifierEliminationProver
 from efmc.sts import TransitionSystem
-from efmc.symabs_prover import SymbolicAbstractionProver
+from efmc.symabs.symabs_prover import SymbolicAbstractionProver
 from z3 import *
 from efmc.utils import is_entail
 

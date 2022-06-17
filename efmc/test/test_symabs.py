@@ -3,7 +3,7 @@ from z3 import *
 
 from . import TestCase, main
 from ..sts import TransitionSystem
-from ..symabs_prover import SymbolicAbstractionProver
+from efmc.symabs.symabs_prover import SymbolicAbstractionProver
 
 
 class TestSymAbs(TestCase):

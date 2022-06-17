@@ -2,8 +2,8 @@
 # import time
 import logging
 from z3 import *
-from typing import List
-from .sts import TransitionSystem
+# from typing import List
+from ..sts import TransitionSystem
 
 """
 #  Checking  safety  properties  using  induction  and  a SAT-solver
@@ -95,6 +95,6 @@ class KInductionProver(object):
         self.sts = system
 
     def solve(self):
-        print("true")
+        raise NotImplementedError
 
         # print("can use k-induction to prove, k =", t)

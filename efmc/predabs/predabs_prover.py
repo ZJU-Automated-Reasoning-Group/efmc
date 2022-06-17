@@ -4,10 +4,8 @@ import logging
 from z3 import *
 from itertools import combinations
 from itertools import chain
-from typing import List
-
-from .sts import TransitionSystem
-from .utils import *
+from ..sts import TransitionSystem
+from ..utils import *
 
 """
 This is an "old-school" version of the predicate abstraction domain.

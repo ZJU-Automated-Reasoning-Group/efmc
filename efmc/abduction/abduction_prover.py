@@ -1,8 +1,8 @@
 # coding: utf-8
 import logging
 from z3 import *
-from .sts import TransitionSystem
-from .abduction.abduction import dillig_abduce
+from ..sts import TransitionSystem
+from .abduction import dillig_abduce
 
 """
 Implementation of the following paper:
@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class AbductionProver(object):
-
 
     def __init__(self, system: TransitionSystem):
         """
@@ -63,7 +62,7 @@ class AbductionProver(object):
                 print(cti)
                 # TODO: need to "cover" the counterexample
                 # inv \land ? |= inv'
-                inv = self.strength(inv)
+                # inv = self.strength(inv)
                 inv = dillig_abduce(pre_cond, post_cond)  # is this correct?
                 # Use CTI to "refine"; find xx that is inductive relative to ....
             else:
