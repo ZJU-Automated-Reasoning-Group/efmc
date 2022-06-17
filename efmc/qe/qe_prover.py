@@ -2,8 +2,8 @@
 import time
 import logging
 from z3 import *
-from .sts import TransitionSystem
-from .utils import *
+from ..sts import TransitionSystem
+from ..utils import *
 
 """
 Use quantifier elimination to compute the strongest inductive invariant?

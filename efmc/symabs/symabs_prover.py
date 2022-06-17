@@ -2,9 +2,10 @@
 import time
 import logging
 from z3 import *
-from .sts import TransitionSystem
-from .symabs import NumericalAbstraction
-from .utils import *
+
+from . import NumericalAbstraction
+from ..sts import TransitionSystem
+from ..utils import *
 
 """
 Using Symbolic Abstraction to find invariants
