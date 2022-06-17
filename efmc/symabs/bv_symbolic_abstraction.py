@@ -57,9 +57,7 @@ class BiVecSymbolicAbstraction:
             print(ex)
 
     def min_once(self, exp: ExprRef):
-        """
-        Minimize exp
-        """
+        """ Minimize exp subject to self.formula"""
         sol = Optimize()
         sol.set("timeout", self.single_query_timeout)
         sol.add(self.formula)
@@ -70,6 +68,7 @@ class BiVecSymbolicAbstraction:
             # return m.eval(exp).as_long()
 
     def max_once(self, exp: ExprRef):
+        """ Maximize exp subject to self.formula"""
         sol = Optimize()
         sol.set("timeout", self.single_query_timeout)
         sol.add(self.formula)
@@ -81,8 +80,7 @@ class BiVecSymbolicAbstraction:
             # return m.eval(exp).as_long()
 
     def min_max_many(self, multi_queries: List[ExprRef]):
-        """
-        """
+        """ Minimize and maximize multi_quries subject to self.formula"""
         # n_queries = len(multi_queries)
         # timeout = n_queries * self.single_query_timeout * 2 # is this reasonable?
         min_res, max_res = box_optimize(self.formula, minimize=multi_queries, maximize=multi_queries, timeout=30000)
@@ -100,28 +98,31 @@ class BiVecSymbolicAbstraction:
                 cnts.append(And(multi_queries[i] >= vmin_bvval, multi_queries[i] <= vmax_bvval))
             else:
                 cnts.append(And(UGE(multi_queries[i], vmin_bvval), ULE(multi_queries[i], vmax_bvval)))
-        return And(cnts)
+        return z3.And(cnts)
 
     def interval_abs(self):
+        """Interval abstraction"""
         if self.compact_opt:
             multi_queries = []
             for var in self.vars:
                 multi_queries.append(var)
             self.interval_abs_as_fml = self.min_max_many(multi_queries)
+            return
             # print(self.interval_abs_as_fml)
-        else:
-            cnts = []
-            for i in range(len(self.vars)):
-                vmin = self.min_once(self.vars[i])
-                vmax = self.max_once((self.vars[i]))
-                if self.signed:
-                    cnts.append(And(self.vars[i] >= vmin, self.vars[i] <= vmax))
-                else:
-                    cnts.append(And(UGE(self.vars[i], vmin), ULE(self.vars[i], vmax)))
-                print(self.vars[i], "[", vmin, ", ", vmax, "]")
-            self.interval_abs_as_fml = And(cnts)
+        # Begin of "Else"
+        cnts = []
+        for i in range(len(self.vars)):
+            vmin = self.min_once(self.vars[i])
+            vmax = self.max_once((self.vars[i]))
+            if self.signed:
+                cnts.append(And(self.vars[i] >= vmin, self.vars[i] <= vmax))
+            else:
+                cnts.append(And(UGE(self.vars[i], vmin), ULE(self.vars[i], vmax)))
+            print(self.vars[i], "[", vmin, ", ", vmax, "]")
+        self.interval_abs_as_fml = And(cnts)
 
     def zone_abs(self):
+        """Zone abstraction"""
         zones = list(itertools.combinations(self.vars, 2))
         if self.compact_opt:
             multi_queries = []
@@ -138,34 +139,36 @@ class BiVecSymbolicAbstraction:
                 self.formula = And(self.formula, And(wrap_around_cnts))
 
             self.zone_abs_as_fml = self.min_max_many(multi_queries)
-            # print(self.zone_abs_as_fml)
-        else:
-            zone_cnts = []
-            objs = []
-            wrap_around_cnts = []
-            for v1, v2 in zones:
-                if v1.sort().size() == v2.sort().size():
-                    objs.append(v1 - v2)
-                    if self.obj_no_overflow:
-                        wrap_around_cnts.append(BVSubNoOverflow(v1, v2))
-                    if self.obj_no_underflow:
-                        wrap_around_cnts.append(BVSubNoUnderflow(v1, v2, signed=self.signed))
+            return
 
-            if len(wrap_around_cnts) > 1:
-                self.formula = And(self.formula, And(wrap_around_cnts))
+        # Begin of "Else"
+        zone_cnts = []
+        objs = []
+        wrap_around_cnts = []
+        for v1, v2 in zones:
+            if v1.sort().size() == v2.sort().size():
+                objs.append(v1 - v2)
+                if self.obj_no_overflow:
+                    wrap_around_cnts.append(BVSubNoOverflow(v1, v2))
+                if self.obj_no_underflow:
+                    wrap_around_cnts.append(BVSubNoUnderflow(v1, v2, signed=self.signed))
 
-            for exp in objs:
-                # TODO: use BVSubNoOverflow
-                exmin = self.min_once(exp)
-                exmax = self.max_once(exp)
-                if self.signed:
-                    zone_cnts.append(And(exp >= exmin, exp <= exmax))
-                else:
-                    zone_cnts.append(And(UGE(exp, exmin), ULE(exp, exmax)))
+        if len(wrap_around_cnts) > 1:
+            self.formula = And(self.formula, And(wrap_around_cnts))
 
-            self.zone_abs_as_fml = And(zone_cnts)
+        for exp in objs:
+            # TODO: use BVSubNoOverflow
+            exmin = self.min_once(exp)
+            exmax = self.max_once(exp)
+            if self.signed:
+                zone_cnts.append(And(exp >= exmin, exp <= exmax))
+            else:
+                zone_cnts.append(And(UGE(exp, exmin), ULE(exp, exmax)))
+
+        self.zone_abs_as_fml = And(zone_cnts)
 
     def octagon_abs(self):
+        """Octagon abstraction"""
         octagons = list(itertools.combinations(self.vars, 2))
         if self.compact_opt:
             multi_queries = []
@@ -190,36 +193,38 @@ class BiVecSymbolicAbstraction:
                 self.formula = And(self.formula, And(wrap_around_cnts))
 
             self.octagon_abs_as_fml = self.min_max_many(multi_queries)
+            return
             # print(self.zone_abs_as_fml)
-        else:
-            oct_cnts = []
-            objs = []
-            wrap_around_cnts = []
+        # Begin of "Else"
+        oct_cnts = []
+        objs = []
+        wrap_around_cnts = []
 
-            for var in self.vars:
-                # need this?
-                objs.append(var)
+        for var in self.vars:
+            # need this?
+            objs.append(var)
 
-            for v1, v2 in octagons:
-                if v1.sort().size() == v2.sort().size():
-                    objs.append(v1 - v2)
-                    objs.append(v1 + v2)
-                    if self.obj_no_overflow:
-                        wrap_around_cnts.append(BVSubNoOverflow(v1, v2))
-                        wrap_around_cnts.append(BVAddNoOverflow(v1, v2, signed=self.signed))
-                    if self.obj_no_underflow:
-                        wrap_around_cnts.append(BVSubNoUnderflow(v1, v2, signed=self.signed))
-                        wrap_around_cnts.append(BVAddNoUnderflow(v1, v2))
+        for v1, v2 in octagons:
+            if v1.sort().size() == v2.sort().size():
+                objs.append(v1 - v2)
+                objs.append(v1 + v2)
+                if self.obj_no_overflow:
+                    wrap_around_cnts.append(BVSubNoOverflow(v1, v2))
+                    wrap_around_cnts.append(BVAddNoOverflow(v1, v2, signed=self.signed))
+                if self.obj_no_underflow:
+                    wrap_around_cnts.append(BVSubNoUnderflow(v1, v2, signed=self.signed))
+                    wrap_around_cnts.append(BVAddNoUnderflow(v1, v2))
 
-            if len(wrap_around_cnts) > 1:
-                self.formula = And(self.formula, And(wrap_around_cnts))
+        if len(wrap_around_cnts) > 1:
+            self.formula = And(self.formula, And(wrap_around_cnts))
 
-            for exp in objs:
-                exmin = self.min_once(exp)
-                exmax = self.max_once(exp)
-                if self.signed:
-                    oct_cnts.append(And(exp >= exmin, exp <= exmax))
-                else:
-                    oct_cnts.append(And(UGE(exp, exmin), ULE(exp, exmax)))
+        for exp in objs:
+            exmin = self.min_once(exp)
+            exmax = self.max_once(exp)
+            if self.signed:
+                oct_cnts.append(And(exp >= exmin, exp <= exmax))
+            else:
+                oct_cnts.append(And(UGE(exp, exmin), ULE(exp, exmax)))
 
-            self.zone_abs_as_fml = And(oct_cnts)
+        self.zone_abs_as_fml = And(oct_cnts)
+

@@ -18,11 +18,8 @@ class PDRProver:
         self.sts = sts
 
     def solve(self):
-        """
-        From transition system to CHC
-        """
-        if not self.sts.initialized:
-            raise AssertionError("STS not initialized!")
+        """From transition system to CHC"""
+        assert self.sts.initialized
         s = SolverFor("HORN")
         # construct the "inv" uninterpreted function
         # FIXME: the following is ugly

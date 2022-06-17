@@ -35,9 +35,10 @@ class EFProver:
 
     def __init__(self, sts: TransitionSystem):
         self.sts = sts
-        self.ct = None  # template
+        self.ct = None  # template type
 
     def set_template(self, ttype: str):
+        """Set self.ct """
         if ttype == "poly":
             self.ct = PolyTemplate(self.sts)
         elif ttype == "interval":
@@ -60,9 +61,7 @@ class EFProver:
             self.ct = PolyTemplate(self.sts)
 
     def check_invariant(self, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRef):
-        """
-        Check whether the generated invariant is correct
-        """
+        """Check whether the generated invariant is correct"""
         correct = True
 
         # 1. Init
@@ -96,7 +95,7 @@ class EFProver:
         """
         Generate VC
         TODO: another strategy is to generate the quantifier free body first,
-        and then add the quantifier once (using self.sts.all_variables?)
+          and then add the quantifier once (using self.sts.all_variables?)
         """
         s = z3.Solver()
         s.add(z3.ForAll(self.sts.variables, z3.Implies(self.sts.init,
@@ -115,9 +114,7 @@ class EFProver:
         return z3.And(s.assertions())
 
     def generate_quantifier_free_vc(self):
-        """
-        This is used by efsmt_solve (a tiny CEGAR-style algorithm)
-        """
+        """Generate the "QF-part" of the VC (quantifiers can be added later)"""
         s = z3.Solver()
         s.add(z3.Implies(self.sts.init, self.ct.template_cnt_init_and_post))
 
@@ -132,8 +129,8 @@ class EFProver:
         return z3.And(s.assertions())
 
     def generate_vc2(self):
-        """
-        ForAll([allvars], And(Init,Trans,Post))
+        """Generate VC in the form of ForAll([allvars], And(Init,Trans,Post))
+        It will first use self.generate_quantifier_free_vc to generate the QF part
         """
         qf_vc = self.generate_quantifier_free_vc()
         # Add additional cnts to restrict the template variables
@@ -145,10 +142,7 @@ class EFProver:
         return z3.ForAll(self.sts.all_variables, qf_vc)
 
     def solve_with_cegar_efsmt(self):
-        """
-        This can be slow (perhaps not a good idea for QF_NRA)
-        Maybe QF_LRA or QF_BV?
-        """
+        """This can be slow (perhaps not a good idea for QF_NRA) Maybe QF_LRA or QF_BV?"""
         phi = self.generate_quantifier_free_vc()
         print("User-defined EFSMT starting!!!")
         start = time.time()
@@ -170,6 +164,7 @@ class EFProver:
             return False
 
     def solve_with_z3(self):
+        """This is the main entrance for the verification"""
         if self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.INTERVAL:
             s = z3.SolverFor("UFLRA")  # FIXME: our encoding seems to be non-linear...
         elif self.ct.template_type == TemplateType.BV_INTERVAL:
@@ -207,9 +202,7 @@ class EFProver:
             return False
 
     def solve_with_bin(self):
-        """
-        Use a third party SMT solvers (perhaps in parallel)
-        """
+        """Use a third party SMT solvers (perhaps in parallel)"""
         solver = z3.Solver()
         solver.add(self.generate_vc())
         if self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.INTERVAL:

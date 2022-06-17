@@ -1,7 +1,7 @@
 # coding: utf-8
 import logging
 import z3
-from typing import List
+# from typing import List
 from .abstract_template import TemplateType, Template
 from ..sts import TransitionSystem
 
@@ -189,7 +189,6 @@ class IntervalTemplateV2(Template):
                 tvars = [z3.Int("l_{}".format(str(var))), z3.Int("u_{}".format(str(var)))]
             self.template_vars.append(tvars)
             self.template_index += 1
-
 
     def get_additional_cnts_for_template_vars(self):
         """

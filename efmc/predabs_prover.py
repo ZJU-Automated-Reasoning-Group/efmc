@@ -23,10 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def eval_preds(m: ModelRef, predicates: List[z3.BoolRef]):
-    """
-    Let m be a model of a formula phi
-    preds be a set of predicates
-    """
+    """ Let m be a model of a formula phi. preds be a set of predicates"""
     res = []
     for p in predicates:
         if is_true(m.eval(p)):
@@ -67,9 +64,7 @@ def weakest_sufficient_condition(fml, preds):
 
 
 def stronget_consequence_simple(phi, preds):
-    """
-    Is this correct?
-    """
+    """Is this correct?"""
     res = And(False)
     negpreds = map(lambda xx: Not(xx), preds)
 
