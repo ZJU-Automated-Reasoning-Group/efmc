@@ -27,7 +27,7 @@ class PolyTemplate(Template):
         self.template_vars = []  # vector of vector
         self.template_index = 0  # number of templates
 
-        self.num_templates = 2  # this is for polyhedral
+        self.num_templates = 1  # this is for polyhedral
 
         self.add_template_vars()  # init self.template_vars
 

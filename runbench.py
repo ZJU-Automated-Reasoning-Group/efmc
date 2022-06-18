@@ -1,5 +1,6 @@
 # coding: utf8
 import os
+import sys
 import subprocess
 from threading import Timer
 import signal
@@ -8,11 +9,11 @@ import psutil
 
 
 def signal_handler(sig, frame):
-    """Captures the shutdown signals and cleans up all child processes of this process."""
     print("handling signals")
     parent = psutil.Process(os.getpid())
     for child in parent.children(recursive=True):
         child.kill()
+    sys.exit(0)
 
 
 def find_smt2_files(path):
@@ -43,26 +44,14 @@ def solve_with_bin_solver(cmd, timeout=5):
     """
     # ret = "unknown"
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
     is_timeout = [False]
     timer = Timer(timeout, terminate, args=[p, is_timeout])
     timer.start()
-
-    res_out = []
-    for line in iter(p.stdout.readline, "b"):
-        if line:
-            tmp = str(line.decode('UTF-8'))
-            res_out.append(tmp)
-            print(tmp)
-        if p.poll() is None:
-            break
-    out = ' '.join(res_out)
-
-    # NOTE: the following two lines may lead to strange resource leak
-    # out = p.stdout.readlines()
-    # out = ' '.join([str(element.decode('UTF-8')) for element in out])
+    out = p.stdout.readlines()
+    out = ' '.join([str(element.decode('UTF-8')) for element in out])
     p.stdout.close()
     timer.cancel()
+    print(out)
     if is_timeout[0]:
         return out
         # return "timeout"
@@ -70,9 +59,10 @@ def solve_with_bin_solver(cmd, timeout=5):
 
 
 def solve_dir(path):
+    cur_dir = os.path.dirname(os.path.realpath(__file__))
     # cmd = ["/Users/prism/Work/cvc5/build/bin/cvc5", "-q"]
-    cmd = ["python3", "/Users/prism/Work/logicbox/independent/efsmt/prover.py", "--prover", "efsmt", "--file"]
-    cmd2 = ["python3", "/Users/prism/Work/logicbox/independent/efsmt/prover.py", "--prover", "pdr", "--file"]
+    cmd = ["python3", cur_dir + "/prover.py", "--prover", "efsmt", "--file"]
+    cmd2 = ["python3", cur_dir + "/prover.py", "--prover", "pdr", "--file"]
     files = find_smt2_files(path)
     # results = {}
     # print(len(files))
@@ -82,17 +72,17 @@ def solve_dir(path):
         print("Solving: ", file)
 
         cmd.append(file)
+        print(cmd)
         out = solve_with_bin_solver(cmd, 5)
         if "EFSMT success" in out:
             efsmt_success += 1
-        print(out)
         cmd.pop()
 
         cmd2.append(file)
+        print(cmd2)
         out2 = solve_with_bin_solver(cmd2, 5)
         if "PDR success" in out2:
             pdr_success += 1
-        print(out2)
         cmd2.pop()
 
 
@@ -103,10 +93,11 @@ if __name__ == "__main__":
     signal.signal(signal.SIGABRT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    solve_dir("/Users/prism/Work/logicbox/independent/efsmt/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+
+    solve_dir(current_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
     # solve_dir("./benchmarks/sygus-inv/LIA/2018.SV-Comp")
     # solve_dir("/Users/prism/Work/logicbox/independent/efsmt/benchmarks/sygus-inv/LIA/2018.NeurIPS_Code2Inv")
     # solve_dir("./benchmarks/sygus-inv/LIA/2016.SyGuS-Comp")
     # solve_dir("./benchmarks/sygus-inv/LIA/2015.FMCAD_Acceleration")
-
 

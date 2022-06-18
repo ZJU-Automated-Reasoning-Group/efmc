@@ -58,7 +58,7 @@ class PySMTSolver(z3.Solver):
                     # print(solver.get_model())
                     return z3.sat
                 return z3.unsat
-        except Exception as e:
+        except Exception:
             return z3.unknown
 
     def check_portfolio(self):
