@@ -1,7 +1,9 @@
 # coding: utf-8
-import time
 import logging
-from z3 import *
+import time
+
+import z3
+
 from .sts import TransitionSystem
 
 """
@@ -20,7 +22,7 @@ class PDRProver:
     def solve(self):
         """From transition system to CHC"""
         assert self.sts.initialized
-        s = SolverFor("HORN")
+        s = z3.SolverFor("HORN")
         # construct the "inv" uninterpreted function
         # FIXME: the following is ugly
         inv_sig = "Function(\'inv\', "
@@ -29,19 +31,19 @@ class PDRProver:
         inv = eval(inv_sig)
 
         # Init
-        s.add(ForAll(self.sts.variables, Implies(self.sts.init,
-                                                 inv(self.sts.variables))))
+        s.add(z3.ForAll(self.sts.variables, z3.Implies(self.sts.init,
+                                                       inv(self.sts.variables))))
         # Inductive
-        s.add(ForAll(self.sts.all_variables, Implies(And(inv(self.sts.variables), self.sts.trans),
-                                                     inv(self.sts.prime_variables))))
+        s.add(z3.ForAll(self.sts.all_variables, z3.Implies(z3.And(inv(self.sts.variables), self.sts.trans),
+                                                           inv(self.sts.prime_variables))))
         # Post
-        s.add(ForAll(self.sts.variables, Implies(inv(self.sts.variables),
-                                                 self.sts.post)))
+        s.add(z3.ForAll(self.sts.variables, z3.Implies(inv(self.sts.variables),
+                                                       self.sts.post)))
 
         print("PDR starting!!!")
         # print(s.to_smt2())
         start = time.time()
-        if s.check() == sat:
+        if s.check() == z3.sat:
             print("PDR success time: ", time.time() - start)
             print("Invariant: ", s.model().eval(inv(self.sts.variables)))
         else:

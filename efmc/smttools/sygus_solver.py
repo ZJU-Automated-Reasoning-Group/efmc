@@ -1,72 +1,73 @@
 # coding: utf-8
-from typing import List, Mapping
-from z3 import *
-
 """
+TODO (this could be very useful):
 1. Build SyGuS instances (PBE and other constraints)
 2. Call CVC5 to solve the SyGuS instances
 3. Parse function definition from SyGuS result
 5. Map the result to Z3py world? (or PySMT world)
 """
 
-
-def visitor(e, seen):
-    if e in seen:
-        return
-    seen[e] = True
-    yield e
-    if is_app(e):
-        for ch in e.children():
-            for e in visitor(ch, seen):
-                yield e
-        return
-    if is_quantifier(e):
-        for e in visitor(e.body(), seen):
-            yield e
-        return
+from typing import List, Mapping
+from z3 import *
 
 
-def modify(e, fn):
+def visitor(exp, seen):
+    if exp in seen:
+        return
+    seen[exp] = True
+    yield exp
+    if is_app(exp):
+        for ch in exp.children():
+            for exp in visitor(ch, seen):
+                yield exp
+        return
+    if is_quantifier(exp):
+        for exp in visitor(exp.body(), seen):
+            yield exp
+        return
+
+
+def modify(expression, fn):
     seen = {}
 
-    def visit(e):
-        if e in seen:
+    def visit(exp):
+        if exp in seen:
             pass
-        elif fn(e) is not None:
-            seen[e] = fn(e)
-        elif is_and(e):
-            chs = [visit(ch) for ch in e.children()]
-            seen[e] = And(chs)
-        elif is_or(e):
-            chs = [visit(ch) for ch in e.children()]
-            seen[e] = Or(chs)
-        elif is_app(e):
-            chs = [visit(ch) for ch in e.children()]
-            seen[e] = e.decl()(chs)
-        elif is_quantifier(e):
+        elif fn(exp) is not None:
+            seen[exp] = fn(exp)
+        elif is_and(exp):
+            chs = [visit(ch) for ch in exp.children()]
+            seen[exp] = And(chs)
+        elif is_or(exp):
+            chs = [visit(ch) for ch in exp.children()]
+            seen[exp] = Or(chs)
+        elif is_app(exp):
+            chs = [visit(ch) for ch in exp.children()]
+            seen[exp] = exp.decl()(chs)
+        elif is_quantifier(exp):
             # Note: does not work for Lambda that requires a separate case
-            body = visit(e.body())
-            is_forall = e.is_forall()
-            num_pats = e.num_patterns()
+            body = visit(exp.body())
+            is_forall = exp.is_forall()
+            num_pats = exp.num_patterns()
             pats = (Pattern * num_pats)()
-            for i in range(num_pats):
-                pats[i] = e.pattern(i).ast
+            for ii in range(num_pats):
+                pats[ii] = exp.pattern(ii).ast
 
-            num_decls = e.num_vars()
+            num_decls = exp.num_vars()
             sorts = (Sort * num_decls)()
             names = (Symbol * num_decls)()
-            for i in range(num_decls):
-                sorts[i] = e.var_sort(i).ast
-                names[i] = to_symbol(e.var_name(i), e.ctx)
+            for ii in range(num_decls):
+                sorts[ii] = exp.var_sort(ii).ast
+                names[ii] = to_symbol(exp.var_name(ii), exp.ctx)
             r = QuantifierRef(
-                Z3_mk_quantifier(e.ctx_ref(), is_forall, e.weight(), num_pats, pats, num_decls, sorts, names, body.ast),
-                e.ctx)
-            seen[e] = r
+                Z3_mk_quantifier(exp.ctx_ref(), is_forall, exp.weight(), num_pats, pats, num_decls, sorts, names, body.ast),
+                exp.ctx)
+            seen[exp] = r
         else:
-            seen[e] = e
-        return seen[e]
+            seen[exp] = exp
+        return seen[exp]
 
-    return visit(e)
+    return visit(expression)
 
 
 def build_sygus_cnt(funcs: List[z3.FuncDeclRef], cnts: List[z3.BoolRef], vars: [z3.ExprRef], logic="ALL"):
@@ -81,8 +82,8 @@ def build_sygus_cnt(funcs: List[z3.FuncDeclRef], cnts: List[z3.BoolRef], vars: [
     # target functions
     for func in funcs:
         target = "(synth-fun {} (".format(func.name())
-        for i in range(func.arity()):
-            target += "({} {}) ".format(str(vars[i]), func.domain(i).sexpr())
+        for ii in range(func.arity()):
+            target += "({} {}) ".format(str(vars[ii]), func.domain(ii).sexpr())
         target += ") {})".format(func.range().sexpr())  # return value
         cmds.append(target)
     # variables
@@ -96,19 +97,19 @@ def build_sygus_cnt(funcs: List[z3.FuncDeclRef], cnts: List[z3.BoolRef], vars: [
     return cnt
 
 
-def replace_fun_with_synthesized_one(fml, func_to_rep, func_def):
+def replace_fun_with_synthesized_one(formula, func_to_rep, func_def):
     """
     :param: fml:
     :param: cnts: a list of constraints
     :param: vars: a list of variables
     """
 
-    def update(e):
-        if is_app(e) and eq(e.decl(), func_to_rep):
-            return substitute_vars(func_def, (e.arg(0)), e.arg(1))
+    def update(exp):
+        if is_app(exp) and eq(exp.decl(), func_to_rep):
+            return substitute_vars(func_def, (exp.arg(0)), exp.arg(1))
         return None
 
-    return modify(fml, update)
+    return modify(formula, update)
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ from ..ef_prover import EFProver
 
 class TestEFSMT(TestCase):
 
-    def test(self):
+    def test_efsmt(self):
         """
         Specify transition system using Z3's python API (a "naive" trick)
         """
@@ -29,7 +29,7 @@ class TestEFSMT(TestCase):
         success = ef_prover.solve_with_z3()
         assert success
 
-    def test2(self):
+    def test_efsmt2(self):
         # Specify transition system using Z3's python API (a "naive" trick)
 
         x1, c1, t, c2, x2, k1, k2, px1, pc1, pt, pc2, px2, pk1, pk2 = Reals(
@@ -47,8 +47,6 @@ class TestEFSMT(TestCase):
         ef_prover.set_template("poly")
         success = ef_prover.solve_with_z3()
         assert success
-
-        assert True
 
 
 if __name__ == '__main__':

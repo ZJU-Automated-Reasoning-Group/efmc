@@ -8,12 +8,14 @@ import psutil
 # import zlib
 
 
+"""
 def signal_handler(sig, frame):
     print("handling signals")
     parent = psutil.Process(os.getpid())
     for child in parent.children(recursive=True):
         child.kill()
     sys.exit(0)
+"""
 
 
 def find_smt2_files(path):
@@ -29,8 +31,8 @@ def find_smt2_files(path):
 def terminate(process, is_timeout):
     if process.poll() is None:
         try:
-            process.terminate()
-            # process.kill()
+            # process.terminate()
+            process.kill()
             is_timeout[0] = True
         except Exception as es:
             # print("error for interrupting")
@@ -81,18 +83,19 @@ def solve_dir(path):
         cmd2.append(file)
         print(cmd2)
         out2 = solve_with_bin_solver(cmd2, 5)
-        if "PDR success" in out2:
+        if "PDR sucxcess" in out2:
             pdr_success += 1
         cmd2.pop()
 
 
 if __name__ == "__main__":
 
+    """
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGQUIT, signal_handler)
     signal.signal(signal.SIGABRT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-
+    """
     current_dir = os.path.dirname(os.path.realpath(__file__))
 
     solve_dir(current_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")

@@ -1,5 +1,6 @@
 # coding: utf-8
-from z3 import *
+import z3
+
 from .mistral_z3 import MSASolver
 from ..utils import is_sat, is_entail, get_variables
 
@@ -48,13 +49,13 @@ def qe_abduce(pre_cond: z3.BoolRef, post_cond: z3.BoolRef):
     vars_to_forget = set(get_variables(aux_fml)).difference(post_vars_minus_pre_vars)
     print(vars_to_forget)
 
-    qfml = ForAll(list(vars_to_forget), aux_fml)
-    qet = Tactic("qe2")
+    qfml = z3.ForAll(list(vars_to_forget), aux_fml)
+    qet = z3.Tactic("qe2")
     after_qe = qet.apply(qfml)[0].as_expr()
     print("After QE: ", after_qe)  # Not(3*z >= 13) ！！！
 
 
-def dillig_abduce(pre_cond: z3.BoolRef, post_cond: z3.BoolRef):
+def dillig_abduce(pre_cond: z3.BoolRef, post_cond: z3.BoolRef) -> z3.ExprRef:
     """
     Dillig-style abduction (which is very expensive)
 

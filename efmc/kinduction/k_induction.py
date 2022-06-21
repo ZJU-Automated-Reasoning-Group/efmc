@@ -1,6 +1,8 @@
 # coding: utf-8
 import logging
-from z3 import *
+
+# from z3 import *
+import z3
 
 """
 Ported from https://github.com/pysmt/pysmt/blob/97c6eda689bbc7707602c2b3a3e1444f9d75166d/examples/model_checking.py
@@ -19,27 +21,27 @@ TODO:
 logger = logging.getLogger(__name__)
 
 
-def is_sat(phi: z3.ExprRef):
+def is_sat(phi: z3.ExprRef) -> bool:
     s = z3.Solver()
     s.add(phi)
     return s.check() == z3.sat
 
 
-def is_unsat(phi: z3.ExprRef):
+def is_unsat(phi: z3.ExprRef) -> bool:
     s = z3.Solver()
     s.add(phi)
     return s.check() == z3.unsat
 
 
-def next_var(v):
+def next_var(variable: z3.ExprRef) -> z3.ExprRef:
     """Returns the 'next' of the given variable"""
     # return z3.Real("next(%s)" % str(v))
-    return z3.Real("next(%s)" % str(v))
+    return z3.Real("next(%s)" % str(variable))
 
 
-def at_time(v, t):
+def at_time(variable, t):
     """Builds an SMT variable representing v at time t"""
-    return z3.Real("%s@%d" % (str(v), t))
+    return z3.Real("%s@%d" % (str(variable), t))
 
 
 class SimpleTransitionSystem(object):
@@ -63,9 +65,9 @@ class BMCInduction(object):
         """Builds a map from x to x@i and from x' to x@(i+1), for all x in system."""
         # TODO: use some cache
         subs_i = []
-        for v in self.system.variables:
-            subs_i.append((v, at_time(v, i)))
-            subs_i.append((next_var(v), at_time(v, i + 1)))
+        for variable in self.system.variables:
+            subs_i.append((variable, at_time(variable, i)))
+            subs_i.append((next_var(variable), at_time(variable, i + 1)))
         return subs_i
 
     def get_unrolling(self, k):
@@ -89,9 +91,9 @@ class BMCInduction(object):
             for j in range(i + 1, k + 1):
                 state = []
                 subs_j = self.get_subs(j)
-                for v in self.system.variables:
-                    v_i = z3.substitute(v, subs_i)
-                    v_j = z3.substitute(v, subs_j)
+                for variable in self.system.variables:
+                    v_i = z3.substitute(variable, subs_i)
+                    v_j = z3.substitute(variable, subs_j)
                     state.append(v_i != v_j)
                 res.append(z3.Or(state))
         return z3.And(res)
@@ -102,7 +104,7 @@ class BMCInduction(object):
         for i in range(k):
             subs_i = self.get_subs(i)
             res.append(z3.substitute(prop, subs_i))
-        return z3.And(res) # need to And all?
+        return z3.And(res)  # need to And all?
 
     def get_bmc(self, prop, k):
         """Returns the BMC encoding at step k"""
@@ -142,17 +144,17 @@ class BMCInduction(object):
 def main():
     """
     """
-    x, y = Reals('x y')
+    x, y = z3.Reals('x y')
     next_x = next_var(x)
     next_y = next_var(y)
-    init = And(x == 0, y == 8)
-    trans = Or(And(x < 8, y <= 8, next_x == x + 2, next_y == y - 2),
-               And(x == 8, next_x == 0, y == 0, next_y == 8))
+    init = z3.And(x == 0, y == 8)
+    trans = z3.Or(z3.And(x < 8, y <= 8, next_x == x + 2, next_y == y - 2),
+                  z3.And(x == 8, next_x == 0, y == 0, next_y == 8))
     variables = [x, y]
     sts = SimpleTransitionSystem(variables, init, trans)
     bmcind = BMCInduction(sts)
 
-    true_prop = Not(And(x == 0, y == 0))  # Is valid.
+    true_prop = z3.Not(z3.And(x == 0, y == 0))  # Is valid.
     bmcind.check_property(true_prop)
 
 

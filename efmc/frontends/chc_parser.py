@@ -8,74 +8,74 @@ TODO: so, do we need to transform the CHC to our transition system first?
 """
 
 
-def visitor(e, seen):
-    if e in seen:
+def visitor(exp, seen):
+    if exp in seen:
         return
-    seen[e] = True
-    yield e
-    if is_app(e):
-        for ch in e.children():
-            for e in visitor(ch, seen):
-                yield e
+    seen[exp] = True
+    yield exp
+    if is_app(exp):
+        for ch in exp.children():
+            for exp in visitor(ch, seen):
+                yield exp
         return
-    if is_quantifier(e):
-        for e in visitor(e.body(), seen):
-            yield e
+    if is_quantifier(exp):
+        for exp in visitor(exp.body(), seen):
+            yield exp
         return
 
 
-def modify(e, fn):
+def modify(expression, fn):
     seen = {}
 
-    def visit(e):
-        if e in seen:
+    def visit(exp):
+        if exp in seen:
             pass
-        elif fn(e) is not None:
-            seen[e] = fn(e)
-        elif is_and(e):
-            chs = [visit(ch) for ch in e.children()]
-            seen[e] = And(chs)
-        elif is_or(e):
-            chs = [visit(ch) for ch in e.children()]
-            seen[e] = Or(chs)
-        elif is_app(e):
-            chs = [visit(ch) for ch in e.children()]
-            seen[e] = e.decl()(chs)
-        elif is_quantifier(e):
+        elif fn(exp) is not None:
+            seen[exp] = fn(exp)
+        elif is_and(exp):
+            chs = [visit(ch) for ch in exp.children()]
+            seen[exp] = And(chs)
+        elif is_or(exp):
+            chs = [visit(ch) for ch in exp.children()]
+            seen[exp] = Or(chs)
+        elif is_app(exp):
+            chs = [visit(ch) for ch in exp.children()]
+            seen[exp] = exp.decl()(chs)
+        elif is_quantifier(exp):
             # Note: does not work for Lambda that requires a separate case
-            body = visit(e.body())
-            is_forall = e.is_forall()
-            num_pats = e.num_patterns()
+            body = visit(exp.body())
+            is_forall = exp.is_forall()
+            num_pats = exp.num_patterns()
             pats = (Pattern * num_pats)()
             for i in range(num_pats):
-                pats[i] = e.pattern(i).ast
+                pats[i] = exp.pattern(i).ast
 
-            num_decls = e.num_vars()
+            num_decls = exp.num_vars()
             sorts = (Sort * num_decls)()
             names = (Symbol * num_decls)()
             for i in range(num_decls):
-                sorts[i] = e.var_sort(i).ast
-                names[i] = to_symbol(e.var_name(i), e.ctx)
+                sorts[i] = exp.var_sort(i).ast
+                names[i] = to_symbol(exp.var_name(i), exp.ctx)
             r = QuantifierRef(
-                Z3_mk_quantifier(e.ctx_ref(), is_forall, e.weight(), num_pats, pats, num_decls, sorts, names, body.ast),
-                e.ctx)
-            seen[e] = r
+                Z3_mk_quantifier(exp.ctx_ref(), is_forall, exp.weight(), num_pats, pats, num_decls, sorts, names, body.ast),
+                exp.ctx)
+            seen[exp] = r
         else:
-            seen[e] = e
-        return seen[e]
+            seen[exp] = exp
+        return seen[exp]
 
-    return visit(e)
+    return visit(expression)
 
 
 def test_replace():
     x, y = Ints('x y')
     fml = x + x + y > 2
     seen = {}
-    for e in visitor(fml, seen):
-        if is_const(e) and e.decl().kind() == Z3_OP_UNINTERPRETED:
-            print("Variable", e)
+    for exp in visitor(fml, seen):
+        if is_const(exp) and exp.decl().kind() == Z3_OP_UNINTERPRETED:
+            print("Variable", exp)
         else:
-            print(e)
+            print(exp)
 
     s = SolverFor("HORN")
     inv = Function('inv', IntSort(), IntSort(), BoolSort())
@@ -92,9 +92,9 @@ def test_replace():
 
     # template = BoolVal(True)
 
-    def update(e):
-        if is_app(e) and eq(e.decl(), inv):
-            return substitute_vars(template, (e.arg(0)), e.arg(1))
+    def update(expression):
+        if is_app(expression) and eq(expression.decl(), inv):
+            return substitute_vars(template, (expression.arg(0)), expression.arg(1))
         return None
 
     chc = And(s.assertions())
@@ -233,8 +233,8 @@ def test_parse3(filename):
     with open(filename, "r") as f:
         res = f.read()
         ss = CHCParser(res, to_real=False)
-        vars, init, trans, post = ss.get_transition_system()
-        print(vars)
+        all_vars, init, trans, post = ss.get_transition_system()
+        print(all_vars)
         # ss.solve_with_pdr()
 
 

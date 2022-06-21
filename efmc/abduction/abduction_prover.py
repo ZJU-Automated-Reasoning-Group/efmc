@@ -1,6 +1,9 @@
 # coding: utf-8
 import logging
-from z3 import *
+# from z3 import *
+
+import z3
+
 from ..sts import TransitionSystem
 from .abduction import dillig_abduce
 
@@ -29,13 +32,13 @@ class AbductionProver(object):
             self.var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
             self.var_map_rev.append((self.sts.prime_variables[i], self.sts.variables[i]))
 
-    def check_inductiveness(self, inv: ExprRef):
+    def check_inductiveness(self, inv: z3.ExprRef):
         """
         Check whether the generated invariant is correct
         """
-        inv_in_prime_vars = substitute(inv, self.var_map)
-        s = Solver()
-        s.add(Not(Implies(And(self.sts.trans, inv), inv_in_prime_vars)))
+        inv_in_prime_vars = z3.substitute(inv, self.var_map)
+        s = z3.Solver()
+        s.add(z3.Not(z3.Implies(z3.And(self.sts.trans, inv), inv_in_prime_vars)))
         if s.check() == z3.sat:
             # not inductive; return a counterexample to inductiveness (CTI)
             model = s.model()

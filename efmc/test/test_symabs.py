@@ -8,7 +8,7 @@ from efmc.symabs.symabs_prover import SymbolicAbstractionProver
 
 class TestSymAbs(TestCase):
 
-    def test(self):
+    def test_symbolic_abstraction(self):
         """
         Specify transition system using Z3's python API (a "naive" trick)
         """

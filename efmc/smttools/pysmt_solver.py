@@ -4,16 +4,17 @@ import z3
 from pysmt.logics import AUTO
 from pysmt.oracles import get_logic
 from pysmt.shortcuts import EqualsOrIff
-from pysmt.shortcuts import Solver, Portfolio, get_model
+from pysmt.shortcuts import Solver, Portfolio
 from pysmt.shortcuts import Symbol, Bool, And, Not
 from pysmt.shortcuts import binary_interpolant, sequence_interpolant
 from pysmt.typing import INT, REAL
 # from pysmt.smtlib.parser import SmtLibParser
 # from pysmt.exceptions import SolverReturnedUnknownResultError
-from pysmt.shortcuts import Bool, get_model, Not, Solver, qelim, ForAll
+from pysmt.shortcuts import Bool, get_model, Not, Solver\
+#, qelim, ForAll
 
 """
-Augmenting Z3 using PYSMT
+Augmenting Z3 using PYSMT (
 """
 
 logger = logging.getLogger(__name__)
