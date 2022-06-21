@@ -1,11 +1,12 @@
 # coding: utf-8
 import time
 import logging
-from z3 import *
+
+import z3
 
 from . import NumericalAbstraction
 from ..sts import TransitionSystem
-from ..utils import *
+from ..utils import is_valid, is_entail, ctx_simplify
 
 """
 Using Symbolic Abstraction to find invariants
@@ -15,15 +16,15 @@ Using Symbolic Abstraction to find invariants
 logger = logging.getLogger(__name__)
 
 
-def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef):
+def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef) -> bool:
     # TODO: Is this correct?
     # TODO: do not need a solver to decide inductive
-    return is_valid(Implies(inv, old_inv))
+    return is_valid(z3.Implies(inv, old_inv))
 
 
-def fixpoint_with_trans(inv: z3.ExprRef, trans: z3.ExprRef, inv_in_prime: z3.ExprRef):
+def fixpoint_with_trans(inv: z3.ExprRef, trans: z3.ExprRef, inv_in_prime: z3.ExprRef) -> bool:
     # TODO: is this correct or the previous one???
-    return is_valid(Implies(And(inv, trans), inv_in_prime))
+    return is_valid(z3.Implies(z3.And(inv, trans), inv_in_prime))
 
 
 class SymbolicAbstractionProver:
@@ -53,12 +54,12 @@ class SymbolicAbstractionProver:
         # FIXME: the termination criteria fixpoint(old_inv, inv) seems to be different from the one below??
         # TODO: should we use fixpoint(old_inv, inv) or fixpoint_with_tarns(old_inv, trans, inv)??
         # """
-        inv_in_prime = substitute(inv, self.var_map)
-        if not is_entail(And(self.sts.trans, inv), inv_in_prime):
+        inv_in_prime = z3.substitute(inv, self.var_map)
+        if not is_entail(z3.And(self.sts.trans, inv), inv_in_prime):
             correct = False
             print("Not inductive!")
-            print("Inv: ", simplify(inv))
-            print("Inv Pri: ", simplify(inv_in_prime))
+            print("Inv: ", z3.simplify(inv))
+            print("Inv Pri: ", z3.simplify(inv_in_prime))
             print(self.sts)
             # exit(0)
         # """
@@ -86,7 +87,7 @@ class SymbolicAbstractionProver:
     def solve(self):
         print("SymAbs starting!!!")
         start = time.time()
-        old_inv = BoolVal(False)
+        old_inv = z3.BoolVal(False)
         # TODO: init could be complex (so, we need to convert it into intervals first?)
         inv = self.sts.init
         i = 0
@@ -96,24 +97,24 @@ class SymbolicAbstractionProver:
             i = i + 1
             sym_abs = NumericalAbstraction()
             # TODO: is And(inv, self.sts.trans) correct? (it may violate the "unrolling order")
-            sym_abs.init_from_fml(And(inv, self.sts.trans), self.sts.prime_variables)
+            sym_abs.init_from_fml(z3.And(inv, self.sts.trans), self.sts.prime_variables)
             onestep = sym_abs.interval_abs()
             # FIXME: Some versions of Z3's Optimize() has bugs
             # FIXME: Maybe we should be able to choose  self-compiled/pre-built python packages for Z3
             # FIXME: but not the one ....
             print("onestep: ", onestep)
-            s = Solver()
-            s.add(Not(Implies(And(inv, self.sts.trans), onestep)))
-            if s.check() == sat:
+            s = z3.Solver()
+            s.add(z3.Not(z3.Implies(z3.And(inv, self.sts.trans), onestep)))
+            if s.check() == z3.sat:
                 print("interval not entailed by???")
-                print(And(inv, self.sts.trans))
+                print(z3.And(inv, self.sts.trans))
                 print(onestep)
                 exit(0)
 
-            onestep = substitute(onestep, self.var_map_rev)
+            onestep = z3.substitute(onestep, self.var_map_rev)
             # print("onestep: ", onestep)
             old_inv = inv
-            inv = simplify(Or(inv, onestep))
+            inv = z3.simplify(z3.Or(inv, onestep))
             # inv = self.apply_join(Or(inv, onestep)) #???
 
         # print("INV:", inv)

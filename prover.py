@@ -152,8 +152,8 @@ if __name__ == "__main__":
     # solve_sygus_file("./benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor1.sl", "symabs")
     # solve_sygus_file("./benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor1.sl", "efsmt")
     # fib_04.sl needs disjunctive?
-    solve_sygus_file('/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_30_x.sl', "pdr")
-    exit(0)
+    # solve_sygus_file('/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_30_x.sl', "pdr")
+    # exit(0)
     parser = argparse.ArgumentParser()
     parser.add_argument('--file', dest='file', default='none', type=str, help="file")
     parser.add_argument('--prover', dest='prover', default='efsmt', type=str, help="The prover for using")
@@ -165,6 +165,6 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGQUIT, signal_handler)
     signal.signal(signal.SIGABRT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+    # signal.signal(signal.SIGTERM, signal_handler)
 
     solve_sygus_file(args.file, args.prover)

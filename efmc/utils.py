@@ -5,6 +5,7 @@ from typing import List, Set
 
 
 def is_function_symbol(s: z3.ExprRef) -> bool:
+    """Decide"""
     if not z3.is_app(s):
         return False
     if z3.is_const(s):
@@ -22,6 +23,7 @@ def is_function_symbol(s: z3.ExprRef) -> bool:
 
 
 def function_symbols(s: z3.ExprRef) -> Set[z3.FuncDeclRef]:
+    """Find function symbols in a Z3 expr"""
     fsymbols = set()
     if is_function_symbol(s):
         fsymbols.add(s.decl())
@@ -33,6 +35,9 @@ def function_symbols(s: z3.ExprRef) -> Set[z3.FuncDeclRef]:
 
 
 def z3_skolemize(e: z3.ExprRef) -> z3.ExprRef:
+    """
+    Skolemize a formula (important for handling quantified formulas)
+    """
     g = z3.Goal()
     g.add(e)
     t = z3.Tactic('snf')
@@ -41,6 +46,7 @@ def z3_skolemize(e: z3.ExprRef) -> z3.ExprRef:
 
 
 def create_function_body_str(funcname: str, varlist: List, body: z3.ExprRef) -> [str]:
+    """"""
     res = []
     target = "(define-fun {} (".format(funcname)
     for i in range(len(varlist)):
@@ -58,10 +64,12 @@ def get_variables(exp: z3.ExprRef) -> [z3.ExprRef]:
 
 
 def ctx_simplify(exp: z3.ExprRef):
+    """Perform complex simplifications (can be slow)"""
     return z3.Tactic('ctx-solver-simplify')(exp).as_expr()
 
 
 def negate(f: z3.ExprRef):
+    """Negate a formula"""
     if z3.is_not(f):
         return f.arg(0)
     else:

@@ -2,7 +2,9 @@
 import itertools
 import logging
 from timeit import default_timer as symabs_timer
-from z3 import *
+
+import z3
+
 from .common import OMTEngine, OMTEngineType
 
 """
@@ -35,7 +37,7 @@ class NumericalAbstraction:
         """
         if self.initialized:
             simp_start = symabs_timer()
-            tac = Then(Tactic("simplify"), Tactic("propagate-values"))
+            tac = z3.Then("simplify", "propagate-values")
             simp_formula = tac.apply(self.formula).as_expr()
             simp_end = symabs_timer()
             if simp_end - simp_start > 6:
@@ -56,12 +58,12 @@ class NumericalAbstraction:
 
             self.omt_engine.init_from_fml(fml)
 
-        except Z3Exception as ex:
+        except z3.Z3Exception as ex:
             print("error when initialization")
-            print(ex) # TODO: should throw ex?
+            print(ex)  # TODO: should throw ex?
 
     def to_omt_file(self, abs_type: str):
-        s = Solver()
+        s = z3.Solver()
         s.add(self.formula)
         omt_str = s.to_smt2()
         if abs_type == "interval":
@@ -86,9 +88,9 @@ class NumericalAbstraction:
             vmin = self.omt_engine.min_once(self.vars[i])
             vmax = self.omt_engine.max_once((self.vars[i]))
             # print(self.vars[i], "[", vmin, ", ", vmax, "]")
-            cnts.append(And(self.vars[i] >= vmin, self.vars[i] <= vmax))
+            cnts.append(z3.And(self.vars[i] >= vmin, self.vars[i] <= vmax))
 
-        return And(cnts)
+        return z3.And(cnts)
         # return simplify(And(cnts))
 
     def zone_abs(self):
@@ -99,7 +101,7 @@ class NumericalAbstraction:
             for v1, v2 in zones:
                 multi_queries.append(v1 - v2)
 
-            return simplify(self.omt_engine.min_max_many(multi_queries))
+            return z3.simplify(self.omt_engine.min_max_many(multi_queries))
         # Begin of "else"
         zone_cnts = []
         objs = []
@@ -108,8 +110,8 @@ class NumericalAbstraction:
         for exp in objs:
             exmin = self.omt_engine.min_once(exp)
             exmax = self.omt_engine.max_once(exp)
-            zone_cnts.append(And(exp >= exmin, exp <= exmax))
-        return And(zone_cnts)
+            zone_cnts.append(z3.And(exp >= exmin, exp <= exmax))
+        return z3.And(zone_cnts)
 
     def octagon_abs(self):
         """Octagon abstraction"""
@@ -131,15 +133,15 @@ class NumericalAbstraction:
             exmin = self.omt_engine.min_once(exp)
             exmax = self.omt_engine.max_once(exp)
             # TODO: this is not elegant (OptiMathSAT already returns an assertion)
-            oct_cnts.append(And(exp >= exmin, exp <= exmax))
+            oct_cnts.append(z3.And(exp >= exmin, exp <= exmax))
 
-        return And(oct_cnts)
+        return z3.And(oct_cnts)
         # return simplify(And(oct_cnts))
 
 
 def feat_test_counting():
-    x, y, z = Ints("x y z")
-    fml = And(x < 10, y > 133)
+    x, y, z = z3.Ints("x y z")
+    fml = z3.And(x < 10, y > 133)
     sa = NumericalAbstraction()
     sa.init_from_fml(fml, [x, y])
     # sa.do_simplification()

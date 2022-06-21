@@ -4,7 +4,7 @@ from . import TestCase, main
 
 class TestBasics(TestCase):
 
-    def test(self):
+    def test_basics(self):
         assert (1 < 2)
 
 

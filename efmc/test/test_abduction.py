@@ -6,7 +6,7 @@ from z3 import *
 
 class TestAbduction(TestCase):
 
-    def test1(self):
+    def test_abduction(self):
         """
         Example:
         pre: existing precondition  Γ: x ≤ 0 ∧ y > 1

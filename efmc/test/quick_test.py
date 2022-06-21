@@ -8,6 +8,7 @@ def is_equiv(a: z3.ExprRef, b: z3.ExprRef):
     s.add(a != b)
     return s.check() == z3.unsat
 
+
 def optimize(fml: z3.ExprRef, obj: z3.ExprRef, minimize=False, timeout: int = 0):
     s = z3.Optimize()
     s.add(fml)
@@ -53,10 +54,10 @@ Seems to be a bug??
 FIXME: maybe choose the self-compiled python packages for Z3 (then we can use newer versions...)
 """
 
-#for i in range(3):
-    # print(box_optimize(fml, [xp], [xp]))
-    # print(optimize(fml, xp, minimize=True))
-    # print(optimize(fml, xp, minimize=False))
+# for i in range(3):
+# print(box_optimize(fml, [xp], [xp]))
+# print(optimize(fml, xp, minimize=True))
+# print(optimize(fml, xp, minimize=False))
 
 
 a, b = Bools("a b")

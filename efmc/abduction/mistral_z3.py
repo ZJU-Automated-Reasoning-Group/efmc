@@ -1,6 +1,7 @@
 # coding: utf-8
-from z3 import *
 from typing import FrozenSet
+
+import z3
 from z3.z3util import get_vars
 
 """
@@ -24,14 +25,14 @@ class MSASolver:
         self.verb = verbose
 
     def init_from_file(self, filename: str) -> None:
-        self.formula = And(parse_smt2_file(filename))
+        self.formula = z3.And(z3.parse_smt2_file(filename))
         # self.formula = simplify(self.formula)
         self.fvars = frozenset(get_vars(self.formula))
 
         if self.verb > 2:
             print('c formula: \'{0}\''.format(self.formula))
 
-    def init_from_formula(self, formula: BoolRef) -> None:
+    def init_from_formula(self, formula: z3.BoolRef) -> None:
         self.formula = formula
         # self.formula = simplify(self.formula)
         self.fvars = frozenset(get_vars(self.formula))
@@ -47,8 +48,8 @@ class MSASolver:
                 model_cnts.append(var == model[var])
         # print(model_cnts)
         # check entailment
-        s = Solver()
-        s.add(Not(Implies(And(model_cnts), self.formula)))
+        s = z3.Solver()
+        s.add(z3.Not(z3.Implies(z3.And(model_cnts), self.formula)))
         if s.check() == z3.sat:
             return False
         return True
@@ -59,9 +60,9 @@ class MSASolver:
         of the dillig-cav12 paper.
         """
         # testing if formula is satisfiable
-        s = Solver()
+        s = z3.Solver()
         s.add(self.formula)
-        if s.check() == unsat:
+        if s.check() == z3.unsat:
             return False
 
         mus = self.compute_mus(frozenset([]), self.fvars, 0)
@@ -100,20 +101,20 @@ class MSASolver:
         return best
 
     def get_model_forall(self, x_univl):
-        s = Solver()
+        s = z3.Solver()
         if len(x_univl) >= 1:
-            qfml = ForAll(list(x_univl), self.formula)
+            qfml = z3.ForAll(list(x_univl), self.formula)
         else:
             qfml = self.formula  # TODO: is this OK?
         s.add(qfml)
-        if s.check() == sat:
+        if s.check() == z3.sat:
             return s.model()
         return False
 
 
 if __name__ == "__main__":
-    a, b, c, d = Ints('a b c d')
-    fml = Or(And(a == 3, b == 3), And(a == 1, b == 1, c == 1, d == 1))
+    a, b, c, d = z3.Ints('a b c d')
+    fml = z3.Or(z3.And(a == 3, b == 3), z3.And(a == 1, b == 1, c == 1, d == 1))
     ms = MSASolver()
     ms.init_from_formula(fml)
     print(ms.find_small_model())  # a = 3, b = 3
