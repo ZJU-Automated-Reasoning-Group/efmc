@@ -84,7 +84,7 @@ class SymbolicAbstractionProver:
         sym_abs.init_from_fml(inv, self.sts.variables)
         return sym_abs.interval_abs()
 
-    def solve(self):
+    def solve(self) -> None:
         print("SymAbs starting!!!")
         start = time.time()
         old_inv = z3.BoolVal(False)

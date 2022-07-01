@@ -1,5 +1,5 @@
 # coding: utf-8
-from z3 import *
+import z3
 
 """
 TODO: https://github.com/dynaroars/program_analysis_notes/blob/6af266996423d8add16dbb4cd5e4f998778659c4/code/iconstructs.py

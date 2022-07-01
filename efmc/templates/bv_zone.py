@@ -1,6 +1,5 @@
 # coding: utf-8
 import z3
-from typing import List
 from .abstract_template import TemplateType, Template
 from ..sts import TransitionSystem
 

@@ -40,7 +40,8 @@ class MSASolver:
         if self.verb > 2:
             print('c formula: \'{0}\''.format(self.formula))
 
-    def validate_small_model(self, model: z3.ModelRef):
+    def validate_small_model(self, model: z3.ModelRef) -> bool:
+        """Check whether a small model is a 'sufficient condition'"""
         decls = model.decls()
         model_cnts = []
         for var in get_vars(self.formula):
