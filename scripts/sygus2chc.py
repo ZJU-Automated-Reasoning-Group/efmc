@@ -5,10 +5,10 @@ Converting SyGuS(Inv) benchmarks to CHC
 
     sygus2chcbv: translate to bv semantics (not semantic-preserving!)
 """
-
+import os
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse
 # from ..efsmt.frontends.mini_sygus_parser import test_main
-from z3 import *
+import z3
 from z3.z3util import get_vars
 
 
@@ -195,10 +195,10 @@ def test_main():
         "; xxx"]
 
     # print(sygus2chc(tt))
-    new_ctx = Context()
+    new_ctx = z3.Context()
     fml_str = sygus2chcbv(tt)
     print(fml_str)
-    s = Solver(ctx=new_ctx)
+    s = z3.Solver(ctx=new_ctx)
     s.from_string(fml_str)
     print(s)
 

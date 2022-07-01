@@ -1,20 +1,20 @@
 # coding: utf-8
 # import time
-import psutil
-import signal
 import logging
+import os
+import signal
+import sys
+import psutil
+import z3
 from efmc.ef_prover import EFProver
 from efmc.frontend import parse_sygus, parse_chc
 from efmc.pdr_prover import PDRProver
 from efmc.qe.qe_prover import QuantifierEliminationProver
 from efmc.sts import TransitionSystem
 from efmc.symabs.symabs_prover import SymbolicAbstractionProver
-from z3 import *
 from efmc.utils import is_entail
 
-
 logger = logging.getLogger(__name__)
-
 
 """
 Automated verification
@@ -95,11 +95,11 @@ def check_invariant(sts: TransitionSystem, inv: z3.ExprRef, inv_in_prime_variabl
 
 def validate_invariant(sts: TransitionSystem):
     # for quick testing
-    x, n, px, pn = Reals("x n x! n!")
-    inv = Or(And(1 <= x, 1 >= x, 1 <= n, 1 >= n),
-             And(Not(n <= 0), x == 0))
-    inv_in_prime = Or(And(1 <= px, 1 >= px, 1 <= pn, 1 >= pn),
-                      And(Not(pn <= 0), px == 0))
+    x, n, px, pn = z3.Reals("x n x! n!")
+    inv = z3.Or(z3.And(1 <= x, 1 >= x, 1 <= n, 1 >= n),
+                z3.And(z3.Not(n <= 0), x == 0))
+    inv_in_prime = z3.Or(z3.And(1 <= px, 1 >= px, 1 <= pn, 1 >= pn),
+                         z3.And(z3.Not(pn <= 0), px == 0))
     check_invariant(sts, inv, inv_in_prime)
 
 

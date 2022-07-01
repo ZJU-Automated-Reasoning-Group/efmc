@@ -1,7 +1,6 @@
 # coding: utf-8
 import logging
 
-# from z3 import *
 import z3
 
 """

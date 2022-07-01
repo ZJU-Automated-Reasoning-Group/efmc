@@ -1,6 +1,5 @@
 # coding: utf-8
 import z3
-from typing import List
 
 from .abstract_template import TemplateType, Template
 from ..sts import TransitionSystem
@@ -48,7 +47,7 @@ class BitVecIntervalTemplate(Template):
         """
         return z3.BoolVal(True)
 
-    def add_template_cnts(self):
+    def add_template_cnts(self) -> None:
         """
         Add cnts for init and post assertions (a trick)
         """
@@ -122,7 +121,7 @@ class DisjunctiveBitVecIntervalTemplate(Template):
     def get_additional_cnts_for_template_vars(self):
         return z3.BoolVal(True)
 
-    def add_template_cnts(self):
+    def add_template_cnts(self) -> None:
         # FIXME: the following is from IntervalTemplate
         cnt_init_and_post_dis = []
         cnt_trans_dis = []

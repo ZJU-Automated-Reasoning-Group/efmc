@@ -1,7 +1,7 @@
 # coding: utf-8
 # import time
 import logging
-from z3 import *
+import z3
 # from typing import List
 from ..sts import TransitionSystem
 

@@ -2,7 +2,6 @@
 import itertools
 import logging
 from typing import List
-# from z3 import *
 import z3
 from .common import box_optimize, get_variables
 
@@ -47,7 +46,7 @@ class BiVecSymbolicAbstraction:
         self.signed = False
         # set_param("verbose", 15)
 
-    def init_from_fml(self, fml: z3.BoolRef):
+    def init_from_fml(self, fml: z3.BoolRef) -> None:
         try:
             self.formula = fml
             for var in get_variables(self.formula):
@@ -57,7 +56,7 @@ class BiVecSymbolicAbstraction:
             print("error when initialization")
             print(ex)
 
-    def min_once(self, exp: z3.ExprRef):
+    def min_once(self, exp: z3.ExprRef) -> z3.ExprRef:
         """ Minimize exp subject to self.formula"""
         sol = z3.Optimize()
         sol.set("timeout", self.single_query_timeout)
@@ -68,7 +67,7 @@ class BiVecSymbolicAbstraction:
             return m.eval(exp, True)
             # return m.eval(exp).as_long()
 
-    def max_once(self, exp: z3.ExprRef):
+    def max_once(self, exp: z3.ExprRef) -> z3.ExprRef:
         """ Maximize exp subject to self.formula"""
         sol = z3.Optimize()
         sol.set("timeout", self.single_query_timeout)
@@ -80,7 +79,7 @@ class BiVecSymbolicAbstraction:
             return m.eval(exp, True)
             # return m.eval(exp).as_long()
 
-    def min_max_many(self, multi_queries: List[z3.ExprRef]):
+    def min_max_many(self, multi_queries: List[z3.ExprRef]) -> z3.ExprRef:
         """ Minimize and maximize multi_quries subject to self.formula"""
         # n_queries = len(multi_queries)
         # timeout = n_queries * self.single_query_timeout * 2 # is this reasonable?
@@ -101,7 +100,7 @@ class BiVecSymbolicAbstraction:
                 cnts.append(z3.And(z3.UGE(multi_queries[i], vmin_bvval), z3.ULE(multi_queries[i], vmax_bvval)))
         return z3.And(cnts)
 
-    def interval_abs(self):
+    def interval_abs(self) -> None:
         """Interval abstraction"""
         if self.compact_opt:
             multi_queries = []
@@ -122,7 +121,7 @@ class BiVecSymbolicAbstraction:
             print(self.vars[i], "[", vmin, ", ", vmax, "]")
         self.interval_abs_as_fml = z3.And(cnts)
 
-    def zone_abs(self):
+    def zone_abs(self) -> None:
         """Zone abstraction"""
         zones = list(itertools.combinations(self.vars, 2))
         if self.compact_opt:
@@ -168,7 +167,7 @@ class BiVecSymbolicAbstraction:
 
         self.zone_abs_as_fml = z3.And(zone_cnts)
 
-    def octagon_abs(self):
+    def octagon_abs(self) -> None:
         """Octagon abstraction"""
         octagons = list(itertools.combinations(self.vars, 2))
         if self.compact_opt:

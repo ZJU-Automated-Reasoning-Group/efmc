@@ -1,6 +1,7 @@
 # coding: utf-8
 from __future__ import print_function
-from z3 import *
+
+import z3
 
 """
 Actually, we also support replacing "inv" by a function body
@@ -13,12 +14,12 @@ def visitor(exp, seen):
         return
     seen[exp] = True
     yield exp
-    if is_app(exp):
+    if z3.is_app(exp):
         for ch in exp.children():
             for exp in visitor(ch, seen):
                 yield exp
         return
-    if is_quantifier(exp):
+    if z3.is_quantifier(exp):
         for exp in visitor(exp.body(), seen):
             yield exp
         return
@@ -32,32 +33,33 @@ def modify(expression, fn):
             pass
         elif fn(exp) is not None:
             seen[exp] = fn(exp)
-        elif is_and(exp):
+        elif z3.is_and(exp):
             chs = [visit(ch) for ch in exp.children()]
-            seen[exp] = And(chs)
-        elif is_or(exp):
+            seen[exp] = z3.And(chs)
+        elif z3.is_or(exp):
             chs = [visit(ch) for ch in exp.children()]
-            seen[exp] = Or(chs)
-        elif is_app(exp):
+            seen[exp] = z3.Or(chs)
+        elif z3.is_app(exp):
             chs = [visit(ch) for ch in exp.children()]
             seen[exp] = exp.decl()(chs)
-        elif is_quantifier(exp):
+        elif z3.is_quantifier(exp):
             # Note: does not work for Lambda that requires a separate case
             body = visit(exp.body())
             is_forall = exp.is_forall()
             num_pats = exp.num_patterns()
-            pats = (Pattern * num_pats)()
+            pats = (z3.Pattern * num_pats)()
             for i in range(num_pats):
                 pats[i] = exp.pattern(i).ast
 
             num_decls = exp.num_vars()
-            sorts = (Sort * num_decls)()
-            names = (Symbol * num_decls)()
+            sorts = (z3.Sort * num_decls)()
+            names = (z3.Symbol * num_decls)()
             for i in range(num_decls):
                 sorts[i] = exp.var_sort(i).ast
-                names[i] = to_symbol(exp.var_name(i), exp.ctx)
-            r = QuantifierRef(
-                Z3_mk_quantifier(exp.ctx_ref(), is_forall, exp.weight(), num_pats, pats, num_decls, sorts, names, body.ast),
+                names[i] = z3.to_symbol(exp.var_name(i), exp.ctx)
+            r = z3.QuantifierRef(
+                z3.Z3_mk_quantifier(exp.ctx_ref(), is_forall, exp.weight(), num_pats, pats, num_decls, sorts, names,
+                                    body.ast),
                 exp.ctx)
             seen[exp] = r
         else:
@@ -68,36 +70,36 @@ def modify(expression, fn):
 
 
 def test_replace():
-    x, y = Ints('x y')
+    x, y = z3.Ints('x y')
     fml = x + x + y > 2
     seen = {}
     for exp in visitor(fml, seen):
-        if is_const(exp) and exp.decl().kind() == Z3_OP_UNINTERPRETED:
+        if z3.is_const(exp) and exp.decl().kind() == z3.Z3_OP_UNINTERPRETED:
             print("Variable", exp)
         else:
             print(exp)
 
-    s = SolverFor("HORN")
-    inv = Function('inv', IntSort(), IntSort(), BoolSort())
-    i, ip, j, jp = Ints('i ip j jp')
-    s.add(ForAll([i, j], Implies(i == 0, inv(i, j))))
-    s.add(ForAll([i, ip, j, jp], Implies(And(inv(i, j), i < 10, ip == i + 1), inv(ip, jp))))
-    s.add(ForAll([i, j], Implies(And(inv(i, j), i >= 10), i == 10)))
+    s = z3.SolverFor("HORN")
+    inv = z3.Function('inv', z3.IntSort(), z3.IntSort(), z3.BoolSort())
+    i, ip, j, jp = z3.Ints('i ip j jp')
+    s.add(z3.ForAll([i, j], z3.Implies(i == 0, inv(i, j))))
+    s.add(z3.ForAll([i, ip, j, jp], z3.Implies(z3.And(inv(i, j), i < 10, ip == i + 1), inv(ip, jp))))
+    s.add(z3.ForAll([i, j], z3.Implies(z3.And(inv(i, j), i >= 10), i == 10)))
 
-    a0, a1, a2 = Ints('a0 a1 a2')
-    b0, b1, b2 = Ints('b0 b1 b2')
-    x = Var(0, IntSort())
-    y = Var(1, IntSort())
-    template = And(a0 + a1 * x + a2 * y >= 0, b0 + b1 * x + b2 * y >= 0)
+    a0, a1, a2 = z3.Ints('a0 a1 a2')
+    b0, b1, b2 = z3.Ints('b0 b1 b2')
+    x = z3.Var(0, z3.IntSort())
+    y = z3.Var(1, z3.IntSort())
+    template = z3.And(a0 + a1 * x + a2 * y >= 0, b0 + b1 * x + b2 * y >= 0)
 
     # template = BoolVal(True)
 
     def update(expression):
-        if is_app(expression) and eq(expression.decl(), inv):
-            return substitute_vars(template, (expression.arg(0)), expression.arg(1))
+        if z3.is_app(expression) and z3.eq(expression.decl(), inv):
+            return z3.substitute_vars(template, (expression.arg(0)), expression.arg(1))
         return None
 
-    chc = And(s.assertions())
+    chc = z3.And(s.assertions())
     print(modify(chc, update))
 
 
@@ -122,19 +124,19 @@ def ground_quantifier(qexpr):
 
 
 def test_parse():
-    s = SolverFor("HORN")
-    inv = Function('inv', BitVecSort(8), BoolSort())
-    i, ip = BitVecs('i ip', 8)
+    s = z3.SolverFor("HORN")
+    inv = z3.Function('inv', z3.BitVecSort(8), z3.BoolSort())
+    i, ip = z3.BitVecs('i ip', 8)
     # init
-    s.add(ForAll([i], Implies(i == 0,
-                              inv(i))))
+    s.add(z3.ForAll([i], z3.Implies(i == 0,
+                                    inv(i))))
     # inductive
-    s.add(ForAll([i, ip], Implies(And(inv(i), i < 10, ip == i + 1),
-                                  inv(ip))))
+    s.add(z3.ForAll([i, ip], z3.Implies(z3.And(inv(i), i < 10, ip == i + 1),
+                                        inv(ip))))
     # sufficient
 
-    s.add(ForAll([i], Implies(inv(i),
-                              Implies(i >= 10, i == 10))))
+    s.add(z3.ForAll([i], z3.Implies(inv(i),
+                                    z3.Implies(i >= 10, i == 10))))
 
     print(s.to_smt2())
 
@@ -170,7 +172,7 @@ class CHCParser:
         assert len(queries) == 1
         for r in fp.get_rules():
             self.sol.add(r)
-        self.sol.add(Not(queries[0]))
+        self.sol.add(z3.Not(queries[0]))
 
     def parse_chc_string(self, chc: str):
         self.fmls = z3.parse_smt2_string(chc)
@@ -178,7 +180,7 @@ class CHCParser:
 
     def solve_with_pdr(self):
         # for debugging
-        sol = SolverFor("HORN")
+        sol = z3.SolverFor("HORN")
         sol.add(self.fmls)
         print(sol)
         print("Solving with CHC")
@@ -195,10 +197,10 @@ class CHCParser:
         pure_trans = z3.And(trans.children()[0].children()[1:])
         if z3.is_and(post.children()[0]):
             # e.g., in the form of Implies(And(inv(i), i >= 10), i == 10)
-            pure_post = simplify(z3.Implies(z3.And(post.children()[0].children()[1:]), post.children()[1]))
+            pure_post = z3.simplify(z3.Implies(z3.And(post.children()[0].children()[1:]), post.children()[1]))
         else:
             # e.g., in the form of Implies(inv(i), i == 10)
-            pure_post = simplify(post.children()[1])
+            pure_post = z3.simplify(post.children()[1])
 
         # print(pure_init, "\n", pure_trans, "\n", pure_post)
 
