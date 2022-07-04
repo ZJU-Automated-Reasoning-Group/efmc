@@ -1,38 +1,35 @@
 # coding: utf8
 import os
-import sys
+# import sys
 import subprocess
 from threading import Timer
-import signal
-import psutil
+from typing import List
+
+# import signal
+# import psutil
 # import zlib
 
 
-"""
-def signal_handler(sig, frame):
-    print("handling signals")
-    parent = psutil.Process(os.getpid())
-    for child in parent.children(recursive=True):
-        child.kill()
-    sys.exit(0)
-"""
+g_input_type = "sygus"
+g_run_efsmt = True
+g_run_pdr = True
 
 
-def find_smt2_files(path):
-    flist = []  # path to smtlib2 files
+def find_smt2_files(path: str) -> List[str]:
+    files_list = []  # path to smtlib2 files
     for root, dirs, files in os.walk(path):
-        for fname in files:
-            tt = os.path.splitext(fname)[1]
+        for filename in files:
+            tt = os.path.splitext(filename)[1]
             if tt == '.smt2' or tt == '.sl':
-                flist.append(os.path.join(root, fname))
-    return flist
+                files_list.append(os.path.join(root, filename))
+    return files_list
 
 
-def terminate(process, is_timeout):
+def terminate(process: subprocess.Popen, is_timeout: List[bool]):
     if process.poll() is None:
         try:
             # process.terminate()
-            process.kill()
+            process.kill()  # ?
             is_timeout[0] = True
         except Exception as es:
             # print("error for interrupting")
@@ -40,10 +37,8 @@ def terminate(process, is_timeout):
             pass
 
 
-def solve_with_bin_solver(cmd, timeout=5):
-    """
-    cmd should be a complete cmd
-    """
+def solve_with_bin_solver(cmd: List[str], timeout=5) -> str:
+    """ cmd should be a complete cmd"""
     # ret = "unknown"
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     is_timeout = [False]
@@ -53,54 +48,50 @@ def solve_with_bin_solver(cmd, timeout=5):
     out = ' '.join([str(element.decode('UTF-8')) for element in out])
     p.stdout.close()
     timer.cancel()
-    print(out)
     if is_timeout[0]:
         return out
         # return "timeout"
     return out
 
 
-def solve_dir(path):
+def solve_file(file_path: str):
     cur_dir = os.path.dirname(os.path.realpath(__file__))
     # cmd = ["/Users/prism/Work/cvc5/build/bin/cvc5", "-q"]
-    cmd = ["python3", cur_dir + "/prover.py", "--prover", "efsmt", "--file"]
-    cmd2 = ["python3", cur_dir + "/prover.py", "--prover", "pdr", "--file"]
-    files = find_smt2_files(path)
-    # results = {}
-    # print(len(files))
-    efsmt_success = 0
-    pdr_success = 0
-    for file in files:
+    if g_input_type == "sygus":
+        if g_run_efsmt:
+            cmd = ["python3", cur_dir + "/prover.py", "--prover", "efsmt", "--file", file_path]
+            out = solve_with_bin_solver(cmd, 5)
+            print(out)
+        if g_run_pdr:
+            cmd2 = ["python3", cur_dir + "/prover.py", "--prover", "pdr", "--file", file_path]
+            out2 = solve_with_bin_solver(cmd2, 5)
+            print(out2)
+    elif g_input_type == "chc":
+        if g_run_efsmt:
+            cmd = ["python3", cur_dir + "/prover.py", "--prover", "efsmt", "--format", "chc", "--file", file_path]
+            out = solve_with_bin_solver(cmd, 5)
+            print(out)
+        if g_run_pdr:
+            cmd2 = ["python3", cur_dir + "/prover.py", "--prover", "pdr", "--format", "chc", "--file"]
+            # print(cmd)
+            out2 = solve_with_bin_solver(cmd2, 5)
+            print(out2)
+    else:
+        print("Unsupported frontend: ", g_input_type)
+        exit(0)
+
+
+def solve_dir(path: str):
+    all_files = find_smt2_files(path)
+    for file in all_files:
         print("Solving: ", file)
-
-        cmd.append(file)
-        print(cmd)
-        out = solve_with_bin_solver(cmd, 5)
-        if "EFSMT success" in out:
-            efsmt_success += 1
-        cmd.pop()
-
-        cmd2.append(file)
-        print(cmd2)
-        out2 = solve_with_bin_solver(cmd2, 5)
-        if "PDR sucxcess" in out2:
-            pdr_success += 1
-        cmd2.pop()
+        solve_file(file)
 
 
 if __name__ == "__main__":
-
-    """
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGQUIT, signal_handler)
-    signal.signal(signal.SIGABRT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
-    """
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-
-    solve_dir(current_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
-    # solve_dir("./benchmarks/sygus-inv/LIA/2018.SV-Comp")
-    # solve_dir("/Users/prism/Work/logicbox/independent/efsmt/benchmarks/sygus-inv/LIA/2018.NeurIPS_Code2Inv")
-    # solve_dir("./benchmarks/sygus-inv/LIA/2016.SyGuS-Comp")
-    # solve_dir("./benchmarks/sygus-inv/LIA/2015.FMCAD_Acceleration")
-
+    g_input_type = "sygus"
+    if g_input_type == "sygus":
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        solve_dir(current_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
+    elif g_input_type == "chc":
+        solve_dir("/Users/prism/Work/eldarica-bin/tests/sygus/")

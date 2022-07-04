@@ -1,17 +1,18 @@
 # coding: utf-8
-from z3 import *
 from typing import List
 
+import z3
 
-def is_equiv(a: z3.ExprRef, b: z3.ExprRef):
+
+def is_equiv(fml_a: z3.ExprRef, fml_b: z3.ExprRef):
     s = z3.Solver()
-    s.add(a != b)
+    s.add(fml_a != fml_b)
     return s.check() == z3.unsat
 
 
-def optimize(fml: z3.ExprRef, obj: z3.ExprRef, minimize=False, timeout: int = 0):
+def optimize(formula: z3.ExprRef, obj: z3.ExprRef, minimize=False, timeout: int = 0):
     s = z3.Optimize()
-    s.add(fml)
+    s.add(formula)
     if timeout > 0:
         s.set("timeout", timeout)
     if minimize:
@@ -22,10 +23,10 @@ def optimize(fml: z3.ExprRef, obj: z3.ExprRef, minimize=False, timeout: int = 0)
         return obj.value()
 
 
-def box_optimize(fml: z3.ExprRef, minimize: List, maximize: List, timeout: int = 0):
+def box_optimize(formula: z3.ExprRef, minimize: List, maximize: List, timeout: int = 0):
     s = z3.Optimize()
     s.set("opt.priority", "box")
-    s.add(fml)
+    s.add(formula)
     if timeout > 0:
         s.set("timeout", timeout)
     min_objectives = [s.minimize(exp) for exp in minimize]
@@ -38,16 +39,16 @@ def box_optimize(fml: z3.ExprRef, minimize: List, maximize: List, timeout: int =
         return min_res, max_res
 
 
-x, y, xp, yp = Reals("x y x! y!")
+x, y, xp, yp = z3.Reals("x y x! y!")
 
-fml = And(Or(And(x <= -2, x >= -3),
-             And(-1 <= x, 2 >= x),
-             And(-1 <= x, 0 >= x),
-             And(-1 <= x, 3 >= x),
-             And(-1 <= x, 4 >= x),
-             And(-1 <= x, 5 >= x),
-             And(-1 <= x, 6 >= x)),
-          Or(And(xp == x + 2, x < 1), And(xp == x + 1, x >= 1)))
+fml = z3.And(z3.Or(z3.And(x <= -2, x >= -3),
+                   z3.And(-1 <= x, 2 >= x),
+                   z3.And(-1 <= x, 0 >= x),
+                   z3.And(-1 <= x, 3 >= x),
+                   z3.And(-1 <= x, 4 >= x),
+                   z3.And(-1 <= x, 5 >= x),
+                   z3.And(-1 <= x, 6 >= x)),
+             z3.Or(z3.And(xp == x + 2, x < 1), z3.And(xp == x + 1, x >= 1)))
 
 """
 Seems to be a bug??
@@ -60,7 +61,7 @@ FIXME: maybe choose the self-compiled python packages for Z3 (then we can use ne
 # print(optimize(fml, xp, minimize=False))
 
 
-a, b = Bools("a b")
-fml_m = Implies(Not(a), b)
-fml_n = Or(a, b)
+a, b = z3.Bools("a b")
+fml_m = z3.Implies(z3.Not(a), b)
+fml_n = z3.Or(a, b)
 print(is_equiv(fml_m, fml_n))

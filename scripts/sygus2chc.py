@@ -207,7 +207,7 @@ def process_file(filename):
     print("Processing ", filename)
     with open(filename, "r") as f:
         content = f.read()
-        fml_str = sygus2chcbv(content, width=32)
+        fml_str = sygus2chcbv(content, width=16)
         # print(fml_str)
         # s = SolverFor("HORN")
         # s.add(And(parse_smt2_string(fml_str)))

@@ -1,23 +1,25 @@
 # coding: utf-8
 import logging
+
 import z3
 from pysmt.logics import AUTO
 from pysmt.oracles import get_logic
-from pysmt.shortcuts import EqualsOrIff
-from pysmt.shortcuts import Solver, Portfolio
-from pysmt.shortcuts import Symbol, Bool, And, Not
-from pysmt.shortcuts import binary_interpolant, sequence_interpolant
-from pysmt.typing import INT, REAL
 # from pysmt.smtlib.parser import SmtLibParser
 # from pysmt.exceptions import SolverReturnedUnknownResultError
-from pysmt.shortcuts import Bool, get_model, Not, Solver\
-#, qelim, ForAll
+from pysmt.shortcuts import Bool, get_model, Not, Solver \
+    # , qelim, ForAll
+from pysmt.shortcuts import EqualsOrIff
+from pysmt.shortcuts import Portfolio
+from pysmt.shortcuts import Symbol, And
+from pysmt.shortcuts import binary_interpolant, sequence_interpolant
+from pysmt.typing import INT, REAL
 
 """
-Augmenting Z3 using PYSMT (
+Augmenting Z3 using PySMT, e.g., interpolant generation
 """
 
 logger = logging.getLogger(__name__)
+
 
 # NOTE: both pysmt and z3 have a class "Solver"
 
@@ -44,9 +46,7 @@ class PySMTSolver(z3.Solver):
         return pysmt_vars, pysmt_fml
 
     def check_with_pysmt(self):
-        """
-        TODO: build a Z3 model?
-        """
+        """TODO: build a Z3 model?"""
         z3fml = z3.And(self.assertions())
         pysmt_vars, pysmt_fml = PySMTSolver.convert(z3fml)
         # print(pysmt_vars)
@@ -84,9 +84,7 @@ class PySMTSolver(z3.Solver):
             return z3.unsat
 
     def all_smt(self, keys: [z3.ExprRef], bound=5):
-        """
-        Sample k models
-        """
+        """Sample k models"""
         z3fml = z3.And(self.assertions())
         _, pysmt_fml = PySMTSolver.convert(z3fml)
         target_logic = get_logic(pysmt_fml)
@@ -105,28 +103,25 @@ class PySMTSolver(z3.Solver):
                 if iteration >= bound: break
 
     def binary_interpolant(self, fml_a: z3.BoolRef, fml_b: z3.BoolRef, logic=None):
-        """
-        Binary interpolant
-        """
+        """ Binary interpolant"""
         _, pysmt_fml_a = PySMTSolver.convert(fml_a)
         _, pysmt_fml_b = PySMTSolver.convert(fml_b)
 
         itp = binary_interpolant(pysmt_fml_a, pysmt_fml_b)
-        print(itp)
-        return
+        return Solver(name='z3').converter.convert(itp)
 
     def sequence_interpolant(self, formulas: [z3.ExprRef]):
-        """
-        Sequence interpolant
-        """
+        """Sequence interpolant"""
         pysmt_formulas = []
         for fml in formulas:
             _, pysmt_fml_a = PySMTSolver.convert(fml)
             pysmt_formulas.append(pysmt_fml_a)
 
-        itp = sequence_interpolant(pysmt_formulas)
-        print(itp)
-        return
+        seq_itp = sequence_interpolant(pysmt_formulas)
+        z3_seq_itp = []
+        for cnt in seq_itp:
+            z3_seq_itp.append(Solver(name='z3').converter.convert(cnt))
+        return z3_seq_itp
 
     def efsmt(self, evars: [z3.ExprRef], uvars: [z3.ExprRef], z3fml: z3.ExprRef, logic=AUTO, maxloops=None,
               esolver_name=None, fsolver_name=None,
@@ -158,6 +153,7 @@ class PySMTSolver(z3.Solver):
                     if fmodel is None:
                         # a trick for returning a Z3 model
                         # TODO: in some versions, we can directly build a model object?
+                        #   Another strategy is to use the converter inside pySMT?
                         for i in range(len(evars)):
                             self.add(evars[i] == esolver.get_value(list(x)[i]))
                         self.check()
@@ -180,5 +176,7 @@ def test():
 
     fml_a = z3.And(x <= 1, y < x)
     fml_b = z3.And(y >= z, z > 0)
-    sol.binary_interpolant(fml_a, fml_b)
-    sol.sequence_interpolant([fml_a, fml_b])
+    print(sol.binary_interpolant(fml_a, fml_b))
+    print(sol.sequence_interpolant([fml_a, fml_b]))
+
+# test()

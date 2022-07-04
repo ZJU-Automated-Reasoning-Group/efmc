@@ -3,7 +3,6 @@ import logging
 import time
 
 import z3
-
 from .sts import TransitionSystem
 
 """
@@ -22,6 +21,9 @@ class PDRProver:
     def solve(self):
         """From transition system to CHC"""
         assert self.sts.initialized
+
+        # the following APIs will be used by eval
+        from z3 import Function, RealSort, IntSort, BoolSort, BitVecSort
         s = z3.SolverFor("HORN")
         # construct the "inv" uninterpreted function
         # FIXME: the following is ugly

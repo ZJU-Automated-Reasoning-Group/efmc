@@ -3,16 +3,30 @@ import logging
 import z3
 from z3.z3util import get_vars
 
+from .mapped_blast import translate_smt2formula_to_cnf
 
 logger = logging.getLogger(__name__)
 
 
-def efsmt_solve_aux(y, phi, maxloops=None):
+def efsmt_to_qbf(y, phi: z3.ExprRef):
+    """
+    Translate to QBF
+    :param y: variables to be universal quantified
+    :param phi: a quantifier-free formula
+    :return: a QBF formula?
+    """
+    bv2bool, id_table, header, clauses = translate_smt2formula_to_cnf(phi)
+    print(bv2bool)
+    print(clauses)
+    return
+
+
+def efsmt_solve_aux(y, phi: z3.ExprRef, maxloops=None):
     """
     A simple CEAGR-style approach for solving exists x. forall y. phi(x, y)
     It can also be understood as a "two-player game"
-    x is the set of template variables (introduced by the template)
-    y is the set of "program variables" (used in the original VC)
+      x is the set of template variables (introduced by the template)
+      y is the set of "program variables" (used in the original VC)
     """
     x = [item for item in get_vars(phi) if item not in y]
     esolver = z3.SolverFor("QF_LRA")

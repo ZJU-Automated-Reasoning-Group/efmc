@@ -1,5 +1,5 @@
 # coding: utf-8
-from z3 import *
+import z3
 
 from . import TestCase, main
 from ..sts import TransitionSystem
@@ -12,11 +12,11 @@ class TestSymAbs(TestCase):
         """
         Specify transition system using Z3's python API (a "naive" trick)
         """
-        x, y, px, py = Reals('x y x! y!')
-        vars = [x, y, px, py]
+        x, y, px, py = z3.Reals('x y x! y!')
+        all_vars = [x, y, px, py]
         init = x == 0
-        trans = And(x < 8, y <= 8, px == x + 2, py == y - 2)
-        post = Not(And(x == 0, y == 0))  # Is valid?
+        trans = z3.And(x < 8, y <= 8, px == x + 2, py == y - 2)
+        post = z3.Not(z3.And(x == 0, y == 0))  # Is valid?
 
         # vars = [x, px]
         # init = x == 0
@@ -24,7 +24,7 @@ class TestSymAbs(TestCase):
         # post = Or(x < 10, x == 10)
 
         sts = TransitionSystem()
-        sts.from_z3_cnts([vars, init, trans, post])
+        sts.from_z3_cnts([all_vars, init, trans, post])
         pp = SymbolicAbstractionProver(sts)
         pp.solve()
 

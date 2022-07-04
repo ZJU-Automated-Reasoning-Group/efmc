@@ -1,5 +1,5 @@
 # coding: utf-8
-from z3 import *
+import z3
 
 from . import TestCase, main
 from .formula_generator import FormulaGenerator
@@ -20,7 +20,7 @@ def find_model(fml):
 
 def test_msa():
     try:
-        w, x, y, z = BitVecs("w x y z", 8)
+        w, x, y, z = z3.BitVecs("w x y z", 8)
         fg = FormulaGenerator([x, y, z])
         fml = fg.generate_formula()
         if is_sat(fml):

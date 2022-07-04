@@ -1,9 +1,16 @@
 # coding: utf-8
+"""
+Generate template-based invariants using EFSMT solving
+NOTE:
+ - We assume there is only one invariant to be synthesized
+"""
+import logging
 import time
 # from typing import List
 from enum import Enum
-import logging
+
 import z3
+
 from .smttools.efsmt_solver import efsmt_solve_aux
 # from .smttools.pysmt_solver import PySMTSolver
 from .smttools.smtlib_solver import SMTLIBSolver
@@ -13,49 +20,40 @@ from .templates import PolyTemplate, IntervalTemplate, ZoneTemplate, Disjunctive
 from .utils import is_entail
 
 
-"""
-Generate template-based invariants using EF-SMT solving
-NOTE:
-- We assume there is only one invariant to be synthesized
-"""
-
 logger = logging.getLogger(__name__)
-
-
-class EFSMTSolverType(Enum):
-    Z3 = 0
-    CVC5 = 1
-    MATHSAT5 = 2
 
 
 class EFProver:
     """
-    Exists-Forall Solving for Invariant Inference
+    Exists-Forall SMT Solving for Inductive Invariant Inference
     """
 
     def __init__(self, sts: TransitionSystem):
         self.sts = sts
         self.ct = None  # template type
+        # ignoring the post condition
+        # useful in "purely" invariant generation mode
+        self.ignore_post_cond = False
 
-    def set_template(self, ttype: str):
-        """Set self.ct """
-        if ttype == "poly":
+    def set_template(self, template_name: str):
+        """Set self.ct (the template to use)"""
+        if template_name == "poly":
             self.ct = PolyTemplate(self.sts)
-        elif ttype == "interval":
+        elif template_name == "interval":
             self.ct = IntervalTemplate(self.sts)
             # the following one uses a < x < b, c < y < d
             # need to confirm whether it is weaker...
             # self.ct = IntervalTemplateV2(self.sts)
-        elif ttype == "zone":
+        elif template_name == "zone":
             if len(self.sts.variables) < 2:
                 self.ct = IntervalTemplate(self.sts)
             else:
                 self.ct = ZoneTemplate(self.sts)
-        elif ttype == "power_poly":
+        elif template_name == "power_poly":
             self.ct = DisjunctivePolyTemplate(self.sts)
-        elif ttype == "power_interval":
+        elif template_name == "power_interval":
             self.ct = DisjunctiveIntervalTemplate(self.sts)
-        elif ttype == "bv_interval":
+        elif template_name == "bv_interval":
             self.ct = BitVecIntervalTemplate(self.sts)
         else:
             self.ct = PolyTemplate(self.sts)
@@ -63,7 +61,6 @@ class EFProver:
     def check_invariant(self, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRef):
         """Check whether the generated invariant is correct"""
         correct = True
-
         # 1. Init
         if not is_entail(self.sts.init, inv):
             correct = False
@@ -75,7 +72,7 @@ class EFProver:
             print("Inductive wrong!")
 
         # 3. Post
-        if not is_entail(inv, self.sts.post):
+        if (not self.ignore_post_cond) and (not is_entail(inv, self.sts.post)):
             correct = False
             print("Post not good!")
 
@@ -87,11 +84,11 @@ class EFProver:
         else:
             print("Invariant check success!")
 
-    def solve(self):
+    def solve(self) -> bool:
         # return self.solve_with_cegar_efsmt()  # FIXME: seems very slow
         return self.solve_with_z3()
 
-    def generate_vc(self):
+    def generate_vc(self) -> z3.ExprRef:
         """
         Generate VC
         TODO: another strategy is to generate the quantifier free body first,
@@ -104,8 +101,9 @@ class EFProver:
         s.add(z3.ForAll(self.sts.all_variables, z3.Implies(z3.And(self.ct.template_cnt_init_and_post, self.sts.trans),
                                                            self.ct.template_cnt_trans)))
 
-        s.add(z3.ForAll(self.sts.variables, z3.Implies(self.ct.template_cnt_init_and_post,
-                                                       self.sts.post)))
+        if not self.ignore_post_cond:
+            s.add(z3.ForAll(self.sts.variables, z3.Implies(self.ct.template_cnt_init_and_post,
+                                                           self.sts.post)))
 
         # Add additional cnts to restrict the template variables
         if self.ct.template_type != TemplateType.POLYHEDRON:
@@ -113,22 +111,23 @@ class EFProver:
 
         return z3.And(s.assertions())
 
-    def generate_quantifier_free_vc(self):
+    def generate_quantifier_free_vc(self) -> z3.ExprRef:
         """Generate the "QF-part" of the VC (quantifiers can be added later)"""
         s = z3.Solver()
         s.add(z3.Implies(self.sts.init, self.ct.template_cnt_init_and_post))
 
         s.add(z3.Implies(z3.And(self.ct.template_cnt_init_and_post, self.sts.trans),
                          self.ct.template_cnt_trans))
-        s.add(z3.Implies(self.ct.template_cnt_init_and_post,
-                         self.sts.post))
+        if not self.ignore_post_cond:
+            s.add(z3.Implies(self.ct.template_cnt_init_and_post,
+                             self.sts.post))
         # Add additional cnts to restrict the template variables
         if self.ct.template_type != TemplateType.POLYHEDRON:
             s.add(self.ct.get_additional_cnts_for_template_vars())
 
         return z3.And(s.assertions())
 
-    def generate_vc2(self):
+    def generate_vc2(self) -> z3.ExprRef:
         """Generate VC in the form of ForAll([allvars], And(Init,Trans,Post))
         It will first use self.generate_quantifier_free_vc to generate the QF part
         """
@@ -141,7 +140,7 @@ class EFProver:
 
         return z3.ForAll(self.sts.all_variables, qf_vc)
 
-    def solve_with_cegar_efsmt(self):
+    def solve_with_cegar_efsmt(self) -> bool:
         """This can be slow (perhaps not a good idea for QF_NRA) Maybe QF_LRA or QF_BV?"""
         phi = self.generate_quantifier_free_vc()
         print("User-defined EFSMT starting!!!")
@@ -152,7 +151,7 @@ class EFProver:
             print("User-defined EFSMT success time: ", time.time() - start)
             # print("\nTemplate and the founded values: ")
             # print(" ", self.ct.template_cnt_init_and_post)
-            print("  model:", model)
+            # print("  model:", model)
             # FIXME: is this model OK?
             inv = z3.simplify(self.ct.build_invariant_expr(model))
             inv_in_prime_variables = z3.simplify(self.ct.build_invariant_expr(model, use_prime_variables=True))
@@ -163,7 +162,7 @@ class EFProver:
             print("User-defined EFSMT fails time: ", time.time() - start)
             return False
 
-    def solve_with_z3(self):
+    def solve_with_z3(self) -> bool:
         """This is the main entrance for the verification"""
         if self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.INTERVAL:
             s = z3.SolverFor("UFLRA")  # FIXME: our encoding seems to be non-linear...
@@ -183,7 +182,7 @@ class EFProver:
         if check_res == z3.sat:
             print("EFSMT success time: ", time.time() - start)
             m = s.model()
-            print(m)
+            # print(m)
             # for Debugging
             # print("\nTemplate and the founded values: ")
             # print(" ", self.ct.get_template_cnt_init_and_post())
@@ -201,7 +200,7 @@ class EFProver:
                 print(s.reason_unknown())
             return False
 
-    def solve_with_bin(self):
+    def solve_with_bin(self) -> z3.CheckSatResult:
         """Use a third party SMT solvers (perhaps in parallel)"""
         solver = z3.Solver()
         solver.add(self.generate_vc())
