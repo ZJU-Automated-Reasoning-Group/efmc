@@ -71,8 +71,10 @@ class OMTEngine:
     def min_once(self, exp: z3.ExprRef):
         """Minimize the objective exp"""
         if self.engine_type == OMTEngineType.Z3OPT:
-            # FIXME: - can be understood as negative
-            return -self.maximize_with_z3opt(-exp)
+            return self.minimize_with_z3opt(exp)
+            # First, - can be understood as negative
+            # Second, it is not good for bit-vector variablers
+            # return -self.maximize_with_z3opt(-exp)
         else:
             raise NotImplementedError
 

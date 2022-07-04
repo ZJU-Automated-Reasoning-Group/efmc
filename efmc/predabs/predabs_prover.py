@@ -59,8 +59,7 @@ def strongest_consequence(fml: z3.ExprRef, predicates: List, k=None) -> z3.ExprR
 
 
 def weakest_sufficient_condition(fml: z3.ExprRef, predicates: List[z3.ExprRef]) -> z3.ExprRef:
-    notfml = negate(fml)
-    sc = strongest_consequence(notfml, predicates)
+    sc = strongest_consequence(negate(fml), predicates)
     return z3.simplify(z3.Not(sc))
 
 
@@ -95,13 +94,12 @@ class PredicateAbstractionProver(object):
             self.var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
             self.var_map_rev.append((self.sts.prime_variables[i], self.sts.variables[i]))
 
-    def set_predicates(self, predicates: List):
-        """
-        The element in the domain is the Boolean combinations of a set of predicates
-        """
+    def set_predicates(self, predicates: List[z3.ExprRef]):
+        """The element in the domain is the Boolean combinations of a set of predicates"""
         self.preds = predicates
 
     def solve(self):
+        """External interface for verifying"""
         preds_prime = []
         for pred in self.preds:
             preds_prime.append(z3.substitute(pred, self.var_map))
@@ -127,21 +125,3 @@ class PredicateAbstractionProver(object):
 
         return
 
-
-if __name__ == '__main__':
-    x, y, z, xp, yp, zp = z3.Reals("x y z x! y! z!")
-
-    init = x == 0
-    trans = z3.And(x < 10, xp == x + 1)
-    post = z3.Implies(x >= 10, x == 10)
-    # preds = [x == 10, x > 10]
-
-    # preds = [x >= 0, x == y]
-    preds = [x < 10, x == 10]
-    all_vars = [x, xp]
-    sts = TransitionSystem()
-    sts.from_z3_cnts([all_vars, init, trans, post])
-
-    pp = PredicateAbstractionProver(sts)
-    pp.set_predicates(preds)
-    pp.solve()

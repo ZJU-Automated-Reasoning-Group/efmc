@@ -34,7 +34,7 @@ class TransitionSystem(object):
         print(self.post)
         return " "
 
-    def from_z3_cnts(self, ts: List[List[z3.ExprRef], z3.ExprRef, z3.ExprRef, z3.ExprRef]):
+    def from_z3_cnts(self, ts: List):
         """A trick for initializing sts"""
         self.all_variables, self.init, self.trans, self.post = ts[0], ts[1], ts[2], ts[3]
         # print(self.all_variables)
