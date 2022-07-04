@@ -1,9 +1,9 @@
 # coding: utf-8
-from z3 import *
+import z3
 
 from . import TestCase, main
-from ..sts import TransitionSystem
 from ..ef_prover import EFProver
+from ..sts import TransitionSystem
 
 
 class TestEFSMT(TestCase):
@@ -14,14 +14,14 @@ class TestEFSMT(TestCase):
         """
         return
 
-        x, y, px, py = Reals('x y x! y!')
+        x, y, px, py = z3.Reals('x y x! y!')
 
-        vars = [x, y, px, py]
-        init = And(x == 0, y == 8)
-        trans = Or(And(x < 8, y <= 8, px == x + 2, py == y - 2), And(x == 8, px == 0, y == 0, py == 8))
-        post = Not(And(x == 0, y == 0))  # Is valid.
+        all_vars = [x, y, px, py]
+        init = z3.And(x == 0, y == 8)
+        trans = z3.Or(z3.And(x < 8, y <= 8, px == x + 2, py == y - 2), z3.And(x == 8, px == 0, y == 0, py == 8))
+        post = z3.Not(z3.And(x == 0, y == 0))  # Is valid.
         sts = TransitionSystem()
-        sts.from_z3_cnts([vars, init, trans, post])
+        sts.from_z3_cnts([all_vars, init, trans, post])
 
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
         ef_prover = EFProver(sts)  # use template and exists-forall solving
@@ -32,15 +32,15 @@ class TestEFSMT(TestCase):
     def test_efsmt2(self):
         # Specify transition system using Z3's python API (a "naive" trick)
 
-        x1, c1, t, c2, x2, k1, k2, px1, pc1, pt, pc2, px2, pk1, pk2 = Reals(
+        x1, c1, t, c2, x2, k1, k2, px1, pc1, pt, pc2, px2, pk1, pk2 = z3.Reals(
             'x1 c1 t c2 x2 k1 k2 x1! c1! t! c2! x2! k1! k2!')
-        vars = [x1, c1, t, c2, x2, k1, k2, px1, pc1, pt, pc2, px2, pk1, pk2]
-        init = BoolVal(True)
-        trans = Or(And(x1 <= 4, pc1 == c1 + t, pc2 == c2 + t, px1 == x1 + t, px2 == x2, pk1 == k1, pk2 == k2),
-                   And(x1 > 4, pc1 == pc1, pc2 == pc2, px1 == x1, px2 == x2, pk1 == k1, pk2 == k2))
-        post = BoolVal(True)
+        all_vars = [x1, c1, t, c2, x2, k1, k2, px1, pc1, pt, pc2, px2, pk1, pk2]
+        init = z3.BoolVal(True)
+        trans = z3.Or(z3.And(x1 <= 4, pc1 == c1 + t, pc2 == c2 + t, px1 == x1 + t, px2 == x2, pk1 == k1, pk2 == k2),
+                      z3.And(x1 > 4, pc1 == pc1, pc2 == pc2, px1 == x1, px2 == x2, pk1 == k1, pk2 == k2))
+        post = z3.BoolVal(True)
         sts = TransitionSystem()
-        sts.from_z3_cnts([vars, init, trans, post])
+        sts.from_z3_cnts([all_vars, init, trans, post])
 
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
         ef_prover = EFProver(sts)  # use template and exists-forall solving

@@ -14,7 +14,7 @@ Octagon
 logger = logging.getLogger(__name__)
 
 
-def get_bv_size(x: z3.ExprRef):
+def get_bv_size(x: z3.ExprRef) -> int:
     if z3.is_bv(x):
         return x.sort().size()
     else:

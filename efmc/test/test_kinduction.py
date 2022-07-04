@@ -1,5 +1,5 @@
 # coding: utf-8
-from z3 import *
+import z3
 
 from . import TestCase, main
 from ..sts import TransitionSystem
@@ -21,18 +21,18 @@ class TestKInduction(TestCase):
             q = q + 1
         {x == y * q + r, r >= 0}
         """
-        x, y, q, r, xp, yp, qp, rp = Ints("x y q r x! y! q! r!")
-        vars = [x, y, q, r, xp, yp, qp, rp]
-        pre = And(x >= 0, y >= 0, r == x, q == 0)
-        post = Or(r >= y, And(x == y * q + r, r >= 0))
-        trans = And(r >= y, xp == x, yp == y, rp == r - y, qp == q + 1)
+        x, y, q, r, xp, yp, qp, rp = z3.Ints("x y q r x! y! q! r!")
+        all_vars = [x, y, q, r, xp, yp, qp, rp]
+        pre = z3.And(x >= 0, y >= 0, r == x, q == 0)
+        post = z3.Or(r >= y, z3.And(x == y * q + r, r >= 0))
+        trans = z3.And(r >= y, xp == x, yp == y, rp == r - y, qp == q + 1)
 
         sts = TransitionSystem()
-        sts.from_z3_cnts([vars, pre, trans, post])
+        sts.from_z3_cnts([all_vars, pre, trans, post])
 
         pp = KInductionProver(sts)
         pp.solve()
-        assert (True)
+        assert True
 
 
 if __name__ == '__main__':

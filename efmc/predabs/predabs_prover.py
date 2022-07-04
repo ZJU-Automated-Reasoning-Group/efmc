@@ -138,9 +138,9 @@ if __name__ == '__main__':
 
     # preds = [x >= 0, x == y]
     preds = [x < 10, x == 10]
-    vars = [x, xp]
+    all_vars = [x, xp]
     sts = TransitionSystem()
-    sts.from_z3_cnts([vars, init, trans, post])
+    sts.from_z3_cnts([all_vars, init, trans, post])
 
     pp = PredicateAbstractionProver(sts)
     pp.set_predicates(preds)

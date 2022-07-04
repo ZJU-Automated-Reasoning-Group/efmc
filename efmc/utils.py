@@ -68,7 +68,7 @@ def ctx_simplify(exp: z3.ExprRef):
     return z3.Tactic('ctx-solver-simplify')(exp).as_expr()
 
 
-def negate(f: z3.ExprRef):
+def negate(f: z3.ExprRef) -> z3.ExprRef:
     """Negate a formula"""
     if z3.is_not(f):
         return f.arg(0)
@@ -85,7 +85,7 @@ def is_valid(phi: z3.ExprRef) -> bool:
         return True
 
 
-def is_entail(a: z3.ExprRef, b: z3.ExprRef):
+def is_entail(a: z3.ExprRef, b: z3.ExprRef) -> bool:
     s = z3.Solver()
     s.add(z3.Not(z3.Implies(a, b)))
     if s.check() == z3.sat:
@@ -94,13 +94,13 @@ def is_entail(a: z3.ExprRef, b: z3.ExprRef):
         return True
 
 
-def is_sat(phi: z3.ExprRef):
+def is_sat(phi: z3.ExprRef) -> bool:
     s = z3.Solver()
     s.add(phi)
     return s.check() == z3.sat
 
 
-def is_equiv(a: z3.ExprRef, b: z3.ExprRef):
+def is_equiv(a: z3.ExprRef, b: z3.ExprRef) -> bool:
     s = z3.Solver()
     s.add(a != b)
     return s.check() == z3.unsat

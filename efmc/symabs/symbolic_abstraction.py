@@ -55,14 +55,13 @@ class NumericalAbstraction:
             for var in vars: self.vars.append(var)
 
             self.initialized = True
-
             self.omt_engine.init_from_fml(fml)
 
         except z3.Z3Exception as ex:
             print("error when initialization")
             print(ex)  # TODO: should throw ex?
 
-    def to_omt_file(self, abs_type: str):
+    def to_omt_file(self, abs_type: str) -> str:
         s = z3.Solver()
         s.add(self.formula)
         omt_str = s.to_smt2()
@@ -75,7 +74,7 @@ class NumericalAbstraction:
         else:
             return omt_str
 
-    def interval_abs(self):
+    def interval_abs(self) -> z3.ExprRef:
         """Interval abstraction"""
         if self.omt_engine.compact_opt:
             multi_queries = []
@@ -93,7 +92,7 @@ class NumericalAbstraction:
         return z3.And(cnts)
         # return simplify(And(cnts))
 
-    def zone_abs(self):
+    def zone_abs(self) -> z3.ExprRef:
         """Zone abstraction"""
         zones = list(itertools.combinations(self.vars, 2))
         if self.omt_engine.compact_opt:
@@ -113,7 +112,7 @@ class NumericalAbstraction:
             zone_cnts.append(z3.And(exp >= exmin, exp <= exmax))
         return z3.And(zone_cnts)
 
-    def octagon_abs(self):
+    def octagon_abs(self) -> z3.ExprRef:
         """Octagon abstraction"""
         octagons = list(itertools.combinations(self.vars, 2))
         if self.omt_engine.compact_opt:

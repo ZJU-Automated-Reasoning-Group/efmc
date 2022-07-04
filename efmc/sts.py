@@ -2,6 +2,7 @@
 # import time
 
 from typing import List
+import z3
 from .utils import ctx_simplify
 
 
@@ -33,7 +34,7 @@ class TransitionSystem(object):
         print(self.post)
         return " "
 
-    def from_z3_cnts(self, ts: List):
+    def from_z3_cnts(self, ts: List[List[z3.ExprRef], z3.ExprRef, z3.ExprRef, z3.ExprRef]):
         """A trick for initializing sts"""
         self.all_variables, self.init, self.trans, self.post = ts[0], ts[1], ts[2], ts[3]
         # print(self.all_variables)

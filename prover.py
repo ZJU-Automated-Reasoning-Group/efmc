@@ -17,14 +17,13 @@ from efmc.utils import is_entail
 logger = logging.getLogger(__name__)
 
 """
-Automated verification
+Automated program verification for various transition systems specified in different formats
+
 """
 
 
 def signal_handler(sig, frame):
-    """
-    Captures the shutdown signals and cleans up all child processes of this process.
-    """
+    print("handling signals")
     parent = psutil.Process(os.getpid())
     for child in parent.children(recursive=True):
         child.kill()
@@ -32,17 +31,13 @@ def signal_handler(sig, frame):
 
 
 def solve_with_qe(sts: TransitionSystem):
-    """
-    Use QE-based strongest inductive invariant inference
-    """
+    """Use QE-based strongest inductive invariant inference"""
     qe_prover = QuantifierEliminationProver(sts)
     qe_prover.solve()
 
 
 def solve_with_chc(sts: TransitionSystem):
-    """
-    Use Z3's IC3/PDR engine (behind the CHC constraint language)
-    """
+    """Use Z3's IC3/PDR engine (behind the CHC constraint language)"""
     chc_prover = PDRProver(sts)
     chc_prover.solve()
 
@@ -55,6 +50,7 @@ def solve_with_ef(sts: TransitionSystem):
     # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
     ef_prover = EFProver(sts)  # use template and exists-forall solving
     if sts.has_bv:
+        # ef_prover.ignore_post_cond = True
         ef_prover.set_template("bv_interval")
     else:
         ef_prover.set_template("poly")
@@ -64,9 +60,7 @@ def solve_with_ef(sts: TransitionSystem):
 
 
 def solve_with_symabs(sts: TransitionSystem):
-    """
-    Use symbolic abstraction based abstract interpretation
-    """
+    """Use symbolic abstraction based abstract interpretation"""
     symabs_prover = SymbolicAbstractionProver(sts)
     symabs_prover.solve()
 
@@ -74,6 +68,10 @@ def solve_with_symabs(sts: TransitionSystem):
 def check_invariant(sts: TransitionSystem, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRef):
     """
     For quick testing
+    :param sts: the transition system
+    :param inv: invariant
+    :param inv_in_prime_variables:
+    :return: none
     """
     correct = True
     if not is_entail(sts.init, inv):
@@ -103,16 +101,23 @@ def validate_invariant(sts: TransitionSystem):
     check_invariant(sts, inv, inv_in_prime)
 
 
-def solve_chc_file(filename: str, prover="efsmt"):
+def solve_chc_file(file_name: str, prover="efsmt"):
     # Currently, CHC is only used for bv
-    all_vars, init, trans, post = parse_chc(filename, to_real_type=False)
-    sts = TransitionSystem()
-    sts.from_z3_cnts([all_vars, init, trans, post])
-    sts.has_bv = True
-    solve_with_ef(sts)
-    # s = SolverFor("HORN")
-    # s.add(z3.And(parse_smt2_file(filename)))
-    # print(s.check())
+    if prover == "efsmt":
+        all_vars, init, trans, post = parse_chc(file_name, to_real_type=False)
+        logger.debug("Finish parsing")
+        sts = TransitionSystem()
+        sts.from_z3_cnts([all_vars, init, trans, post])
+        sts.has_bv = True
+        solve_with_ef(sts)
+    elif prover == "pdr":
+        s = z3.SolverFor("HORN")
+        s.add(z3.And(z3.parse_smt2_file(file_name)))
+        print("PDR starts working!")
+        print(s.check())
+    else:
+        print("Not supported engine: {}".format(prover))
+        exit(0)
 
 
 def solve_sygus_file(filename: str, prover="all"):
@@ -146,25 +151,29 @@ def solve_sygus_file(filename: str, prover="all"):
 if __name__ == "__main__":
     import argparse
 
-    # solve_chc_file("./benchmarks/bv/simple.smt2", "efsmt")
-    # solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/fib_44.sl.smt2", "efsmt")
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGQUIT, signal_handler)
+    signal.signal(signal.SIGABRT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
 
-    # solve_sygus_file("./benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor1.sl", "symabs")
-    # solve_sygus_file("./benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor1.sl", "efsmt")
+
+    # solve_chc_file("../benchmarks/bv/simple.smt2", "efsmt")
+    # solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/fib_01.sl.smt2", "efsmt")
     # fib_04.sl needs disjunctive?
     # solve_sygus_file('/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_30_x.sl', "pdr")
     # exit(0)
     parser = argparse.ArgumentParser()
-    parser.add_argument('--file', dest='file', default='none', type=str, help="file")
+    parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
     parser.add_argument('--prover', dest='prover', default='efsmt', type=str, help="The prover for using")
+    parser.add_argument('--format', dest='format', default='sygus', type=str, help="The input format")
     # parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
     # parser.add_argument('--threads', dest='threads', default=4, type=int, help="threads")
     args = parser.parse_args()
 
-    # Registers signal handler so we can kill all of our child processes.
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGQUIT, signal_handler)
-    signal.signal(signal.SIGABRT, signal_handler)
-    # signal.signal(signal.SIGTERM, signal_handler)
-
-    solve_sygus_file(args.file, args.prover)
+    if args.format == "sygus":
+        solve_sygus_file(args.file, args.prover)
+    elif args.format == "chc":
+        solve_chc_file(args.file, args.prover)
+    else:
+        print("Not supported format {}".format(args.foramt))
+        exit(0)

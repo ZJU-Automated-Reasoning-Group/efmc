@@ -61,9 +61,9 @@ class IntervalTemplate(Template):
     def get_additional_cnts_for_template_vars(self):
         """
         Add constraints for restricting the template variables.
-        (For interval, zone, etc.)
+        (For interval, zone, etc. over integer/real variables?)
 
-        Consider two variables x and y
+        For example, consider the two variables x and y
             ix0 + x * ix1  >= 0   for lower (ix1 must be 1 or 0)
             ix2 + x * ix3  >= 0   for upper (ix3 must be -1 or 0)
             iy0 + y * iy1  >= 0   for lower
@@ -146,12 +146,12 @@ class IntervalTemplate(Template):
 
 class IntervalTemplateV2(Template):
     """
-    Interval domain
+    Interval domain (it seems that this one does not work)
     FIXME: The current IntervalTemplate introduces non-linear cnts, which are not elegant.
       However, due to the problem of infinity (?), we cannot use the following kind of templates
       a <= x <= b,  c <= y <= d (this seems to restrict the values of a, b, c, d)
       The above template leads to incompleteness (?)
-      But,can we use a < x < b,  c < y < d (e.g., for integers?)
+      But, can we use a < x < b,  c < y < d (e.g., for integers?)
     """
 
     def __init__(self, sts: TransitionSystem):

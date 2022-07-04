@@ -1,7 +1,8 @@
 # coding: utf-8
+import z3
+
 from . import TestCase, main
 from ..abduction.abduction import abduce
-from z3 import *
 
 
 class TestAbduction(TestCase):
@@ -14,8 +15,8 @@ class TestAbduction(TestCase):
            Γ ∧ ψ |= φ can be rewritten as ψ |= Γ -> φ.
            So, we use universal qe to compute the sufficient condition of Γ -> φ.
         """
-        x, y, z = Ints("x y z")
-        pre_cond = And(x <= 0, y > 1)
+        x, y, z = z3.Ints("x y z")
+        pre_cond = z3.And(x <= 0, y > 1)
         post_cond = 2 * x - y + 3 * z <= 10
         assert (abduce(pre_cond, post_cond))
 
