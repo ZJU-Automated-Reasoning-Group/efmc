@@ -46,13 +46,13 @@ class NumericalAbstraction:
         else:
             print("error: not initialized")
 
-    def init_from_fml(self, fml: z3.BoolRef, vars: [z3.ExprRef]):
+    def init_from_fml(self, fml: z3.BoolRef, cared_vars: [z3.ExprRef]):
         try:
             self.formula = fml
             # for var in get_variables(self.formula):
             #    if is_int(var) or is_real(var): self.vars.append(var)
             # TODO: For verification, we may only care about the primed variables
-            for var in vars: self.vars.append(var)
+            for var in cared_vars: self.vars.append(var)
 
             self.initialized = True
             self.omt_engine.init_from_fml(fml)

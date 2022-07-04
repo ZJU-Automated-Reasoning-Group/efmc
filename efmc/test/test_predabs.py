@@ -2,8 +2,8 @@
 import z3
 
 from . import TestCase, main
-from ..sts import TransitionSystem
 from ..predabs import PredicateAbstractionProver
+from ..sts import TransitionSystem
 
 
 class TestPredicateAbstraction(TestCase):
@@ -16,9 +16,25 @@ class TestPredicateAbstraction(TestCase):
         post = x
         preds = [x, y]
 
-        vars = [x, y, xp, yp]
+        all_vars = [x, y, xp, yp]
         sts = TransitionSystem()
-        sts.from_z3_cnts([vars, init, trans, post])
+        sts.from_z3_cnts([all_vars, init, trans, post])
+
+        pp = PredicateAbstractionProver(sts)
+        pp.set_predicates(preds)
+        pp.solve()
+
+    def test_arith_program(self):
+        x, y, z, xp, yp, zp = z3.Reals("x y z x! y! z!")
+        init = x == 0
+        trans = z3.And(x < 10, xp == x + 1)
+        post = z3.Implies(x >= 10, x == 10)
+        # preds = [x == 10, x > 10]
+        # preds = [x >= 0, x == y]
+        preds = [x < 10, x == 10]
+        all_vars = [x, xp]
+        sts = TransitionSystem()
+        sts.from_z3_cnts([all_vars, init, trans, post])
 
         pp = PredicateAbstractionProver(sts)
         pp.set_predicates(preds)
