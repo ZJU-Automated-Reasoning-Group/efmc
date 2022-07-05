@@ -215,38 +215,38 @@ class SyGusInVParser:
         Return the format of our trivial transition system
         """
         from z3.z3util import get_vars
-        init_cnts = []
-        trans_cnts = []
-        post_cnts = []
+        init_constraints = []
+        trans_constraints = []
+        post_constraints = []
         for var in self.all_vars:
-            vname, vtype = var[0], var[1]
-            # print(vname, vtype)
-            if isinstance(vtype, List):
+            var_name, var_type = var[0], var[1]
+            # print(var_name, var_type)
+            if isinstance(var_type, List):
                 # E.g., ['Array', 'Int', 'Int']
-                final_type = "({})".format(" ".join(vtype))
+                final_type = "({})".format(" ".join(var_type))
             else:
                 # FIXME: to test abstract domains, we may cast Int types to Real
                 # FIXME: but casting here is not very elegant
-                if self.to_real and vtype != "Real":
+                if self.to_real and var_type != "Real":
                     final_type = "Real"
                 else:
-                    final_type = vtype
+                    final_type = var_type
 
-            init_cnts.append("(declare-const {} {})".format(vname, final_type))
-            trans_cnts.append("(declare-const {} {})".format(vname, final_type))
-            post_cnts.append("(declare-const {} {})".format(vname, final_type))
+            init_constraints.append("(declare-const {} {})".format(var_name, final_type))
+            trans_constraints.append("(declare-const {} {})".format(var_name, final_type))
+            post_constraints.append("(declare-const {} {})".format(var_name, final_type))
 
-        init_cnts.append("(assert {})".format(self.pre_fun_body))
-        trans_cnts.append("(assert {})".format(self.trans_fun_body))
-        post_cnts.append("(assert {})".format(self.post_fun_body))
+        init_constraints.append("(assert {})".format(self.pre_fun_body))
+        trans_constraints.append("(assert {})".format(self.trans_fun_body))
+        post_constraints.append("(assert {})".format(self.post_fun_body))
 
-        # print("\n".join(init_cnts))
-        # print("\n".join(trans_cnts))
-        # print("\n".join(post_cnts))
+        # print("\n".join(init_constraints))
+        # print("\n".join(trans_constraints))
+        # print("\n".join(post_constraints))
 
-        init = z3.parse_smt2_string("\n".join(init_cnts))[0]
-        trans = z3.parse_smt2_string("\n".join(trans_cnts))[0]
-        post = z3.parse_smt2_string("\n".join(post_cnts))[0]
+        init = z3.parse_smt2_string("\n".join(init_constraints))[0]
+        trans = z3.parse_smt2_string("\n".join(trans_constraints))[0]
+        post = z3.parse_smt2_string("\n".join(post_constraints))[0]
 
         # a dirty trick to keep order?
         # TODO: does th following functions preseve some order?

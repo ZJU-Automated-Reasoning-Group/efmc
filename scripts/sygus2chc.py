@@ -6,13 +6,18 @@ Converting SyGuS(Inv) benchmarks to CHC
     sygus2chcbv: translate to bv semantics (not semantic-preserving!)
 """
 import os
-from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse
+
 # from ..efsmt.frontends.mini_sygus_parser import test_main
 import z3
 from z3.z3util import get_vars
 
+from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse
 
-def sygus2chc(tt: str):
+g_bitvector_width = 8
+g_bitvector_signedness = "unsigned"
+
+
+def sygus2chc(tt: str) -> str:
     # ss = SyGusInVParser("\n".join(tt_arr), to_real=False)
     ss = SyGusInVParser(tt, to_real=False)
     all_vars, init, trans, post = ss.get_transition_system()
@@ -42,18 +47,22 @@ def sygus2chc(tt: str):
     return fml_str
 
 
-rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
-             ">=": "bvsge", "<=": "bvsle", ">": "bvsgt", "<": "bvslt"}
+def rep_operand(op: str) -> str:
+    if g_bitvector_signedness == "signed":
+        rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
+                     ">=": "bvsge", "<=": "bvsle", ">": "bvsgt", "<": "bvslt"}
+    else:
+        rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
+                     ">=": "bvuge", "<=": "bvule", ">": "bvugt", "<": "bvult"}
 
-
-def rep_operand(op):
     if op in rep_rules:
         return rep_rules[op]
     return op
 
 
-def to_bv_sexpr_misc(line: [str], width):
+def to_bv_sexpr_misc(line: [str]):
     """
+    This is used for converting LIRA expressions to BV
     E.g.,
     ['and', ['=', 'x', 1], ['=', 'y', 1]]
     ['and', ['=', 'x!', ['+', 'x', 'y']], ['=', 'y!', ['+', 'x', 'y']]]
@@ -72,10 +81,10 @@ def to_bv_sexpr_misc(line: [str], width):
                       ['bvadd', 1, [bvnot', 50]]
             """
             if isinstance(line[1], int):
-                var = '(_ bv{} {})'.format(line[1], width)
+                var = '(_ bv{} {})'.format(line[1], g_bitvector_width)
             else:
                 var = line[1]
-            new_line = ['bvadd', '(_ bv1 {})'.format(width), ['bvnot', var]]
+            new_line = ['bvadd', '(_ bv1 {})'.format(g_bitvector_width), ['bvnot', var]]
         else:
             new_line = [rep_operand(line[0])]
             new_line += line[1:]
@@ -89,32 +98,32 @@ def to_bv_sexpr_misc(line: [str], width):
                 # handling cases like x = -50 (same as above)
                 if element[0] == '-' and len(element) == 2 and (not isinstance(element[1], list)):  # ['-', 50]
                     if isinstance(element[1], int):
-                        var = '(_ bv{} {})'.format(element[1], width)
+                        var = '(_ bv{} {})'.format(element[1], g_bitvector_width)
                     else:
                         var = element[1]
-                    new_element = ['bvadd', '(_ bv1 {})'.format(width), ['bvnot', var]]
+                    new_element = ['bvadd', '(_ bv1 {})'.format(g_bitvector_width), ['bvnot', var]]
                 else:
                     new_element = [rep_operand(element[0])]
                     new_element += element[1:]
             else:
                 new_element = element
 
-            for exp in to_bv_sexpr_misc(new_element, width):
+            for exp in to_bv_sexpr_misc(new_element):
                 res.append(exp)
         else:
             if isinstance(element, int):
-                res.append("(_ bv{} {})".format(element, width))
+                res.append("(_ bv{} {})".format(element, g_bitvector_width))
             else:
                 res.append(str(element))
     res.append(")")
     return res
 
 
-def ira2bv(tt, width):
-    return " ".join(to_bv_sexpr_misc(parse(tt), width))
+def ira2bv(tt: str) -> str:
+    return " ".join(to_bv_sexpr_misc(parse(tt)))
 
 
-def sygus2chcbv(tt, width, signed=True):
+def sygus2chcbv(tt):
     """
     FIXME: how to convert constants...
     """
@@ -129,7 +138,7 @@ def sygus2chcbv(tt, width, signed=True):
     # (declare-fun inv ((_ BitVec 8)) Bool)
     bv_inv_sig = "(declare-fun inv ("
     for _ in range(len(init_vars)):
-        bv_inv_sig += "(_ BitVec {}) ".format(width)
+        bv_inv_sig += "(_ BitVec {}) ".format(g_bitvector_width)
     bv_inv_sig += ") Bool)\n"
 
     bv_fml_str = "(set-logic HORN)\n"
@@ -139,14 +148,14 @@ def sygus2chcbv(tt, width, signed=True):
     bv_init_vars_sig = []
     bv_init_vars = []
     for var in init_vars:
-        bv_init_vars_sig.append("({} {})".format(str(var), z3.BitVec(str(var), width).sort().sexpr()))
+        bv_init_vars_sig.append("({} {})".format(str(var), z3.BitVec(str(var), g_bitvector_width).sort().sexpr()))
         bv_init_vars.append(str(var))
 
     # print(init)
 
     bv_init_cnt = "(assert (forall ({}) \n " \
                   "      (=> {} (inv {}))))\n".format(" ".join(bv_init_vars_sig),
-                                                      ira2bv(init.sexpr(), width),
+                                                      ira2bv(init.sexpr()),
                                                       " ".join(bv_init_vars))
     # print(bv_init_cnt)
     bv_fml_str += bv_init_cnt
@@ -157,13 +166,13 @@ def sygus2chcbv(tt, width, signed=True):
     bv_trans_vars = [str(var) for var in trans_vars]
 
     for var in all_vars:
-        bv_all_vars_sig.append("({} {})".format(str(var), z3.BitVec(str(var), width).sort().sexpr()))
+        bv_all_vars_sig.append("({} {})".format(str(var), z3.BitVec(str(var), g_bitvector_width).sort().sexpr()))
         bv_all_vars.append(str(var))
 
     bv_trans_cnt = "(assert (forall ({}) \n " \
                    "      (=> (and (inv {}) {}) (inv {}))))\n".format(" ".join(bv_all_vars_sig),
                                                                       " ".join(bv_init_vars),
-                                                                      ira2bv(trans.sexpr(), width),
+                                                                      ira2bv(trans.sexpr()),
                                                                       " ".join(bv_trans_vars))
 
     # print(bv_trans_cnt)
@@ -173,7 +182,7 @@ def sygus2chcbv(tt, width, signed=True):
     bv_post_cnt = "(assert (forall ({}) \n " \
                   "      (=> (inv {}) {})))\n".format(" ".join(bv_init_vars_sig),
                                                       " ".join(bv_init_vars),
-                                                      ira2bv(post.sexpr(), width)
+                                                      ira2bv(post.sexpr())
                                                       )
 
     # print(bv_post_cnt)
@@ -207,7 +216,7 @@ def process_file(filename):
     print("Processing ", filename)
     with open(filename, "r") as f:
         content = f.read()
-        fml_str = sygus2chcbv(content, width=16)
+        fml_str = sygus2chcbv(content)
         # print(fml_str)
         # s = SolverFor("HORN")
         # s.add(And(parse_smt2_string(fml_str)))
@@ -224,7 +233,7 @@ def process_file(filename):
         f.close()
 
 
-def process_folder(path):
+def process_folder(path: str):
     flist = []  # path to smtlib2 files
     for root, dirs, files in os.walk(path):
         for fname in files:

@@ -3,6 +3,7 @@ import logging
 import time
 
 import z3
+
 from .sts import TransitionSystem
 
 """
@@ -15,23 +16,29 @@ logger = logging.getLogger(__name__)
 
 
 class PDRProver:
-    def __init__(self, sts: TransitionSystem):
-        self.sts = sts
+    def __init__(self, system: TransitionSystem):
+        self.sts = system
 
     def solve(self):
         """From transition system to CHC"""
         assert self.sts.initialized
 
-        # the following APIs will be used by eval
-        from z3 import Function, RealSort, IntSort, BoolSort, BitVecSort
-        s = z3.SolverFor("HORN")
         # construct the "inv" uninterpreted function
-        # FIXME: the following is ugly
-        inv_sig = "Function(\'inv\', "
-        for _ in range(len(self.sts.variables)): inv_sig += "RealSort(),"
-        inv_sig += "BoolSort())"
-        inv = eval(inv_sig)
+        s = z3.SolverFor("HORN")
+        inv_sig = "z3.Function(\'inv\', "
 
+        if self.sts.has_int:
+            for _ in range(len(self.sts.variables)): inv_sig += "z3.IntSort(), "
+        elif self.sts.has_real:
+            for _ in range(len(self.sts.variables)): inv_sig += "z3.RealSort(), "
+        elif self.sts.has_bv:
+            bv_size = self.sts.variables[0].sort().size()
+            for _ in range(len(self.sts.variables)): inv_sig += "z3.BitVecSort({}), ".format(str(bv_size))
+        else:
+            raise NotImplementedError
+
+        inv_sig += "z3.BoolSort())"
+        inv = eval(inv_sig)
         # Init
         s.add(z3.ForAll(self.sts.variables, z3.Implies(self.sts.init,
                                                        inv(self.sts.variables))))

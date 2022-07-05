@@ -21,6 +21,8 @@ class BitVecAffineTemplate(Template):
     """
 
     def __init__(self, sts: TransitionSystem):
+        self.template_type = TemplateType.BV_AFFINE_RELATION
+
         self.sts = sts
 
     def add_template_vars(self):

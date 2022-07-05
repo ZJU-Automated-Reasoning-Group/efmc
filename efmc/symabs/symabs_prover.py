@@ -109,7 +109,7 @@ class SymbolicAbstractionProver:
                 print("interval not entailed by???")
                 print(z3.And(inv, self.sts.trans))
                 print(onestep)
-                exit(0)
+                # exit(0)
 
             onestep = z3.substitute(onestep, self.var_map_rev)
             # print("onestep: ", onestep)

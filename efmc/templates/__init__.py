@@ -1,7 +1,7 @@
 # coding: utf-8
 from .abstract_template import TemplateType, Template
 from .interval import IntervalTemplate, DisjunctiveIntervalTemplate, IntervalTemplateV2
-from .bv_interval import BitVecIntervalTemplate
+from .bv_interval import BitVecIntervalTemplate, DisjunctiveBitVecIntervalTemplate
 from .polyhedron import PolyTemplate, DisjunctivePolyTemplate
 from .octagon import OctagonTemplate
 from .zone import ZoneTemplate
@@ -17,3 +17,4 @@ OctagonTemplate = OctagonTemplate
 ZoneTemplate = ZoneTemplate
 
 BitVecIntervalTemplate = BitVecIntervalTemplate
+DisjunctiveBitVecIntervalTemplate = DisjunctiveBitVecIntervalTemplate

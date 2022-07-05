@@ -1,7 +1,8 @@
 # coding: utf-8
+from typing import List, Set
+
 import z3
 from z3.z3util import get_vars
-from typing import List, Set
 
 
 def is_function_symbol(s: z3.ExprRef) -> bool:
@@ -35,9 +36,7 @@ def function_symbols(s: z3.ExprRef) -> Set[z3.FuncDeclRef]:
 
 
 def z3_skolemize(e: z3.ExprRef) -> z3.ExprRef:
-    """
-    Skolemize a formula (important for handling quantified formulas)
-    """
+    """Skolemize a formula (important for handling quantified formulas)"""
     g = z3.Goal()
     g.add(e)
     t = z3.Tactic('snf')
@@ -60,6 +59,7 @@ def create_function_body_str(funcname: str, varlist: List, body: z3.ExprRef) -> 
 
 
 def get_variables(exp: z3.ExprRef) -> [z3.ExprRef]:
+    """Get variables of exp"""
     return get_vars(exp)
 
 
@@ -77,6 +77,7 @@ def negate(f: z3.ExprRef) -> z3.ExprRef:
 
 
 def is_valid(phi: z3.ExprRef) -> bool:
+    """Decide validity of phi"""
     s = z3.Solver()
     s.add(z3.Not(phi))
     if s.check() == z3.sat:
@@ -86,6 +87,7 @@ def is_valid(phi: z3.ExprRef) -> bool:
 
 
 def is_entail(a: z3.ExprRef, b: z3.ExprRef) -> bool:
+    """Decide whether a entails b or not (i.e., b is a consequence of a)"""
     s = z3.Solver()
     s.add(z3.Not(z3.Implies(a, b)))
     if s.check() == z3.sat:
@@ -95,18 +97,21 @@ def is_entail(a: z3.ExprRef, b: z3.ExprRef) -> bool:
 
 
 def is_sat(phi: z3.ExprRef) -> bool:
+    """Decide satisfiability of phi"""
     s = z3.Solver()
     s.add(phi)
     return s.check() == z3.sat
 
 
 def is_equiv(a: z3.ExprRef, b: z3.ExprRef) -> bool:
+    """Decide equivalence between a and b"""
     s = z3.Solver()
     s.add(a != b)
     return s.check() == z3.unsat
 
 
-def z3_string_decoder(z3str: z3.StringVal):
+def z3_string_decoder(z3str: z3.StringVal) -> str:
+    """Convert z3.StringVal to python string"""
     length = z3.Int("length")
     tmp_string = z3.String("ts")
     solver = z3.Solver()

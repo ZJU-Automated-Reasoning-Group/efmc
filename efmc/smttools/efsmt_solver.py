@@ -35,7 +35,7 @@ def efsmt_solve_aux(y, phi: z3.ExprRef, maxloops=None):
     loops = 0
     while maxloops is None or loops <= maxloops:
         loops += 1
-        # print("esolver loigc: ", get_logic(z3.And(esolver.assertions())))
+        # print("esolver logic: ", get_logic(z3.And(esolver.assertions())))
         if esolver.check() == z3.unsat:
             return z3.unsat, False
         else:
@@ -45,7 +45,7 @@ def efsmt_solve_aux(y, phi: z3.ExprRef, maxloops=None):
             sub_phi = z3.simplify(z3.substitute(phi, mappings))
             fsolver.push()
             fsolver.add(z3.Not(sub_phi))
-            # print("fsolver loigc: ", get_logic(z3.And(fsolver.assertions())))
+            # print("fsolver logic: ", get_logic(z3.And(fsolver.assertions())))
             if fsolver.check() == z3.sat:
                 # the fmodel could be a counterexample of inductiveness (or init and post)
                 # so, it would be interesting to better understand and utilize fmodel, e.g., by analyzing sub_phi?

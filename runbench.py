@@ -72,7 +72,7 @@ def solve_file(file_path: str):
             out = solve_with_bin_solver(cmd, 5)
             print(out)
         if g_run_pdr:
-            cmd2 = ["python3", cur_dir + "/prover.py", "--prover", "pdr", "--format", "chc", "--file"]
+            cmd2 = ["python3", cur_dir + "/prover.py", "--prover", "pdr", "--format", "chc", "--file", file_path]
             # print(cmd)
             out2 = solve_with_bin_solver(cmd2, 5)
             print(out2)
@@ -89,9 +89,12 @@ def solve_dir(path: str):
 
 
 if __name__ == "__main__":
-    g_input_type = "sygus"
+    g_input_type = "chc"
     if g_input_type == "sygus":
         current_dir = os.path.dirname(os.path.realpath(__file__))
         solve_dir(current_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
     elif g_input_type == "chc":
         solve_dir("/Users/prism/Work/eldarica-bin/tests/sygus/")
+    else:
+        print("Input type not supported!")
+        exit(0)
