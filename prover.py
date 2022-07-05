@@ -23,6 +23,13 @@ Automated program verification for various transition systems specified in diffe
 
 
 def signal_handler(sig, frame):
+    """
+    The signal_handler function handles signals sent to the process.
+
+    :param sig: Specify the signal that was caught
+    :param frame: Get the stack frame of the signal
+    :return: The signal number and the frame object
+    """
     print("handling signals")
     parent = psutil.Process(os.getpid())
     for child in parent.children(recursive=True):
@@ -108,13 +115,13 @@ def solve_chc_file(file_name: str, prover="efsmt"):
         logger.debug("Finish parsing")
         sts = TransitionSystem()
         sts.from_z3_cnts([all_vars, init, trans, post])
-        sts.has_bv = True
         solve_with_ef(sts)
     elif prover == "pdr":
         s = z3.SolverFor("HORN")
         s.add(z3.And(z3.parse_smt2_file(file_name)))
         print("PDR starts working!")
-        print(s.check())
+        res = s.check()
+        print(res)
     else:
         print("Not supported engine: {}".format(prover))
         exit(0)
@@ -158,10 +165,11 @@ if __name__ == "__main__":
 
 
     # solve_chc_file("../benchmarks/bv/simple.smt2", "efsmt")
-    # solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/fib_01.sl.smt2", "efsmt")
+    # solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/minor3.sl.smt2", "efsmt")
+    # solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/fib_04.sl.smt2", "pdr")
     # fib_04.sl needs disjunctive?
-    # solve_sygus_file('/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_30_x.sl', "pdr")
-    # exit(0)
+    solve_sygus_file('/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_04.sl', "pdr")
+    exit(0)
     parser = argparse.ArgumentParser()
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
     parser.add_argument('--prover', dest='prover', default='efsmt', type=str, help="The prover for using")

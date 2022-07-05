@@ -6,8 +6,6 @@ NOTE:
 """
 import logging
 import time
-# from typing import List
-from enum import Enum
 
 import z3
 
@@ -16,8 +14,10 @@ from .smttools.efsmt_solver import efsmt_solve_aux
 from .smttools.smtlib_solver import SMTLIBSolver
 from .sts import TransitionSystem
 from .templates import PolyTemplate, IntervalTemplate, ZoneTemplate, DisjunctivePolyTemplate, TemplateType, \
-    DisjunctiveIntervalTemplate, BitVecIntervalTemplate
+    DisjunctiveIntervalTemplate, BitVecIntervalTemplate, DisjunctiveBitVecIntervalTemplate
 from .utils import is_entail
+
+# from typing import List
 
 
 logger = logging.getLogger(__name__)
@@ -55,6 +55,8 @@ class EFProver:
             self.ct = DisjunctiveIntervalTemplate(self.sts)
         elif template_name == "bv_interval":
             self.ct = BitVecIntervalTemplate(self.sts)
+        elif template_name == "power_bv_interval":
+            self.ct = DisjunctiveBitVecIntervalTemplate(self.sts)
         else:
             self.ct = PolyTemplate(self.sts)
 
@@ -106,7 +108,8 @@ class EFProver:
                                                            self.sts.post)))
 
         # Add additional cnts to restrict the template variables
-        if self.ct.template_type != TemplateType.POLYHEDRON:
+        if self.ct.template_type == TemplateType.INTERVAL or self.ct.template_type == TemplateType.DISJUNCTIVE_INTERVAL or \
+            self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.OCTAGON:
             s.add(self.ct.get_additional_cnts_for_template_vars())
 
         return z3.And(s.assertions())
@@ -141,7 +144,7 @@ class EFProver:
         return z3.ForAll(self.sts.all_variables, qf_vc)
 
     def solve_with_cegar_efsmt(self) -> bool:
-        """This can be slow (perhaps not a good idea for QF_NRA) Maybe QF_LRA or QF_BV?"""
+        """This can be slow (perhaps not a good idea for NRA) Maybe good for LRA or BV?"""
         phi = self.generate_quantifier_free_vc()
         print("User-defined EFSMT starting!!!")
         start = time.time()
@@ -200,25 +203,33 @@ class EFProver:
                 print(s.reason_unknown())
             return False
 
-    def solve_with_bin(self) -> z3.CheckSatResult:
+    def solve_with_bin_solver(self) -> z3.CheckSatResult:
         """Use a third party SMT solvers (perhaps in parallel)"""
         solver = z3.Solver()
         solver.add(self.generate_vc())
         if self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.INTERVAL:
-            smt2sting = "(seg-logic UFLRA)\n"  #
+            smt2string = "(seg-logic UFLRA)\n"
+        elif self.ct.template_type == TemplateType.BV_INTERVAL:
+            smt2string = "(set-logic BV)\n"  # or UFBV
         else:
-            smt2sting = "(seg-logic UFNRA)\n"  #
-        smt2sting += "\n".join(solver.to_smt2().split("\n"))
+            smt2string = "(seg-logic UFNRA)\n"  #
+        smt2string += "\n".join(solver.to_smt2().split("\n"))
         # smt2sting += "\n".join(solver.to_smt2().split("\n")[:-2])  # for removing (check-sat)
         bin_cmd = f"/Users/prism/Work/cvc5/build/bin/cvc5 -q --produce-models"
         # bin_cmd = f"/Users/prism/Work/cvc5/build/bin/cvc5 -q --produce-models"
         bin_solver = SMTLIBSolver(bin_cmd)
-        res = bin_solver.check_sat_from_scratch(smt2sting)
+        start = time.time()
+        res = bin_solver.check_sat_from_scratch(smt2string)
         ret = z3.unknown
         if res == "sat":
             # print(bin_solver.get_expr_values(["p1", "p0", "p2"]))
+            print("External solver success time: ", time.time() - start)
             ret = z3.sat
         elif res == "unsat":
+            print("External solver fails time: ", time.time() - start)
             ret = z3.unsat
+        else:
+            print("Seems timeout or error in the external solver")
+            print(res)
         bin_solver.stop()
         return ret

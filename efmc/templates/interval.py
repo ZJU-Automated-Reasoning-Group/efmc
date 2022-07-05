@@ -144,89 +144,6 @@ class IntervalTemplate(Template):
             return cnts[0]
 
 
-class IntervalTemplateV2(Template):
-    """
-    Interval domain (it seems that this one does not work)
-    FIXME: The current IntervalTemplate introduces non-linear cnts, which are not elegant.
-      However, due to the problem of infinity (?), we cannot use the following kind of templates
-      a <= x <= b,  c <= y <= d (this seems to restrict the values of a, b, c, d)
-      The above template leads to incompleteness (?)
-      But, can we use a < x < b,  c < y < d (e.g., for integers?)
-    """
-
-    def __init__(self, sts: TransitionSystem):
-
-        self.template_type = TemplateType.INTERVAL
-
-        self.use_real = True
-
-        self.sts = sts
-        self.arity = len(self.sts.variables)
-
-        self.template_vars = []  # vector of vector
-        self.template_index = 0  # number of templates
-
-        self.add_template_vars()
-
-        # pre compute to reduce redundant calling
-        self.template_cnt_init_and_post = None
-        self.template_cnt_trans = None
-        self.add_template_cnts()
-
-    def add_template_vars(self):
-        """
-        Add several groups of template vars
-        Assume that self.sts.inv_vars are [x, y], we will add two templates
-            l_x < x < u_x
-            l_y < y < u_y
-        After this function, self.template_vars will be:
-        [[l_x, u_x], [l_y, u_y]]
-        """
-        for var in self.sts.variables:
-            if self.use_real:
-                tvars = [z3.Real("l_{}".format(str(var))), z3.Real("u_{}".format(str(var)))]
-            else:
-                tvars = [z3.Int("l_{}".format(str(var))), z3.Int("u_{}".format(str(var)))]
-            self.template_vars.append(tvars)
-            self.template_index += 1
-
-    def get_additional_cnts_for_template_vars(self):
-        """
-        This implementation does not need additional ones?
-        """
-        return z3.BoolVal(True)
-
-    def add_template_cnts(self):
-        """
-        Add cnts for init and post assertions (a trick)
-        """
-        cnts = []
-        cnts_prime = []
-        for i in range(self.arity):
-            var = self.sts.variables[i]
-            var_prime = self.sts.prime_variables[i]
-            cnts.append(z3.And(self.template_vars[i][0] < var, self.template_vars[i][1] > var))
-            cnts_prime.append(z3.And(self.template_vars[i][0] < var_prime, self.template_vars[i][1] > var_prime))
-
-        self.template_cnt_init_and_post = z3.And(cnts)
-        self.template_cnt_trans = z3.And(cnts_prime)
-
-    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
-        """
-        Build an invariant from a model (fixing the values of the template vars)
-        """
-        cnts = []
-        for i in range(self.arity):
-            if use_prime_variables:
-                var = self.sts.prime_variables[i]
-            else:
-                var = self.sts.variables[i]
-            tvar_l = self.template_vars[i][0]
-            tvar_u = self.template_vars[i][1]
-            cnts.append(z3.And(model[tvar_l] < var, model[tvar_u] > var))
-        return z3.And(cnts)
-
-
 class DisjunctiveIntervalTemplate(Template):
     """
     Disjunctive Interval domain
@@ -234,7 +151,7 @@ class DisjunctiveIntervalTemplate(Template):
 
     def __init__(self, sts: TransitionSystem):
 
-        self.template_type = TemplateType.INTERVAL
+        self.template_type = TemplateType.DISJUNCTIVE_INTERVAL
 
         self.use_real = True
 
@@ -282,7 +199,7 @@ class DisjunctiveIntervalTemplate(Template):
                 # the second means "no upper bound"?
                 cnts.append(z3.Or(i3 == -1, z3.And(i3 == 0, i2 == 0)))
             dis_cnts.append(z3.And(cnts))
-        return z3.And(dis_cnts)  # TODO: this should be And, but not Or (as they are the additional ones?
+        return z3.And(dis_cnts)  # TODO: this should be And, but not Or (as they are the additional ones)?
 
     def add_template_cnts(self):
         # FIXME: the following is from IntervalTemplate
@@ -335,6 +252,83 @@ class DisjunctiveIntervalTemplate(Template):
             else:
                 cnts_dis.append(cnts[0])
         return z3.Or(cnts_dis)
+
+
+class IntervalTemplateV2(Template):
+    """
+    Interval domain (it seems that this one does not work)
+    FIXME: The current IntervalTemplate introduces non-linear cnts, which are not elegant.
+      However, due to the problem of infinity (?), we cannot use the following kind of templates
+      a <= x <= b,  c <= y <= d (this seems to restrict the values of a, b, c, d)
+      The above template leads to incompleteness (?)
+      But, can we use a < x < b,  c < y < d (e.g., for integers?)
+    """
+
+    def __init__(self, sts: TransitionSystem):
+
+        self.template_type = TemplateType.INTERVAL
+
+        self.use_real = True
+
+        self.sts = sts
+        self.arity = len(self.sts.variables)
+
+        self.template_vars = []  # vector of vector
+        self.template_index = 0  # number of templates
+
+        self.add_template_vars()
+
+        # pre compute to reduce redundant calling
+        self.template_cnt_init_and_post = None
+        self.template_cnt_trans = None
+        self.add_template_cnts()
+
+    def add_template_vars(self):
+        """
+        Add several groups of template vars
+        Assume that self.sts.inv_vars are [x, y], we will add two templates
+            l_x < x < u_x
+            l_y < y < u_y
+        After this function, self.template_vars will be:
+        [[l_x, u_x], [l_y, u_y]]
+        """
+        for var in self.sts.variables:
+            if self.use_real:
+                tvars = [z3.Real("l_{}".format(str(var))), z3.Real("u_{}".format(str(var)))]
+            else:
+                tvars = [z3.Int("l_{}".format(str(var))), z3.Int("u_{}".format(str(var)))]
+            self.template_vars.append(tvars)
+            self.template_index += 1
+
+    def get_additional_cnts_for_template_vars(self):
+        """This implementation does not need additional ones?"""
+        return z3.BoolVal(True)
+
+    def add_template_cnts(self):
+        """Add cnts for init and post assertions (a trick)"""
+        cnts = []
+        cnts_prime = []
+        for i in range(self.arity):
+            var = self.sts.variables[i]
+            var_prime = self.sts.prime_variables[i]
+            cnts.append(z3.And(self.template_vars[i][0] < var, self.template_vars[i][1] > var))
+            cnts_prime.append(z3.And(self.template_vars[i][0] < var_prime, self.template_vars[i][1] > var_prime))
+
+        self.template_cnt_init_and_post = z3.And(cnts)
+        self.template_cnt_trans = z3.And(cnts_prime)
+
+    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
+        """Build an invariant from a model (fixing the values of the template vars)"""
+        cnts = []
+        for i in range(self.arity):
+            if use_prime_variables:
+                var = self.sts.prime_variables[i]
+            else:
+                var = self.sts.variables[i]
+            tvar_l = self.template_vars[i][0]
+            tvar_u = self.template_vars[i][1]
+            cnts.append(z3.And(model[tvar_l] < var, model[tvar_u] > var))
+        return z3.And(cnts)
 
 
 class DisjunctiveIntervalTemplateV2:
