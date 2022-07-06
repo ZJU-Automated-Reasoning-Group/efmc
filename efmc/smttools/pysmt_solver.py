@@ -6,8 +6,7 @@ from pysmt.logics import AUTO
 from pysmt.oracles import get_logic
 # from pysmt.smtlib.parser import SmtLibParser
 # from pysmt.exceptions import SolverReturnedUnknownResultError
-from pysmt.shortcuts import Bool, get_model, Not, Solver \
-    # , qelim, ForAll
+from pysmt.shortcuts import Bool, get_model, Not, Solver
 from pysmt.shortcuts import EqualsOrIff
 from pysmt.shortcuts import Portfolio
 from pysmt.shortcuts import Symbol, And
