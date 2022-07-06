@@ -24,7 +24,7 @@ class TestBitVecIntervalTemplate(TestCase):
         ef_prover = EFProver(sts)  # use template and exists-forall solving
         ef_prover.set_template("power_bv_interval")
         vc = ef_prover.generate_vc()
-        # print(vc)
+        print(vc)
         # ef_prover.solve()
         # print(sts.to_chc_str())
 

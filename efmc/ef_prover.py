@@ -9,9 +9,7 @@ import time
 
 import z3
 
-from .smttools.efsmt_solver import efsmt_solve_aux
-# from .smttools.pysmt_solver import PySMTSolver
-from .smttools.smtlib_solver import SMTLIBSolver
+from .smttools.efsmt_solver import EFSMTSolver
 from .sts import TransitionSystem
 from .templates import PolyTemplate, IntervalTemplate, ZoneTemplate, DisjunctivePolyTemplate, TemplateType, \
     DisjunctiveIntervalTemplate, BitVecIntervalTemplate, DisjunctiveBitVecIntervalTemplate
@@ -34,6 +32,7 @@ class EFProver:
         # ignoring the post condition
         # useful in "purely" invariant generation mode
         self.ignore_post_cond = False
+        self.logic = "ALL"
 
     def set_template(self, template_name: str):
         """Set self.ct (the template to use)"""
@@ -59,6 +58,33 @@ class EFProver:
             self.ct = DisjunctiveBitVecIntervalTemplate(self.sts)
         else:
             self.ct = PolyTemplate(self.sts)
+
+        self.setup_logic()
+
+    def setup_logic(self):
+        """Setup self.logic according to the template type and the sts
+        Another strategy is to use the get_logic API to analyze the constructed
+        verification condition (it relies on several Probes of z3).
+        """
+        if self.sts.has_bv:
+            self.logic = "BV"  # of UFBV?
+        elif self.sts.has_real:
+            template = self.ct.template_type
+            if template == TemplateType.ZONE or template == TemplateType.INTERVAL \
+                    or template == TemplateType.DISJUNCTIVE_INTERVAL:
+                # FIXME: currently, our encoding seems to be non-linear...
+                #   See the coe in efmc/templates/interval.val
+                self.logic = "UFLRA"  # or LRA?
+            else:
+                self.logic = "UFNRA"  # or UFNRA?
+        elif self.sts.has_int:
+            template = self.ct.template_type
+            if template == TemplateType.ZONE or template == TemplateType.INTERVAL:
+                self.logic = "LIA"  # or UFLIA?
+            else:
+                self.logic = "NIA"  # or UFNIA?
+        else:
+            raise NotImplementedError
 
     def check_invariant(self, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRef):
         """Check whether the generated invariant is correct"""
@@ -109,7 +135,7 @@ class EFProver:
 
         # Add additional cnts to restrict the template variables
         if self.ct.template_type == TemplateType.INTERVAL or self.ct.template_type == TemplateType.DISJUNCTIVE_INTERVAL or \
-            self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.OCTAGON:
+                self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.OCTAGON:
             s.add(self.ct.get_additional_cnts_for_template_vars())
 
         return z3.And(s.assertions())
@@ -146,15 +172,13 @@ class EFProver:
     def solve_with_cegar_efsmt(self) -> bool:
         """This can be slow (perhaps not a good idea for NRA) Maybe good for LRA or BV?"""
         phi = self.generate_quantifier_free_vc()
+        y = self.sts.all_variables
+        ef_sol = EFSMTSolver(self.logic)
         print("User-defined EFSMT starting!!!")
         start = time.time()
-        # print(self.sts.all_variables)
-        z3_res, model = efsmt_solve_aux(self.sts.all_variables, phi)
-        if z3_res == z3.sat:
+        check_res, model = ef_sol.solve_with_cegar(y, phi)
+        if check_res == z3.sat:
             print("User-defined EFSMT success time: ", time.time() - start)
-            # print("\nTemplate and the founded values: ")
-            # print(" ", self.ct.template_cnt_init_and_post)
-            # print("  model:", model)
             # FIXME: is this model OK?
             inv = z3.simplify(self.ct.build_invariant_expr(model))
             inv_in_prime_variables = z3.simplify(self.ct.build_invariant_expr(model, use_prime_variables=True))
@@ -167,14 +191,9 @@ class EFProver:
 
     def solve_with_z3(self) -> bool:
         """This is the main entrance for the verification"""
-        if self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.INTERVAL:
-            s = z3.SolverFor("UFLRA")  # FIXME: our encoding seems to be non-linear...
-        elif self.ct.template_type == TemplateType.BV_INTERVAL:
-            s = z3.SolverFor("UFBV")
-        else:
-            s = z3.SolverFor("UFNRA")
+        s = z3.SolverFor(self.logic)
         vc = self.generate_vc2()
-        # print("Logic of VC: ", get_logic(z3.AndThen(z3.Tactic("simplify"), z3.Tactic("ctx-simplify"))(vc).as_expr()))
+        # print("Logic of VC: ", get_logic(z3.AndThen(z3.Tactic("simplify"),z3.Tactic("ctx-simplify"))(vc).as_expr()))
         # vc = self.generate_vc()
         s.add(vc)  # sometimes can be much faster!
         print("EFSMT starting!!!")
@@ -185,11 +204,6 @@ class EFProver:
         if check_res == z3.sat:
             print("EFSMT success time: ", time.time() - start)
             m = s.model()
-            # print(m)
-            # for Debugging
-            # print("\nTemplate and the founded values: ")
-            # print(" ", self.ct.get_template_cnt_init_and_post())
-            # print("  model:", m)
             inv = self.ct.build_invariant_expr(m, use_prime_variables=False)
             inv_in_prime_variables = self.ct.build_invariant_expr(m, use_prime_variables=True)
             print("Invariant: ", inv)
@@ -198,38 +212,15 @@ class EFProver:
         else:
             print("EFSMT fail time: ", time.time() - start)
             print("Cannot verify using the template!")
-
+            print(check_res)
             if check_res == z3.unknown:
                 print(s.reason_unknown())
             return False
 
     def solve_with_bin_solver(self) -> z3.CheckSatResult:
         """Use a third party SMT solvers (perhaps in parallel)"""
-        solver = z3.Solver()
-        solver.add(self.generate_vc())
-        if self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.INTERVAL:
-            smt2string = "(seg-logic UFLRA)\n"
-        elif self.ct.template_type == TemplateType.BV_INTERVAL:
-            smt2string = "(set-logic BV)\n"  # or UFBV
-        else:
-            smt2string = "(seg-logic UFNRA)\n"  #
-        smt2string += "\n".join(solver.to_smt2().split("\n"))
-        # smt2sting += "\n".join(solver.to_smt2().split("\n")[:-2])  # for removing (check-sat)
-        bin_cmd = f"/Users/prism/Work/cvc5/build/bin/cvc5 -q --produce-models"
-        # bin_cmd = f"/Users/prism/Work/cvc5/build/bin/cvc5 -q --produce-models"
-        bin_solver = SMTLIBSolver(bin_cmd)
-        start = time.time()
-        res = bin_solver.check_sat_from_scratch(smt2string)
-        ret = z3.unknown
-        if res == "sat":
-            # print(bin_solver.get_expr_values(["p1", "p0", "p2"]))
-            print("External solver success time: ", time.time() - start)
-            ret = z3.sat
-        elif res == "unsat":
-            print("External solver fails time: ", time.time() - start)
-            ret = z3.unsat
-        else:
-            print("Seems timeout or error in the external solver")
-            print(res)
-        bin_solver.stop()
-        return ret
+        ef_sol = EFSMTSolver(self.logic)
+        print("External binary solver starting!!!")
+        y = self.sts.all_variables
+        phi = self.generate_quantifier_free_vc()
+        ef_sol.solve_with_bin_smt(y, phi)

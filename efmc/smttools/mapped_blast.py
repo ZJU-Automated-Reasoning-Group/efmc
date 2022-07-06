@@ -1,13 +1,13 @@
 # coding: utf-8
+"""
+Do bit-blasting and track the correlations of bit-vec and boolean information.
+   Currently, we aim to convert use the facility to convert an EFSMT(BV) instance to QBF
+"""
 import sys
 from typing import List, Dict, Tuple
 
 import z3
 from z3.z3util import get_vars
-
-
-# p cnf nvar nclauses
-# cr projected_var_ids
 
 
 def is_literal(exp: z3.ExprRef): return z3.is_const(exp) and exp.decl().kind() == z3.Z3_OP_UNINTERPRETED

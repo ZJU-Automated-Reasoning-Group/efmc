@@ -7,6 +7,8 @@ from subprocess import PIPE, Popen
 from typing import Optional, List
 import os
 
+from .smt_exceptions import SolverError
+
 """
 Partially modified from https://github.com/trailofbits/manticore
 TODO: allow the user to select different modes 
@@ -21,33 +23,6 @@ TODO: we need to consider three "incremental mode"
 3. Use assumption literal
 """
 logger = logging.getLogger(__name__)
-
-
-class SMTError(Exception):
-    """
-    Top level Exception object for custom exception hierarchy
-    """
-    pass
-
-
-class ExecutorError(SMTError):
-    pass
-
-
-class SmtlibError(SMTError):
-    pass
-
-
-class Z3NotFoundError(SmtlibError):
-    pass
-
-
-class SolverError(SmtlibError):
-    pass
-
-
-class SolverUnknown(SolverError):
-    pass
 
 
 class SmtlibProc:
