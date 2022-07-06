@@ -8,6 +8,11 @@ efsmt/.pytest_cache
 venv
 *__pycache__/
 
+# for binary solvers (download pre-built binaries, or download the code and build)
+deps/
+
+doc/
+
 # Directories, log, ..
 callgrind.out.*
 .z3-trace

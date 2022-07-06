@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 """
 Automated program verification for various transition systems specified in different formats
-
 """
 
 
@@ -57,13 +56,14 @@ def solve_with_ef(sts: TransitionSystem):
     # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
     ef_prover = EFProver(sts)  # use template and exists-forall solving
     if sts.has_bv:
-        # ef_prover.ignore_post_cond = True
+        # ef_prover.ignore_post_cond = True # an important flag
         ef_prover.set_template("bv_interval")
     else:
         ef_prover.set_template("poly")
         # ef_prover.set_template("power_interval")
         # ef_prover.set_template("interval")
     ef_prover.solve()
+    # ef_prover.solve_with_bin_solver()
 
 
 def solve_with_symabs(sts: TransitionSystem):
@@ -165,10 +165,10 @@ if __name__ == "__main__":
 
 
     # solve_chc_file("../benchmarks/bv/simple.smt2", "efsmt")
-    # solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/minor3.sl.smt2", "efsmt")
+    solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/minor3.sl.smt2", "efsmt")
     # solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/fib_04.sl.smt2", "pdr")
     # fib_04.sl needs disjunctive?
-    solve_sygus_file('/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_04.sl', "pdr")
+    # solve_sygus_file('/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl', "efsmt")
     exit(0)
     parser = argparse.ArgumentParser()
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")

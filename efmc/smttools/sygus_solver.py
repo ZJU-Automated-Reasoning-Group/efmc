@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-TODO (this could be very useful):
+TODO (this could be very useful, but we have not used it for know):
  1. Build SyGuS instances (PBE and other constraints)
  2. Call CVC5 to solve the SyGuS instances
  3. Parse function definition from SyGuS result
