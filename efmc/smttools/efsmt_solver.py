@@ -69,7 +69,21 @@ class EFSMTSolver:
 
     def solve_with_qbf(self, y: List[z3.ExprRef], phi: z3.ExprRef):
         """
-        Translate to QBF
+        Translate EFSMT(BV) to QBF (preserve the quantifiers)
+        :param y: variables to be universal quantified
+        :param phi: a quantifier-free formula
+        :return: a QBF formula?
+        """
+        assert self.logic == "BV" or self.logic == "UFBV"
+        bv2bool, id_table, header, clauses = translate_smt2formula_to_cnf(phi)
+        print(bv2bool)
+        print(clauses)
+
+    def solve_with_sat(self, y: List[z3.ExprRef], phi: z3.ExprRef):
+        """
+        Translate EFSMT(BV) to SAT and use an SAT solver to solve
+          1. First, EFSMT(BV) to QBF
+          2. Second, QBF to SAT (maybe use expansion-based QE?)
         :param y: variables to be universal quantified
         :param phi: a quantifier-free formula
         :return: a QBF formula?
