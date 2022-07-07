@@ -1,4 +1,6 @@
 """
+Houdini algorithm for invariant inference
+
 Modified from https://github.com/sosy-lab/java-smt/blob/d05b4c8eeb3424be20cc1d9553eaffae81898857/src/org/sosy_lab/java_smt/example/HoudiniApp.java
 """
 import z3
@@ -10,17 +12,17 @@ def get_selector_var(idx: int):
     return z3.Bool("SEL_{}".format(idx))
 
 
-def prime(input: z3.ExprRef):
+def prime(exp: z3.ExprRef):
     """
     traverse the formula and replace all symbols in the formula with their primed version
-    :param input:
+    :param exp:
     :return: a new formula
     """
-    all_vars = get_vars(input)
+    all_vars = get_vars(exp)
     rep_map = []
     for v in all_vars:
         rep_map.append((v, z3.Int("{}_p".format(str(v)))))
-    return z3.substitute(input, rep_map)
+    return z3.substitute(exp, rep_map)
 
 
 def houdini(lemmas: [z3.ExprRef], transition: z3.ExprRef):
