@@ -106,3 +106,39 @@ class TransitionSystem(object):
         sol = z3.Solver()
         sol.add(self.to_chc_constraints())
         return "(set-logic HORN)\n" + sol.to_smt2()
+
+
+class BooleanProgram:
+    """
+    A transition system with only Boolean variables
+    E.g., "Boolean program"
+    """
+
+    def __init__(self):
+        self.all_variables = []  # self.variables + self.prime_variables
+        self.variables = []  # x, y
+        self.prime_variables = []  # x!, y!
+        self.trans = None  # formula about the relation of x, y, x!, y!
+        self.init = None  # formula about x, y
+        self.post = None  # formula about x, y
+        self.initialized = False
+
+    def __repr__(self):
+        print(self.all_variables)
+        print(self.init)
+        print(self.trans)
+        print(self.post)
+        return " "
+
+    def from_z3_cnts(self, ts: List):
+        self.all_variables, self.init, self.trans, self.post = ts[0], ts[1], ts[2], ts[3]
+        # print(self.all_variables)
+        for var in self.all_variables:
+            # print(str(var))
+            # FIXME: using name is not a good and general idea
+            if str(var).endswith('!'):
+                self.prime_variables.append(var)
+            else:
+                self.variables.append(var)
+        # print(self.variables, self.prime_variables)
+        self.initialized = True

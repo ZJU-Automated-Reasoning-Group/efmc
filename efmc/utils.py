@@ -5,6 +5,20 @@ import z3
 from z3.z3util import get_vars
 
 
+def eval_predicates(m: z3.ModelRef, predicates: List[z3.BoolRef]):
+    """ Let m be a model of a formula phi, preds be a set of predicates
+    """
+    res = []
+    for p in predicates:
+        if z3.is_true(m.eval(p)):
+            res.append(p)
+        elif z3.is_false(m.eval(p)):
+            res.append(negate(p))
+        else:
+            pass
+    return res
+
+
 def is_function_symbol(s: z3.ExprRef) -> bool:
     """Decide"""
     if not z3.is_app(s):

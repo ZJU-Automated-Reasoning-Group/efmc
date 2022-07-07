@@ -1,8 +1,4 @@
 # coding: utf-8
-import logging
-
-import z3
-
 """
 Ported from https://github.com/pysmt/pysmt/blob/97c6eda689bbc7707602c2b3a3e1444f9d75166d/examples/model_checking.py
 
@@ -13,9 +9,12 @@ TODO:
    Different approaches for creating vars and exprs
    Incremental version
    Parallel version
-   Integrated into our main interface
+   Integrated into our main interface (kinduction_prover.py)
 
 """
+import logging
+
+import z3
 
 logger = logging.getLogger(__name__)
 
