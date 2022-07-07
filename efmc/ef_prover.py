@@ -1,24 +1,46 @@
 # coding: utf-8
 """
-Generate template-based invariants using EFSMT solving
+Constraint/template based invariant inference using EFSMT solving
 NOTE:
  - We assume there is only one invariant to be synthesized
+ - This file relies heavily on the templates in efmc.templates
 """
+
 import logging
 import time
+from enum import Enum
 
 import z3
 
 from .smttools.efsmt_solver import EFSMTSolver
 from .sts import TransitionSystem
-from .templates import PolyTemplate, IntervalTemplate, ZoneTemplate, DisjunctivePolyTemplate, TemplateType, \
-    DisjunctiveIntervalTemplate, BitVecIntervalTemplate, DisjunctiveBitVecIntervalTemplate
-from .utils import is_entail
-
-# from typing import List
-
+from .templates import *
+# PolyTemplate, IntervalTemplate, ZoneTemplate, OctagonTemplate, DisjunctivePolyTemplate, TemplateType, \
+#    DisjunctiveIntervalTemplate, BitVecIntervalTemplate, DisjunctiveBitVecIntervalTemplate
 
 logger = logging.getLogger(__name__)
+
+
+def is_entail(a: z3.ExprRef, b: z3.ExprRef) -> bool:
+    """Decide whether a entails b or not (i.e., b is a consequence of a)"""
+    s = z3.Solver()
+    s.add(z3.Not(z3.Implies(a, b)))
+    if s.check() == z3.sat:
+        return False
+    else:
+        return True
+
+
+class EFSMTEngine(Enum):
+    """
+    Engines for solving the EFSMT instances
+    """
+    Z3 = 0  # use z3
+    CVC5 = 1  # via the smtlib_solver interface
+    YICES2 = 2  # via the smtlib_solver interface
+    CEGAR = 3  # smt-based cegar-style algorithm (currently, we use z3' API)
+    QBF = 4  # reduce to QBF: only applicable to BV instances
+    SAT = 5  # reduce to SAT (QBF + QE?): only applicable to BV instances
 
 
 class EFProver:
@@ -27,12 +49,13 @@ class EFProver:
     """
 
     def __init__(self, sts: TransitionSystem):
-        self.sts = sts
+        self.sts = sts # the transition system
         self.ct = None  # template type
         # ignoring the post condition
         # useful in "purely" invariant generation mode
         self.ignore_post_cond = False
-        self.logic = "ALL"
+        self.logic = "ALL" # the logic
+        self.engine = EFSMTEngine.Z3
 
     def set_template(self, template_name: str):
         """Set self.ct (the template to use)"""
@@ -48,10 +71,16 @@ class EFProver:
                 self.ct = IntervalTemplate(self.sts)
             else:
                 self.ct = ZoneTemplate(self.sts)
-        elif template_name == "power_poly":
+        elif template_name == "octagon":
+            if len(self.sts.variables) < 2:
+                self.ct = IntervalTemplate(self.sts)
+            else:
+                self.ct = OctagonTemplate(self.sts)
+        elif template_name == "power_poly":  # bounded, disjunctive polyhedral
             self.ct = DisjunctivePolyTemplate(self.sts)
-        elif template_name == "power_interval":
+        elif template_name == "power_interval": # bounded, disjunctive interval
             self.ct = DisjunctiveIntervalTemplate(self.sts)
+        # the following domains are for bit-vector programs
         elif template_name == "bv_interval":
             self.ct = BitVecIntervalTemplate(self.sts)
         elif template_name == "power_bv_interval":
@@ -62,7 +91,7 @@ class EFProver:
         self.setup_logic()
 
     def setup_logic(self):
-        """Setup self.logic according to the template type and the sts
+        """Setup self.logic according to the types of the template and the transition system.
         Another strategy is to use the get_logic API to analyze the constructed
         verification condition (it relies on several Probes of z3).
         """
@@ -113,8 +142,16 @@ class EFProver:
             print("Invariant check success!")
 
     def solve(self) -> bool:
+        """
+        The interface for calling different engines
+        """
         # return self.solve_with_cegar_efsmt()  # FIXME: seems very slow
-        return self.solve_with_z3()
+        if self.engine == EFSMTEngine.Z3:
+            return self.solve_with_z3()
+        elif self.engine == EFSMTEngine.CEGAR:
+            return self.solve_with_cegar_efsmt()
+        else:
+            return self.solve_with_z3()
 
     def generate_vc(self) -> z3.ExprRef:
         """

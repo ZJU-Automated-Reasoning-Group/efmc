@@ -1,5 +1,5 @@
 """
-Converting SyGuS(Inv) benchmarks to CHC
+Converting SyGuS(Inv) benchmarks to CHC instances
 
     sygus2chc: preserves the variable types
 

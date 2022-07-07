@@ -72,44 +72,13 @@ def solve_with_symabs(sts: TransitionSystem):
     symabs_prover.solve()
 
 
-def check_invariant(sts: TransitionSystem, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRef):
-    """
-    For quick testing
-    :param sts: the transition system
-    :param inv: invariant
-    :param inv_in_prime_variables:
-    :return: none
-    """
-    correct = True
-    if not is_entail(sts.init, inv):
-        correct = False
-        print("Init wrong!")
-    if not is_entail(z3.And(sts.trans, inv), inv_in_prime_variables):
-        correct = False
-        print("Inductive wrong!")
-    if not is_entail(inv, sts.post):
-        correct = False
-        print("Post wrong!")
-    if not correct:
-        print("Invariant not success!")
-        print(sts)
-        print("Inv: ", inv)
-    else:
-        print("Invariant check success!")
-
-
-def validate_invariant(sts: TransitionSystem):
-    # for quick testing
-    x, n, px, pn = z3.Reals("x n x! n!")
-    inv = z3.Or(z3.And(1 <= x, 1 >= x, 1 <= n, 1 >= n),
-                z3.And(z3.Not(n <= 0), x == 0))
-    inv_in_prime = z3.Or(z3.And(1 <= px, 1 >= px, 1 <= pn, 1 >= pn),
-                         z3.And(z3.Not(pn <= 0), px == 0))
-    check_invariant(sts, inv, inv_in_prime)
-
-
 def solve_chc_file(file_name: str, prover="efsmt"):
-    # Currently, CHC is only used for bv
+    """
+    Solve a CHC file
+    :param file_name: the CHC file
+    :param prover: strategy
+    """
+    # Currently, CHC is only used for bv?
     if prover == "efsmt":
         all_vars, init, trans, post = parse_chc(file_name, to_real_type=False)
         logger.debug("Finish parsing")
@@ -128,9 +97,6 @@ def solve_chc_file(file_name: str, prover="efsmt"):
 
 
 def solve_sygus_file(filename: str, prover="all"):
-    """
-    Currently, we support the sygus frontend
-    """
     # FIXME: To use abstract domains and to preserve completeness,
     #   I cast integer variables to reals (this can be bad?) when parsing.
     #   A better idea is to transform the transition system after the parsing
@@ -147,8 +113,6 @@ def solve_sygus_file(filename: str, prover="all"):
         solve_with_qe(sts)
     elif prover == "symabs":
         solve_with_symabs(sts)
-    elif prover == "test":
-        validate_invariant(sts)
     else:
         solve_with_ef(sts)
         solve_with_chc(sts)
