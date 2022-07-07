@@ -1,3 +1,9 @@
+"""
+Verifying Boolean programs using IC3
+
+ TODO: This file is taken from the examples of Z3' codebase.
+  We should modify it for accepting Boolean transition systems (BooleanProgram in efmc/sts.py)
+"""
 import heapq
 import sys
 

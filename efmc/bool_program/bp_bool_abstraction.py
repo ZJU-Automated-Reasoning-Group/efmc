@@ -1,5 +1,8 @@
 """
 Verifying Boolean Programs using "Boolean abstraction"
+
+ Given a set of Boolean variables P and a transition system S,
+ it finds the strongest inductive invariant expressible as the Boolean combination of P.
 """
 from typing import List
 
@@ -9,8 +12,6 @@ from ..sts import BooleanProgram
 from ..utils import negate, is_valid, ctx_simplify, eval_predicates
 
 
-############################
-# predicate abstraction
 def strongest_consequence(fml: z3.ExprRef, predicates: List[z3.ExprRef], k=None):
     """
     Compute the strongest necessary condition of fml that is the Boolean combination of preds

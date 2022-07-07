@@ -1,6 +1,8 @@
 # coding: utf-8
+"""
+Augmenting Z3 using PySMT, e.g., interpolant generation
+"""
 import logging
-
 import z3
 from pysmt.logics import AUTO
 from pysmt.oracles import get_logic
@@ -13,9 +15,6 @@ from pysmt.shortcuts import Symbol, And
 from pysmt.shortcuts import binary_interpolant, sequence_interpolant
 from pysmt.typing import INT, REAL
 
-"""
-Augmenting Z3 using PySMT, e.g., interpolant generation
-"""
 
 logger = logging.getLogger(__name__)
 
