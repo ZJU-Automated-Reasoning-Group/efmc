@@ -1,10 +1,11 @@
 # coding: utf-8
-import random
-import z3
-
 """
 Randomly generate a formula (used for testing algorithms)
+ and a transition system?
 """
+
+import random
+import z3
 
 
 class FormulaGenerator:
