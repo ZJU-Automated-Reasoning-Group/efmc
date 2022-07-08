@@ -12,7 +12,7 @@ from efmc.pdr_prover import PDRProver
 from efmc.qe.qe_prover import QuantifierEliminationProver
 from efmc.sts import TransitionSystem
 from efmc.symabs.symabs_prover import SymbolicAbstractionProver
-from efmc.utils import is_entail
+# from efmc.utils import is_entail
 
 logger = logging.getLogger(__name__)
 
@@ -126,7 +126,6 @@ if __name__ == "__main__":
     signal.signal(signal.SIGQUIT, signal_handler)
     signal.signal(signal.SIGABRT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-
 
     # solve_chc_file("../benchmarks/bv/simple.smt2", "efsmt")
     solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/minor3.sl.smt2", "efsmt")

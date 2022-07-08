@@ -1,5 +1,5 @@
 # coding: utf-8
-import fcntl
+import fcntl  # seems that Windows does not have this lib.
 import logging
 import shlex
 import time
