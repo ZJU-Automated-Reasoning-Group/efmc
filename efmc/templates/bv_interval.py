@@ -86,7 +86,7 @@ class DisjunctiveBitVecIntervalTemplate(Template):
 
     def __init__(self, sts: TransitionSystem):
 
-        self.template_type = TemplateType.INTERVAL
+        self.template_type = TemplateType.BV_DISJUNCTIVE_INTERVAL
 
         # TODO: infer the signedness of variables? (or design a domain that is signedness-irrelevant
         self.signedness = Signedness.UNSIGNED

@@ -10,7 +10,14 @@ from typing import List
 import z3
 from z3.z3util import get_vars
 
-from .smtlib_solver import SMTLIBSolver
+from .smt_exceptions import SmtlibError
+
+g_has_smtib_support = True
+try:
+    from .smtlib_solver import SMTLIBSolver
+except Exception:
+    # e.g., windows does not have fcntl
+    g_has_smtib_support = False
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +100,9 @@ class EFSMTSolver:
         :param phi: the quantifier-free part of the VC
         :return: TBD
         """
+        if not g_has_smtib_support:
+            raise SmtlibError("smtlib not supported (e.g., windows)s")
+
         smt2string = "(set-logic {})\n".format(self.logic)
         sol = z3.Solver()
         sol.add(z3.ForAll(y, phi))
