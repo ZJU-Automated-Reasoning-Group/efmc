@@ -1,5 +1,5 @@
 # coding: utf-8
-from typing import List, Set
+from typing import List, Set, Tuple, Optional
 
 import z3
 from z3.z3util import get_vars
