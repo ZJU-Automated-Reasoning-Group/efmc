@@ -1,6 +1,9 @@
-# coding: utf-8
+"""Interval template over integer or real variables
+"""
 import logging
+
 import z3
+
 # from typing import List
 from .abstract_template import TemplateType, Template
 from ..sts import TransitionSystem
@@ -10,8 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class IntervalTemplate(Template):
-    """
-    Interval domain
+    """Interval domain
+    NOTE: the constraints may look a bit strange, as we borrow the implementation for
+     the interval one (which uses FOUR template variables for each program variable, but NOT TWO)
     """
 
     def __init__(self, sts: TransitionSystem):
@@ -34,8 +38,7 @@ class IntervalTemplate(Template):
         self.add_template_cnts()
 
     def add_template_vars(self):
-        """
-        Add several groups of template vars
+        """Add several groups of template vars
         Assume that self.sts.variables are [x, y], we will add four templates!!
             ix0 + x * ix1  >= 0
             ix2 + x * ix3  >= 0
@@ -59,8 +62,7 @@ class IntervalTemplate(Template):
         # print(self.template_vars)
 
     def get_additional_cnts_for_template_vars(self):
-        """
-        Add constraints for restricting the template variables.
+        """Add constraints for restricting the template variables.
         (For interval, zone, etc. over integer/real variables?)
 
         For example, consider the two variables x and y
@@ -82,8 +84,7 @@ class IntervalTemplate(Template):
         return big_and(cnts)
 
     def add_template_cnts(self):
-        """
-        Consider two variables x and y
+        """Consider two variables x and y
             ix0 + x * ix1  >= 0   for lower (ix1 must be 1 or 0)
             ix2 + x * ix3  >= 0   for upper (ix3 must be -1 or 0)
 

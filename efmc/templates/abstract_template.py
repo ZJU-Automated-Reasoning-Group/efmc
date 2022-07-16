@@ -31,8 +31,7 @@ class TemplateType(Enum):
 
 
 class Template(object):
-    """
-    Abstract interface for template-based verification
+    """Abstract interface for template-based verification
     """
 
     def add_template_vars(self):
