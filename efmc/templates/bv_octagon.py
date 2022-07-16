@@ -1,4 +1,5 @@
-# coding: utf-8
+"""Octagon template over bit-vector variables
+"""
 import z3
 from .abstract_template import Template, TemplateType
 from ..sts import TransitionSystem

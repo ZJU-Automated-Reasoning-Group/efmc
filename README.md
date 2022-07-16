@@ -1,5 +1,5 @@
 
-# A Toolkit for Inductive Invariant Generation
+# A Verification Toolkit
 
 
 ## 1. Current Features
@@ -12,13 +12,14 @@ Related work:
 
 Currently, we do not apply Farkas' lemma now, but use exists-forall SMT solving.
 
-### Abuductive Inference
+### Abductive Inference
 
 Related work:
 - Inductive Invariant Generation via Abductive Inference, OOPSLA 13
 
 ### Predicate Abstraction 
 Currently, we have a very basic version (not used now).
+Perhaps it could be useful for Boolean programs.
 
 ### Symbolic Abstraction
 Currently, we have a very basic version (only interval domain, no join and widening)

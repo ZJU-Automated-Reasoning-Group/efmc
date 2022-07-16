@@ -1,13 +1,10 @@
-# coding: utf-8
+"""Affine relation domain over bit-vectors
+"""
 import z3
 # from typing import List
 
 from .abstract_template import TemplateType, Template
 from ..sts import TransitionSystem
-
-"""
-Affine relation domain over bit-vectors
-"""
 
 
 class BitVecAffineTemplate(Template):

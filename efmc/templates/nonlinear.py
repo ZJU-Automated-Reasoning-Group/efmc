@@ -1,4 +1,5 @@
-# coding: utf-8
+"""Non-linear template over integer or real variables
+"""
 from typing import List
 import z3
 from .abstract_template import TemplateType, Template

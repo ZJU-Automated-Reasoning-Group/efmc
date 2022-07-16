@@ -1,5 +1,5 @@
-# coding: utf-8
-# from typing import List
+"""Zone domain over integer or real variables
+"""
 import logging
 import itertools
 import z3
@@ -7,16 +7,12 @@ from .abstract_template import TemplateType, Template
 from ..sts import TransitionSystem
 from ..utils import get_variables
 
-
 logger = logging.getLogger(__name__)
 
 
 class ZoneTemplate(Template):
-    """
-    Zone domain
-
-    FIXME: maybe has flaws (if the solution for interval works, maybe borrow that one)
-
+    """ NOTE: the constraints may look a bit strange, as we borrow the implementation for
+     the interval one (which uses FOUR template variables for each program variable, but NOT TWO)
     """
 
     def __init__(self, sts: TransitionSystem):
@@ -118,3 +114,19 @@ class ZoneTemplate(Template):
                 cnts.append(model[i2] + term * model[i3] >= 0)
 
         return z3.And(cnts)
+
+
+class DisjunctiveZoneTemplate(Template):
+
+    def __init__(self):
+        raise NotImplementedError
+
+    def add_template_vars(self):
+        raise NotImplementedError
+
+    def add_template_cnts(self):
+        raise NotImplementedError
+
+    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
+        raise NotImplementedError
+

@@ -1,5 +1,4 @@
-"""
-Facilities for bit-vector related staff
+"""Facilities for bit-vector related operations
 """
 from enum import Enum
 

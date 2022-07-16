@@ -1,5 +1,5 @@
-# coding: utf-8
-# from typing import List
+"""Octagon template over integer or real variables
+"""
 import logging
 import z3
 from .abstract_template import TemplateType, Template

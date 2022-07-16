@@ -1,4 +1,5 @@
-# coding: utf-8
+"""Interval template over bit-vector variables
+"""
 import z3
 
 from .abstract_template import TemplateType, Template
@@ -8,9 +9,6 @@ from ..utils import big_and
 
 
 class BitVecIntervalTemplate(Template):
-    """
-    Interval template over bit-vector variables
-    """
 
     def __init__(self, sts: TransitionSystem):
 

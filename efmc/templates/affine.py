@@ -1,3 +1,5 @@
+"""Affine domain over integer or real variables
+"""
 import logging
 import z3
 from .abstract_template import TemplateType, Template

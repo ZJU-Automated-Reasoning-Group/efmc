@@ -1,4 +1,5 @@
-# coding: utf-8
+"""Polyhedral template over integer or real variables
+"""
 # from typing import List
 import logging
 import z3
@@ -10,9 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class PolyTemplate(Template):
-    """
-    Polyhedral domain
-    """
+
 
     def __init__(self, sts: TransitionSystem):
 
