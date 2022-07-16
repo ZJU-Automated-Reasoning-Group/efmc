@@ -1,3 +1,16 @@
+""" Sampling (least) inductive invariant
+ TODO: this is an idea that combines the sprites of symbolic abstraction and constraint-based invariant generation.
+  Perhaps a simple strategy is to use some kind of linear search:
+  while true:
+    Initialize the constraints for the template variables as P
+    Try to generate an invariant I (e.g., using EFSMT solving to find solutions of P)
+    if the previous step fails (P is unsatisfiable):
+       break
+    else:
+       Update P by adding additional constraints to the template variables, which encodes "give me a more precise invariant"
+    Essentially, we may need to solve a special kind of OMT instance:
+    (1) The search space is characterized by a quantified formula; (2) the objective is about "most precise invariant"
+"""
 # coding: utf-8
 import time
 import logging
@@ -6,16 +19,11 @@ from .sts import TransitionSystem
 from .templates import TemplateType, BitVecIntervalTemplate
 from .utils import is_entail
 
-"""
-Sampling (least) inductive invariant via Symbolic Abstraction
-
-"""
-
 
 logger = logging.getLogger(__name__)
 
 
-class InvariantSampler(object):
+class BestInvariantSampler(object):
     # TODO: currently, we only use bv interval for PoC
 
     def __init__(self, sts: TransitionSystem):
@@ -23,7 +31,7 @@ class InvariantSampler(object):
         self.ct = None  # template
 
     def set_template(self, ttype: str):
-        assert ttype == "bv_interval"
+        assert "bv" in ttype
         self.ct = BitVecIntervalTemplate(self.sts)
 
     def check_invariant(self, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRef):
