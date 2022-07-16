@@ -4,6 +4,7 @@ import z3
 from .abstract_template import TemplateType, Template
 from .bv_utils import Signedness
 from ..sts import TransitionSystem
+from ..utils import big_and
 
 
 class BitVecIntervalTemplate(Template):
@@ -51,16 +52,18 @@ class BitVecIntervalTemplate(Template):
             var = self.sts.variables[i]
             var_prime = self.sts.prime_variables[i]
             if self.signedness == Signedness.UNSIGNED:
-                cnts.append(z3.And(z3.UGE(var, self.template_vars[i][0]), z3.ULE(var, self.template_vars[i][1])))
+                cnts.append(
+                    z3.And(z3.UGE(var, self.template_vars[i][0]), z3.ULE(var, self.template_vars[i][1])))
                 cnts_prime.append(
                     z3.And(z3.UGE(var_prime, self.template_vars[i][0]), z3.ULE(var_prime, self.template_vars[i][1])))
             else:
-                cnts.append(z3.And(var >= self.template_vars[i][0], var <= self.template_vars[i][1]))
+                cnts.append(
+                    z3.And(var >= self.template_vars[i][0], var <= self.template_vars[i][1]))
                 cnts_prime.append(
                     z3.And(var_prime >= self.template_vars[i][0], var_prime <= self.template_vars[i][1]))
 
-        self.template_cnt_init_and_post = z3.simplify(z3.And(cnts))
-        self.template_cnt_trans = z3.simplify(z3.And(cnts_prime))
+        self.template_cnt_init_and_post = z3.simplify(big_and(cnts))
+        self.template_cnt_trans = z3.simplify(big_and(cnts_prime))
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
         """ Build an invariant from a model (fixing the values of the template vars)"""
@@ -133,22 +136,24 @@ class DisjunctiveBitVecIntervalTemplate(Template):
             cnt_init_post = []  # For sts.variables
             cnt_trans = []  # For sts.prime_variables
             for i in range(self.arity):
-                var = self.sts.variables[i]  # x, y
-                prime_var = self.sts.prime_variables[i]  # x!, y!
+                var = self.sts.variables[i]  # e.g., x, y
+                prime_var = self.sts.prime_variables[i]  # e.g., x!, y!
                 template_vars_for_var = vars_for_dis[i]
                 if self.signedness == Signedness.UNSIGNED:
                     cnt_init_post.append(
-                        z3.And(z3.UGE(var, template_vars_for_var[0]), z3.ULE(var, template_vars_for_var[1])))
+                        z3.And(z3.UGE(var, template_vars_for_var[0]),
+                               z3.ULE(var, template_vars_for_var[1])))
                     cnt_trans.append(
                         z3.And(z3.UGE(prime_var, template_vars_for_var[0]),
                                z3.ULE(prime_var, template_vars_for_var[1])))
                 else:
-                    cnt_init_post.append(z3.And(var >= template_vars_for_var[0], var <= template_vars_for_var[1]))
+                    cnt_init_post.append(
+                        z3.And(var >= template_vars_for_var[0], var <= template_vars_for_var[1]))
                     cnt_trans.append(
                         z3.And(prime_var >= template_vars_for_var[0], prime_var <= template_vars_for_var[1]))
 
-            cnt_init_and_post_dis.append(z3.And(cnt_init_post))
-            cnt_trans_dis.append(z3.And(cnt_trans))
+            cnt_init_and_post_dis.append(big_and(cnt_init_post))
+            cnt_trans_dis.append(big_and(cnt_trans))
 
         self.template_cnt_init_and_post = z3.Or(cnt_init_and_post_dis)
         self.template_cnt_trans = z3.Or(cnt_trans_dis)
@@ -156,6 +161,21 @@ class DisjunctiveBitVecIntervalTemplate(Template):
         # print(self.template_cnt_trans)
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
+        # TODO: check for correctness
+        cnts_dis = []
+        for vars_for_dis in self.template_vars:
+            cnts = []
+            for i in range(self.arity):
+                if use_prime_variables:
+                    var = self.sts.prime_variables[i]
+                else:
+                    var = self.sts.variables[i]
+                template_vars_for_var = vars_for_dis[i]
+                lower, upper = template_vars_for_var[0], template_vars_for_var[1]
+                if self.signedness == Signedness.UNSIGNED:
+                    cnts.append(z3.And(z3.UGE(var, model[lower]), z3.ULE(var, model[upper])))
+                else:
+                    cnts.append(z3.And(var >= model[lower],  var <= model[upper]))
 
-        raise NotImplementedError
-        # FIXME: the following is from IntervalTemplate
+            cnts_dis.append(big_and(cnts))
+        return z3.Or(cnts_dis)
