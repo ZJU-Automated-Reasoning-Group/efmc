@@ -5,6 +5,19 @@ import z3
 from z3.z3util import get_vars
 
 
+def big_and(exp_list: List[z3.ExprRef]):
+    """make and"""
+    if len(exp_list) == 1:
+        return exp_list[0]
+    return z3.And(*exp_list)
+
+
+def big_or(ll: List[z3.ExprRef]):
+    if len(ll) == 1:
+        return ll[0]
+    return z3.Or(*ll)
+
+
 def eval_predicates(m: z3.ModelRef, predicates: List[z3.BoolRef]):
     """ Let m be a model of a formula phi, preds be a set of predicates
     """

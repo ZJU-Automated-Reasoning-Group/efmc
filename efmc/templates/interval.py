@@ -4,7 +4,7 @@ import z3
 # from typing import List
 from .abstract_template import TemplateType, Template
 from ..sts import TransitionSystem
-
+from ..utils import big_and
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +79,7 @@ class IntervalTemplate(Template):
             cnts.append(z3.Or(i1 == 1, z3.And(i1 == 0, i0 == 0)))
             # the second means "no upper bound"?
             cnts.append(z3.Or(i3 == -1, z3.And(i3 == 0, i2 == 0)))
-        return z3.And(cnts)
+        return big_and(cnts)
 
     def add_template_cnts(self):
         """
@@ -199,7 +199,7 @@ class DisjunctiveIntervalTemplate(Template):
                 # the second means "no upper bound"?
                 cnts.append(z3.Or(i3 == -1, z3.And(i3 == 0, i2 == 0)))
             dis_cnts.append(z3.And(cnts))
-        return z3.And(dis_cnts)  # TODO: this should be And, but not Or (as they are the additional ones)?
+        return big_and(dis_cnts)  # TODO: this should be And, but not Or (as they are the additional ones)?
 
     def add_template_cnts(self):
         # FIXME: the following is from IntervalTemplate
@@ -334,4 +334,4 @@ class IntervalTemplateV2(Template):
 class DisjunctiveIntervalTemplateV2:
 
     def __init__(self):
-        return
+        raise NotImplementedError
