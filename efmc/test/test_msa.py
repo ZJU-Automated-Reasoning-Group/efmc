@@ -1,10 +1,10 @@
 # coding: utf-8
 import z3
 
-from . import TestCase, main
-from .formula_generator import FormulaGenerator
-from ..abduction.mistral_z3 import MSASolver
-from ..utils import get_variables, is_sat
+from efmc.test import TestCase, main
+from efmc.test.formula_generator import FormulaGenerator
+from efmc.abduction.mistral_z3 import MSASolver
+from efmc.utils import get_variables, is_sat
 
 
 def find_minimal_model(fml):

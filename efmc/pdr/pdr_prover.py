@@ -4,7 +4,7 @@ import time
 
 import z3
 
-from .sts import TransitionSystem
+from ..sts import TransitionSystem
 
 """
 Property-Directed Reachability (or IC3)

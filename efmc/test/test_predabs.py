@@ -1,9 +1,9 @@
 # coding: utf-8
 import z3
 
-from . import TestCase, main
-from ..predabs import PredicateAbstractionProver
-from ..sts import TransitionSystem
+from efmc.test import TestCase, main
+from efmc.predabs import PredicateAbstractionProver
+from efmc.sts import TransitionSystem
 
 
 class TestPredicateAbstraction(TestCase):
