@@ -1,8 +1,8 @@
 # coding: utf-8
 import z3
 
-from . import TestCase, main
-from ..abduction.abduction import abduce
+from efmc.test import TestCase, main
+from efmc.abduction.abduction import abduce
 
 
 class TestAbduction(TestCase):

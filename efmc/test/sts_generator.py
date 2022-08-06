@@ -1,8 +1,8 @@
 """
 Randomly generating a transition system
 """
-import z3
-from .formula_generator import FormulaGenerator
+
+from efmc.test.formula_generator import FormulaGenerator
 
 
 class TransitionSystemGenerator:

@@ -127,12 +127,10 @@ if __name__ == "__main__":
     signal.signal(signal.SIGABRT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    # solve_chc_file("../benchmarks/bv/simple.smt2", "efsmt")
-    solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/minor3.sl.smt2", "efsmt")
-    # solve_chc_file("/Users/prism/Work/eldarica-bin/tests/sygus/fib_04.sl.smt2", "pdr")
+    # solve_chc_file("/Users/prism/Work/tools/eldarica-bin/tests/sygus/minor3.sl.smt2", "efsmt")
     # fib_04.sl needs disjunctive?
     # solve_sygus_file('/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl', "efsmt")
-    exit(0)
+    # exit(0)
     parser = argparse.ArgumentParser()
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
     parser.add_argument('--prover', dest='prover', default='efsmt', type=str, help="The prover for using")

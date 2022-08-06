@@ -1,5 +1,6 @@
 scripts/tmptest.py
 scripts/tmpbench.py
+tmp.py
 .DS_Store
 .pytest_cache
 efsmt/.pytest_cache

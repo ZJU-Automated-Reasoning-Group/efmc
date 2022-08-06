@@ -1,8 +1,8 @@
 # coding: utf-8
 import z3
 
-from . import TestCase, main
-from ..sts import TransitionSystem
+from efmc.test import TestCase, main
+from efmc.sts import TransitionSystem
 from efmc.symabs.symabs_prover import SymbolicAbstractionProver
 
 

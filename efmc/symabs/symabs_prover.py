@@ -4,7 +4,7 @@ import logging
 
 import z3
 
-from . import NumericalAbstraction
+from .omt_symabs.symbolic_abstraction import NumericalAbstraction
 from ..sts import TransitionSystem
 from ..utils import is_valid, is_entail, ctx_simplify
 

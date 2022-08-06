@@ -1,9 +1,9 @@
 # coding: utf-8
 import z3
 
-from . import TestCase, main
-from ..ef_prover import EFProver
-from ..sts import TransitionSystem
+from efmc.test import TestCase, main
+from efmc.ef_prover import EFProver
+from efmc.sts import TransitionSystem
 
 
 class TestEFSMT(TestCase):

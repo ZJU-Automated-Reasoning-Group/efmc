@@ -94,7 +94,7 @@ if __name__ == "__main__":
         current_dir = os.path.dirname(os.path.realpath(__file__))
         solve_dir(current_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
     elif g_input_type == "chc":
-        solve_dir("/Users/prism/Work/eldarica-bin/tests/sygus/")
+        solve_dir("/Users/prism/Work/tools/eldarica-bin/tests/sygus/")
     else:
         print("Input type not supported!")
         exit(0)
