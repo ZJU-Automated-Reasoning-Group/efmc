@@ -1,8 +1,8 @@
 # coding: utf-8
 import z3
 
-from .mistral_z3 import MSASolver
-from ..utils import is_sat, is_entail, get_variables
+from efmc.abduction.mistral_z3 import MSASolver
+from efmc.utils import is_sat, is_entail, get_variables
 
 """
 NOTE: we aim to implement Dillig's abduction-based invariant inference

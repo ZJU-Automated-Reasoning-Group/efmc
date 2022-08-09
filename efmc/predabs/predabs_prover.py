@@ -7,8 +7,8 @@ from typing import List
 
 import z3
 
-from ..sts import TransitionSystem
-from ..utils import negate, is_sat, is_valid, ctx_simplify
+from efmc.sts import TransitionSystem
+from efmc.utils import negate, is_sat, is_valid, ctx_simplify
 
 """
 This is an "old-school" version of the predicate abstraction domain.

@@ -1,5 +1,8 @@
-# coding: utf-8
-# import time
+""" Automated program verification for various transition systems specified in different formats
+
+This file is the default external interface for calling different engines inside the `efmc` dir
+"""
+
 import logging
 import os
 import signal
@@ -16,15 +19,9 @@ from efmc.symabs.symabs_prover import SymbolicAbstractionProver
 
 logger = logging.getLogger(__name__)
 
-"""
-Automated program verification for various transition systems specified in different formats
-"""
-
 
 def signal_handler(sig, frame):
-    """
-    The signal_handler function handles signals sent to the process.
-
+    """The signal_handler function handles signals sent to the process.
     :param sig: Specify the signal that was caught
     :param frame: Get the stack frame of the signal
     :return: The signal number and the frame object
@@ -49,8 +46,7 @@ def solve_with_chc(sts: TransitionSystem):
 
 
 def solve_with_ef(sts: TransitionSystem):
-    """
-    Use template-based invariant generation
+    """Use template-based invariant generation
     Currently, we solve the VC (exists-forall problems) via SMT
     """
     # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
@@ -73,8 +69,7 @@ def solve_with_symabs(sts: TransitionSystem):
 
 
 def solve_chc_file(file_name: str, prover="efsmt"):
-    """
-    Solve a CHC file
+    """Solve a CHC file
     :param file_name: the CHC file
     :param prover: strategy
     """

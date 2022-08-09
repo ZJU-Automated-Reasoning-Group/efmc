@@ -3,7 +3,7 @@
 import logging
 import z3
 # from typing import List
-from ..sts import TransitionSystem
+from efmc.sts import TransitionSystem
 
 """
 #  Checking  safety  properties  using  induction  and  a SAT-solver

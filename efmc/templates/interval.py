@@ -5,9 +5,9 @@ import logging
 import z3
 
 # from typing import List
-from .abstract_template import TemplateType, Template
-from ..sts import TransitionSystem
-from ..utils import big_and
+from efmc.templates.abstract_template import TemplateType, Template
+from efmc.sts import TransitionSystem
+from efmc.utils import big_and
 
 logger = logging.getLogger(__name__)
 

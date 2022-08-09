@@ -10,11 +10,11 @@ from typing import List
 import z3
 from z3.z3util import get_vars
 
-from .smt_exceptions import SmtlibError
+from efmc.smttools.smt_exceptions import SmtlibError
 
 g_has_smtib_support = True
 try:
-    from .smtlib_solver import SMTLIBSolver
+    from efmc.smttools.smtlib_solver import SMTLIBSolver
 except Exception:
     # e.g., windows does not have fcntl
     g_has_smtib_support = False

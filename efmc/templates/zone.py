@@ -3,9 +3,9 @@
 import logging
 import itertools
 import z3
-from .abstract_template import TemplateType, Template
-from ..sts import TransitionSystem
-from ..utils import get_variables
+from efmc.templates.abstract_template import TemplateType, Template
+from efmc.sts import TransitionSystem
+from efmc.utils import get_variables
 
 logger = logging.getLogger(__name__)
 

@@ -3,8 +3,8 @@
 import z3
 # from typing import List
 
-from .abstract_template import TemplateType, Template
-from ..sts import TransitionSystem
+from efmc.templates.abstract_template import TemplateType, Template
+from efmc.sts import TransitionSystem
 
 
 class BitVecAffineTemplate(Template):

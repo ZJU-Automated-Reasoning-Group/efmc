@@ -1,6 +1,6 @@
 # coding: utf-8
-from .frontends.mini_sygus_parser import SyGusInVParser
-from .frontends.chc_parser import CHCParser
+from efmc.frontends.mini_sygus_parser import SyGusInVParser
+from efmc.frontends.chc_parser import CHCParser
 
 """
 Wrappers for the frontends

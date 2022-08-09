@@ -3,7 +3,7 @@ import itertools
 import logging
 from typing import List
 import z3
-from .common import box_optimize, get_variables
+from efmc.symabs.omt_symabs.common import box_optimize, get_variables
 
 """
 Interval
