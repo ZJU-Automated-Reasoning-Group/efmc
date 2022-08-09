@@ -2,10 +2,10 @@
 """
 import z3
 
-from .abstract_template import TemplateType, Template
-from .bv_utils import Signedness
-from ..sts import TransitionSystem
-from ..utils import big_and
+from efmc.templates.abstract_template import TemplateType, Template
+from efmc.templates.bv_utils import Signedness
+from efmc.sts import TransitionSystem
+from efmc.utils import big_and
 
 
 class BitVecIntervalTemplate(Template):

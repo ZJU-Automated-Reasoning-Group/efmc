@@ -12,9 +12,9 @@ from enum import Enum
 
 import z3
 
-from .smttools.efsmt_solver import EFSMTSolver
-from .sts import TransitionSystem
-from .templates import *
+from efmc.smttools.efsmt_solver import EFSMTSolver
+from efmc.sts import TransitionSystem
+from efmc.templates import *
 # PolyTemplate, IntervalTemplate, ZoneTemplate, OctagonTemplate, DisjunctivePolyTemplate, TemplateType, \
 #    DisjunctiveIntervalTemplate, BitVecIntervalTemplate, DisjunctiveBitVecIntervalTemplate
 

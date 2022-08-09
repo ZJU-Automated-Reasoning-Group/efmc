@@ -1,4 +1,5 @@
-""" Sampling (least) inductive invariant
+""" Generating Best Inductive Invariant
+
  TODO: this is an idea that combines the sprites of symbolic abstraction and constraint-based invariant generation.
   Perhaps a simple strategy is to use some kind of linear search:
   while true:
@@ -10,20 +11,23 @@
        Update P by adding additional constraints to the template variables, which encodes "give me a more precise invariant"
     Essentially, we may need to solve a special kind of OMT instance:
     (1) The search space is characterized by a quantified formula; (2) the objective is about "most precise invariant"
+
+ TODO: under certain conditions, we can use the symbolic abstraction based approach for computing the best inductive invariants.
+   - i.e., symbolic abstraction + iteration (without using widening)
 """
 # coding: utf-8
 import time
 import logging
 import z3
-from .sts import TransitionSystem
-from .templates import TemplateType, BitVecIntervalTemplate
-from .utils import is_entail
+from efmc.sts import TransitionSystem
+from efmc.templates import TemplateType, BitVecIntervalTemplate
+from efmc.utils import is_entail
 
 
 logger = logging.getLogger(__name__)
 
 
-class BestInvariantSampler(object):
+class BestInvariantGenerator(object):
     # TODO: currently, we only use bv interval for PoC
 
     def __init__(self, sts: TransitionSystem):
@@ -79,7 +83,7 @@ class BestInvariantSampler(object):
 
         return z3.ForAll(self.sts.all_variables, qf_cond)
 
-    def get_one_invariant(self):
+    def get_initial_invariant(self):
         assert self.ct.template_type == TemplateType.BV_INTERVAL
         s = z3.SolverFor("UFBV")
         inv_cond = self.generate_invariant_condition()
@@ -108,6 +112,9 @@ class BestInvariantSampler(object):
                 print(s.reason_unknown())
             return False
 
-    def minimize_invairant(self):
+    def refine_invariant_condition(self):
+        raise NotImplementedError
 
-        return
+    def minimize_invairant(self):
+        inv = self.get_initial_invariant()
+        raise NotImplementedError

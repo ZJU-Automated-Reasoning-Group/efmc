@@ -5,7 +5,7 @@ from timeit import default_timer as symabs_timer
 
 import z3
 
-from .common import OMTEngine, OMTEngineType
+from efmc.symabs.omt_symabs.common import OMTEngine, OMTEngineType
 
 """
 NOTE: This is a simplified version of the imple. in the "symabs" dir.

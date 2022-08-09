@@ -3,8 +3,8 @@ import logging
 
 import z3
 
-from ..sts import TransitionSystem
-from .abduction import dillig_abduce
+from efmc.sts import TransitionSystem
+from efmc.abduction.abduction import dillig_abduce
 
 """
 Implementation of the following paper:

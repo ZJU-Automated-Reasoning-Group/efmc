@@ -7,7 +7,7 @@ from subprocess import PIPE, Popen
 from typing import Optional, List
 import os
 
-from .smt_exceptions import SolverError
+from efmc.smttools.smt_exceptions import SolverError
 
 """
 Partially modified from https://github.com/trailofbits/manticore

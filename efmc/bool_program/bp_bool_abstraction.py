@@ -8,8 +8,8 @@ from typing import List
 
 import z3
 
-from ..sts import BooleanProgram
-from ..utils import negate, is_valid, ctx_simplify, eval_predicates
+from efmc.sts import BooleanProgram
+from efmc.utils import negate, is_valid, ctx_simplify, eval_predicates
 
 
 def strongest_consequence(fml: z3.ExprRef, predicates: List[z3.ExprRef], k=None):

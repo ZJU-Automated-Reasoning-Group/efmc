@@ -1,8 +1,8 @@
 """Octagon template over bit-vector variables
 """
 import z3
-from .abstract_template import Template, TemplateType
-from ..sts import TransitionSystem
+from efmc.templates.abstract_template import Template, TemplateType
+from efmc.sts import TransitionSystem
 
 
 class BitVecOctagonTemplate(Template):

@@ -2,8 +2,8 @@
 import time
 import logging
 import z3
-from ..sts import TransitionSystem
-from ..utils import is_valid
+from efmc.sts import TransitionSystem
+from efmc.utils import is_valid
 
 """
 Use quantifier elimination to compute the strongest inductive invariant?

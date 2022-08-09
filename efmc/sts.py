@@ -5,7 +5,7 @@ from typing import List
 
 import z3
 
-from .utils import ctx_simplify
+from efmc.utils import ctx_simplify
 
 
 class TransitionSystem(object):
