@@ -2,9 +2,9 @@
 """
 import z3
 
+from efmc.sts import TransitionSystem
 from efmc.templates.abstract_template import TemplateType, Template
 from efmc.templates.bv_utils import Signedness
-from efmc.sts import TransitionSystem
 from efmc.utils import big_and
 
 
@@ -36,7 +36,6 @@ class BitVecIntervalTemplate(Template):
             tvars = [z3.BitVec("l_{}".format(str(var)), var.sort().size()),
                      z3.BitVec("u_{}".format(str(var)), var.sort().size())]
             self.template_vars.append(tvars)
-            self.template_index += 1
 
     def get_additional_cnts_for_template_vars(self):
         """ This implementation does not need additional ones"""
@@ -49,16 +48,15 @@ class BitVecIntervalTemplate(Template):
         for i in range(self.arity):
             var = self.sts.variables[i]
             var_prime = self.sts.prime_variables[i]
+            var_l = self.template_vars[i][0]  # lower bound
+            var_u = self.template_vars[i][1]  # upper bound
+
             if self.signedness == Signedness.UNSIGNED:
-                cnts.append(
-                    z3.And(z3.UGE(var, self.template_vars[i][0]), z3.ULE(var, self.template_vars[i][1])))
-                cnts_prime.append(
-                    z3.And(z3.UGE(var_prime, self.template_vars[i][0]), z3.ULE(var_prime, self.template_vars[i][1])))
+                cnts.append(z3.And(z3.UGE(var, var_l), z3.ULE(var, var_u)))
+                cnts_prime.append(z3.And(z3.UGE(var_prime, var_l), z3.ULE(var_prime, var_u)))
             else:
-                cnts.append(
-                    z3.And(var >= self.template_vars[i][0], var <= self.template_vars[i][1]))
-                cnts_prime.append(
-                    z3.And(var_prime >= self.template_vars[i][0], var_prime <= self.template_vars[i][1]))
+                cnts.append(z3.And(var >= var_l, var <= var_u))
+                cnts_prime.append(z3.And(var_prime >= var_l, var_prime <= var_u))
 
         self.template_cnt_init_and_post = z3.simplify(big_and(cnts))
         self.template_cnt_trans = z3.simplify(big_and(cnts_prime))
@@ -92,8 +90,6 @@ class DisjunctiveBitVecIntervalTemplate(Template):
         # TODO: infer the signedness of variables? (or design a domain that is signedness-irrelevant
         self.signedness = Signedness.UNSIGNED
 
-        self.use_real = True
-
         self.sts = sts
         self.arity = len(self.sts.variables)
 
@@ -114,7 +110,6 @@ class DisjunctiveBitVecIntervalTemplate(Template):
             vars_for_dis = []
             for j in range(self.arity):
                 var = self.sts.variables[j]
-                self.template_index += 1
                 tvars = [z3.BitVec("d{0}l{1}".format(i, str(var)), var.sort().size()),
                          z3.BitVec("d{0}u{1}".format(i, str(var)), var.sort().size())]
                 vars_for_dis.append(tvars)
@@ -173,7 +168,7 @@ class DisjunctiveBitVecIntervalTemplate(Template):
                 if self.signedness == Signedness.UNSIGNED:
                     cnts.append(z3.And(z3.UGE(var, model[lower]), z3.ULE(var, model[upper])))
                 else:
-                    cnts.append(z3.And(var >= model[lower],  var <= model[upper]))
+                    cnts.append(z3.And(var >= model[lower], var <= model[upper]))
 
             cnts_dis.append(big_and(cnts))
         return z3.Or(cnts_dis)
