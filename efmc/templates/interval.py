@@ -4,9 +4,9 @@ import logging
 
 import z3
 
+from efmc.sts import TransitionSystem
 # from typing import List
 from efmc.templates.abstract_template import TemplateType, Template
-from efmc.sts import TransitionSystem
 from efmc.utils import big_and
 
 logger = logging.getLogger(__name__)
@@ -14,8 +14,6 @@ logger = logging.getLogger(__name__)
 
 class IntervalTemplate(Template):
     """Interval domain
-    NOTE: the constraints may look a bit strange, as we borrow the implementation for
-     the interval one (which uses FOUR template variables for each program variable, but NOT TWO)
     """
 
     def __init__(self, sts: TransitionSystem):
@@ -62,7 +60,9 @@ class IntervalTemplate(Template):
         # print(self.template_vars)
 
     def get_additional_cnts_for_template_vars(self):
-        """Add constraints for restricting the template variables.
+        """FIXME: this encoding is not elegant (but IntervalTemplateV2 is not complete)
+            i.e., it will miss some states
+        Add constraints for restricting the template variables.
         (For interval, zone, etc. over integer/real variables?)
 
         For example, consider the two variables x and y
@@ -312,8 +312,11 @@ class IntervalTemplateV2(Template):
         for i in range(self.arity):
             var = self.sts.variables[i]
             var_prime = self.sts.prime_variables[i]
-            cnts.append(z3.And(self.template_vars[i][0] < var, self.template_vars[i][1] > var))
-            cnts_prime.append(z3.And(self.template_vars[i][0] < var_prime, self.template_vars[i][1] > var_prime))
+            var_l = self.template_vars[i][0]  # lower bound
+            var_u = self.template_vars[i][1]  # upper bound
+
+            cnts.append(z3.And(var_l < var, var_u > var))
+            cnts_prime.append(z3.And(var_l < var_prime, var_u > var_prime))
 
         self.template_cnt_init_and_post = z3.And(cnts)
         self.template_cnt_trans = z3.And(cnts_prime)

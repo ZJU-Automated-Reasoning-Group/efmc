@@ -15,14 +15,15 @@
  TODO: under certain conditions, we can use the symbolic abstraction based approach for computing the best inductive invariants.
    - i.e., symbolic abstraction + iteration (without using widening)
 """
+import logging
 # coding: utf-8
 import time
-import logging
+
 import z3
+
 from efmc.sts import TransitionSystem
 from efmc.templates import TemplateType, BitVecIntervalTemplate
 from efmc.utils import is_entail
-
 
 logger = logging.getLogger(__name__)
 

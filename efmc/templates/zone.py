@@ -1,10 +1,12 @@
 """Zone domain over integer or real variables
 """
-import logging
 import itertools
+import logging
+
 import z3
-from efmc.templates.abstract_template import TemplateType, Template
+
 from efmc.sts import TransitionSystem
+from efmc.templates.abstract_template import TemplateType, Template
 from efmc.utils import get_variables
 
 logger = logging.getLogger(__name__)
@@ -94,17 +96,15 @@ class ZoneTemplate(Template):
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
         """
-        TODO: the following is for interval
+        TODO: is the following correct?
         """
         cnts = []
-
         for i in range(len(self.zones)):
             if use_prime_variables:
                 term = self.prime_zones[i]
             else:
                 term = self.zones[i]
-
-            template_vars_for_term = self.template_vars[i]  # this does not work!
+            template_vars_for_term = self.template_vars[i]  # this does not work??
             i0, i1 = template_vars_for_term[0], template_vars_for_term[1]
             i2, i3 = template_vars_for_term[2], template_vars_for_term[3]
 
@@ -129,4 +129,3 @@ class DisjunctiveZoneTemplate(Template):
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
         raise NotImplementedError
-
