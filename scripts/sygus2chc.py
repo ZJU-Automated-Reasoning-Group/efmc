@@ -2,9 +2,12 @@
 Converting SyGuS(Inv) benchmarks to CHC instances
 
     sygus2chc: preserves the variable types
+      - E.g., from SyGuS(LIA) to CHC(LIA)
 
     sygus2chcbv: translate to bv semantics (not semantic-preserving!)
+      - E.g., from SyGuS(LIA) to CHC(BV)
 """
+
 import os
 
 # from ..efsmt.frontends.mini_sygus_parser import test_main
@@ -19,31 +22,66 @@ g_bitvector_signedness = "unsigned"
 
 def sygus2chc(tt: str) -> str:
     # ss = SyGusInVParser("\n".join(tt_arr), to_real=False)
+    from z3 import Function, IntSort, BoolSort
+    # chc_lira_str = sygus2chc(tt)
     ss = SyGusInVParser(tt, to_real=False)
     all_vars, init, trans, post = ss.get_transition_system()
-    init_vars = get_vars(init)
-    trans_vars = list(set(all_vars).difference(set(init_vars)))
-
-    s = z3.SolverFor("HORN")
-    inv_sig = "Function(\'inv\', "
-    for _ in range(len(init_vars)): inv_sig += "IntSort(),"
-    inv_sig += "BoolSort())"
-    inv = eval(inv_sig)
-
-    # print(z3.ForAll(init_vars, z3.Implies(init, inv(init_vars))).sexpr())
-
-    s.add(z3.ForAll(init_vars, z3.Implies(init,
-                                          inv(init_vars))))
-
-    s.add(z3.ForAll(all_vars, z3.Implies(z3.And(inv(init_vars), trans),
-                                         inv(trans_vars))))
-
-    s.add(z3.ForAll(init_vars, z3.Implies(inv(init_vars),
-                                          post)))
-    # print(input_to_list(tttt))
+    #  NOTE: I assume that variables in all_vars are "sorted".
+    init_vars = all_vars[0: int(len(all_vars) / 2)]
+    trans_vars = all_vars[int(len(all_vars) / 2):]
+    # print("all vars: ", all_vars)
+    # print("init vars: ", init_vars)
+    # init_vars = get_vars(init) # not good?
+    inv_sig = "(declare-fun inv ("
+    for _ in range(len(init_vars)):
+        inv_sig += "Int "
+    inv_sig += ") Bool)\n"
 
     fml_str = "(set-logic HORN)\n"
-    fml_str += "\n".join(s.to_smt2().split("\n")[2:])
+    fml_str += inv_sig
+
+    # init cnt
+    init_vars_sig = []
+    ira_init_vars = []
+    for var in init_vars:
+        init_vars_sig.append("({0} {1})".format(str(var), "Int"))
+        ira_init_vars.append(str(var))
+    print("init_vars: ", init_vars)
+    init_cnt = "(assert (forall ({}) \n " \
+               "      (=> {} (inv {}))))\n".format(" ".join(init_vars_sig),
+                                                   init.sexpr(),
+                                                   " ".join(ira_init_vars))
+    # print(bv_init_cnt)
+    fml_str += init_cnt
+
+    # trans cnt
+    all_vars_sig = []
+    trans_vars = [str(var) for var in trans_vars]
+    ira_all_vars = []
+    for var in all_vars:
+        all_vars_sig.append("({} {})".format(str(var), "Int"))
+        ira_all_vars.append(str(var))
+    # print("all vars sig: ", all_vars_sig)
+
+    bv_trans_cnt = "(assert (forall ({0}) \n " \
+                   "      (=> (and (inv {1}) {2}) (inv {3}))))\n".format(" ".join(all_vars_sig),
+                                                                         " ".join(ira_init_vars),
+                                                                         trans.sexpr(),
+                                                                         " ".join(trans_vars))
+
+    # print(bv_trans_cnt)
+    fml_str += bv_trans_cnt
+
+    # Post cnt
+    post_cnt = "(assert (forall ({}) \n " \
+                  "      (=> (inv {}) {})))\n".format(" ".join(init_vars_sig),
+                                                      " ".join(ira_init_vars),
+                                                      post.sexpr()
+                                                      )
+
+    # print(bv_post_cnt)
+    fml_str += post_cnt
+    fml_str += "(check-sat)\n"
     return fml_str
 
 
@@ -216,7 +254,8 @@ def process_file(filename):
     print("Processing ", filename)
     with open(filename, "r") as f:
         content = f.read()
-        fml_str = sygus2chcbv(content)
+        # fml_str = sygus2chcbv(content)
+        fml_str = sygus2chc(content)
         # print(fml_str)
         # s = SolverFor("HORN")
         # s.add(And(parse_smt2_string(fml_str)))
@@ -225,7 +264,7 @@ def process_file(filename):
         # print(s.check())
         # print("XXXXXXX")
         base = os.path.basename(filename)
-        new_file_name = "/Users/prism/Work/eldarica-bin/tests/sygus/" + base + ".smt2"
+        new_file_name = "/Users/rainoftime/Work/regression-tests/sygus/" + base + ".smt2"
         with open(new_file_name, "w") as new_f:
             new_f.write(fml_str)
             new_f.close()
@@ -249,4 +288,5 @@ if __name__ == '__main__':
     # print(ira2bv(tt))
     # test_main()
     # process_file("/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor3.sl")
-    process_folder("/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
+    process_file("/Users/rainoftime/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_09s.sl")
+    # process_folder("/Users/rainoftime/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
