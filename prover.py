@@ -124,8 +124,8 @@ if __name__ == "__main__":
 
     # solve_chc_file("/Users/prism/Work/tools/eldarica-bin/tests/sygus/minor3.sl.smt2", "efsmt")
     # fib_04.sl needs disjunctive?
-    # solve_sygus_file('/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl', "efsmt")
-    # exit(0)
+    solve_sygus_file('/Users/rainoftime/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl', "efsmt")
+    exit(0)
     parser = argparse.ArgumentParser()
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
     parser.add_argument('--prover', dest='prover', default='efsmt', type=str, help="The prover for using")
