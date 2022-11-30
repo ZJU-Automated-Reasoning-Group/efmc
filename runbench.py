@@ -56,7 +56,7 @@ def solve_with_bin_solver(cmd: List[str], timeout=5) -> str:
 
 def solve_file(file_path: str):
     cur_dir = os.path.dirname(os.path.realpath(__file__))
-    # cmd = ["/Users/prism/Work/cvc5/build/bin/cvc5", "-q"]
+    # cmd = [".../cvc5/build/bin/cvc5", "-q"]
     if g_input_type == "sygus":
         if g_run_efsmt:
             cmd = ["python3", cur_dir + "/prover.py", "--prover", "efsmt", "--file", file_path]
@@ -93,8 +93,8 @@ if __name__ == "__main__":
     if g_input_type == "sygus":
         current_dir = os.path.dirname(os.path.realpath(__file__))
         solve_dir(current_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
-    elif g_input_type == "chc":
-        solve_dir("/Users/prism/Work/tools/eldarica-bin/tests/sygus/")
+    # elif g_input_type == "chc":
+    #    solve_dir("....")
     else:
         print("Input type not supported!")
         exit(0)

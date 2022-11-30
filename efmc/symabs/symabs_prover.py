@@ -4,9 +4,9 @@ import logging
 
 import z3
 
-from .omt_symabs.symbolic_abstraction import NumericalAbstraction
-from ..sts import TransitionSystem
-from ..utils import is_valid, is_entail, ctx_simplify
+from efmc.symabs.omt_symabs.symbolic_abstraction import NumericalAbstraction
+from efmc.sts import TransitionSystem
+from efmc.utils import is_valid, is_entail, ctx_simplify
 
 """
 Using Symbolic Abstraction to find invariants

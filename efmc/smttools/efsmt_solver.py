@@ -108,7 +108,7 @@ class EFSMTSolver:
         sol.add(z3.ForAll(y, phi))
         smt2string += sol.to_smt2()
 
-        bin_cmd = f"/Users/prism/Work/cvc5/build/bin/cvc5 -q --produce-models"
+        bin_cmd = f"/.../cvc5 -q --produce-models"
         bin_solver = SMTLIBSolver(bin_cmd)
         start = time.time()
         res = bin_solver.check_sat_from_scratch(smt2string)

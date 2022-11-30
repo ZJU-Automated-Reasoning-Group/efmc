@@ -15,8 +15,6 @@ import z3
 from efmc.smttools.efsmt_solver import EFSMTSolver
 from efmc.sts import TransitionSystem
 from efmc.templates import *
-# PolyTemplate, IntervalTemplate, ZoneTemplate, OctagonTemplate, DisjunctivePolyTemplate, TemplateType, \
-#    DisjunctiveIntervalTemplate, BitVecIntervalTemplate, DisjunctiveBitVecIntervalTemplate
 
 logger = logging.getLogger(__name__)
 

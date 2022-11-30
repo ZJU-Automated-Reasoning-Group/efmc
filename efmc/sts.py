@@ -1,5 +1,6 @@
-# coding: utf-8
-# import time
+"""
+Transition system (Abstraction of programs)
+"""
 
 from typing import List
 

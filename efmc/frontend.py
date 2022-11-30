@@ -1,14 +1,13 @@
-# coding: utf-8
-from efmc.frontends.mini_sygus_parser import SyGusInVParser
-from efmc.frontends.chc_parser import CHCParser
-
 """
 Wrappers for the frontends
-- CHC
+- Constraint Horn Clause (CHC)
 - SyGuS invariant track
-- VMT (verification modulo theory) 
-- Btor2
+- VMT: TBD
+- Btor2: TBD
 """
+
+from efmc.frontends.mini_sygus_parser import SyGusInVParser
+from efmc.frontends.chc_parser import CHCParser
 
 
 def parse_chc(filename: str, to_real_type: bool):
