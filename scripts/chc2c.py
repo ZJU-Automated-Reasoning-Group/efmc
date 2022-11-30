@@ -151,8 +151,9 @@ def compile_ira_to_c_sat(formula):
     for expr in c_visitor(formula):
         loop.append(" {};\n".format(expr))
 
-    print("sig: ", sig)
-    print("loop: ", loop)
+    # print("sig: ", sig)
+    # print("loop: ", loop)
+    return loop
 
 
 def compile_bv_to_c_sat(formula):

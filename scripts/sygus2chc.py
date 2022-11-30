@@ -250,7 +250,7 @@ def test_main():
     print(s)
 
 
-def process_file(filename):
+def process_file(filename: str, target_dir: str):
     print("Processing ", filename)
     with open(filename, "r") as f:
         content = f.read()
@@ -263,8 +263,8 @@ def process_file(filename):
         # print(s.to_smt2())
         # print(s.check())
         # print("XXXXXXX")
-        base = os.path.basename(filename)
-        new_file_name = "/Users/rainoftime/Work/regression-tests/sygus/" + base + ".smt2"
+        filename_base = os.path.basename(filename)
+        new_file_name = target_dir + filename_base + ".smt2"
         with open(new_file_name, "w") as new_f:
             new_f.write(fml_str)
             new_f.close()
@@ -272,7 +272,7 @@ def process_file(filename):
         f.close()
 
 
-def process_folder(path: str):
+def process_folder(path: str, target_dir: str):
     flist = []  # path to smtlib2 files
     for root, dirs, files in os.walk(path):
         for fname in files:
@@ -280,13 +280,15 @@ def process_folder(path: str):
             if tt == '.smt2' or tt == '.sl':
                 flist.append(os.path.join(root, fname))
     for filename in flist:
-        process_file(filename)
+        process_file(filename, target_dir)
 
 
 if __name__ == '__main__':
     # tt = "(and (<= x! (+ x y)) (< y! (+ x y)))"
     # print(ira2bv(tt))
     # test_main()
-    # process_file("/Users/prism/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor3.sl")
-    process_file("/Users/rainoftime/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_09s.sl")
-    # process_folder("/Users/rainoftime/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
+    target_dir = "~/Work"
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    # process_file(dir_path +  "/benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor3.sl", target_dir)
+    # process_file(dir_path + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_09s.sl", target_dir)
+    process_folder(dir_path + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB", target_dir)

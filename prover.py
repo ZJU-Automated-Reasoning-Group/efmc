@@ -122,9 +122,9 @@ if __name__ == "__main__":
     signal.signal(signal.SIGABRT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    # solve_chc_file("/Users/prism/Work/tools/eldarica-bin/tests/sygus/minor3.sl.smt2", "efsmt")
+    dir_path = os.path.dirname(os.path.realpath(__file__))
     # fib_04.sl needs disjunctive?
-    solve_sygus_file('/Users/rainoftime/Work/efmc/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl', "efsmt")
+    solve_sygus_file(dir_path + '/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl', "efsmt")
     exit(0)
     parser = argparse.ArgumentParser()
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
