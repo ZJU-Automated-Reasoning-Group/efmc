@@ -110,8 +110,8 @@ class DisjunctiveBitVecIntervalTemplate(Template):
             vars_for_dis = []
             for j in range(self.arity):
                 var = self.sts.variables[j]
-                tvars = [z3.BitVec("d{0}l{1}".format(i, str(var)), var.sort().size()),
-                         z3.BitVec("d{0}u{1}".format(i, str(var)), var.sort().size())]
+                tvars = [z3.BitVec("d{0}_{1}_l".format(i, str(var)), var.sort().size()),
+                         z3.BitVec("d{0}_{1}_u".format(i, str(var)), var.sort().size())]
                 vars_for_dis.append(tvars)
 
             self.template_vars.append(vars_for_dis)
@@ -124,14 +124,16 @@ class DisjunctiveBitVecIntervalTemplate(Template):
         # FIXME: the following is from IntervalTemplate
         cnt_init_and_post_dis = []
         cnt_trans_dis = []
-        for vars_for_dis in self.template_vars:
+
+        for i in range(self.num_of_disjuncts):
+            # Invariant: len(self.template_vars) = self.num_of_disjuncts
             # print("XXX", vars_for_dis)
             cnt_init_post = []  # For sts.variables
             cnt_trans = []  # For sts.prime_variables
-            for i in range(self.arity):
-                var = self.sts.variables[i]  # e.g., x, y
-                prime_var = self.sts.prime_variables[i]  # e.g., x!, y!
-                template_vars_for_var = vars_for_dis[i]
+            for j in range(self.arity):
+                var = self.sts.variables[j]  # e.g., x, y
+                prime_var = self.sts.prime_variables[j]  # e.g., x!, y!
+                template_vars_for_var = self.template_vars[i][j]
                 if self.signedness == Signedness.UNSIGNED:
                     cnt_init_post.append(
                         z3.And(z3.UGE(var, template_vars_for_var[0]),

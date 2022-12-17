@@ -24,3 +24,20 @@ class OctagonTemplate(Template):
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
         raise NotImplementedError
+
+
+class DisjunctiveOctagonTemplate(Template):
+    def __init__(self, system: TransitionSystem):
+        self.template_type = TemplateType.DISJUNCTIVE_OCTAGON
+
+        self.use_real = True
+        self.sts = system
+
+    def add_template_vars(self):
+        raise NotImplementedError
+
+    def add_template_cnts(self):
+        raise NotImplementedError
+
+    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
+        raise NotImplementedError
