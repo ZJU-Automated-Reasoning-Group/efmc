@@ -3,7 +3,7 @@ import z3
 
 from efmc.test import TestCase, main
 from efmc.sts import TransitionSystem
-from efmc.kinduction.kinduction_prover import KInductionProver
+from efmc.engines.kinduction.kinduction_prover import KInductionProver
 
 
 class TestKInduction(TestCase):

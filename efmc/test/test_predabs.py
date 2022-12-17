@@ -1,8 +1,9 @@
 # coding: utf-8
+import logging
 import z3
 
 from efmc.test import TestCase, main
-from efmc.predabs import PredicateAbstractionProver
+from efmc.engines.predabs import PredicateAbstractionProver
 from efmc.sts import TransitionSystem
 
 
@@ -43,4 +44,5 @@ class TestPredicateAbstraction(TestCase):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     main()

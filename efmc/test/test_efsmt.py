@@ -2,7 +2,7 @@
 import z3
 
 from efmc.test import TestCase, main
-from efmc.ef_prover import EFProver
+from efmc.engines.ef.ef_prover import EFProver
 from efmc.sts import TransitionSystem
 
 

@@ -3,7 +3,7 @@ import z3
 
 from efmc.test import TestCase, main
 from efmc.test.formula_generator import FormulaGenerator
-from efmc.abduction.mistral_z3 import MSASolver
+from efmc.engines.abduction.mistral_z3 import MSASolver
 from efmc.utils import get_variables, is_sat
 
 
