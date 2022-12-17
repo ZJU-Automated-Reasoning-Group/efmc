@@ -1,0 +1,87 @@
+"""Affine relation domain over bit-vectors
+"""
+import z3
+# from typing import List
+
+from efmc.engines.ef.templates.abstract_template import TemplateType, Template
+from efmc.sts import TransitionSystem
+
+
+class BitVecAffineTemplate(Template):
+    """
+    TODO: There are several different variants. Some references
+      - Matt elder et al., Abstract domains of affine relations, TOPLAS'14
+      - Olm and Seidl, Precise interprocedural analysis through linear algebra, POPL'04
+       - King and Sondergaard,
+         Inferring congruence equations using SAT, CAV'08
+         Automatic abstraction for congruences, VMCAI'10
+    """
+
+    def __init__(self, sts: TransitionSystem):
+        self.template_type = TemplateType.BV_AFFINE
+
+        self.sts = sts
+
+    def add_template_vars(self):
+        """
+        Add several groups of template vars
+        """
+        raise NotImplementedError
+
+    def get_additional_cnts_for_template_vars(self):
+        """
+        This implementation does not need additional ones?
+        """
+        raise NotImplementedError
+
+    def add_template_cnts(self):
+        """
+        Add cnts for init and post assertions (a trick)
+        """
+        raise NotImplementedError
+
+    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
+        """
+        Build an invariant from a model (fixing the values of the template vars)
+        """
+        raise NotImplementedError
+
+
+class DisjunctiveBitVecAffineTemplate(Template):
+    """
+    TODO: There are several different variants. Some references
+      - Matt elder et al., Abstract domains of affine relations, TOPLAS'14
+      - Olm and Seidl, Precise interprocedural analysis through linear algebra, POPL'04
+       - King and Sondergaard,
+         Inferring congruence equations using SAT, CAV'08
+         Automatic abstraction for congruences, VMCAI'10
+    """
+
+    def __init__(self, sts: TransitionSystem):
+        self.template_type = TemplateType.BV_DISJUNCTIVE_AFFINE
+
+        self.sts = sts
+
+    def add_template_vars(self):
+        """
+        Add several groups of template vars
+        """
+        raise NotImplementedError
+
+    def get_additional_cnts_for_template_vars(self):
+        """
+        This implementation does not need additional ones?
+        """
+        raise NotImplementedError
+
+    def add_template_cnts(self):
+        """
+        Add cnts for init and post assertions (a trick)
+        """
+        raise NotImplementedError
+
+    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
+        """
+        Build an invariant from a model (fixing the values of the template vars)
+        """
+        raise NotImplementedError

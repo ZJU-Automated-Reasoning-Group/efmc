@@ -3,7 +3,7 @@ Convert SyGuS(invariant track) instances to C programs
 """
 import os
 import z3
-from efmc.frontend import parse_sygus
+from efmc.frontends import parse_sygus
 from efmc.sts import TransitionSystem
 from chc2c import compile_ira_to_c_sat
 

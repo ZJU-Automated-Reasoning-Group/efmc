@@ -2,7 +2,7 @@
 import z3
 
 from efmc.test import TestCase, main
-from efmc.abduction.abduction import abduce
+from efmc.engines.abduction import abduce
 
 
 class TestAbduction(TestCase):

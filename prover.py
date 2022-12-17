@@ -9,12 +9,12 @@ import signal
 import sys
 import psutil
 import z3
-from efmc.ef_prover import EFProver
-from efmc.frontend import parse_sygus, parse_chc
-from efmc.pdr.pdr_prover import PDRProver
-from efmc.qe.qe_prover import QuantifierEliminationProver
+from efmc.engines.ef.ef_prover import EFProver
+from efmc.frontends import parse_sygus, parse_chc
+from efmc.engines.pdr.pdr_prover import PDRProver
+from efmc.engines.qe import QuantifierEliminationProver
 from efmc.sts import TransitionSystem
-from efmc.symabs.symabs_prover import SymbolicAbstractionProver
+from efmc.engines.symabs import SymbolicAbstractionProver
 # from efmc.utils import is_entail
 
 logger = logging.getLogger(__name__)
