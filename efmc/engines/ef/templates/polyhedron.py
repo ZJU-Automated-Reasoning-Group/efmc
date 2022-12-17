@@ -5,7 +5,7 @@ import logging
 import z3
 from efmc.engines.ef.templates.abstract_template import TemplateType, Template
 from efmc.sts import TransitionSystem
-
+from efmc.utils import big_and
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,9 @@ class PolyTemplate(Template):
         self.template_vars = []  # vector of vector
         self.template_index = 0  # number of templates
 
-        self.num_templates = 1  # this is for polyhedral
+        #  number of linear inequalities (NOTE: interval, zone, and octagon domains do not need this)
+        #  thus, the following field is polyhedron-specific
+        self.num_templates = 1
 
         self.add_template_vars()  # init self.template_vars
 
@@ -42,7 +44,7 @@ class PolyTemplate(Template):
         Initialize self.template_vars
 
         E.g., assume that self.sts.variables are [x, y]. We will add two templates
-            p1_0 + x*p1_1 + y*p2_2  >= 0
+            p1_0 + x*p1_1 + y*p1_2  >= 0
             p2_0 + x*p2_1 + y*p2_2  >= 0
 
         After this function, self.template_vars will be:
@@ -84,15 +86,8 @@ class PolyTemplate(Template):
             cnts_init_post.append(term_init_post >= 0)
             cnts_trans.append(term_trans >= 0)
 
-        if len(cnts_init_post) > 1:
-            self.template_cnt_init_and_post = z3.And(cnts_init_post)
-        else:
-            self.template_cnt_init_and_post = cnts_init_post[0]
-
-        if len(cnts_init_post) > 1:
-            self.template_cnt_trans = z3.And(cnts_trans)
-        else:
-            self.template_cnt_trans = cnts_trans[0]
+        self.template_cnt_init_and_post = big_and(cnts_init_post)
+        self.template_cnt_trans = big_and(cnts_trans)
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False) -> z3.ExprRef:
         """
@@ -111,10 +106,8 @@ class PolyTemplate(Template):
                 else:
                     term = term + self.sts.variables[j - 1] * model[tvar]
             cnts.append(term >= 0)
-        if len(cnts) > 1:
-            return z3.And(cnts)
-        else:
-            return cnts[0]
+
+        return big_and(cnts)
 
 
 class DisjunctivePolyTemplate(Template):

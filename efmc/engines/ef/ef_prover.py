@@ -12,7 +12,6 @@ from enum import Enum
 
 import z3
 
-from efmc.smttools.efsmt_solver import EFSMTSolver
 from efmc.sts import TransitionSystem
 from efmc.utils import is_entail
 from efmc.engines.ef.templates import *
@@ -57,7 +56,7 @@ class EFProver:
             # the following one uses a < x < b, c < y < d
             # need to confirm whether it is weaker...
             # self.ct = IntervalTemplateV2(self.sts)
-        elif template_name == "power_interval": # bounded, disjunctive interval
+        elif template_name == "power_interval":  # bounded, disjunctive interval
             self.ct = DisjunctiveIntervalTemplate(self.sts)
         elif template_name == "zone":
             if len(self.sts.variables) < 2:
@@ -90,6 +89,10 @@ class EFProver:
                 self.ct = BitVecOctagonTemplate(self.sts)
         elif template_name == "power_bv_octagon":
             self.ct = DisjunctiveBitVecOctagonTemplate(self.sts)
+        elif template_name == "bv_poly":
+            self.ct = BitVecPolyhedronTemplate(self.sts)
+        elif template_name == "power_bv_poly":
+            self.ct = DisjunctiveBitVecPolyhedronTemplate(self.sts)
         else:
             self.ct = PolyTemplate(self.sts)
 
@@ -147,10 +150,7 @@ class EFProver:
             print("Invariant check success!")
 
     def solve(self) -> bool:
-        """
-        The interface for calling different engines
-        """
-
+        """The interface for calling different engines"""
         print("Start solving: ")
         print("Used template: {}".format(str(self.ct.template_type)))
         print("Used logic: {}".format(str(self.logic)))
@@ -163,8 +163,7 @@ class EFProver:
             return self.solve_with_z3()
 
     def generate_vc(self) -> z3.ExprRef:
-        """
-        Generate VC
+        """ Generate VC (Version 1)
         TODO: another strategy is to generate the quantifier free body first,
           and then add the quantifier once (using self.sts.all_variables?)
         """
@@ -209,38 +208,23 @@ class EFProver:
         """
         qf_vc = self.generate_quantifier_free_vc()
         # Add additional cnts to restrict the template variables
-        if self.ct.template_type != TemplateType.POLYHEDRON:
-            qf_vc = z3.And(qf_vc, self.ct.get_additional_cnts_for_template_vars())
-
+        # if self.ct.template_type != TemplateType.POLYHEDRON:
+        #    qf_vc = z3.And(qf_vc, self.ct.get_additional_cnts_for_template_vars())
         # qf_vc = ctx_simplify(qf_vc) # can be slow
         logger.debug("Finish generating VC")
         return z3.ForAll(self.sts.all_variables, qf_vc)
-
-    def solve_with_cegar_efsmt(self) -> bool:
-        """This can be slow (perhaps not a good idea for NRA) Maybe good for LRA or BV?"""
-        phi = self.generate_quantifier_free_vc()
-        y = self.sts.all_variables
-        ef_sol = EFSMTSolver(self.logic)
-        print("User-defined EFSMT starting!!!")
-        start = time.time()
-        check_res, model = ef_sol.solve_with_cegar(y, phi)
-        if check_res == z3.sat:
-            print("User-defined EFSMT success time: ", time.time() - start)
-            # FIXME: is this model OK?
-            inv = z3.simplify(self.ct.build_invariant_expr(model))
-            inv_in_prime_variables = z3.simplify(self.ct.build_invariant_expr(model, use_prime_variables=True))
-            print("Invariant: ", inv)
-            self.check_invariant(inv, inv_in_prime_variables)
-            return True
-        else:
-            print("User-defined EFSMT fails time: ", time.time() - start)
-            return False
 
     def solve_with_z3(self) -> bool:
         """This is the main entrance for the verification"""
         s = z3.SolverFor(self.logic)
         vc = self.generate_vc2()
-        # print(vc)
+        # TODO: use the interface in efsmt/efsmt_solver.py
+        #     e.g., pass the following y and phi to EFSMTSolver
+        #       y = self.sts.all_variables
+        #       phi = self.generate_quantifier_free_vc()
+        #     One possible problem is: to build the invariant, we need a model, which
+        #     may not be very easy to be parsed if we use a bin solver
+        print(vc)
         s.add(vc)  # sometimes can be much faster!
         print("EFSMT starting!!!")
         start = time.time()
@@ -263,10 +247,3 @@ class EFProver:
                 print(s.reason_unknown())
             return False
 
-    def solve_with_bin_solver(self) -> z3.CheckSatResult:
-        """Use a third party SMT solvers (perhaps in parallel)"""
-        ef_sol = EFSMTSolver(self.logic)
-        print("External binary solver starting!!!")
-        y = self.sts.all_variables
-        phi = self.generate_quantifier_free_vc()
-        ef_sol.solve_with_bin_smt(y, phi)
