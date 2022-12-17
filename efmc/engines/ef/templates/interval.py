@@ -109,8 +109,8 @@ class IntervalTemplate(Template):
             cnts_trans.append(i0 + prime_var * i1 >= 0)
             cnts_trans.append(i2 + prime_var * i3 >= 0)
 
-        self.template_cnt_init_and_post = z3.And(cnts_init_post)
-        self.template_cnt_trans = z3.And(cnts_trans)
+        self.template_cnt_init_and_post = big_and(cnts_init_post)
+        self.template_cnt_trans = big_and(cnts_trans)
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
         """
@@ -139,10 +139,7 @@ class IntervalTemplate(Template):
             if model[i3].as_long() != 0:
                 cnts.append(model[i2] + var * model[i3] >= 0)
 
-        if len(cnts) > 1:
-            return z3.And(cnts)
-        else:
-            return cnts[0]
+        return big_and(cnts)
 
 
 class DisjunctiveIntervalTemplate(Template):
@@ -248,10 +245,7 @@ class DisjunctiveIntervalTemplate(Template):
                     cnts.append(model[i0] + var * model[i1] >= 0)
                 if model[i3].as_long() != 0:
                     cnts.append(model[i2] + var * model[i3] >= 0)
-            if len(cnts) > 1:
-                cnts_dis.append(z3.And(cnts))
-            else:
-                cnts_dis.append(cnts[0])
+            return big_and(cnts)
         return z3.Or(cnts_dis)
 
 

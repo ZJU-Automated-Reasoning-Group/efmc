@@ -8,6 +8,7 @@ from .zone import ZoneTemplate
 from .bv_interval import BitVecIntervalTemplate, DisjunctiveBitVecIntervalTemplate
 from .bv_zone import BitVecZoneTemplate, DisjunctiveBitVecZoneTemplate
 from .bv_octagon import BitVecOctagonTemplate, DisjunctiveBitVecOctagonTemplate
+from .bv_polyhedron import BitVecPolyhedronTemplate, DisjunctiveBitVecPolyhedronTemplate
 
 # Export
 TemplateType = TemplateType
@@ -25,5 +26,6 @@ BitVecZoneTemplate = BitVecZoneTemplate
 DisjunctiveBitVecZoneTemplate = DisjunctiveBitVecZoneTemplate
 BitVecOctagonTemplate = BitVecOctagonTemplate
 DisjunctiveBitVecOctagonTemplate = DisjunctiveBitVecOctagonTemplate
-
+BitVecPolyhedronTemplate = BitVecPolyhedronTemplate
+DisjunctiveBitVecPolyhedronTemplate = DisjunctiveBitVecPolyhedronTemplate
 
