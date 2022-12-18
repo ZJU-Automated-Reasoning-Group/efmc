@@ -1,7 +1,7 @@
 # coding: utf-8
 import z3
 
-from efmc.test import TestCase, main
+from efmc.tests import TestCase, main
 from efmc.engines.ef.ef_prover import EFProver
 from efmc.sts import TransitionSystem
 
