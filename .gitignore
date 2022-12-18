@@ -1,3 +1,5 @@
+bin_solvers/*
+!bin_solvers/download.py
 scripts/tmptest.py
 scripts/tmpbench.py
 tmp.py
