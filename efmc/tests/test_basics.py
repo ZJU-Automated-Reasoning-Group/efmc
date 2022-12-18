@@ -1,5 +1,5 @@
 # coding: utf-8
-from efmc.test import TestCase, main
+from efmc.tests import TestCase, main
 
 
 class TestBasics(TestCase):

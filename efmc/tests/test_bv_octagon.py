@@ -2,14 +2,14 @@
 import logging
 import z3
 
-from efmc.test import TestCase, main
+from efmc.tests import TestCase, main
 from efmc.engines.ef.ef_prover import EFProver
 from efmc.sts import TransitionSystem
 
 
-class TestBitVecZoneTemplate(TestCase):
+class TestBitVecOctagonTemplate(TestCase):
 
-    def test_bv_zone(self):
+    def test_bv_octagon(self):
         """
         Specify transition system using Z3's python API (a "naive" trick)
         """
@@ -25,7 +25,7 @@ class TestBitVecZoneTemplate(TestCase):
 
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
         ef_prover = EFProver(sts)  # use template and exists-forall solving
-        ef_prover.set_template("bv_zone")
+        ef_prover.set_template("bv_octagon")
         ef_prover.generate_vc()
         # print(vc)
         ef_prover.solve()

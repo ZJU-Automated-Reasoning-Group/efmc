@@ -2,7 +2,7 @@
 Randomly generating a transition system
 """
 
-from efmc.test.formula_generator import FormulaGenerator
+from efmc.tests.formula_generator import FormulaGenerator
 
 
 class TransitionSystemGenerator:
