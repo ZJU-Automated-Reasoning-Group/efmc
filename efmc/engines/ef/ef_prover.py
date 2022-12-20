@@ -89,6 +89,10 @@ class EFProver:
                 self.ct = BitVecOctagonTemplate(self.sts)
         elif template_name == "power_bv_octagon":
             self.ct = DisjunctiveBitVecOctagonTemplate(self.sts)
+        elif template_name == "bv_affine":
+            self.ct = BitVecAffineTemplate(self.sts)
+        elif template_name == "power_bv_affine":
+            self.ct = DisjunctiveBitVecAffineTemplate(self.sts)
         elif template_name == "bv_poly":
             self.ct = BitVecPolyhedronTemplate(self.sts)
         elif template_name == "power_bv_poly":
@@ -224,7 +228,7 @@ class EFProver:
         #       phi = self.generate_quantifier_free_vc()
         #     One possible problem is: to build the invariant, we need a model, which
         #     may not be very easy to be parsed if we use a bin solver
-        print(vc)
+        # print(vc)
         s.add(vc)  # sometimes can be much faster!
         print("EFSMT starting!!!")
         start = time.time()

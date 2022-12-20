@@ -19,6 +19,13 @@ from efmc.engines.symabs import SymbolicAbstractionProver
 
 logger = logging.getLogger(__name__)
 
+g_args = None  # the parse
+g_int_real_templates = ["interval", "power_interval", "zone", "octagon", "poly"]
+# "power_poly"
+g_bv_templates = ["bv_interval", "power_bv_interval", "bv_zone", "power_bv_zone", "bv_octagon", "power_bv_octagon",
+                  "bv_affine", "bv_poly"]
+# "power_bv_affine", "power_bv_poly"
+
 
 def signal_handler(sig, frame):
     """The signal_handler function handles signals sent to the process.
@@ -51,14 +58,25 @@ def solve_with_ef(sts: TransitionSystem):
     """
     # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
     ef_prover = EFProver(sts)  # use template and exists-forall solving
+    # ef_prover.ignore_post_cond = True # an important flag
     if sts.has_bv:
-        # ef_prover.ignore_post_cond = True # an important flag
-        # ef_prover.set_template("bv_interval")
-        ef_prover.set_template("bv_octagon")
+        if g_args.template in g_bv_templates:
+            # ef_prover.set_template("bv_interval")
+            ef_prover.set_template(g_args.template)
+        else:
+            print("Unsupported template: ", g_args.template)
+            print("You may try: ", g_bv_templates)
+            exit(0)
     else:
-        ef_prover.set_template("poly")
-        # ef_prover.set_template("power_interval")
-        # ef_prover.set_template("interval")
+        if g_args.template in g_int_real_templates:
+            ef_prover.set_template("poly")
+            # ef_prover.set_template("power_interval")
+            # ef_prover.set_template("interval")
+        else:
+            print("Unsupported template: ", g_args.template)
+            print("You may try: ", g_int_real_templates)
+            exit(0)
+
     ef_prover.solve()
     # ef_prover.solve_with_bin_solver()
 
@@ -132,15 +150,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
     parser.add_argument('--engine', dest='engine', default='efsmt', type=str, help="The prover for using: efsmt or pdr")
+    parser.add_argument('--template', dest='template', default='interval', type=str, help="The template for efsmt")
     parser.add_argument('--lang', dest='lang', default='sygus', type=str, help="The input format: sygus or chc")
     # parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
     # parser.add_argument('--threads', dest='threads', default=4, type=int, help="threads")
-    args = parser.parse_args()
+    g_args = parser.parse_args()
 
-    if args.lang == "sygus":
-        solve_sygus_file(args.file, args.engine)
-    elif args.lang == "chc":
-        solve_chc_file(args.file, args.engine)
+    if g_args.lang == "sygus":
+        solve_sygus_file(g_args.file, g_args.engine)
+    elif g_args.lang == "chc":
+        solve_chc_file(g_args.file, g_args.engine)
     else:
-        print("Not supported format {}".format(args.foramt))
+        print("Not supported format {}".format(g_args.lang))
         exit(0)
