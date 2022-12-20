@@ -1,5 +1,6 @@
 """
-A set of simple transition systems for unit testing
+A set of simple transition systems for testing verification algorithms
+(NOTE: only for integer variables)
 """
 
 import z3

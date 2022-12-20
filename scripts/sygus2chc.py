@@ -9,11 +9,7 @@ Converting SyGuS(Inv) benchmarks to CHC instances
 """
 
 import os
-
-# from ..efsmt.frontends.mini_sygus_parser import test_main
 import z3
-from z3.z3util import get_vars
-
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse
 
 g_bitvector_width = 8
