@@ -59,20 +59,20 @@ def solve_file(file_path: str):
     # cmd = [".../cvc5/build/bin/cvc5", "-q"]
     if g_input_type == "sygus":
         if g_run_efsmt:
-            cmd = ["python3", cur_dir + "/prover.py", "--prover", "efsmt", "--file", file_path]
+            cmd = ["python3", cur_dir + "/prover.py", "--engine", "efsmt", "--file", file_path]
             out = solve_with_bin_solver(cmd, 5)
             print(out)
         if g_run_pdr:
-            cmd2 = ["python3", cur_dir + "/prover.py", "--prover", "pdr", "--file", file_path]
+            cmd2 = ["python3", cur_dir + "/prover.py", "--engine", "pdr", "--file", file_path]
             out2 = solve_with_bin_solver(cmd2, 5)
             print(out2)
     elif g_input_type == "chc":
         if g_run_efsmt:
-            cmd = ["python3", cur_dir + "/prover.py", "--prover", "efsmt", "--format", "chc", "--file", file_path]
+            cmd = ["python3", cur_dir + "/prover.py", "--engine", "efsmt", "--lang", "chc", "--file", file_path]
             out = solve_with_bin_solver(cmd, 5)
             print(out)
         if g_run_pdr:
-            cmd2 = ["python3", cur_dir + "/prover.py", "--prover", "pdr", "--format", "chc", "--file", file_path]
+            cmd2 = ["python3", cur_dir + "/prover.py", "--engine", "pdr", "--lang", "chc", "--file", file_path]
             # print(cmd)
             out2 = solve_with_bin_solver(cmd2, 5)
             print(out2)

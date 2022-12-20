@@ -53,7 +53,8 @@ def solve_with_ef(sts: TransitionSystem):
     ef_prover = EFProver(sts)  # use template and exists-forall solving
     if sts.has_bv:
         # ef_prover.ignore_post_cond = True # an important flag
-        ef_prover.set_template("bv_interval")
+        # ef_prover.set_template("bv_interval")
+        ef_prover.set_template("bv_octagon")
     else:
         ef_prover.set_template("poly")
         # ef_prover.set_template("power_interval")
@@ -81,6 +82,8 @@ def solve_chc_file(file_name: str, prover="efsmt"):
         sts.from_z3_cnts([all_vars, init, trans, post])
         solve_with_ef(sts)
     elif prover == "pdr":
+        # TODO: convert to the TransitionSystem (and then use the PDR code at
+        #  efmc/engines/pdr/pdr_prover.py
         s = z3.SolverFor("HORN")
         s.add(z3.And(z3.parse_smt2_file(file_name)))
         print("PDR starts working!")
@@ -109,9 +112,9 @@ def solve_sygus_file(filename: str, prover="all"):
     elif prover == "symabs":
         solve_with_symabs(sts)
     else:
-        solve_with_ef(sts)
+        # solve_with_ef(sts)
         solve_with_chc(sts)
-        solve_with_symabs(sts)
+        # solve_with_symabs(sts)
 
 
 if __name__ == "__main__":
@@ -122,22 +125,22 @@ if __name__ == "__main__":
     signal.signal(signal.SIGABRT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
-    dir_path = os.path.dirname(os.path.realpath(__file__))
+    # dir_path = os.path.dirname(os.path.realpath(__file__))
     # fib_04.sl needs disjunctive?
-    solve_sygus_file(dir_path + '/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl', "efsmt")
-    exit(0)
+    # solve_sygus_file(dir_path + '/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl', "efsmt")
+    # exit(0)
     parser = argparse.ArgumentParser()
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
-    parser.add_argument('--prover', dest='prover', default='efsmt', type=str, help="The prover for using")
-    parser.add_argument('--format', dest='format', default='sygus', type=str, help="The input format")
+    parser.add_argument('--engine', dest='engine', default='efsmt', type=str, help="The prover for using: efsmt or pdr")
+    parser.add_argument('--lang', dest='lang', default='sygus', type=str, help="The input format: sygus or chc")
     # parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
     # parser.add_argument('--threads', dest='threads', default=4, type=int, help="threads")
     args = parser.parse_args()
 
-    if args.format == "sygus":
-        solve_sygus_file(args.file, args.prover)
-    elif args.format == "chc":
-        solve_chc_file(args.file, args.prover)
+    if args.lang == "sygus":
+        solve_sygus_file(args.file, args.engine)
+    elif args.lang == "chc":
+        solve_chc_file(args.file, args.engine)
     else:
         print("Not supported format {}".format(args.foramt))
         exit(0)
