@@ -22,6 +22,8 @@ class BitVecAffineTemplate(Template):
     def __init__(self, sts: TransitionSystem):
         self.template_type = TemplateType.BV_AFFINE
 
+        self.signedness = Signedness.SIGNED
+
         self.sts = sts
         self.arity = len(self.sts.variables)
 
@@ -129,6 +131,8 @@ class DisjunctiveBitVecAffineTemplate(Template):
 
     def __init__(self, sts: TransitionSystem):
         self.template_type = TemplateType.BV_DISJUNCTIVE_AFFINE
+
+        self.signedness = Signedness.SIGNED
 
         self.sts = sts
 

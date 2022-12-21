@@ -4,6 +4,10 @@
 
 ## 1. The Main Engines
 
+- Template-based (Constraint-based) Approach
+- Property-Directed Reachability (PDR) Approach
+- K-Induction
+
 ### Template-based (Constraint-based) Approach
 
 Related work:
@@ -25,6 +29,8 @@ python3 prover.py --engine efsmt --template bv_interval --lang chc --file benchm
 
 ### Property-Directed Reachability (PDR) Approach
 Currently, we use the one inside Z3 (named `Spacer`)
+
+### Simple K-Induction
 
 ## 2. Other Engines
 

@@ -14,7 +14,7 @@ class BitVecOctagonTemplate(Template):
         self.sts = sts
         self.template_type = TemplateType.BV_OCTAGON
         # TODO: infer the signedness of variables? (or design a domain that is signedness-irrelevant
-        self.signedness = Signedness.UNSIGNED
+        self.signedness = Signedness.SIGNED
         # self.obj_no_overflow = False  # for controlling the behavior of x - y, x + y
         # self.obj_no_underflow = False
 
@@ -156,7 +156,7 @@ class DisjunctiveBitVecOctagonTemplate(Template):
         self.template_type = TemplateType.BV_DISJUNCTIVE_OCTAGON
 
         # TODO: infer the signedness of variables? (or design a domain that is signedness-irrelevant
-        self.signedness = Signedness.UNSIGNED
+        self.signedness = Signedness.SIGNED
 
         self.sts = sts
         self.arity = len(self.sts.variables)
