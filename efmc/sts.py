@@ -32,6 +32,10 @@ class TransitionSystem(object):
         self.has_real = False
         self.has_array = False
 
+    def add_post(self, exp):
+        """Update/initialize set.post (to be verified)"""
+        self.post = exp
+
     def __repr__(self):
         print(self.all_variables)
         print(self.init)

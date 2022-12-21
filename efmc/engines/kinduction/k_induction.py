@@ -10,11 +10,12 @@ TODO:
    Incremental version
    Parallel version
    Integrated into our main interface (kinduction_prover.py)
-
 """
 import logging
 
 import z3
+
+from efmc.sts import TransitionSystem
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,7 @@ class SimpleTransitionSystem(object):
 
 class BMCInduction(object):
     """
-    This one is non incremental
+    This one is non-incremental
     """
 
     def __init__(self, system):

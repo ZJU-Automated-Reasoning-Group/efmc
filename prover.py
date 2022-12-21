@@ -9,17 +9,20 @@ import signal
 import sys
 import psutil
 import z3
-from efmc.engines.ef.ef_prover import EFProver
-from efmc.frontends import parse_sygus, parse_chc
-from efmc.engines.pdr.pdr_prover import PDRProver
-from efmc.engines.qe import QuantifierEliminationProver
 from efmc.sts import TransitionSystem
+from efmc.frontends import parse_sygus, parse_chc
+from efmc.engines.ef.ef_prover import EFProver
+from efmc.engines.pdr.pdr_prover import PDRProver
+from efmc.engines.kinduction.kinduction_prover import KInductionProver
+from efmc.engines.qe import QuantifierEliminationProver
 from efmc.engines.symabs import SymbolicAbstractionProver
 # from efmc.utils import is_entail
 
 logger = logging.getLogger(__name__)
 
-g_args = None  # the parse
+g_args = None  # the parsed arguments
+
+# the invariant templates
 g_int_real_templates = ["interval", "power_interval", "zone", "octagon", "poly"]
 # "power_poly"
 g_bv_templates = ["bv_interval", "power_bv_interval", "bv_zone", "power_bv_zone", "bv_octagon", "power_bv_octagon",
@@ -46,10 +49,16 @@ def solve_with_qe(sts: TransitionSystem):
     qe_prover.solve()
 
 
-def solve_with_chc(sts: TransitionSystem):
+def solve_with_pdr(sts: TransitionSystem):
     """Use Z3's IC3/PDR engine (behind the CHC constraint language)"""
     chc_prover = PDRProver(sts)
     chc_prover.solve()
+
+
+def solve_with_k_induction(sts: TransitionSystem):
+    """Use K-induction"""
+    kind_prover = KInductionProver(sts)
+    kind_prover.solve(20)
 
 
 def solve_with_ef(sts: TransitionSystem):
@@ -92,21 +101,25 @@ def solve_chc_file(file_name: str, prover="efsmt"):
     :param file_name: the CHC file
     :param prover: strategy
     """
+    all_vars, init, trans, post = parse_chc(file_name, to_real_type=False)
+    logger.debug("Finish parsing")
+    sts = TransitionSystem()
+    sts.from_z3_cnts([all_vars, init, trans, post])
+
     # Currently, CHC is only used for bv?
     if prover == "efsmt":
-        all_vars, init, trans, post = parse_chc(file_name, to_real_type=False)
-        logger.debug("Finish parsing")
-        sts = TransitionSystem()
-        sts.from_z3_cnts([all_vars, init, trans, post])
         solve_with_ef(sts)
     elif prover == "pdr":
-        # TODO: convert to the TransitionSystem (and then use the PDR code at
-        #  efmc/engines/pdr/pdr_prover.py
+        """
         s = z3.SolverFor("HORN")
         s.add(z3.And(z3.parse_smt2_file(file_name)))
-        print("PDR starts working!")
         res = s.check()
         print(res)
+        """
+        print("PDR starts working!")
+        solve_with_pdr(sts)
+    elif prover == "kind":
+        solve_with_k_induction(sts)
     else:
         print("Not supported engine: {}".format(prover))
         exit(0)
@@ -124,14 +137,16 @@ def solve_sygus_file(filename: str, prover="all"):
         solve_with_ef(sts)
     elif prover == "pdr":
         # vars2, init2, trans2, post2 = parse_sygus(filename, to_real_type=False)
-        solve_with_chc(sts)
-    elif prover == "qe":
-        solve_with_qe(sts)
-    elif prover == "symabs":
-        solve_with_symabs(sts)
+        solve_with_pdr(sts)
+    elif prover == "kind":
+        solve_with_k_induction(sts)
+    # elif prover == "qe":
+    #    solve_with_qe(sts)
+    # elif prover == "symabs":
+    #    solve_with_symabs(sts)
     else:
         # solve_with_ef(sts)
-        solve_with_chc(sts)
+        solve_with_pdr(sts)
         # solve_with_symabs(sts)
 
 

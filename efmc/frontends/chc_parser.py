@@ -242,5 +242,5 @@ def test_parse3(filename):
 
 if __name__ == "__main__":
     # test_parse()
-    test_parse3("../../benchmarks/bv/array_max-1.smt2")
+    test_parse3("../../benchmarks/chc/bv/array_max-1.smt2")
     # test_replace()

@@ -410,7 +410,7 @@ def test(file):
     print(result)
 
 
-test("../../benchmarks/bool/horn4.smt2")
+test("../../benchmarks/chc/bool/horn4.smt2")
 # test("data/horn2.smt2")
 # test("data/horn3.smt2")
 # test("data/horn4.smt2")
