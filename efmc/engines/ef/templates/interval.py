@@ -134,11 +134,12 @@ class IntervalTemplate(Template):
             i0, i1 = template_vars_for_var[0], template_vars_for_var[1]
             i2, i3 = template_vars_for_var[2], template_vars_for_var[3]
 
-            if model[i1].as_long() != 0:
-                cnts.append(model[i0] + var * model[i1] >= 0)
-            if model[i3].as_long() != 0:
-                cnts.append(model[i2] + var * model[i3] >= 0)
+            if model.eval(i1, True).as_long() != 0:
+                cnts.append(model.eval(i0, True) + var * model.eval(i1, True) >= 0)
+            if model.eval(i3, True).as_long() != 0:
+                cnts.append(model.eval(i2, True) + var * model.eval(i3, True) >= 0)
 
+        # print("cnts for invariant: ", cnts)
         return big_and(cnts)
 
 

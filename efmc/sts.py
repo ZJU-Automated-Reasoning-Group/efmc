@@ -28,9 +28,20 @@ class TransitionSystem(object):
         self.initialized = False
 
         self.has_bv = False
+        self.signedness = "signed"
+
         self.has_int = False
         self.has_real = False
         self.has_array = False
+
+    def set_signedness(self, ty: str):
+        assert self.has_bv
+        if ty == "signed":
+            self.signedness = "signed"
+        elif ty == "unsigned":
+            self.signedness = "unsigned"
+        else:
+            raise NotImplementedError
 
     def add_post(self, exp):
         """Update/initialize set.post (to be verified)"""

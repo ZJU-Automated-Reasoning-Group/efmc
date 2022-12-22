@@ -22,12 +22,12 @@ class TestBitVecIntervalTemplate(TestCase):
         post = z3.Implies(z3.UGE(x, 8), x == 8)
         sts = TransitionSystem()
         sts.from_z3_cnts([all_vars, init, trans, post])
-
+        sts.set_signedness("unsigned")
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
         ef_prover = EFProver(sts)  # use template and exists-forall solving
-        ef_prover.set_template("power_bv_interval")
+        ef_prover.set_template("bv_interval")
         # ef_prover.set_template("bv_interval")
-        vc = ef_prover.generate_vc()
+        # vc = ef_prover.generate_vc()
         # print(vc)
         ef_prover.solve()
         # print(sts.to_chc_str())

@@ -22,6 +22,7 @@ class TestBitVecOctagonTemplate(TestCase):
         post = z3.Implies(z3.And(z3.UGE(x, 8), z3.UGE(y, 8)),  x == 8)
         sts = TransitionSystem()
         sts.from_z3_cnts([all_vars, init, trans, post])
+        sts.set_signedness("unsigned")
 
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
         ef_prover = EFProver(sts)  # use template and exists-forall solving

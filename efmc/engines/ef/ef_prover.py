@@ -39,11 +39,11 @@ class EFProver:
     def __init__(self, sts: TransitionSystem):
         self.sts = sts # the transition system
         self.ct = None  # template type
-        # ignoring the post condition
-        # useful in "purely" invariant generation mode
-        self.ignore_post_cond = False
-        self.logic = "ALL" # the logic
+        self.ignore_post_cond = False  # ignoring the post condition (useful in "purely" invariant generation mode)
+        self.logic = "ALL"  # the logic
         self.engine = EFSMTEngine.Z3
+        self.validate_invaraint = True   # use SMT solvers to check the invariant
+        self.inductive_invaraint = None  # the generated invariant
 
     def set_template(self, template_name: str):
         """Set self.ct (the template to use)"""
@@ -239,9 +239,11 @@ class EFProver:
             print("EFSMT success time: ", time.time() - start)
             m = s.model()
             inv = self.ct.build_invariant_expr(m, use_prime_variables=False)
-            inv_in_prime_variables = self.ct.build_invariant_expr(m, use_prime_variables=True)
             print("Invariant: ", inv)
-            self.check_invariant(inv, inv_in_prime_variables)
+            if self.validate_invaraint:
+                inv_in_prime_variables = self.ct.build_invariant_expr(m, use_prime_variables=True)
+                self.check_invariant(inv, inv_in_prime_variables)
+            self.inductive_invaraint = inv  # preserve the invariant
             return True
         else:
             print("EFSMT fail time: ", time.time() - start)

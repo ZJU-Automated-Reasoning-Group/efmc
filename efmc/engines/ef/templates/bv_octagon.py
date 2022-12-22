@@ -13,6 +13,12 @@ class BitVecOctagonTemplate(Template):
     def __init__(self, sts: TransitionSystem):
         self.sts = sts
         self.template_type = TemplateType.BV_OCTAGON
+
+        if sts.signedness == "signed":
+            self.signedness = Signedness.SIGNED
+        elif sts.signedness == "unsigned":
+            self.signedness = Signedness.UNSIGNED
+
         # TODO: infer the signedness of variables? (or design a domain that is signedness-irrelevant
         self.signedness = Signedness.SIGNED
         # self.obj_no_overflow = False  # for controlling the behavior of x - y, x + y
@@ -154,6 +160,11 @@ class DisjunctiveBitVecOctagonTemplate(Template):
     def __init__(self, sts: TransitionSystem):
         self.sts = sts
         self.template_type = TemplateType.BV_DISJUNCTIVE_OCTAGON
+
+        if sts.signedness == "signed":
+            self.signedness = Signedness.SIGNED
+        elif sts.signedness == "unsigned":
+            self.signedness = Signedness.UNSIGNED
 
         # TODO: infer the signedness of variables? (or design a domain that is signedness-irrelevant
         self.signedness = Signedness.SIGNED

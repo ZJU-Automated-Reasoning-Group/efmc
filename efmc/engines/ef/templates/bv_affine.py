@@ -22,10 +22,13 @@ class BitVecAffineTemplate(Template):
     def __init__(self, sts: TransitionSystem):
         self.template_type = TemplateType.BV_AFFINE
 
-        self.signedness = Signedness.SIGNED
-
         self.sts = sts
         self.arity = len(self.sts.variables)
+
+        if sts.signedness == "signed":
+            self.signedness = Signedness.SIGNED
+        elif sts.signedness == "unsigned":
+            self.signedness = Signedness.UNSIGNED
 
         self.template_vars = []  # vector of vector
 
@@ -132,7 +135,10 @@ class DisjunctiveBitVecAffineTemplate(Template):
     def __init__(self, sts: TransitionSystem):
         self.template_type = TemplateType.BV_DISJUNCTIVE_AFFINE
 
-        self.signedness = Signedness.SIGNED
+        if sts.signedness == "signed":
+            self.signedness = Signedness.SIGNED
+        elif sts.signedness == "unsigned":
+            self.signedness = Signedness.UNSIGNED
 
         self.sts = sts
 
