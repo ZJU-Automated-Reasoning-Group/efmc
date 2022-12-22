@@ -86,11 +86,9 @@ class KInductionProver(object):
     def get_unrolling(self, k):
         """Unrolling of the transition relation from 0 to k:
         E.g. T(0,1) & T(1,2) & ... & T(k-1,k)
-
         for i in range(k + 1):
             subs_i = self.get_subs(i)
             res.append(z3.substitute(self.sts.trans, subs_i))
-        return res
         """
         res = []
         if k == 0:
@@ -125,6 +123,7 @@ class KInductionProver(object):
         for i in range(k):
             subs_i = self.get_subs(i)
             res.append(z3.substitute(self.sts.post, subs_i))
+        return res
         """
         res = []
         if k == 0:
@@ -160,7 +159,7 @@ class KInductionProver(object):
         prop_k = z3.substitute(self.sts.post, subs_k)
 
         k_hypothesis = self.get_k_hypothesis(k)
-        print("k hypothesis: ", k_hypothesis)
+        # print("k hypothesis: ", k_hypothesis)
         if self.use_aux_invariant:
             k_aux_inv = self.strength_via_invariant(k)
             print("Aux invariant: ", k_aux_inv)
@@ -177,7 +176,8 @@ class KInductionProver(object):
             print("Generating aux invariant..")
             inv_gen = InvariantGenerator(self.sts)
             aux_inv = inv_gen.generate_via_ef()
-            if not z3.is_false(aux_inv):
+            print("aux inv", aux_inv)
+            if not z3.is_true(aux_inv):
                 self.aux_invariant = aux_inv
             else:
                 self.use_aux_invariant = False   # the invariant generator does not work
@@ -186,9 +186,11 @@ class KInductionProver(object):
         for b in range(k):
             f_bmc = self.get_bmc(b)
             print("   [BMC]    Checking bound %d..." % (b + 1))
-            if is_sat(f_bmc):
+            s = z3.Solver()
+            s.add(f_bmc)
+            if s.check() == z3.sat:
                 print("--> Bug found at step %d" % (b + 1))
-                # print(f_bmc)
+                print(s.model())
                 return "UNSAFE"
 
             f_kind = self.get_k_induction(b)

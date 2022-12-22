@@ -21,7 +21,10 @@ class ZoneTemplate(Template):
 
         self.template_type = TemplateType.ZONE
 
-        self.use_real = True
+        if sts.has_real:
+            self.use_real = True
+        else:
+            self.use_real = False
 
         self.sts = sts
         self.arity = len(self.sts.variables)
@@ -118,7 +121,13 @@ class ZoneTemplate(Template):
 
 class DisjunctiveZoneTemplate(Template):
 
-    def __init__(self):
+    def __init__(self, sts: TransitionSystem):
+
+        if sts.has_real:
+            self.use_real = True
+        else:
+            self.use_real = False
+
         raise NotImplementedError
 
     def add_template_vars(self):

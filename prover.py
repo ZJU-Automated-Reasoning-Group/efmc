@@ -58,8 +58,8 @@ def solve_with_pdr(sts: TransitionSystem):
 def solve_with_k_induction(sts: TransitionSystem):
     """Use K-induction"""
     kind_prover = KInductionProver(sts)
-    # if g_args.aux_inv:
-    #    kind_prover.use_aux_invariant = True
+    if g_args.aux_inv:
+        kind_prover.use_aux_invariant = True
     kind_prover.solve(30)
 
 
@@ -134,12 +134,12 @@ def solve_sygus_file(filename: str, prover="all"):
     # FIXME: To use abstract domains and to preserve completeness,
     #   I cast integer variables to reals (this can be bad?) when parsing.
     #   A better idea is to transform the transition system after the parsing
-    all_vars, init, trans, post = parse_sygus(filename, to_real_type=True)
+    all_vars, init, trans, post = parse_sygus(filename, to_real_type=False)
     sts = TransitionSystem()
     sts.from_z3_cnts([all_vars, init, trans, post])
     if sts.has_bv:
         # TODO: enforce to add this (or, infer automatically)
-        sts.set_signedness("unsigned")
+        sts.set_signedness("signed")
 
     # print(sts)
     if prover == "efsmt":

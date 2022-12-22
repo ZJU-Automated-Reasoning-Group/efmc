@@ -56,8 +56,7 @@ class MSASolver:
         return True
 
     def find_small_model(self):
-        """
-        This method implements find_msa() procedure from Fig. 2
+        """This method implements find_msa() procedure from Fig. 2
         of the dillig-cav12 paper.
         """
         # testing if formula is satisfiable

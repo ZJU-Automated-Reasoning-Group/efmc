@@ -10,11 +10,14 @@ logger = logging.getLogger(__name__)
 
 class OctagonTemplate(Template):
 
-    def __init__(self, system: TransitionSystem):
+    def __init__(self, sts: TransitionSystem):
         self.template_type = TemplateType.OCTAGON
 
-        self.use_real = True
-        self.sts = system
+        if sts.has_real:
+            self.use_real = True
+        else:
+            self.use_real = False
+        self.sts = sts
 
     def add_template_vars(self):
         raise NotImplementedError
@@ -27,11 +30,14 @@ class OctagonTemplate(Template):
 
 
 class DisjunctiveOctagonTemplate(Template):
-    def __init__(self, system: TransitionSystem):
+    def __init__(self, sts: TransitionSystem):
         self.template_type = TemplateType.DISJUNCTIVE_OCTAGON
 
-        self.use_real = True
-        self.sts = system
+        if sts.has_real:
+            self.use_real = True
+        else:
+            self.use_real = False
+        self.sts = sts
 
     def add_template_vars(self):
         raise NotImplementedError
