@@ -1,21 +1,11 @@
 # coding: utf-8
 """
-Ported from https://github.com/pysmt/pysmt/blob/97c6eda689bbc7707602c2b3a3e1444f9d75166d/examples/model_checking.py
-
-For incremental k-induction, we may refer to
-   https://github.com/SRI-CSL/sally/blob/80f19306bed842e7a706f178cc5e2972d342482c/src/engine/kind/kind_engine.cpp
-
-TODO:
-   Different approaches for creating vars and exprs
-   Incremental version
-   Parallel version
-   Integrated into our main interface (kinduction_prover.py)
+NOTE: this one is not used
 """
 import logging
 
 import z3
 
-from efmc.sts import TransitionSystem
 
 logger = logging.getLogger(__name__)
 

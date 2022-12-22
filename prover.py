@@ -58,7 +58,9 @@ def solve_with_pdr(sts: TransitionSystem):
 def solve_with_k_induction(sts: TransitionSystem):
     """Use K-induction"""
     kind_prover = KInductionProver(sts)
-    kind_prover.solve(20)
+    # if g_args.aux_inv:
+    #    kind_prover.use_aux_invariant = True
+    kind_prover.solve(30)
 
 
 def solve_with_ef(sts: TransitionSystem):
@@ -105,6 +107,9 @@ def solve_chc_file(file_name: str, prover="efsmt"):
     logger.debug("Finish parsing")
     sts = TransitionSystem()
     sts.from_z3_cnts([all_vars, init, trans, post])
+    if sts.has_bv:
+        # TODO: enforce to add this (or, infer automatically)
+        sts.set_signedness("signed")
 
     # Currently, CHC is only used for bv?
     if prover == "efsmt":
@@ -132,6 +137,10 @@ def solve_sygus_file(filename: str, prover="all"):
     all_vars, init, trans, post = parse_sygus(filename, to_real_type=True)
     sts = TransitionSystem()
     sts.from_z3_cnts([all_vars, init, trans, post])
+    if sts.has_bv:
+        # TODO: enforce to add this (or, infer automatically)
+        sts.set_signedness("unsigned")
+
     # print(sts)
     if prover == "efsmt":
         solve_with_ef(sts)
@@ -161,11 +170,14 @@ if __name__ == "__main__":
     # dir_path = os.path.dirname(os.path.realpath(__file__))
     # fib_04.sl needs disjunctive?
     # solve_sygus_file(dir_path + '/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl', "efsmt")
-    # exit(0)
+    # solve_chc_file(dir_path + '/benchmarks/chc/bv/2017.ASE_FIB/32bits_signed/fib_15.sl_32bits_signed.smt2',
+    #               prover="efsmt")
+    #exit(0)
     parser = argparse.ArgumentParser()
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
     parser.add_argument('--engine', dest='engine', default='efsmt', type=str, help="The prover for using: efsmt or pdr")
     parser.add_argument('--template', dest='template', default='interval', type=str, help="The template for efsmt")
+    parser.add_argument('--aux-inv', dest='aux_inv', default=False, type=bool, help="Use aux invariant for k-induction")
     parser.add_argument('--lang', dest='lang', default='sygus', type=str, help="The input format: sygus or chc")
     # parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
     # parser.add_argument('--threads', dest='threads', default=4, type=int, help="threads")

@@ -17,7 +17,10 @@ class BitVecZoneTemplate(Template):
         self.template_type = TemplateType.BV_ZONE
 
         # TODO: infer the signedness of variables? (or design a domain that is signedness-irrelevant
-        self.signedness = Signedness.SIGNED
+        if sts.signedness == "signed":
+            self.signedness = Signedness.SIGNED
+        elif sts.signedness == "unsigned":
+            self.signedness = Signedness.UNSIGNED
 
         self.sts = sts
         self.arity = len(self.sts.variables)
@@ -111,7 +114,10 @@ class DisjunctiveBitVecZoneTemplate(Template):
         self.template_type = TemplateType.BV_DISJUNCTIVE_ZONE
 
         # TODO: infer the signedness of variables? (or design a domain that is signedness-irrelevant
-        self.signedness = Signedness.SIGNED
+        if sts.signedness == "signed":
+            self.signedness = Signedness.SIGNED
+        elif sts.signedness == "unsigned":
+            self.signedness = Signedness.UNSIGNED
 
         self.sts = sts
         self.arity = len(self.sts.variables)

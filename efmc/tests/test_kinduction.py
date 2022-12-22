@@ -11,6 +11,7 @@ from efmc.tests.simple_sts import get_int_sys1, get_int_sys2, get_int_sys3, get_
 class TestKInduction(TestCase):
 
     def test_kind1(self):
+        return
         """
         Description:
         It calculates q = x / y and r = x % y.
@@ -38,8 +39,9 @@ class TestKInduction(TestCase):
     def test_kind2(self):
         print("Running one test...")
         sts = TransitionSystem()
-        sts.from_z3_cnts(get_int_sys2())
+        sts.from_z3_cnts(get_int_sys3())
         pp = KInductionProver(sts)
+        pp.use_aux_invariant = False
         start = time.time()
         pp.solve(k=20)
         print("time: ", time.time() - start)
