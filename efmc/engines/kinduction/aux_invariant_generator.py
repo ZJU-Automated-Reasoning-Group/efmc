@@ -19,14 +19,12 @@ class InvariantGenerator(object):
         if self.sts.has_bv:
             ef_prover.set_template("bv_interval")
         else:
-            ef_prover.set_template("interval")
+            ef_prover.set_template("power_interval")
         if ef_prover.solve():
             if z3.is_true(z3.simplify(ef_prover.inductive_invaraint)):
-                return z3.BoolVal(False)    # the invariant is too weak (True)
+                return z3.BoolVal(True)    # the invariant is too weak (True)
             return ef_prover.inductive_invaraint
         else:
-            return z3.BoolVal(False)
-
-
+            return z3.BoolVal(True)
 
 

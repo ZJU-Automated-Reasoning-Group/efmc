@@ -16,7 +16,11 @@ class AffineTemplate(Template):
     def __init__(self, system: TransitionSystem):
         self.template_type = TemplateType.OCTAGON
 
-        self.use_real = True
+        # self.use_real = True
+        if system.has_real:
+            self.use_real = True
+        else:
+            self.use_real = False
         self.sts = system
 
     def add_template_vars(self):

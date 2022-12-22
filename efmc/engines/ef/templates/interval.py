@@ -20,7 +20,10 @@ class IntervalTemplate(Template):
 
         self.template_type = TemplateType.INTERVAL
 
-        self.use_real = True
+        if sts.has_real:
+            self.use_real = True
+        else:
+            self.use_real = False
 
         self.sts = sts
         self.arity = len(self.sts.variables)
@@ -152,7 +155,10 @@ class DisjunctiveIntervalTemplate(Template):
 
         self.template_type = TemplateType.DISJUNCTIVE_INTERVAL
 
-        self.use_real = True
+        if sts.has_real:
+            self.use_real = True
+        else:
+            self.use_real = False
 
         self.sts = sts
         self.arity = len(self.sts.variables)
@@ -264,7 +270,10 @@ class IntervalTemplateV2(Template):
 
         self.template_type = TemplateType.INTERVAL
 
-        self.use_real = True
+        if sts.has_real:
+            self.use_real = True
+        else:
+            self.use_real = False
 
         self.sts = sts
         self.arity = len(self.sts.variables)

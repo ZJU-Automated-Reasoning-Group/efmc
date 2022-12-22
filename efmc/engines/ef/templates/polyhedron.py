@@ -17,7 +17,10 @@ class PolyTemplate(Template):
         self.template_type = TemplateType.POLYHEDRON
 
         # TODO: perhaps we should block sts that is does not use reals?
-        self.use_real = True
+        if sts.has_real:
+            self.use_real = True
+        else:
+            self.use_real = False
 
         self.sts = sts
         self.arity = len(self.sts.variables)
@@ -117,6 +120,12 @@ class DisjunctivePolyTemplate(Template):
 
     def __init__(self, sts: TransitionSystem):
         # TODO: perhaps we should block sts that is does not use reals?
+
+        if sts.has_real:
+            self.use_real = True
+        else:
+            self.use_real = False
+
         raise NotImplementedError
 
     def add_template_vars(self):

@@ -138,6 +138,7 @@ post_func_names = ["post_fun", "PostF", "post-f"]
 class SyGusInVParser:
 
     def __init__(self, inputs: str, to_real: bool):
+        # print("to real? ", to_real)
         self.to_real = to_real
         self.logic = None
         self.inv_vars = []
