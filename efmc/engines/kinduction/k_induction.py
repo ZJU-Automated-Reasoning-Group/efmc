@@ -6,7 +6,6 @@ import logging
 
 import z3
 
-
 logger = logging.getLogger(__name__)
 
 

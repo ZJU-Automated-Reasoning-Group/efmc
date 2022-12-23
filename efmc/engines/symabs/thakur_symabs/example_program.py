@@ -5,6 +5,7 @@ engine to handle loops.
 from frontend.program import Program
 from domains.sign import Sign, SignAbstractState, SignDomain
 
+
 def main():
     """Construct and analyze the example program.
     """
@@ -30,6 +31,7 @@ def main():
     assert output_state.sign_of("x") == Sign.Negative
     assert output_state.sign_of("y") == Sign.Positive
     assert output_state.sign_of("z") == Sign.Top
+
 
 if __name__ == "__main__":
     main()

@@ -9,6 +9,7 @@ class ConjunctiveDomain:
     Applications (Ph.D. dissertation). Computer Sciences Department, University
     of Wisconsin, Madison.
     """
+
     def model(self, phi):
         """Returns a solution to logical formula phi.
         The satisfying model is returned as a ConcreteElement, or None if the

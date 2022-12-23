@@ -81,7 +81,7 @@ def solve_with_ef(sts: TransitionSystem):
             exit(0)
     else:
         if g_args.template in g_int_real_templates:
-            ef_prover.set_template("poly")
+            ef_prover.set_template(g_args.template)
             # ef_prover.set_template("power_interval")
             # ef_prover.set_template("interval")
         else:

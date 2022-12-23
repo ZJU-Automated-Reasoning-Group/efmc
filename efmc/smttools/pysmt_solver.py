@@ -15,7 +15,6 @@ from pysmt.shortcuts import Symbol, And
 from pysmt.shortcuts import binary_interpolant, sequence_interpolant
 from pysmt.typing import INT, REAL
 
-
 logger = logging.getLogger(__name__)
 
 

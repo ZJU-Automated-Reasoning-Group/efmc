@@ -124,4 +124,3 @@ class PredicateAbstractionProver(object):
             print(">>> MAYBE?!?!\n\n")
 
         return
-

@@ -17,7 +17,6 @@ import z3
 from efmc.sts import TransitionSystem
 from efmc.engines.kinduction.aux_invariant_generator import InvariantGenerator
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -38,6 +37,7 @@ class KInductionProver(object):
     k-induction
     This one is non-incremental
     """
+
     def __init__(self, system: TransitionSystem):
         self.sts = system
         self.use_aux_invariant = False  # use aux invariant generate by other tools
@@ -180,7 +180,7 @@ class KInductionProver(object):
             if not z3.is_true(aux_inv):
                 self.aux_invariant = aux_inv
             else:
-                self.use_aux_invariant = False   # the invariant generator does not work
+                self.use_aux_invariant = False  # the invariant generator does not work
 
         print("Checking property %s..." % str(self.sts.post))
         for b in range(k):
@@ -197,9 +197,8 @@ class KInductionProver(object):
             f_kind = self.get_k_induction(b)
             logger.debug("   [K-IND]  Checking bound %d..." % (b + 1))
             if is_unsat(f_kind):
-                print("--> The system is safe!")
+                print("--> The system is proved safe at {}".format((b + 1)))
                 print("SUCCESS: SAFE")
                 return
         print("UNKNOWN")
         return
-

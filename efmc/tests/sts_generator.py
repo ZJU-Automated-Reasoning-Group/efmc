@@ -9,6 +9,7 @@ class TransitionSystemGenerator:
     """
     TODO: how to ensure the oracle
     """
+
     def __int__(self):
         self.fml_gene = FormulaGenerator()
         pass

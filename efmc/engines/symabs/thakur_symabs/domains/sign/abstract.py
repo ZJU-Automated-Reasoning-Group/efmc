@@ -32,6 +32,7 @@ class Sign(Enum):
             return Sign.Negative
         return Sign.Top
 
+
 class SignAbstractState(AbstractState):
     """Abstract state describing the signs of a collection of variables.
     """
