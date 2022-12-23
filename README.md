@@ -12,7 +12,12 @@
 
 Related work:
 - Linear Invariant Generation using Non-linear Constarint Solving, CAV 03
-- Program Analysis via Constraint Solving, PLDI 08
+- Constraint-Based Linear-Relations Analysis, SAS'04 
+- Non-Linear Loop Invariant Generation using Gröbner Bases, POPL'04 
+- Progarm analsyis via constraint solving, PLDI'08 
+- Invgen: An efficient invariant generator, CAV'09 
+- SMT-Based Array Invariant Generation, VMCAI'13
+
 Currently, we do not apply Farkas' lemma, but use exists-forall SMT solving.
 
 To run the engine, you may try two ways:
@@ -30,7 +35,19 @@ python3 prover.py --engine efsmt --template bv_interval --lang chc --file benchm
 ### Property-Directed Reachability (PDR) Approach
 Currently, we use the one inside Z3 (named `Spacer`)
 
+Example:
+~~~~
+python3 prover.py --engine pdr --lang chc --file file.smt2
+~~~~
+
+
 ### Simple K-Induction
+We have implemented a simple one in `efmc/engines/kinduction`.
+
+Example:
+~~~~
+python3 prover.py --engine kind --lang chc --file file.smt2
+~~~~
 
 ## 2. Other Engines
 
