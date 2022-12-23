@@ -2,7 +2,7 @@
 """
 Constraint/template based invariant inference using EFSMT solving
 NOTE:
- - We assume there is only one invariant to be synthesized
+ - We assume there is only one invariant to be synthesized.
  - This file relies heavily on the templates in efmc.templates
 """
 
@@ -26,7 +26,7 @@ class EFSMTEngine(Enum):
     Z3 = 0  # use z3
     CVC5 = 1  # via the smtlib_solver interface
     YICES2 = 2  # via the smtlib_solver interface
-    CEGAR = 3  # smt-based cegar-style algorithm (currently, we use z3' API)
+    CEGAR = 3  # smt-based cegar-style algorithm (currently, we use z3's API)
     QBF = 4  # reduce to QBF: only applicable to BV instances
     SAT = 5  # reduce to SAT (QBF + QE?): only applicable to BV instances
 
@@ -37,13 +37,14 @@ class EFProver:
     """
 
     def __init__(self, sts: TransitionSystem):
-        self.sts = sts # the transition system
+        self.sts = sts  # the transition system
         self.ct = None  # template type
         self.ignore_post_cond = False  # ignoring the post condition (useful in "purely" invariant generation mode)
-        self.logic = "ALL"  # the logic
+        self.logic = "ALL"  # the logic, e.g., BV, LIA, ...
         self.engine = EFSMTEngine.Z3
-        self.validate_invaraint = True   # use SMT solvers to check the invariant
-        self.inductive_invaraint = None  # the generated invariant
+        self.validate_invaraint = True  # use SMT solvers to validate the correctness of the invariant
+        self.inductive_invaraint = None  # the generated invariant (e.g., to be used by other engines)
+        self.property_strengthening = False  # use "template = P and template" as the invariant template
 
     def set_template(self, template_name: str):
         """Set self.ct (the template to use)"""
@@ -161,29 +162,43 @@ class EFProver:
         # return self.solve_with_cegar_efsmt()  # FIXME: seems very slow
         if self.engine == EFSMTEngine.Z3:
             return self.solve_with_z3()
-        elif self.engine == EFSMTEngine.CEGAR:
-            return self.solve_with_cegar_efsmt()
         else:
             return self.solve_with_z3()
 
     def generate_vc(self) -> z3.ExprRef:
         """ Generate VC (Version 1)
-        TODO: another strategy is to generate the quantifier free body first,
-          and then add the quantifier once (using self.sts.all_variables?)
+        Another strategy is to generate the quantifier free body first and then add the
+        quantifier once (to self.sts.all_variables), which is implemented in generate_vc2
         """
         s = z3.Solver()
-        s.add(z3.ForAll(self.sts.variables, z3.Implies(self.sts.init,
-                                                       self.ct.template_cnt_init_and_post)))
+        if self.property_strengthening:
+            # use "template = P and template" as the invariant template
+            var_map = []  # x' to x, y' to y
+            for i in range(len(self.sts.variables)):
+                var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
+            post_in_prime = z3.substitute(self.sts.post, var_map)  # post cond that uses x', y', ..
 
-        s.add(z3.ForAll(self.sts.all_variables, z3.Implies(z3.And(self.ct.template_cnt_init_and_post, self.sts.trans),
-                                                           self.ct.template_cnt_trans)))
+            s.add(z3.ForAll(self.sts.variables, z3.Implies(self.sts.init,
+                                                           z3.And(self.sts.post, self.ct.template_cnt_init_and_post))))
+            s.add(z3.ForAll(self.sts.all_variables,
+                            z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post, self.sts.trans),
+                                       z3.And(post_in_prime, self.ct.template_cnt_trans))))
+            if not self.ignore_post_cond:
+                s.add(z3.ForAll(self.sts.variables,
+                                z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post),
+                                           self.sts.post)))
+        else:
+            s.add(z3.ForAll(self.sts.variables, z3.Implies(self.sts.init, self.ct.template_cnt_init_and_post)))
+            s.add(z3.ForAll(self.sts.all_variables,
+                            z3.Implies(z3.And(self.ct.template_cnt_init_and_post, self.sts.trans),
+                                       self.ct.template_cnt_trans)))
+            if not self.ignore_post_cond:
+                s.add(z3.ForAll(self.sts.variables, z3.Implies(self.ct.template_cnt_init_and_post,
+                                                               self.sts.post)))
 
-        if not self.ignore_post_cond:
-            s.add(z3.ForAll(self.sts.variables, z3.Implies(self.ct.template_cnt_init_and_post,
-                                                           self.sts.post)))
-
-        # Add additional cnts to restrict the template variables
-        if self.ct.template_type == TemplateType.INTERVAL or self.ct.template_type == TemplateType.DISJUNCTIVE_INTERVAL or \
+        # Add additional cnts to restrict the template variables (only for int/real)
+        if self.ct.template_type == TemplateType.INTERVAL or \
+                self.ct.template_type == TemplateType.DISJUNCTIVE_INTERVAL or \
                 self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.OCTAGON:
             s.add(self.ct.get_additional_cnts_for_template_vars())
 
@@ -191,19 +206,40 @@ class EFProver:
 
     def generate_quantifier_free_vc(self) -> z3.ExprRef:
         """Generate the "QF-part" of the VC (quantifiers will be added later
-         by the generate_vc2function)"""
+         by the generate_vc2 function)"""
         s = z3.Solver()
-        s.add(z3.Implies(self.sts.init, self.ct.template_cnt_init_and_post))
+        if self.property_strengthening:
+            # use "template = P and template" as the invariant template
+            var_map = []  # x' to x, y' to y
+            for i in range(len(self.sts.variables)):
+                var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
+            post_in_prime = z3.substitute(self.sts.post, var_map)  # post cond that uses x', y', ..
 
-        s.add(z3.Implies(z3.And(self.ct.template_cnt_init_and_post, self.sts.trans),
-                         self.ct.template_cnt_trans))
-        if not self.ignore_post_cond:
-            s.add(z3.Implies(self.ct.template_cnt_init_and_post,
-                             self.sts.post))
+            s.add(z3.ForAll(self.sts.variables, z3.Implies(self.sts.init,
+                                                           z3.And(self.sts.post, self.ct.template_cnt_init_and_post))))
+            s.add(z3.ForAll(self.sts.all_variables,
+                            z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post, self.sts.trans),
+                                       z3.And(post_in_prime, self.ct.template_cnt_trans))))
+            if not self.ignore_post_cond:
+                s.add(z3.ForAll(self.sts.variables,
+                                z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post),
+                                           self.sts.post)))
+        else:
+            s.add(z3.Implies(self.sts.init, self.ct.template_cnt_init_and_post))
+
+            s.add(z3.Implies(z3.And(self.ct.template_cnt_init_and_post, self.sts.trans),
+                             self.ct.template_cnt_trans))
+
+            if not self.ignore_post_cond:
+                s.add(z3.Implies(self.ct.template_cnt_init_and_post,
+                                 self.sts.post))
+
         # Add additional cnts to restrict the template variables
-        if self.ct.template_type == TemplateType.INTERVAL or self.ct.template_type == TemplateType.DISJUNCTIVE_INTERVAL or \
+        if self.ct.template_type == TemplateType.INTERVAL or \
+                self.ct.template_type == TemplateType.DISJUNCTIVE_INTERVAL or \
                 self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.OCTAGON:
             s.add(self.ct.get_additional_cnts_for_template_vars())
+
         return z3.And(s.assertions())
 
     def generate_vc2(self) -> z3.ExprRef:
@@ -238,11 +274,24 @@ class EFProver:
         if check_res == z3.sat:
             print("EFSMT success time: ", time.time() - start)
             m = s.model()
-            inv = self.ct.build_invariant_expr(m, use_prime_variables=False)
-            print("Invariant: ", inv)
-            if self.validate_invaraint:
-                inv_in_prime_variables = self.ct.build_invariant_expr(m, use_prime_variables=True)
-                self.check_invariant(inv, inv_in_prime_variables)
+            if self.property_strengthening:
+                # use "template = P and template" as the invariant template
+                inv = z3.And(self.sts.post, self.ct.build_invariant_expr(m, use_prime_variables=False))
+                print("Invariant: ", inv)
+                if self.validate_invaraint:
+                    var_map = []  # x' to x, y' to y
+                    for i in range(len(self.sts.variables)):
+                        var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
+                    post_in_prime = z3.substitute(self.sts.post, var_map)  # post cond that uses x', y', ..
+                    inv_in_prime_variables = z3.And(post_in_prime,
+                                                    self.ct.build_invariant_expr(m, use_prime_variables=True))
+                    self.check_invariant(inv, inv_in_prime_variables)
+            else:
+                inv = self.ct.build_invariant_expr(m, use_prime_variables=False)
+                print("Invariant: ", inv)
+                if self.validate_invaraint:
+                    inv_in_prime_variables = self.ct.build_invariant_expr(m, use_prime_variables=True)
+                    self.check_invariant(inv, inv_in_prime_variables)
             self.inductive_invaraint = inv  # preserve the invariant
             return True
         else:
@@ -252,4 +301,3 @@ class EFProver:
             if check_res == z3.unknown:
                 print(s.reason_unknown())
             return False
-

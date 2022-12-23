@@ -173,30 +173,33 @@ class KInductionProver(object):
     def solve(self, k: int):
         """Interleaves BMC and K-Ind to verify the property."""
         if self.use_aux_invariant:
-            print("Generating aux invariant..")
+            # print("Generating aux invariant..")
             inv_gen = InvariantGenerator(self.sts)
             aux_inv = inv_gen.generate_via_ef()
-            print("aux inv", aux_inv)
+            # print("aux inv", aux_inv)
             if not z3.is_true(aux_inv):
                 self.aux_invariant = aux_inv
             else:
                 self.use_aux_invariant = False   # the invariant generator does not work
 
-        print("Checking property %s..." % self.sts.post)
+        print("Checking property %s..." % str(self.sts.post))
         for b in range(k):
             f_bmc = self.get_bmc(b)
-            print("   [BMC]    Checking bound %d..." % (b + 1))
+            logger.debug("   [BMC]    Checking bound %d..." % (b + 1))
             s = z3.Solver()
             s.add(f_bmc)
             if s.check() == z3.sat:
                 print("--> Bug found at step %d" % (b + 1))
-                print(s.model())
-                return "UNSAFE"
+                # print(s.model())
+                print("SUCCESS: UNSAFE")
+                return
 
             f_kind = self.get_k_induction(b)
-            print("   [K-IND]  Checking bound %d..." % (b + 1))
+            logger.debug("   [K-IND]  Checking bound %d..." % (b + 1))
             if is_unsat(f_kind):
                 print("--> The system is safe!")
-                return "SAFE"
-        return "UNKNOWN"
+                print("SUCCESS: SAFE")
+                return
+        print("UNKNOWN")
+        return
 

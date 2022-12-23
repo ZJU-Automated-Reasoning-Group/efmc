@@ -11,7 +11,7 @@ from efmc.utils import big_and
 
 class BitVecAffineTemplate(Template):
     """
-    TODO: There are several different variants. Some references
+    TODO: There are several variants. Some references
       - Matt elder et al., Abstract domains of affine relations, TOPLAS'14
       - Olm and Seidl, Precise interprocedural analysis through linear algebra, POPL'04
        - King and Sondergaard,

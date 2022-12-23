@@ -188,6 +188,7 @@ class CHCParser:
 
     def get_transition_system(self):
         # TODO: remove "inv"? (Besides, ground_quantifier may change the var order...)
+        #  Also, ground_quantifier can be slow
         # from z3.z3util import get_vars
         init, vars_init = ground_quantifier(self.fmls[0])
         trans, vars_trans = ground_quantifier(self.fmls[1])
@@ -201,9 +202,7 @@ class CHCParser:
         else:
             # e.g., in the form of Implies(inv(i), i == 10)
             pure_post = z3.simplify(post.children()[1])
-
         # print(pure_init, "\n", pure_trans, "\n", pure_post)
-
         # all_vars = get_vars(trans)
         return vars_trans, pure_init, pure_trans, pure_post
 

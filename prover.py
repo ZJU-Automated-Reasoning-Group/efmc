@@ -57,9 +57,10 @@ def solve_with_pdr(sts: TransitionSystem):
 
 def solve_with_k_induction(sts: TransitionSystem):
     """Use K-induction"""
+    print("K-induction starts..")
     kind_prover = KInductionProver(sts)
-    if g_args.aux_inv:
-        kind_prover.use_aux_invariant = True
+    # if g_args.aux_inv:
+    #    kind_prover.use_aux_invariant = True
     kind_prover.solve(30)
 
 
@@ -104,7 +105,7 @@ def solve_chc_file(file_name: str, prover="efsmt"):
     :param prover: strategy
     """
     all_vars, init, trans, post = parse_chc(file_name, to_real_type=False)
-    logger.debug("Finish parsing")
+    print("Finish parsing CHC file")
     sts = TransitionSystem()
     sts.from_z3_cnts([all_vars, init, trans, post])
     if sts.has_bv:
@@ -135,6 +136,7 @@ def solve_sygus_file(filename: str, prover="all"):
     #   I cast integer variables to reals (this can be bad?) when parsing.
     #   A better idea is to transform the transition system after the parsing
     all_vars, init, trans, post = parse_sygus(filename, to_real_type=False)
+    print("Finish parsing SyGuS file")
     sts = TransitionSystem()
     sts.from_z3_cnts([all_vars, init, trans, post])
     if sts.has_bv:
