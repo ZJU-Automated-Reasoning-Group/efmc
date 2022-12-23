@@ -121,7 +121,7 @@ class DisjunctiveBitVecIntervalTemplate(Template):
                 vars_for_dis.append(tvars)
 
             self.template_vars.append(vars_for_dis)
-        print(self.template_vars)
+        # print(self.template_vars)
 
     def get_additional_cnts_for_template_vars(self):
         return z3.BoolVal(True)
