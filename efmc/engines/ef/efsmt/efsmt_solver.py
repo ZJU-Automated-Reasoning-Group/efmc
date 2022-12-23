@@ -24,7 +24,7 @@ class EFSMTStrategy(Enum):
     SAT = 6
 
 
-def simple_cegar_efsmt(logic: str,  x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, maxloops=None):
+def simple_cegar_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, maxloops=None):
     """ Solves exists x. forall y. phi(x, y) with simple CEGAR
     """
     # x = [item for item in get_vars(phi) if item not in y]

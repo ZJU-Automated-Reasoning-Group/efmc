@@ -5,6 +5,7 @@ from ..algorithms import bilateral
 from ..z3_variables import Z3VariablesDomain
 from .abstract import ReducedProductAbstractState
 
+
 # TODO(masotoud): find a different naming scheme that makes this clearer, if
 # possible.
 # pylint: disable=invalid-name
@@ -17,6 +18,7 @@ class ReducedProductDomain(Z3VariablesDomain):
     variables and want to use information from one analysis to improve the
     information in another.
     """
+
     def __init__(self, variables, domain_A, domain_B):
         """Construct a ReducedProductDomain with given variables, sub-domains.
 

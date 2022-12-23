@@ -7,7 +7,6 @@ import z3
 from efmc.sts import TransitionSystem
 from efmc.engines.ef.templates.abstract_template import TemplateType, Template
 
-
 logger = logging.getLogger(__name__)
 
 

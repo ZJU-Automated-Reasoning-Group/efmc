@@ -5,7 +5,7 @@
 ## 1. The Main Engines
 
 - Template-based (Constraint-based) Approach
-- Property-Directed Reachability (PDR) Approach
+- Property-Directed Reachability (PDR)
 - K-Induction
 
 ### Template-based (Constraint-based) Approach

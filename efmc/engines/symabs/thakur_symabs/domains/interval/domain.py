@@ -8,6 +8,7 @@ from .abstract import Interval, IntervalAbstractState
 class IntervalDomain(Z3VariablesDomain):
     """Represents an abstract space over the intervals of variables.
     """
+
     def __init__(self, variables):
         """Constructs a new IntervalDomain, with variables named in variables.
 

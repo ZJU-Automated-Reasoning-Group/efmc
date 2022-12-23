@@ -432,5 +432,3 @@ def eval_predicates(m: z3.ModelRef, predicates: List[z3.BoolRef]):
         else:
             pass
     return res
-
-

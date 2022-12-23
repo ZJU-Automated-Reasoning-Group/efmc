@@ -1,5 +1,7 @@
 """Definitions for abstract state types.
 """
+
+
 # pylint: disable=too-few-public-methods
 
 
@@ -9,6 +11,7 @@ class AbstractState:
         __le__
     The other methods take their values from __le__.
     """
+
     def __le__(self, rhs):
         """True if self is exactly a subset of rhs.
         NOTE that this definition means (not (a <= b)) does NOT imply a > b.

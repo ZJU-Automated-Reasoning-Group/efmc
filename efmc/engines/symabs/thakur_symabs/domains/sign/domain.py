@@ -8,6 +8,7 @@ from .abstract import Sign, SignAbstractState
 class SignDomain(Z3VariablesDomain):
     """Represents an abstract space over the sign of variables.
     """
+
     def __init__(self, variables):
         """Constructs a new SignDomain, with variables named in variables.
 

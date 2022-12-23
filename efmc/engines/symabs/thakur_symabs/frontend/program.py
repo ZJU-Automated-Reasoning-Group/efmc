@@ -7,6 +7,7 @@ from ..domains.algorithms import bilateral
 class Program:
     """Represents a straight-line program in 2-operand notation.
     """
+
     def __init__(self, program):
         """Initialize the program from a string @program.
 
@@ -76,6 +77,7 @@ class Program:
     def transform(self, domain, input_abstract_state):
         """Compute the most precise output abstract state.
         """
+
         def add_primes(unprimed):
             return unprimed + (self.prime_depth * "'")
 

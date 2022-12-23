@@ -2,6 +2,7 @@
 """
 from ..core.abstract import AbstractState
 
+
 # TODO(masotoud): find a different naming scheme that makes this clearer, if
 # possible.
 # pylint: disable=invalid-name
@@ -10,6 +11,7 @@ from ..core.abstract import AbstractState
 class ReducedProductAbstractState(AbstractState):
     """Abstract state describing the signs of a collection of variables.
     """
+
     def __init__(self, state_A, state_B):
         """Construct a new ReducedProductAbstractState.
 

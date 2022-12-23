@@ -37,6 +37,7 @@ class TestMSA(TestCase):
                 find_minimal_model(fml)
         except Exception as ex:
             print(ex)
+
     assert True
 
 

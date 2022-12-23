@@ -6,6 +6,7 @@ from ..core.abstract import AbstractState
 class Interval:
     """Represents a single integer, closed interval.
     """
+
     def __init__(self, lower, upper):
         """Construct an Interval with the given lower and upper bounds.
 
