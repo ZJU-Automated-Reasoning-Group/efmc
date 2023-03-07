@@ -70,6 +70,7 @@ class TransitionSystem(object):
         # FIXME: currently, we assume that each variable has the same type
         #  However, we may want to support sys that has different types of variables.
         sample_var = self.variables[0]
+        # print(sample_var.sort())
         if z3.is_int(sample_var):
             self.has_int = True
         elif z3.is_real(sample_var):

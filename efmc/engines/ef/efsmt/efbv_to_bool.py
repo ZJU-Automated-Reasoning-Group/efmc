@@ -18,14 +18,18 @@ from efmc.smttools.mapped_blast import translate_smt2formula_to_numeric_clauses
 logger = logging.getLogger(__name__)
 
 
-class EFBV2BoolTranslator:
+class EFBV2BoolAux:
     def __init__(self):
         self.universal_bools = []
         self.existential_bools = []
         self.bool_clauses = []
 
     def flattening(self, fml: z3.ExprRef, existential_vars: List[z3.ExprRef], universal_vars: List[z3.ExprRef]):
-        """" Translate a bit-vector formula to a Boolean formula and initialize some self.fields
+        """Translate a bit-vector formula to a Boolean formula and initialize some self.fields
+        Args:
+            fml (z3.ExprRef): The bit-vector formula to translate to Boolean.
+            existential_vars (List[z3.ExprRef]): A list containing bit-vector variables that are under existential quantification.
+            universal_vars (List[z3.ExprRef]): A list containing bit-vector variables that are under universal quantification.
         """
         # TODO: should handle cases where fml is simplified to be true or false
         # bv2bool, bool2id, header, clauses = translate_smt2formula_to_cnf(fml)
@@ -141,7 +145,7 @@ class EFBVFormulaTranslator:
         :param universal_vars: the set of universal quantified bit-vector formulas
         :return: a quantified Boolean formula (in z3)
         """
-        translator = EFBV2BoolTranslator()
+        translator = EFBV2BoolAux()
         translator.flattening(fml, existential_vars, universal_vars)
         return translator.to_qbf_clauses()
 

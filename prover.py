@@ -15,7 +15,6 @@ from efmc.engines.ef.ef_prover import EFProver
 from efmc.engines.pdr.pdr_prover import PDRProver
 from efmc.engines.kinduction.kinduction_prover import KInductionProver
 from efmc.engines.qe import QuantifierEliminationProver
-from efmc.engines.symabs import SymbolicAbstractionProver
 # from efmc.utils import is_entail
 
 logger = logging.getLogger(__name__)
@@ -93,12 +92,6 @@ def solve_with_ef(sts: TransitionSystem):
     # ef_prover.solve_with_bin_solver()
 
 
-def solve_with_symabs(sts: TransitionSystem):
-    """Use symbolic abstraction based abstract interpretation"""
-    symabs_prover = SymbolicAbstractionProver(sts)
-    symabs_prover.solve()
-
-
 def solve_chc_file(file_name: str, prover="efsmt"):
     """Solve a CHC file
     :param file_name: the CHC file
@@ -141,7 +134,8 @@ def solve_sygus_file(filename: str, prover="all"):
     sts.from_z3_cnts([all_vars, init, trans, post])
     if sts.has_bv:
         # TODO: enforce to add this (or, infer automatically)
-        sts.set_signedness("signed")
+        #  e.g., check whether there are bvsle, bvslt, ... in the formula
+        sts.set_signedness("unsigned")
 
     # print(sts)
     if prover == "efsmt":
@@ -153,12 +147,9 @@ def solve_sygus_file(filename: str, prover="all"):
         solve_with_k_induction(sts)
     # elif prover == "qe":
     #    solve_with_qe(sts)
-    # elif prover == "symabs":
-    #    solve_with_symabs(sts)
     else:
         # solve_with_ef(sts)
         solve_with_pdr(sts)
-        # solve_with_symabs(sts)
 
 
 if __name__ == "__main__":

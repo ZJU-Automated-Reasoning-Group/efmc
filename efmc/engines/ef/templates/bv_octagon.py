@@ -208,8 +208,9 @@ class DisjunctiveBitVecOctagonTemplate(Template):
             #  aux variables for x, y, z ,...
             aux_vars = []
             for v in self.sts.variables:
+                # print(v, v.sort().size())
                 tvars = [z3.BitVec("d{0}_{1}_l".format(i, str(v)), v.sort().size()),
-                         z3.BitVec("d{0}_{}_u".format(i, str(v)), v.sort().size())]
+                         z3.BitVec("d{0}_{1}_u".format(i, str(v)), v.sort().size())]
                 aux_vars.append(tvars)
             self.template_vars_for_vars.append(aux_vars)
 

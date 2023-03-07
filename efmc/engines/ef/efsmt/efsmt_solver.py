@@ -9,7 +9,7 @@ from typing import List
 import z3
 
 from efmc.engines.ef.efsmt.efsmt_utils import solve_with_bin_smt
-from efmc.engines.ef.efsmt.efbv_formula_manager import EFBVFormulaTranslator
+from efmc.engines.ef.efsmt.efbv_to_bool import EFBVFormulaTranslator
 
 logger = logging.getLogger(__name__)
 
