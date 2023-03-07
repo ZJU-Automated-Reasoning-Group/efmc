@@ -160,11 +160,15 @@ class SyGusInVParser:
         for element in lines:
             if isinstance(element, list):
                 for e in self.to_sexpr_misc(element):
-                    res.append(e)
+                    res.append(str(e))
             else:
-                if isinstance(element, int) and self.to_real:
-                    element = str(element) + ".0"
-                res.append(str(element))
+                # TODO: what if element is real/float (just use str(element))?
+                if isinstance(element, int):
+                    if self.to_real:
+                        element = str(element) + ".0"
+                    else:
+                        element = str(element)
+                res.append(element)
         res.append(")")
         return res
 
@@ -224,7 +228,15 @@ class SyGusInVParser:
             # print(var_name, var_type)
             if isinstance(var_type, List):
                 # E.g., ['Array', 'Int', 'Int']
-                final_type = "({})".format(" ".join(var_type))
+                # E.g., ['_', 'BitVec', 32] (32 should be converted to str)
+                # print(var_type)
+                var_type_final = []
+                for t in var_type:
+                    if isinstance(t, str):
+                        var_type_final.append(t)
+                    else:
+                        var_type_final.append(str(t))
+                final_type = "({})".format(" ".join(var_type_final))
             else:
                 # FIXME: to test abstract domains, we may cast Int types to Real
                 # FIXME: but casting here is not very elegant
@@ -250,9 +262,9 @@ class SyGusInVParser:
         post = z3.parse_smt2_string("\n".join(post_constraints))[0]
 
         # a dirty trick to keep order?
-        # TODO: does th following functions preseve some order?
-        # Is the order necessary?
-
+        # TODO: does the following functions preserve some order?
+        #  Is the order necessary? (x, y, x!, y!, ..)
+        """
         # it's possible that some variables in self.all_vars are not used
         z3_vars = get_vars(z3.And(init, trans, post))
         z3_vars_names = [str(var) for var in z3_vars]
@@ -263,16 +275,21 @@ class SyGusInVParser:
                     temp_cnts.append(z3.Real(var_sig[0]) == z3.RealVal(1.0))
                 else:
                     temp_cnts.append(z3.Int(var_sig[0]) == z3.IntVal(1))
-        # get_vars(z3.And(z3.And(temp_cnts), z3.And(init, trans, post)))
-
-        all_vars = []
+        all_vars = get_vars(z3.And(z3.And(temp_cnts), z3.And(init, trans, post)))
+        """
+        all_vars = []   # another way for collecting the signature
         for var_sig in self.all_vars:  # ['i', 'Int']
-            if self.to_real:
+            if 'Int' in var_sig:
+                if self.to_real:
+                    all_vars.append(z3.Real(var_sig[0]))
+                else:
+                    all_vars.append(z3.Int(var_sig[0]))
+            elif 'Real' in var_sig:
                 all_vars.append(z3.Real(var_sig[0]))
-            else:
-                all_vars.append(z3.Int(var_sig[0]))
-        # print(all_vars)
-        # print(self.all_vars)
+            else:  # should we just assume the type is bv?
+                # ['x', ['_', 'BitVec', 32]]
+                all_vars.append(z3.BitVec(var_sig[0], var_sig[1][2]))
+
         return all_vars, init, trans, post
 
 
