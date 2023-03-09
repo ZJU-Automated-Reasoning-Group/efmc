@@ -1,20 +1,91 @@
 import time
+from typing import List
+import subprocess
+from threading import Timer
+import  logging
+
 import z3
 
 from efmc.smttools.smtlib_solver import SMTLIBSolver
+from efmc.engines.ef.efsmt.efsmt_config import \
+    z3_exec, cvc5_exec, g_bin_solver_timeout, caqe_exec
 
-z3_exec = ""
-cvc5_exec = ""
+
+logger = logging.getLogger(__name__)
+
+def terminate(process, is_timeout: List):
+    """
+        Terminates a process and sets the timeout flag to True.
+        process : subprocess.Popen
+            The process to be terminated.
+        is_timeout : List
+            A list containing a single boolean item. If the process exceeds the timeout limit, the boolean item will be
+            set to True.
+        """
+    if process.poll() is None:
+        try:
+            process.terminate()
+            is_timeout[0] = True
+        except Exception as ex:
+            print("error for interrupting")
+            print(ex)
+
+
+def solve_with_bin_qbf(fml_str: str, solver_name: str):
+    """Call bin QBF solvers
+    TODO: can we follow the way of SMTLIBSolver? i.e, send
+     the QDIMAS strings directly, instead of dumping as a file
+    """
+    logger.debug("Solving QBF via {}".format(solver_name))
+
+    import tempfile
+    tmp = tempfile.NamedTemporaryFile(delete=True, suffix='.qdimacs')
+    try:
+        # do stuff with temp
+        # print(fml_str)
+        tmp.write(bytes(fml_str, encoding='utf8'))
+        print(bytes(fml_str, encoding='utf8'))
+        if solver_name == "caqe":
+            cmd = [caqe_exec, tmp.name]
+        else:
+            cmd = [caqe_exec, tmp.name]
+        print(cmd)
+
+        p_gene = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        is_timeout_gene = [False]
+        timer_gene = Timer(g_bin_solver_timeout, terminate, args=[p_gene, is_timeout_gene])
+        timer_gene.start()
+        out_gene = p_gene.stdout.readlines()
+        out_gene = ' '.join([str(element.decode('UTF-8')) for element in out_gene])
+        p_gene.stdout.close()  # close?
+        timer_gene.cancel()
+        if p_gene.poll() is None:
+            p_gene.terminate()  # TODO: need this?
+
+        print(out_gene)
+        if is_timeout_gene[0]:
+            return "unknown"
+        if "unsatisfiable" in out_gene:
+            return "unsat"
+        elif "satisfiable" in out_gene:
+            return "sat"
+        else:
+            return "unknown"
+    finally:
+        tmp.close()
+
 
 
 def solve_with_bin_smt(logic: str, y, phi: z3.ExprRef, solver_name: str):
-    """Call bin SMT solvers to solve exists forall"""
+    """Call bin SMT solvers to solve exists forall
+    FIXME: currently, I use the SMLIBSolver (We can send strings to the bin solver)
+      However, the interface is inconsistent with the QBF one.
+    """
     smt2string = "(set-logic {})\n".format(logic)
     sol = z3.Solver()
     sol.add(z3.ForAll(y, phi))
     smt2string += sol.to_smt2()
 
-    # TODO: build/download bin solvers in the project
     # bin_cmd = ""
     if solver_name == "z3":
         bin_cmd = z3_exec

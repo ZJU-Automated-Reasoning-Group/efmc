@@ -15,20 +15,9 @@ import z3
 from efmc.sts import TransitionSystem
 from efmc.utils import is_entail
 from efmc.engines.ef.templates import *
+from efmc.engines.ef.efsmt.efsmt_solver import EFSMTSolver
 
 logger = logging.getLogger(__name__)
-
-
-class EFSMTEngine(Enum):
-    """
-    Engines for solving the EFSMT instances
-    """
-    Z3 = 0  # use z3
-    CVC5 = 1  # via the smtlib_solver interface
-    YICES2 = 2  # via the smtlib_solver interface
-    CEGAR = 3  # smt-based cegar-style algorithm (currently, we use z3's API)
-    QBF = 4  # reduce to QBF: only applicable to BV instances
-    SAT = 5  # reduce to SAT (QBF + QE?): only applicable to BV instances
 
 
 class EFProver:
@@ -36,15 +25,19 @@ class EFProver:
     Exists-Forall SMT Solving for Inductive Invariant Inference
     """
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
         self.sts = sts  # the transition system
         self.ct = None  # template type
         self.ignore_post_cond = False  # ignoring the post condition (useful in "purely" invariant generation mode)
         self.logic = "ALL"  # the logic, e.g., BV, LIA, ...
-        self.engine = EFSMTEngine.Z3
         self.validate_invaraint = True  # use SMT solvers to validate the correctness of the invariant
         self.inductive_invaraint = None  # the generated invariant (e.g., to be used by other engines)
         self.property_strengthening = False  # use "template = P and template" as the invariant template
+        self.seed = kwargs.get("seed", 1)  # random seed
+        self.engine = "z3"
+
+    def set_engine(self, engine_name: str):
+        self.engine = engine_name
 
     def set_template(self, template_name: str):
         """Set self.ct (the template to use)"""
@@ -160,10 +153,24 @@ class EFProver:
         print("Used template: {}".format(str(self.ct.template_type)))
         print("Used logic: {}".format(str(self.logic)))
         # return self.solve_with_cegar_efsmt()  # FIXME: seems very slow
-        if self.engine == EFSMTEngine.Z3:
+        if self.engine == "z3":
             return self.solve_with_z3()
         else:
-            return self.solve_with_z3()
+            qf_vc = self.generate_quantifier_free_vc()
+            print("EFSMT starting!!!")
+            ef_solver = EFSMTSolver(logic="BV", solver=self.engine)
+            forall_vars = self.sts.all_variables
+            exists_vars = []
+            for ele in self.ct.template_vars:
+                if isinstance(ele, list):
+                    for v in ele: exists_vars.append(v)
+                else:
+                    exists_vars.append(ele)
+            # print("qf part of vc: ", qf_vc)
+            # print("exists vars: ", exists_vars)
+            # print("forall vars: ", forall_vars)
+            ef_solver.init(exist_vars=exists_vars, forall_vars=forall_vars, phi=qf_vc)
+            return ef_solver.solve()
 
     def generate_vc(self) -> z3.ExprRef:
         """ Generate VC (Version 1)
@@ -209,7 +216,7 @@ class EFProver:
          by the generate_vc2 function)"""
         s = z3.Solver()
         if self.property_strengthening:
-            # use "template = P and template" as the invariant template
+            # use "template = P and template" as the invariant template!!
             var_map = []  # x' to x, y' to y
             for i in range(len(self.sts.variables)):
                 var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
