@@ -14,7 +14,7 @@ class TestBitVecIntervalTemplate(TestCase):
         Specify transition system using Z3's python API (a "naive" trick)
         """
         logging.basicConfig(level=logging.DEBUG)
-        x, y, px, py = z3.BitVecs('x y x! y!', 10)
+        x, y, px, py = z3.BitVecs('x y x! y!', 6)
         all_vars = [x, y, px, py]
         init = z3.And(x == 0, y == 0)
         trans = z3.And(z3.And(z3.ULT(x, 8), z3.ULT(y, 8)),
@@ -26,6 +26,7 @@ class TestBitVecIntervalTemplate(TestCase):
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
         ef_prover = EFProver(sts)  # use template and exists-forall solving
         ef_prover.set_template("bv_interval")
+        ef_prover.set_engine("caqe")
         # ef_prover.set_template("bv_interval")
         # vc = ef_prover.generate_vc()
         # print(vc)

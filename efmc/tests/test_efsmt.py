@@ -12,6 +12,7 @@ class TestEFSMT(TestCase):
         """
         Specify transition system using Z3's python API (a "naive" trick)
         """
+        print("testing efsmt")
         x, y, px, py = z3.Reals('x y x! y!')
 
         all_vars = [x, y, px, py]
@@ -29,6 +30,7 @@ class TestEFSMT(TestCase):
 
     def test_efsmt2(self):
         # Specify transition system using Z3's python API (a "naive" trick)
+        print("testing efsmt2")
 
         x1, c1, t, c2, x2, k1, k2, px1, pc1, pt, pc2, px2, pk1, pk2 = z3.Reals(
             'x1 c1 t c2 x2 k1 k2 x1! c1! t! c2! x2! k1! k2!')
