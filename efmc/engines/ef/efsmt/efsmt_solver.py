@@ -61,15 +61,6 @@ def simple_cegar_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
                 return z3.sat
     return z3.unknown
 
-
-def solve_with_z3(logic: str, y: List[z3.ExprRef], phi: z3.ExprRef) -> z3.CheckSatResult:
-    """Call Z3's Python API"""
-    qfml = z3.ForAll(y, phi)
-    s = z3.SolverFor(logic)  # can be very fast
-    s.add(qfml)
-    return s.check()
-
-
 def solve_z3qbf(fml: z3.ExprRef):
     """Solve Exists X Forall Y Exists Z . P(...), which is translated from an exists-forall bit-vector instance
     NOTE: We do not need to explicitly specify the first Exists
@@ -112,8 +103,7 @@ class EFSMTSolver:
         assert self.initialized
         logger.debug("EFSMT solver: {}".format(self.solver))
         if self.solver == "z3":
-            return solve_with_z3(self.logic, self.forall_vars, self.phi)
-            # return solve_with_bin_smt(y, phi, self.logic, "z3")
+            return solve_with_bin_smt(self.logic, self.forall_vars, self.phi, "z3")
         elif self.solver == "cvc5":
             return solve_with_bin_smt(self.logic, self.forall_vars, self.phi, "cvc5")
         elif self.solver == "btor":
@@ -144,6 +134,9 @@ class EFSMTSolver:
         fml_manager = EFBVFormulaTranslator()
         return solve_z3qbf(fml_manager.to_z3_qbf(self.phi, self.exists_vars, self.forall_vars))
 
+    def solve_with_z3_sat(self, y: List[z3.ExprRef], phi: z3.ExprRef):
+        raise NotImplementedError
+
     def solve_with_third_party_qbf(self, solver_name: str):
         assert self.logic == "BV" or self.logic == "UFBV"
         fml_manager = EFBVFormulaTranslator()
@@ -151,5 +144,10 @@ class EFSMTSolver:
                                              universal_vars=self.forall_vars)
         return solve_with_bin_qbf(qdimacs, solver_name)
 
-    def solve_with_sat(self, y: List[z3.ExprRef], phi: z3.ExprRef):
+    def solve_with_third_party_sat(self, y: List[z3.ExprRef], phi: z3.ExprRef):
+        """
+        Use third-party SAT solvers... (do we need?)
+        """
         raise NotImplementedError
+
+

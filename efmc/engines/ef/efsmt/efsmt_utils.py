@@ -1,8 +1,9 @@
+import os
 import time
 from typing import List
 import subprocess
 from threading import Timer
-import  logging
+import logging
 
 import z3
 
@@ -10,8 +11,8 @@ from efmc.smttools.smtlib_solver import SMTLIBSolver
 from efmc.engines.ef.efsmt.efsmt_config import \
     z3_exec, cvc5_exec, g_bin_solver_timeout, caqe_exec
 
-
 logger = logging.getLogger(__name__)
+
 
 def terminate(process, is_timeout: List):
     """
@@ -33,24 +34,18 @@ def terminate(process, is_timeout: List):
 
 def solve_with_bin_qbf(fml_str: str, solver_name: str):
     """Call bin QBF solvers
-    TODO: can we follow the way of SMTLIBSolver? i.e, send
-     the QDIMAS strings directly, instead of dumping as a file
     """
     logger.debug("Solving QBF via {}".format(solver_name))
-
-    import tempfile
-    tmp = tempfile.NamedTemporaryFile(delete=True, suffix='.qdimacs')
+    tmp = open("/tmp/temp.qdimacs", "w")
+    tmp_filename = "/tmp/temp.qdimacs"
     try:
-        # do stuff with temp
-        # print(fml_str)
-        tmp.write(bytes(fml_str, encoding='utf8'))
-        print(bytes(fml_str, encoding='utf8'))
+        tmp.write(fml_str)
+        tmp.close()
         if solver_name == "caqe":
-            cmd = [caqe_exec, tmp.name]
+            cmd = [caqe_exec, tmp_filename]
         else:
-            cmd = [caqe_exec, tmp.name]
+            cmd = [caqe_exec, tmp_filename]
         print(cmd)
-
         p_gene = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         is_timeout_gene = [False]
         timer_gene = Timer(g_bin_solver_timeout, terminate, args=[p_gene, is_timeout_gene])
@@ -61,6 +56,8 @@ def solve_with_bin_qbf(fml_str: str, solver_name: str):
         timer_gene.cancel()
         if p_gene.poll() is None:
             p_gene.terminate()  # TODO: need this?
+
+        os.remove(tmp_filename)  # rm the tmp file
 
         print(out_gene)
         if is_timeout_gene[0]:
@@ -73,13 +70,60 @@ def solve_with_bin_qbf(fml_str: str, solver_name: str):
             return "unknown"
     finally:
         tmp.close()
-
+        if os.path.isfile(tmp_filename):
+            os.remove(tmp_filename)
 
 
 def solve_with_bin_smt(logic: str, y, phi: z3.ExprRef, solver_name: str):
     """Call bin SMT solvers to solve exists forall
-    FIXME: currently, I use the SMLIBSolver (We can send strings to the bin solver)
-      However, the interface is inconsistent with the QBF one.
+    In this version, we create a temp file, and ...
+    """
+    logger.debug("Solving EFSMT(BV) via {}".format(solver_name))
+    fml_str = "(set-logic {})\n".format(logic)
+    sol = z3.Solver()
+    sol.add(z3.ForAll(y, phi))
+    fml_str += sol.to_smt2()
+    tmp = open("/tmp/temp.smt2", "w")
+    tmp_filename = "/tmp/temp.smt2"
+    try:
+        tmp.write(fml_str)
+        tmp.close()
+        if solver_name == "z3":
+            cmd = [z3_exec, tmp_filename]
+        elif solver_name == "cvc5":
+            cmd = [cvc5_exec, "-q", "--produce-models", tmp_filename]
+        else:
+            cmd = [z3_exec, tmp_filename]
+        p_gene = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        is_timeout_gene = [False]
+        timer_gene = Timer(g_bin_solver_timeout, terminate, args=[p_gene, is_timeout_gene])
+        timer_gene.start()
+        out_gene = p_gene.stdout.readlines()
+        out_gene = ' '.join([str(element.decode('UTF-8')) for element in out_gene])
+        p_gene.stdout.close()  # close?
+        timer_gene.cancel()
+        if p_gene.poll() is None:
+            p_gene.terminate()  # TODO: need this?
+
+        os.remove(tmp_filename)  # rm the tmp file
+
+        if is_timeout_gene[0]:
+            return "unknown"
+        elif "unsat" in out_gene:
+            return "unsat"
+        elif "sat" in out_gene:
+            return "sat"
+        else:
+            return "unknown"
+    finally:
+        tmp.close()
+        if os.path.isfile(tmp_filename):
+            os.remove(tmp_filename)
+
+
+def solve_with_bin_smt_v2(logic: str, y, phi: z3.ExprRef, solver_name: str):
+    """Call bin SMT solvers to solve exists forall
+    In thi version, I use the SMLIBSolver (We can send strings to the bin solver)
     """
     smt2string = "(set-logic {})\n".format(logic)
     sol = z3.Solver()
@@ -108,3 +152,23 @@ def solve_with_bin_smt(logic: str, y, phi: z3.ExprRef, solver_name: str):
         print(res)
     bin_solver.stop()
     return res
+
+
+def demo_solver():
+    cmd = [cvc5_exec, "-q", "--produce-models", '/Users/rainoftime/Work/efmc/efmc/tests/tmp.smt2']
+    p_gene = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    is_timeout_gene = [False]
+    timer_gene = Timer(g_bin_solver_timeout, terminate, args=[p_gene, is_timeout_gene])
+    timer_gene.start()
+    out_gene = p_gene.stdout.readlines()
+    out_gene = ' '.join([str(element.decode('UTF-8')) for element in out_gene])
+    p_gene.stdout.close()  # close?
+    timer_gene.cancel()
+    if p_gene.poll() is None:
+        p_gene.terminate()  # TODO: need this?
+
+    print(out_gene)
+
+
+if __name__ == "__main__":
+    demo_solver()

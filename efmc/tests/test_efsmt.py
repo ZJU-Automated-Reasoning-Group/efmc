@@ -45,6 +45,8 @@ class TestEFSMT(TestCase):
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
         ef_prover = EFProver(sts)  # use template and exists-forall solving
         ef_prover.set_template("poly")
+        ef_prover.set_engine("z3api")  # Use z3's Python API
+        # ef_prover.set_engine("cvc5")
         success = ef_prover.solve_with_z3()
         assert success
 
