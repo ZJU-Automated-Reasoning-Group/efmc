@@ -74,6 +74,8 @@ def solve_with_ef(sts: TransitionSystem):
         if g_args.template in g_bv_templates:
             # ef_prover.set_template("bv_interval")
             ef_prover.set_template(g_args.template)
+            ef_prover.set_engine("z3api")  # Use z3's Python API (the default one)
+            # ef_prover.set_engine("cvc5")
         else:
             print("Unsupported template: ", g_args.template)
             print("You may try: ", g_bv_templates)

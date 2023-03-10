@@ -34,7 +34,7 @@ class EFProver:
         self.inductive_invaraint = None  # the generated invariant (e.g., to be used by other engines)
         self.property_strengthening = False  # use "template = P and template" as the invariant template
         self.seed = kwargs.get("seed", 1)  # random seed
-        self.engine = "z3"
+        self.engine = "z3api"   # Use Z3's Python API (for testing features)
 
     def set_engine(self, engine_name: str):
         self.engine = engine_name
@@ -153,12 +153,12 @@ class EFProver:
         print("Used template: {}".format(str(self.ct.template_type)))
         print("Used logic: {}".format(str(self.logic)))
         # return self.solve_with_cegar_efsmt()  # FIXME: seems very slow
-        if self.engine == "z3":
+        if self.engine == "z3api":
             return self.solve_with_z3()
         else:
             qf_vc = self.generate_quantifier_free_vc()
             print("EFSMT starting!!!")
-            ef_solver = EFSMTSolver(logic="BV", solver=self.engine)
+            ef_solver = EFSMTSolver(logic=self.logic, solver=self.engine)
             forall_vars = self.sts.all_variables
             exists_vars = []
             for ele in self.ct.template_vars:

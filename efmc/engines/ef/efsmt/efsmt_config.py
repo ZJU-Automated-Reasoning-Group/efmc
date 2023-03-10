@@ -7,6 +7,4 @@ cvc5_exec = project_root_dir + "/bin_solvers/cvc5"
 
 caqe_exec = project_root_dir + "/bin_solvers/caqe"
 
-print(caqe_exec)
-
-g_bin_solver_timeout = 50
+g_bin_solver_timeout = 30
