@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 project_root_dir = str(Path(__file__).parent.parent.parent.parent.parent)
