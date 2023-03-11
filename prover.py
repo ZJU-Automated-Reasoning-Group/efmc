@@ -8,7 +8,6 @@ import os
 import signal
 import sys
 import psutil
-import z3
 from efmc.sts import TransitionSystem
 from efmc.frontends import parse_sygus, parse_chc
 from efmc.engines.ef.ef_prover import EFProver
@@ -24,7 +23,8 @@ g_args = None  # the parsed arguments
 # the invariant templates
 g_int_real_templates = ["interval", "power_interval", "zone", "octagon", "poly"]
 # "power_poly"
-g_bv_templates = ["bv_interval", "power_bv_interval", "bv_zone", "power_bv_zone", "bv_octagon", "power_bv_octagon",
+g_bv_templates = ["bv_interval", "power_bv_interval", "bv_zone", "power_bv_zone",
+                  "bv_octagon", "power_bv_octagon",
                   "bv_affine", "bv_poly"]
 # "power_bv_affine", "power_bv_poly"
 
@@ -58,8 +58,8 @@ def solve_with_k_induction(sts: TransitionSystem):
     """Use K-induction"""
     print("K-induction starts..")
     kind_prover = KInductionProver(sts)
-    # if g_args.aux_inv:
-    #    kind_prover.use_aux_invariant = True
+    if g_args.kind_aux_inv:
+       kind_prover.use_aux_invariant = True
     kind_prover.solve(30)
 
 
@@ -68,14 +68,15 @@ def solve_with_ef(sts: TransitionSystem):
     Currently, we solve the VC (exists-forall problems) via SMT
     """
     # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
-    ef_prover = EFProver(sts)  # use template and exists-forall solving
+    ef_prover = EFProver(sts, prop_strengthen=g_args.prop_strengthen)  # use template and exists-forall solving
     # ef_prover.ignore_post_cond = True # an important flag
     if sts.has_bv:
         if g_args.template in g_bv_templates:
             # ef_prover.set_template("bv_interval")
             ef_prover.set_template(g_args.template)
-            ef_prover.set_engine("z3api")  # Use z3's Python API (the default one)
-            # ef_prover.set_engine("cvc5")
+            # the default one is "z3api"
+            ef_prover.set_solver(g_args.smt_solver)
+            # ef_prover.set_solver("cvc5")
         else:
             print("Unsupported template: ", g_args.template)
             print("You may try: ", g_bv_templates)
@@ -147,10 +148,7 @@ def solve_sygus_file(filename: str, prover="all"):
         solve_with_pdr(sts)
     elif prover == "kind":
         solve_with_k_induction(sts)
-    # elif prover == "qe":
-    #    solve_with_qe(sts)
     else:
-        # solve_with_ef(sts)
         solve_with_pdr(sts)
 
 
@@ -168,15 +166,26 @@ if __name__ == "__main__":
     # solve_chc_file(dir_path + '/benchmarks/chc/bv/2017.ASE_FIB/32bits_signed/fib_15.sl_32bits_signed.smt2',
     #               prover="efsmt")
     #exit(0)
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
-    parser.add_argument('--engine', dest='engine', default='efsmt', type=str, help="The prover for using: efsmt or pdr")
-    parser.add_argument('--template', dest='template', default='interval', type=str, help="The template for efsmt")
-    parser.add_argument('--aux-inv', dest='aux_inv', default=False, type=bool, help="Use aux invariant for k-induction")
+    parser.add_argument('--engine', dest='engine', default='efsmt', type=str, help='''Set the engine:
+  efsmt: template-based invariant generation + efsmt solving;
+  pdr: property-directed reachability (we use the engine inside Z3);
+  kind: k-induction''')
+    parser.add_argument('--template', dest='template', default='interval', type=str,
+                        help="The invariant template (only useful when the --engine=efsmt")
+    parser.add_argument('--smt-solver', dest='smt_solver', default='z3api', type=str,
+                        help="SMT solver (TODO: allow the user to specify a path to the solver?)")
+
+    parser.add_argument('--prop-strengthen', dest='prop_strengthen', default=False, type=bool,
+                        help="Enable property strengthening (currently, using 'T = T and Prop' as the template" )
+    parser.add_argument('--kind-aux-inv', dest='kind_aux_inv', default=False, type=bool, help="Use aux invariant for k-induction (by default, k-induction does not need this)")
     parser.add_argument('--lang', dest='lang', default='sygus', type=str, help="The input format: sygus or chc")
-    # parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
+    parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
     # parser.add_argument('--threads', dest='threads', default=4, type=int, help="threads")
     g_args = parser.parse_args()
+
+    # python3 prover.py --file benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl --engine efsmt
 
     if g_args.lang == "sygus":
         solve_sygus_file(g_args.file, g_args.engine)
