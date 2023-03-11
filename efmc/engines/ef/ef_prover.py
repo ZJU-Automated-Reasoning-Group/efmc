@@ -32,12 +32,15 @@ class EFProver:
         self.logic = "ALL"  # the logic, e.g., BV, LIA, ...
         self.validate_invaraint = True  # use SMT solvers to validate the correctness of the invariant
         self.inductive_invaraint = None  # the generated invariant (e.g., to be used by other engines)
-        self.property_strengthening = False  # use "template = P and template" as the invariant template
-        self.seed = kwargs.get("seed", 1)  # random seed
-        self.engine = "z3api"   # Use Z3's Python API (for testing features)
 
-    def set_engine(self, engine_name: str):
-        self.engine = engine_name
+        self.seed = kwargs.get("seed", 1)  # random seed
+        # use "template = P and template" as the invariant template
+        self.prop_strengthening = kwargs.get("prop_strengthen", False)
+        self.solver = kwargs.get("solver", "z3api")
+        # print("strengthening? ", self.prop_strengthening)
+
+    def set_solver(self, solver_name: str):
+        self.solver = solver_name
 
     def set_template(self, template_name: str):
         """Set self.ct (the template to use)"""
@@ -153,12 +156,12 @@ class EFProver:
         print("Used template: {}".format(str(self.ct.template_type)))
         print("Used logic: {}".format(str(self.logic)))
         # return self.solve_with_cegar_efsmt()  # FIXME: seems very slow
-        if self.engine == "z3api":
+        if self.solver == "z3api":
             return self.solve_with_z3()
         else:
             qf_vc = self.generate_quantifier_free_vc()
             print("EFSMT starting!!!")
-            ef_solver = EFSMTSolver(logic=self.logic, solver=self.engine)
+            ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver)
             forall_vars = self.sts.all_variables
             exists_vars = []
             for ele in self.ct.template_vars:
@@ -178,7 +181,7 @@ class EFProver:
         quantifier once (to self.sts.all_variables), which is implemented in generate_vc2
         """
         s = z3.Solver()
-        if self.property_strengthening:
+        if self.prop_strengthening:
             # use "template = P and template" as the invariant template
             var_map = []  # x' to x, y' to y
             for i in range(len(self.sts.variables)):
@@ -215,7 +218,7 @@ class EFProver:
         """Generate the "QF-part" of the VC (quantifiers will be added later
          by the generate_vc2 function)"""
         s = z3.Solver()
-        if self.property_strengthening:
+        if self.prop_strengthening:
             # use "template = P and template" as the invariant template!!
             var_map = []  # x' to x, y' to y
             for i in range(len(self.sts.variables)):
@@ -281,7 +284,7 @@ class EFProver:
         if check_res == z3.sat:
             print("EFSMT success time: ", time.time() - start)
             m = s.model()
-            if self.property_strengthening:
+            if self.prop_strengthening:
                 # use "template = P and template" as the invariant template
                 inv = z3.And(self.sts.post, self.ct.build_invariant_expr(m, use_prime_variables=False))
                 print("Invariant: ", inv)

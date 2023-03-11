@@ -27,8 +27,8 @@ class TestBitVecZoneTemplate(TestCase):
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
         ef_prover = EFProver(sts)  # use template and exists-forall solving
         ef_prover.set_template("bv_zone")
-        ef_prover.set_engine("z3api")  # Use z3's Python API
-        # ef_prover.set_engine("cvc5")
+        ef_prover.set_solver("z3api")  # Use z3's Python API
+        # ef_prover.set_solver("cvc5")
         # ef_prover.generate_vc()
         # print(vc)
         ef_prover.solve()
