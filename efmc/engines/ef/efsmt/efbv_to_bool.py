@@ -249,4 +249,3 @@ def demo_efbv2bool():
 if __name__ == '__main__':
     res = demo_efbv2bool()
     print(res)
-

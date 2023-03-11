@@ -31,9 +31,6 @@ g_bv_templates = ["bv_interval", "power_bv_interval", "bv_zone", "power_bv_zone"
 
 def signal_handler(sig, frame):
     """The signal_handler function handles signals sent to the process.
-    :param sig: Specify the signal that was caught
-    :param frame: Get the stack frame of the signal
-    :return: The signal number and the frame object
     """
     print("handling signals")
     parent = psutil.Process(os.getpid())
@@ -176,10 +173,12 @@ if __name__ == "__main__":
                         help="The invariant template (only useful when the --engine=efsmt")
     parser.add_argument('--smt-solver', dest='smt_solver', default='z3api', type=str,
                         help="SMT solver (TODO: allow the user to specify a path to the solver?)")
-
     parser.add_argument('--prop-strengthen', dest='prop_strengthen', default=False, type=bool,
                         help="Enable property strengthening (currently, using 'T = T and Prop' as the template" )
-    parser.add_argument('--kind-aux-inv', dest='kind_aux_inv', default=False, type=bool, help="Use aux invariant for k-induction (by default, k-induction does not need this)")
+
+    parser.add_argument('--kind-aux-inv', dest='kind_aux_inv', default=False, type=bool, help="Use aux invariant for k-induction")
+    parser.add_argument('--kind-k', dest='kind_k', default=20, type=int,
+                        help="Set the k value for k-induction")
     parser.add_argument('--lang', dest='lang', default='sygus', type=str, help="The input format: sygus or chc")
     parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
     # parser.add_argument('--threads', dest='threads', default=4, type=int, help="threads")

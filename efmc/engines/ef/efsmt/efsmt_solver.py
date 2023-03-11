@@ -61,6 +61,7 @@ def simple_cegar_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
                 return z3.sat
     return z3.unknown
 
+
 def solve_z3qbf(fml: z3.ExprRef):
     """Solve Exists X Forall Y Exists Z . P(...), which is translated from an exists-forall bit-vector instance
     NOTE: We do not need to explicitly specify the first Exists
@@ -149,5 +150,3 @@ class EFSMTSolver:
         Use third-party SAT solvers... (do we need?)
         """
         raise NotImplementedError
-
-
