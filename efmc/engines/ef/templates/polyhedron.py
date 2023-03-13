@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class PolyTemplate(Template):
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
 
         self.template_type = TemplateType.POLYHEDRON
 
@@ -118,13 +118,15 @@ class DisjunctivePolyTemplate(Template):
     Polyhedral domain
     """
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
         # TODO: perhaps we should block sts that is does not use reals?
 
         if sts.has_real:
             self.use_real = True
         else:
             self.use_real = False
+
+        self.num_disjunctions = kwargs.get("num_disjunctions", 2)
 
         raise NotImplementedError
 

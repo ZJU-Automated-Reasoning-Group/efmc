@@ -1,5 +1,4 @@
 """ Automated program verification for various transition systems specified in different formats
-
 This file is the default external interface for calling different engines inside the `efmc` dir
 """
 
@@ -14,6 +13,7 @@ from efmc.engines.ef.ef_prover import EFProver
 from efmc.engines.pdr.pdr_prover import PDRProver
 from efmc.engines.kinduction.kinduction_prover import KInductionProver
 from efmc.engines.qe import QuantifierEliminationProver
+
 # from efmc.utils import is_entail
 
 logger = logging.getLogger(__name__)
@@ -26,6 +26,8 @@ g_int_real_templates = ["interval", "power_interval", "zone", "octagon", "poly"]
 g_bv_templates = ["bv_interval", "power_bv_interval", "bv_zone", "power_bv_zone",
                   "bv_octagon", "power_bv_octagon",
                   "bv_affine", "bv_poly"]
+
+
 # "power_bv_affine", "power_bv_poly"
 
 
@@ -56,7 +58,7 @@ def solve_with_k_induction(sts: TransitionSystem):
     print("K-induction starts..")
     kind_prover = KInductionProver(sts)
     if g_args.kind_aux_inv:
-       kind_prover.use_aux_invariant = True
+        kind_prover.use_aux_invariant = True
     kind_prover.solve(30)
 
 
@@ -65,12 +67,12 @@ def solve_with_ef(sts: TransitionSystem):
     Currently, we solve the VC (exists-forall problems) via SMT
     """
     # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
-    ef_prover = EFProver(sts, prop_strengthen=g_args.prop_strengthen)  # use template and exists-forall solving
+    ef_prover = EFProver(sts, prop_strengthen=g_args.prop_strengthen)
     # ef_prover.ignore_post_cond = True # an important flag
     if sts.has_bv:
         if g_args.template in g_bv_templates:
             # ef_prover.set_template("bv_interval")
-            ef_prover.set_template(g_args.template)
+            ef_prover.set_template(g_args.template, num_disjunctions=g_args.num_disjunctions)
             # the default one is "z3api"
             ef_prover.set_solver(g_args.smt_solver)
             # ef_prover.set_solver("cvc5")
@@ -80,9 +82,11 @@ def solve_with_ef(sts: TransitionSystem):
             exit(0)
     else:
         if g_args.template in g_int_real_templates:
-            ef_prover.set_template(g_args.template)
-            # ef_prover.set_template("power_interval")
-            # ef_prover.set_template("interval")
+            ef_prover.set_template(g_args.template, num_disjunctions=g_args.num_disjunctions)
+            # the default one is "z3api"
+            ef_prover.set_solver(g_args.smt_solver)
+            # ef_prover.set_solver("cvc5")
+            # ef_prover.set_template("power_interval")   ("interval")
         else:
             print("Unsupported template: ", g_args.template)
             print("You may try: ", g_int_real_templates)
@@ -162,7 +166,7 @@ if __name__ == "__main__":
     # solve_sygus_file(dir_path + '/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl', "efsmt")
     # solve_chc_file(dir_path + '/benchmarks/chc/bv/2017.ASE_FIB/32bits_signed/fib_15.sl_32bits_signed.smt2',
     #               prover="efsmt")
-    #exit(0)
+    # exit(0)
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
     parser.add_argument('--engine', dest='engine', default='efsmt', type=str, help='''Set the engine:
@@ -171,12 +175,17 @@ if __name__ == "__main__":
   kind: k-induction''')
     parser.add_argument('--template', dest='template', default='interval', type=str,
                         help="The invariant template (only useful when the --engine=efsmt")
+    parser.add_argument('--num-disjunctions', dest='num_disjunctions', default=1, type=int,
+                        help="Set the number of disjunctions (for disjunctive invariant)")
     parser.add_argument('--smt-solver', dest='smt_solver', default='z3api', type=str,
                         help="SMT solver (TODO: allow the user to specify a path to the solver?)")
-    parser.add_argument('--prop-strengthen', dest='prop_strengthen', default=False, type=bool,
-                        help="Enable property strengthening (currently, using 'T = T and Prop' as the template" )
 
-    parser.add_argument('--kind-aux-inv', dest='kind_aux_inv', default=False, type=bool, help="Use aux invariant for k-induction")
+    # T' = T and P (where T is the original template, and P is the property)
+    parser.add_argument('--prop-strengthen', dest='prop_strengthen', default=False, type=bool,
+                        help="Enable property strengthening (currently, using 'T = T and Prop' as the template")
+
+    parser.add_argument('--kind-aux-inv', dest='kind_aux_inv', default=False, type=bool,
+                        help="Use aux invariant for k-induction")
     parser.add_argument('--kind-k', dest='kind_k', default=20, type=int,
                         help="Set the k value for k-induction")
     parser.add_argument('--lang', dest='lang', default='sygus', type=str, help="The input format: sygus or chc")

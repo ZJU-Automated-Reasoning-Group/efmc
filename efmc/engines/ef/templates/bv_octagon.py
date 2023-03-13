@@ -10,7 +10,7 @@ from efmc.utils import get_variables, big_and, big_or
 
 class BitVecOctagonTemplate(Template):
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
         self.sts = sts
         self.template_type = TemplateType.BV_OCTAGON
 
@@ -157,7 +157,7 @@ class BitVecOctagonTemplate(Template):
 
 class DisjunctiveBitVecOctagonTemplate(Template):
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
         self.sts = sts
         self.template_type = TemplateType.BV_DISJUNCTIVE_OCTAGON
 
@@ -189,7 +189,7 @@ class DisjunctiveBitVecOctagonTemplate(Template):
 
         self.template_index = 0  # number of templates
 
-        self.num_of_disjuncts = 2
+        self.num_disjunctions = kwargs.get("num_disjunctions", 2)
 
         self.add_template_vars()
 
@@ -202,8 +202,8 @@ class DisjunctiveBitVecOctagonTemplate(Template):
         """
         Add several groups of template vars
         """
-        for i in range(self.num_of_disjuncts):
-            # crate self.num_of_disjuncts classes of variables
+        for i in range(self.num_disjunctions):
+            # crate self.num_disjunctions classes of variables
 
             #  aux variables for x, y, z ,...
             aux_vars = []
@@ -240,7 +240,7 @@ class DisjunctiveBitVecOctagonTemplate(Template):
         cnt_init_and_post_dis = []
         cnt_trans_dis = []
 
-        for i in range(self.num_of_disjuncts):
+        for i in range(self.num_disjunctions):
             cnt_init_post = []  # For sts.variables
             cnt_trans = []  # For sts.prime_variables
 
@@ -293,10 +293,10 @@ class DisjunctiveBitVecOctagonTemplate(Template):
         """
         cnts_dis = []
 
-        for i in range(self.num_of_disjuncts):
+        for i in range(self.num_disjunctions):
             cnts = []
 
-            # Invariant: len(self.template_vars) = self.num_of_disjuncts
+            # Invariant: len(self.template_vars) = self.num_disjunctions
             aux_vars_for_vars_ith_disjunct = self.template_vars_for_vars[i]
             for j in range(self.arity):
                 if use_prime_variables:
@@ -318,6 +318,7 @@ class DisjunctiveBitVecOctagonTemplate(Template):
                     term = self.octagons[j]
                 term_l = aux_vars_for_terms_ith_disjunct[j][0]  # lower bound of the term
                 term_u = aux_vars_for_terms_ith_disjunct[j][1]  # upper bound of the term
+
                 if self.signedness == Signedness.UNSIGNED:
                     cnts.append(z3.And(z3.ULE(model[term_l], term), z3.UGE(model[term_u], term)))
                 else:

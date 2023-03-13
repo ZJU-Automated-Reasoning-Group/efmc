@@ -27,6 +27,8 @@ class TestBitVecIntervalTemplate(TestCase):
         ef_prover = EFProver(sts)  # use template and exists-forall solving
         ef_prover.set_template("bv_interval")
         ef_prover.set_solver("z3api")  # Use z3's Python API
+
+
         # ef_prover.set_solver("cvc5")
         # ef_prover.set_template("bv_interval")
         # vc = ef_prover.generate_vc()

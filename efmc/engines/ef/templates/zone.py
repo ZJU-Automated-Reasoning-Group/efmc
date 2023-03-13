@@ -17,7 +17,7 @@ class ZoneTemplate(Template):
      the interval one (which uses FOUR template variables for each program variable, but NOT TWO)
     """
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
 
         self.template_type = TemplateType.ZONE
 
@@ -121,12 +121,14 @@ class ZoneTemplate(Template):
 
 class DisjunctiveZoneTemplate(Template):
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
 
         if sts.has_real:
             self.use_real = True
         else:
             self.use_real = False
+
+        self.num_disjunctions = kwargs.get("num_disjunctions", 2)
 
         raise NotImplementedError
 

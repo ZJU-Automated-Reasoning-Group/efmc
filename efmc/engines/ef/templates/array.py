@@ -17,7 +17,7 @@ class ArrayTemplate(Template):
     E.g., https://www.cs.upc.edu/~albert/papers/vmcai2013.pdf
     """
 
-    def __init__(self, system: TransitionSystem):
+    def __init__(self, system: TransitionSystem, **kwargs):
         self.template_type = TemplateType.ARRAY
         self.sts = system
         # TODO: we should be "directly" pass system to IntervalTemplate
@@ -43,7 +43,7 @@ class UFTemplate(Template):
     Currently, we focus on UFLIA
     """
 
-    def __init__(self, system: TransitionSystem):
+    def __init__(self, system: TransitionSystem, **kwargs):
         self.template_type = TemplateType.ARRAY
         self.sts = system
         # TODO: we should be "directly" pass system to IntervalTemplate
