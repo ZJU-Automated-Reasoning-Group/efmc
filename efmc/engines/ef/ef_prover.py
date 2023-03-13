@@ -34,27 +34,28 @@ class EFProver:
         self.inductive_invaraint = None  # the generated invariant (e.g., to be used by other engines)
 
         self.seed = kwargs.get("seed", 1)  # random seed
-        # use "template = P and template" as the invariant template
+        # use "template = P and template" as the invariant actual template
         self.prop_strengthening = kwargs.get("prop_strengthen", False)
+        # the SMT solver for dealing with the EFSMT queries
         self.solver = kwargs.get("solver", "z3api")
         # print("strengthening? ", self.prop_strengthening)
 
     def set_solver(self, solver_name: str):
         self.solver = solver_name
 
-    def set_template(self, template_name: str):
+    def set_template(self, template_name: str, num_disjunctions=1):
         """Set self.ct (the template to use)"""
         if template_name == "poly":
             self.ct = PolyTemplate(self.sts)
         elif template_name == "power_poly":  # bounded, disjunctive polyhedral
-            self.ct = DisjunctivePolyTemplate(self.sts)
+            self.ct = DisjunctivePolyTemplate(self.sts, num_disjunctions=num_disjunctions)
         elif template_name == "interval":
             self.ct = IntervalTemplate(self.sts)
             # the following one uses a < x < b, c < y < d
             # need to confirm whether it is weaker...
             # self.ct = IntervalTemplateV2(self.sts)
         elif template_name == "power_interval":  # bounded, disjunctive interval
-            self.ct = DisjunctiveIntervalTemplate(self.sts)
+            self.ct = DisjunctiveIntervalTemplate(self.sts, num_disjunctions=num_disjunctions)
         elif template_name == "zone":
             if len(self.sts.variables) < 2:
                 self.ct = IntervalTemplate(self.sts)
@@ -71,29 +72,29 @@ class EFProver:
         elif template_name == "bv_interval":
             self.ct = BitVecIntervalTemplate(self.sts)
         elif template_name == "power_bv_interval":
-            self.ct = DisjunctiveBitVecIntervalTemplate(self.sts)
+            self.ct = DisjunctiveBitVecIntervalTemplate(self.sts, num_disjunctions=num_disjunctions)
         elif template_name == "bv_zone":
             if len(self.sts.variables) < 2:
                 self.ct = BitVecIntervalTemplate(self.sts)
             else:
                 self.ct = BitVecZoneTemplate(self.sts)
         elif template_name == "power_bv_zone":
-            self.ct = DisjunctiveBitVecIntervalTemplate(self.sts)
+            self.ct = DisjunctiveBitVecIntervalTemplate(self.sts, num_disjunctions=num_disjunctions)
         elif template_name == "bv_octagon":
             if len(self.sts.variables) < 2:
                 self.ct = BitVecIntervalTemplate(self.sts)
             else:
                 self.ct = BitVecOctagonTemplate(self.sts)
         elif template_name == "power_bv_octagon":
-            self.ct = DisjunctiveBitVecOctagonTemplate(self.sts)
+            self.ct = DisjunctiveBitVecOctagonTemplate(self.sts, num_disjunctions=num_disjunctions)
         elif template_name == "bv_affine":
             self.ct = BitVecAffineTemplate(self.sts)
         elif template_name == "power_bv_affine":
-            self.ct = DisjunctiveBitVecAffineTemplate(self.sts)
+            self.ct = DisjunctiveBitVecAffineTemplate(self.sts, nnum_disjunctions=num_disjunctions)
         elif template_name == "bv_poly":
             self.ct = BitVecPolyhedronTemplate(self.sts)
         elif template_name == "power_bv_poly":
-            self.ct = DisjunctiveBitVecPolyhedronTemplate(self.sts)
+            self.ct = DisjunctiveBitVecPolyhedronTemplate(self.sts, num_disjunctions=self.num_disjunctions)
         else:
             self.ct = PolyTemplate(self.sts)
 
@@ -118,9 +119,9 @@ class EFProver:
         elif self.sts.has_int:
             template = self.ct.template_type
             if template == TemplateType.ZONE or template == TemplateType.INTERVAL:
-                self.logic = "LIA"  # or UFLIA?
+                self.logic = "UFLIA"  # or UFLIA?
             else:
-                self.logic = "NIA"  # or UFNIA?
+                self.logic = "UFNIA"  # or UFNIA?
         else:
             raise NotImplementedError
 

@@ -13,7 +13,7 @@ class BitVecPolyhedronTemplate(Template):
     Bit-vec polyhedron
     """
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
         self.template_type = TemplateType.BV_POLYHEDRON
 
         # TODO: infer the signedness of variables? (or design a domain that is signedness-irrelevant
@@ -122,7 +122,7 @@ class DisjunctiveBitVecPolyhedronTemplate(Template):
     TODO: There are several variants. Some references
     """
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
         self.template_type = TemplateType.BV_DISJUNCTIVE_POLYHEDRON
 
         if sts.signedness == "signed":
@@ -131,6 +131,9 @@ class DisjunctiveBitVecPolyhedronTemplate(Template):
             self.signedness = Signedness.UNSIGNED
 
         self.sts = sts
+
+        self.num_disjunctions = kwargs.get("num_disjunctions", 2)
+
 
     def add_template_vars(self):
         """

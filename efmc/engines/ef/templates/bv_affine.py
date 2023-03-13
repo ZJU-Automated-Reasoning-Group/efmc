@@ -19,7 +19,7 @@ class BitVecAffineTemplate(Template):
          Automatic abstraction for congruences, VMCAI'10
     """
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
         self.template_type = TemplateType.BV_AFFINE
 
         self.sts = sts
@@ -132,7 +132,7 @@ class DisjunctiveBitVecAffineTemplate(Template):
          Automatic abstraction for congruences, VMCAI'10
     """
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
         self.template_type = TemplateType.BV_DISJUNCTIVE_AFFINE
 
         if sts.signedness == "signed":
@@ -141,6 +141,8 @@ class DisjunctiveBitVecAffineTemplate(Template):
             self.signedness = Signedness.UNSIGNED
 
         self.sts = sts
+
+        self.num_disjunctions = kwargs.get("num_disjunctions", 2)
 
     def add_template_vars(self):
         """

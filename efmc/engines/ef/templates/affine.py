@@ -13,7 +13,7 @@ class AffineTemplate(Template):
     Affine relation (linear equality) analysis
     """
 
-    def __init__(self, system: TransitionSystem):
+    def __init__(self, system: TransitionSystem, **kwargs):
         self.template_type = TemplateType.OCTAGON
 
         # self.use_real = True

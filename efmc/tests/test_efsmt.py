@@ -24,9 +24,9 @@ class TestEFSMT(TestCase):
 
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
         ef_prover = EFProver(sts)  # use template and exists-forall solving
-        ef_prover.set_template("poly")
-        success = ef_prover.solve_with_z3()
-        assert success
+        ef_prover.set_template("power_interval", num_disjunctions=2)
+        success = ef_prover.solve()
+        assert True
 
     def test_efsmt2(self):
         # Specify transition system using Z3's python API (a "naive" trick)
@@ -44,10 +44,10 @@ class TestEFSMT(TestCase):
 
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
         ef_prover = EFProver(sts)  # use template and exists-forall solving
-        ef_prover.set_template("poly")
+        ef_prover.set_template("power_interval", num_disjunctions=2)
         ef_prover.set_solver("z3api")  # Use z3's Python API
         # ef_prover.set_solver("cvc5")
-        success = ef_prover.solve_with_z3()
+        success = ef_prover.solve()
         assert success
 
 

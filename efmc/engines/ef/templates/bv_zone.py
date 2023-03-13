@@ -12,7 +12,7 @@ from efmc.utils import get_variables, big_and, big_or
 
 class BitVecZoneTemplate(Template):
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
 
         self.template_type = TemplateType.BV_ZONE
 
@@ -110,7 +110,7 @@ class BitVecZoneTemplate(Template):
 
 class DisjunctiveBitVecZoneTemplate(Template):
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
         self.template_type = TemplateType.BV_DISJUNCTIVE_ZONE
 
         # TODO: infer the signedness of variables? (or design a domain that is signedness-irrelevant
@@ -132,7 +132,7 @@ class DisjunctiveBitVecZoneTemplate(Template):
         self.template_vars = []  # vector of vector
         self.template_index = 0  # number of templates
 
-        self.num_of_disjuncts = 2
+        self.num_disjunctions = kwargs.get("num_disjunctions", 2)
 
         self.add_template_vars()
 
@@ -145,7 +145,7 @@ class DisjunctiveBitVecZoneTemplate(Template):
         """
         Add several groups of template vars
         """
-        for i in range(self.num_of_disjuncts):
+        for i in range(self.num_disjunctions):
             vars_for_dis = []
             for j in range(len(self.zones)):
                 term = self.zones[i]
@@ -173,8 +173,8 @@ class DisjunctiveBitVecZoneTemplate(Template):
         cnt_init_and_post_dis = []
         cnt_trans_dis = []
 
-        for i in range(self.num_of_disjuncts):
-            # Invariant: len(self.template_vars) = self.num_of_disjuncts
+        for i in range(self.num_disjunctions):
+            # Invariant: len(self.template_vars) = self.num_disjunctions
             vars_for_ith_disjunct = self.template_vars[i]
             cnt_init_post = []  # For sts.variables
             cnt_trans = []  # For sts.prime_variables
@@ -207,8 +207,8 @@ class DisjunctiveBitVecZoneTemplate(Template):
         Build an invariant from a model (fixing the values of the template vars)
         """
         cnts_dis = []
-        for i in range(self.num_of_disjuncts):
-            # Invariant: len(self.template_vars) = self.num_of_disjuncts
+        for i in range(self.num_disjunctions):
+            # Invariant: len(self.template_vars) = self.num_disjunctions
             vars_for_ith_disjunct = self.template_vars[i]
             cnts = []  # constraints for one disjunct
             for j in range(len(self.zones)):

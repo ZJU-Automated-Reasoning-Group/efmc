@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class OctagonTemplate(Template):
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
         self.template_type = TemplateType.OCTAGON
 
         if sts.has_real:
@@ -30,7 +30,7 @@ class OctagonTemplate(Template):
 
 
 class DisjunctiveOctagonTemplate(Template):
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
         self.template_type = TemplateType.DISJUNCTIVE_OCTAGON
 
         if sts.has_real:

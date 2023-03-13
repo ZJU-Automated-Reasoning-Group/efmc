@@ -16,7 +16,7 @@ class IntervalTemplate(Template):
     """Interval domain
     """
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
 
         self.template_type = TemplateType.INTERVAL
 
@@ -151,7 +151,7 @@ class DisjunctiveIntervalTemplate(Template):
     Disjunctive Interval domain
     """
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
 
         self.template_type = TemplateType.DISJUNCTIVE_INTERVAL
 
@@ -166,7 +166,7 @@ class DisjunctiveIntervalTemplate(Template):
         self.template_vars = []  # vector of vector
         self.template_index = 0  # number of templates
 
-        self.num_of_disjuncts = 2
+        self.num_disjunctions = kwargs.get("num_disjunctions", 2)
 
         self.add_template_vars()
 
@@ -176,7 +176,7 @@ class DisjunctiveIntervalTemplate(Template):
         self.add_template_cnts()
 
     def add_template_vars(self):
-        for i in range(self.num_of_disjuncts):
+        for i in range(self.num_disjunctions):
             vars_for_dis = []
             for j in range(self.arity):
                 var = self.sts.variables[j]
@@ -237,6 +237,7 @@ class DisjunctiveIntervalTemplate(Template):
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
         # FIXME: the following is from IntervalTemplate
         cnts_dis = []
+        # print("groups of template vars: ", len(self.template_vars))
         for vars_for_dis in self.template_vars:
             cnts = []
             for i in range(self.arity):
@@ -252,7 +253,8 @@ class DisjunctiveIntervalTemplate(Template):
                     cnts.append(model[i0] + var * model[i1] >= 0)
                 if model[i3].as_long() != 0:
                     cnts.append(model[i2] + var * model[i3] >= 0)
-            return big_and(cnts)
+            cnts_dis.append(big_and(cnts))
+
         return z3.Or(cnts_dis)
 
 
@@ -266,7 +268,7 @@ class IntervalTemplateV2(Template):
       But, can we use a < x < b,  c < y < d (e.g., for integers?)
     """
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
 
         self.template_type = TemplateType.INTERVAL
 

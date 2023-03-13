@@ -10,7 +10,7 @@ from efmc.utils import big_and
 
 class BitVecIntervalTemplate(Template):
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
 
         self.template_type = TemplateType.BV_INTERVAL
 
@@ -86,7 +86,7 @@ class DisjunctiveBitVecIntervalTemplate(Template):
     Disjunctive Interval domain
     """
 
-    def __init__(self, sts: TransitionSystem):
+    def __init__(self, sts: TransitionSystem, **kwargs):
 
         self.template_type = TemplateType.BV_DISJUNCTIVE_INTERVAL
 
@@ -102,7 +102,8 @@ class DisjunctiveBitVecIntervalTemplate(Template):
         self.template_vars = []  # vector of vector
         self.template_index = 0  # number of templates
 
-        self.num_of_disjuncts = 2
+        self.num_disjunctions = kwargs.get("num_disjunctions", 2)
+
 
         self.add_template_vars()
 
@@ -112,7 +113,7 @@ class DisjunctiveBitVecIntervalTemplate(Template):
         self.add_template_cnts()
 
     def add_template_vars(self):
-        for i in range(self.num_of_disjuncts):
+        for i in range(self.num_disjunctions):
             vars_for_dis = []
             for j in range(self.arity):
                 var = self.sts.variables[j]
@@ -131,8 +132,8 @@ class DisjunctiveBitVecIntervalTemplate(Template):
         cnt_init_and_post_dis = []
         cnt_trans_dis = []
 
-        for i in range(self.num_of_disjuncts):
-            # Invariant: len(self.template_vars) = self.num_of_disjuncts
+        for i in range(self.num_disjunctions):
+            # Invariant: len(self.template_vars) = self.num_disjunctions
             # print("XXX", vars_for_dis)
             cnt_init_post = []  # For sts.variables
             cnt_trans = []  # For sts.prime_variables
@@ -179,4 +180,5 @@ class DisjunctiveBitVecIntervalTemplate(Template):
                     cnts.append(z3.And(var >= model[lower], var <= model[upper]))
 
             cnts_dis.append(big_and(cnts))
+
         return z3.Or(cnts_dis)
