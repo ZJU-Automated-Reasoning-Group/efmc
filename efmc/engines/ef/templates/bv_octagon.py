@@ -262,7 +262,7 @@ class DisjunctiveBitVecOctagonTemplate(Template):
             #  aux variables for x - y, x + y, ...
             aux_vars_for_terms = []
             for j in range(len(self.octagons)):
-                term = self.octagons[i]
+                term = self.octagons[j]
                 term_vars = get_variables(term)
                 term_name = "{}{}".format(term_vars[0], term_vars[1])
                 self.template_index += 1
