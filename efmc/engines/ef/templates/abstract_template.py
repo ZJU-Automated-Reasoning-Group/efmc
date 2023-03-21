@@ -1,4 +1,5 @@
-# coding: utf-8
+
+
 from enum import Enum
 import z3
 
@@ -39,15 +40,15 @@ class Template(object):
         raise NotImplementedError
 
     def add_template_cnts(self):
-        """Add constraints for the template variables
+        """Add constraints for the template variables (according to specification of inductive loop invariant)
         TODO: in some cases, we may want to iteratively/gradually add new constraints
          to the template variables. Perhaps we need to  design a good interface for doing this.
-         (For example, we may want to compute the "minimal/most precise" inductive invariant.
+         (For example, we may want to compute the "minimal/most precise" inductive invariant).
         """
         raise NotImplementedError
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
-        """Build an invariant from a model, i.e., fixing the values of the template vars
+        """Build an invariant from a model, i.e., finding assignments of the template vars
         :param model the model used for building expr
         :param use_prime_variables deciding using x, y or x!, y!
         """

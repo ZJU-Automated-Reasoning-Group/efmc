@@ -11,12 +11,15 @@ from efmc.utils import big_and
 
 class BitVecAffineTemplate(Template):
     """
+    Affine relation domain over bit-vectors
+    This class represents a template for affine relations over bit-vectors.
+    It can be used to generate invariants for transition systems with bit-vector variables.
+
     TODO: There are several variants. Some references
       - Matt elder et al., Abstract domains of affine relations, TOPLAS'14
       - Olm and Seidl, Precise interprocedural analysis through linear algebra, POPL'04
-       - King and Sondergaard,
-         Inferring congruence equations using SAT, CAV'08
-         Automatic abstraction for congruences, VMCAI'10
+      - King and Sondergaard, Inferring congruence equations using SAT, CAV'08
+      - Automatic abstraction for congruences, VMCAI'10
     """
 
     def __init__(self, sts: TransitionSystem, **kwargs):
@@ -29,6 +32,9 @@ class BitVecAffineTemplate(Template):
             self.signedness = Signedness.SIGNED
         elif sts.signedness == "unsigned":
             self.signedness = Signedness.UNSIGNED
+
+        self.obj_no_overflow = kwargs.get("no_overflow", False)
+        self.obj_no_underflow = kwargs.get("no_underflow", False)
 
         self.template_vars = []  # vector of vector
 
@@ -143,6 +149,9 @@ class DisjunctiveBitVecAffineTemplate(Template):
         self.sts = sts
 
         self.num_disjunctions = kwargs.get("num_disjunctions", 2)
+
+        self.obj_no_overflow = kwargs.get("no_overflow", False)
+        self.obj_no_underflow = kwargs.get("no_underflow", False)
 
     def add_template_vars(self):
         """

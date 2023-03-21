@@ -28,7 +28,7 @@ class TransitionSystem(object):
         self.initialized = False
 
         self.has_bv = False
-        self.signedness = "signed"
+        self.signedness = "unsigned"
 
         self.has_int = False
         self.has_real = False
