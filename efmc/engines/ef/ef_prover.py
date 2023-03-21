@@ -43,6 +43,8 @@ class EFProver:
         self.no_overflow = kwargs.get("no_overflow", False)
         self.no_underflow = kwargs.get("no_underflow", False)
 
+        print("prevent over/under flow? ", self.no_overflow, self.no_underflow)
+
     def set_solver(self, solver_name: str):
         self.solver = solver_name
 
