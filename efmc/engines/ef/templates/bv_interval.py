@@ -9,12 +9,14 @@ from efmc.utils import big_and
 
 
 class BitVecIntervalTemplate(Template):
+    
 
     def __init__(self, sts: TransitionSystem, **kwargs):
 
         self.template_type = TemplateType.BV_INTERVAL
 
-        # TODO: infer the signedness of variables? (or design a domain that is signedness-irrelevant
+        # TODO: infer the signedness of variables? (or design a domain that is
+        #  signedness-irrelevant. Currently, we use unsigned by default
         if sts.signedness == "signed":
             self.signedness = Signedness.SIGNED
         elif sts.signedness == "unsigned":
@@ -22,6 +24,10 @@ class BitVecIntervalTemplate(Template):
 
         self.sts = sts
         self.arity = len(self.sts.variables)
+
+        # self.obj_no_overflow = kwargs.get("no_overflow", False)
+        # self.obj_no_underflow = kwargs.get("no_underflow", False)
+
 
         self.template_vars = []  # vector of vector
         self.template_index = 0  # number of templates

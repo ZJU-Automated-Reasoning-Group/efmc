@@ -22,17 +22,36 @@ class BitVecZoneTemplate(Template):
         elif sts.signedness == "unsigned":
             self.signedness = Signedness.UNSIGNED
 
+        # prevent over/under flows in the template exprs, e.g., x - y
+        self.obj_no_overflow = kwargs.get("no_overflow", False)
+        self.obj_no_underflow = kwargs.get("no_underflow", False)
+
         self.sts = sts
         self.arity = len(self.sts.variables)
         assert (self.arity >= 2)
         assert (len(self.sts.prime_variables) >= 2)
 
         self.zones = []
+
+        self.wrap_around_cnts_vars = []  # for preventing under/under flow in the tempalte exprs
+        self.wrap_around_cnts_prime_vars = []
+        signed = True if self.signedness == Signedness.SIGNED else False
+
         for x, y in list(itertools.combinations(self.sts.variables, 2)):
             self.zones.append(x - y)
+            if self.obj_no_overflow:
+                self.wrap_around_cnts_vars.append(z3.BVSubNoOverflow(x, y))
+            if self.obj_no_underflow:
+                self.wrap_around_cnts_vars.append(z3.BVSubNoUnderflow(x, y, signed=signed))
+
         self.prime_zones = []
         for px, py in list(itertools.combinations(self.sts.prime_variables, 2)):
             self.prime_zones.append(px - py)
+
+            if self.obj_no_overflow:
+                self.wrap_around_cnts_prime_vars.append(z3.BVSubNoOverflow(px, py))
+            if self.obj_no_underflow:
+                self.wrap_around_cnts_prime_vars.append(z3.BVSubNoUnderflow(px, py, signed=signed))
 
         self.template_vars = []  # vector of vector
         self.template_index = 0  # number of templates
@@ -46,6 +65,7 @@ class BitVecZoneTemplate(Template):
 
     def add_template_vars(self):
         # follow interval, but use self.zones
+
         for i in range(len(self.zones)):
             term = self.zones[i]
             term_vars = get_variables(term)
@@ -82,7 +102,16 @@ class BitVecZoneTemplate(Template):
                                          term_u >= term_prime))
 
         self.template_cnt_init_and_post = big_and(cnts)
+        if len(self.wrap_around_cnts_vars) > 0:
+            # print(self.wrap_around_cnts_vars)
+            self.template_cnt_init_and_post = z3.And(self.template_cnt_init_and_post,
+                                                     big_and(self.wrap_around_cnts_vars))
+
         self.template_cnt_trans = big_and(cnts_prime)
+        if len(self.wrap_around_cnts_prime_vars) > 0:
+            self.template_cnt_trans = z3.And(self.template_cnt_trans,
+                                             big_and(self.wrap_around_cnts_prime_vars))
+
         # raise NotImplementedError
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
@@ -119,15 +148,32 @@ class DisjunctiveBitVecZoneTemplate(Template):
         elif sts.signedness == "unsigned":
             self.signedness = Signedness.UNSIGNED
 
+        # prevent over/under flows in the template exprs, e.g., x - y
+        self.obj_no_overflow = kwargs.get("no_overflow", False)
+        self.obj_no_underflow = kwargs.get("no_underflow", False)
+
         self.sts = sts
         self.arity = len(self.sts.variables)
+
+        self.wrap_around_cnts_vars = []  # for preventing under/under flow in the tempalte exprs
+        self.wrap_around_cnts_prime_vars = []
+        signed = True if self.signedness == Signedness.SIGNED else False
 
         self.zones = []  # x - y, x - z, y - z, ...
         for x, y in list(itertools.combinations(self.sts.variables, 2)):
             self.zones.append(x - y)
+            if self.obj_no_overflow:
+                self.wrap_around_cnts_vars.append(z3.BVSubNoOverflow(x, y))
+            if self.obj_no_underflow:
+                self.wrap_around_cnts_vars.append(z3.BVSubNoUnderflow(x, y, signed=signed))
+
         self.prime_zones = []
         for px, py in list(itertools.combinations(self.sts.prime_variables, 2)):
             self.prime_zones.append(px - py)
+            if self.obj_no_overflow:
+                self.wrap_around_cnts_prime_vars.append(z3.BVSubNoOverflow(px, py))
+            if self.obj_no_underflow:
+                self.wrap_around_cnts_prime_vars.append(z3.BVSubNoUnderflow(px, py, signed=signed))
 
         self.template_vars = []  # vector of vector
         self.template_index = 0  # number of templates
@@ -148,7 +194,7 @@ class DisjunctiveBitVecZoneTemplate(Template):
         for i in range(self.num_disjunctions):
             vars_for_dis = []
             for j in range(len(self.zones)):
-                term = self.zones[i]
+                term = self.zones[j]
                 term_vars = get_variables(term)
                 term_name = "{}{}".format(term_vars[0], term_vars[1])
                 self.template_index += 1
@@ -194,8 +240,19 @@ class DisjunctiveBitVecZoneTemplate(Template):
                     cnt_trans.append(z3.And(term_l <= term_prime,
                                             term_u >= term_prime))
 
-            cnt_init_and_post_dis.append(big_and(cnt_init_post))
-            cnt_trans_dis.append(big_and(cnt_trans))
+            ith_cnt_init_post = big_and(cnt_init_post)
+            ith_cnt_trans = big_and(cnt_trans)
+
+            # for preventing over/under flows in x - y,...
+            if len(self.wrap_around_cnts_vars) > 0:
+                ith_cnt_init_post = z3.And(ith_cnt_init_post,
+                                           big_and(self.wrap_around_cnts_vars))
+            if len(self.wrap_around_cnts_prime_vars) > 0:
+                ith_cnt_trans = z3.And(ith_cnt_trans,
+                                       big_and(self.wrap_around_cnts_prime_vars))
+
+            cnt_init_and_post_dis.append(ith_cnt_init_post)
+            cnt_trans_dis.append(ith_cnt_trans)
 
         self.template_cnt_init_and_post = big_or(cnt_init_and_post_dis)
         self.template_cnt_trans = big_or(cnt_trans_dis)

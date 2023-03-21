@@ -12,7 +12,7 @@ import os
 import z3
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse
 
-g_bitvector_width = 8
+g_bitvector_width = 32
 g_bitvector_signedness = "unsigned"
 
 
@@ -250,8 +250,8 @@ def process_file(filename: str, target_dir: str):
     print("Processing ", filename)
     with open(filename, "r") as f:
         content = f.read()
-        # fml_str = sygus2chcbv(content)
-        fml_str = sygus2chc(content)
+        fml_str = sygus2chcbv(content)
+        # fml_str = sygus2chc(content)
         # print(fml_str)
         # s = SolverFor("HORN")
         # s.add(And(parse_smt2_string(fml_str)))

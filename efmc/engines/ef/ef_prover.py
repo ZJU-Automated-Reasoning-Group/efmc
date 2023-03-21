@@ -38,12 +38,15 @@ class EFProver:
         self.prop_strengthening = kwargs.get("prop_strengthen", False)
         # the SMT solver for dealing with the EFSMT queries
         self.solver = kwargs.get("solver", "z3api")
-        # print("strengthening? ", self.prop_strengthening)
+
+        # prevent over/underflow in the template exprs, e.g., x - y, x + y
+        self.no_overflow = kwargs.get("no_overflow", False)
+        self.no_underflow = kwargs.get("no_underflow", False)
 
     def set_solver(self, solver_name: str):
         self.solver = solver_name
 
-    def set_template(self, template_name: str, num_disjunctions=1):
+    def set_template(self, template_name: str, num_disjunctions=2):
         """Set self.ct (the template to use)"""
         if template_name == "poly":
             self.ct = PolyTemplate(self.sts)
@@ -72,29 +75,43 @@ class EFProver:
         elif template_name == "bv_interval":
             self.ct = BitVecIntervalTemplate(self.sts)
         elif template_name == "power_bv_interval":
-            self.ct = DisjunctiveBitVecIntervalTemplate(self.sts, num_disjunctions=num_disjunctions)
+            self.ct = DisjunctiveBitVecIntervalTemplate(self.sts,
+                                                        num_disjunctions=num_disjunctions)
         elif template_name == "bv_zone":
             if len(self.sts.variables) < 2:
                 self.ct = BitVecIntervalTemplate(self.sts)
             else:
-                self.ct = BitVecZoneTemplate(self.sts)
+                self.ct = BitVecZoneTemplate(self.sts,
+                                             no_overflow=self.no_overflow,
+                                             no_underflow=self.no_underflow)
+
         elif template_name == "power_bv_zone":
-            self.ct = DisjunctiveBitVecIntervalTemplate(self.sts, num_disjunctions=num_disjunctions)
+            self.ct = DisjunctiveBitVecZoneTemplate(self.sts,
+                                                    num_disjunctions=num_disjunctions,
+                                                    no_overflow=self.no_overflow,
+                                                    no_underflow=self.no_underflow)
         elif template_name == "bv_octagon":
             if len(self.sts.variables) < 2:
                 self.ct = BitVecIntervalTemplate(self.sts)
             else:
-                self.ct = BitVecOctagonTemplate(self.sts)
+                self.ct = BitVecOctagonTemplate(self.sts,
+                                                no_overflow=self.no_overflow,
+                                                no_underflow=self.no_underflow)
         elif template_name == "power_bv_octagon":
-            self.ct = DisjunctiveBitVecOctagonTemplate(self.sts, num_disjunctions=num_disjunctions)
+            self.ct = DisjunctiveBitVecOctagonTemplate(self.sts,
+                                                       num_disjunctions=num_disjunctions,
+                                                       no_overflow=self.no_overflow,
+                                                       no_underflow=self.no_underflow)
         elif template_name == "bv_affine":
             self.ct = BitVecAffineTemplate(self.sts)
         elif template_name == "power_bv_affine":
-            self.ct = DisjunctiveBitVecAffineTemplate(self.sts, nnum_disjunctions=num_disjunctions)
+            self.ct = DisjunctiveBitVecAffineTemplate(self.sts,
+                                                      nnum_disjunctions=num_disjunctions)
         elif template_name == "bv_poly":
             self.ct = BitVecPolyhedronTemplate(self.sts)
         elif template_name == "power_bv_poly":
-            self.ct = DisjunctiveBitVecPolyhedronTemplate(self.sts, num_disjunctions=self.num_disjunctions)
+            self.ct = DisjunctiveBitVecPolyhedronTemplate(self.sts,
+                                                          num_disjunctions=self.num_disjunctions)
         else:
             self.ct = PolyTemplate(self.sts)
 
@@ -275,11 +292,10 @@ class EFProver:
         #       phi = self.generate_quantifier_free_vc()
         #     One possible problem is: to build the invariant, we need a model, which
         #     may not be very easy to be parsed if we use a bin solver
-        # print(vc)
+        print(vc)
         s.add(vc)  # sometimes can be much faster!
         print("EFSMT starting!!!")
         start = time.time()
-        # print(s)
         # print(s.to_smt2())
         check_res = s.check()
         if check_res == z3.sat:

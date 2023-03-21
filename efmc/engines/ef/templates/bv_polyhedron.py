@@ -22,6 +22,9 @@ class BitVecPolyhedronTemplate(Template):
         elif sts.signedness == "unsigned":
             self.signedness = Signedness.UNSIGNED
 
+        self.obj_no_overflow = kwargs.get("no_overflow", False)
+        self.obj_no_underflow = kwargs.get("no_underflow", False)
+
         self.sts = sts
         self.arity = len(self.sts.variables)
 
@@ -133,6 +136,9 @@ class DisjunctiveBitVecPolyhedronTemplate(Template):
         self.sts = sts
 
         self.num_disjunctions = kwargs.get("num_disjunctions", 2)
+
+        self.obj_no_overflow = kwargs.get("no_overflow", False)
+        self.obj_no_underflow = kwargs.get("no_underflow", False)
 
 
     def add_template_vars(self):
