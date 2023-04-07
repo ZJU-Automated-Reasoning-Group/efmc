@@ -14,11 +14,9 @@ from efmc.engines.pdr.pdr_prover import PDRProver
 from efmc.engines.kinduction.kinduction_prover import KInductionProver
 from efmc.engines.qe import QuantifierEliminationProver
 
-# from efmc.utils import is_entail
+from efmc.utils.global_config import g_verifier_args   # the parsed arguments
 
 logger = logging.getLogger(__name__)
-
-g_args = None  # the parsed arguments
 
 # the invariant templates
 g_int_real_templates = ["interval", "power_interval", "zone", "octagon", "poly"]
@@ -55,9 +53,10 @@ def solve_with_pdr(sts: TransitionSystem):
 
 def solve_with_k_induction(sts: TransitionSystem):
     """Use K-induction"""
+    global g_verifier_args
     print("K-induction starts..")
     kind_prover = KInductionProver(sts)
-    if g_args.kind_aux_inv:
+    if g_verifier_args.kind_aux_inv:
         kind_prover.use_aux_invariant = True
     kind_prover.solve(30)
 
@@ -67,33 +66,34 @@ def solve_with_ef(sts: TransitionSystem):
     Currently, we solve the VC (exists-forall problems) via SMT
     """
     # ef_prover.ignore_post_cond = True # an important flag
+    global g_verifier_args
     if sts.has_bv:
-        if g_args.prevent_over_under_flows > 0:
-            ef_prover = EFProver(sts, prop_strengthen=g_args.prop_strengthen,
+        if g_verifier_args.prevent_over_under_flows > 0:
+            ef_prover = EFProver(sts, prop_strengthen=g_verifier_args.prop_strengthen,
                                  no_overflow=True, no_underflow=True)
         else:
-            ef_prover = EFProver(sts, prop_strengthen=g_args.prop_strengthen,
+            ef_prover = EFProver(sts, prop_strengthen=g_verifier_args.prop_strengthen,
                                  no_overflow=False, no_underflow=False)
-        if g_args.template in g_bv_templates:
+        if g_verifier_args.template in g_bv_templates:
             # ef_prover.set_template("bv_interval")
-            ef_prover.set_template(g_args.template, num_disjunctions=g_args.num_disjunctions)
+            ef_prover.set_template(g_verifier_args.template, num_disjunctions=g_verifier_args.num_disjunctions)
             # the default one is "z3api"
-            ef_prover.set_solver(g_args.smt_solver)
+            ef_prover.set_solver(g_verifier_args.smt_solver)
             # ef_prover.set_solver("cvc5")
         else:
-            print("Unsupported template: ", g_args.template)
+            print("Unsupported template: ", g_verifier_args.template)
             print("You may try: ", g_bv_templates)
             exit(0)
     else:
-        ef_prover = EFProver(sts, prop_strengthen=g_args.prop_strengthen)
-        if g_args.template in g_int_real_templates:
-            ef_prover.set_template(g_args.template, num_disjunctions=g_args.num_disjunctions)
+        ef_prover = EFProver(sts, prop_strengthen=g_verifier_args.prop_strengthen)
+        if g_verifier_args.template in g_int_real_templates:
+            ef_prover.set_template(g_verifier_args.template, num_disjunctions=g_verifier_args.num_disjunctions)
             # the default one is "z3api"
-            ef_prover.set_solver(g_args.smt_solver)
+            ef_prover.set_solver(g_verifier_args.smt_solver)
             # ef_prover.set_solver("cvc5")
             # ef_prover.set_template("power_interval")   ("interval")
         else:
-            print("Unsupported template: ", g_args.template)
+            print("Unsupported template: ", g_verifier_args.template)
             print("You may try: ", g_int_real_templates)
             exit(0)
 
@@ -159,6 +159,7 @@ def solve_sygus_file(filename: str, prover="all"):
 
 
 if __name__ == "__main__":
+    global g_verifier_args
     import argparse
 
     signal.signal(signal.SIGINT, signal_handler)
@@ -172,6 +173,7 @@ if __name__ == "__main__":
     # solve_chc_file(dir_path + '/benchmarks/chc/bv/2017.ASE_FIB/32bits_signed/fib_15.sl_32bits_signed.smt2',
     #               prover="efsmt")
     # exit(0)
+
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
     parser.add_argument('--engine', dest='engine', default='efsmt', type=str, help='''Set the engine:
@@ -185,12 +187,20 @@ if __name__ == "__main__":
     parser.add_argument('--num-disjunctions', dest='num_disjunctions', default=1, type=int,
                         help="Set the number of disjunctions (for disjunctive invariant)")
     parser.add_argument('--smt-solver', dest='smt_solver', default='z3api', type=str,
-                        help="SMT solver (TODO: allow the user to specify a path to the solver?)")
+                        help="SMT solver (this option is not used by default)")
     parser.add_argument('--prevent-over-under-flows', dest='prevent_over_under_flows', default=0, type=int,
                         help="Preventing over/under flows in the template expressions, e.g., x - y, x + y")
     # T' = T and P (where T is the original template, and P is the property)
     parser.add_argument('--prop-strengthen', dest='prop_strengthen', default=False, type=bool,
                         help="Enable property strengthening (currently, using 'T = T and Prop' as the template")
+
+    # dump the quantified smt2 file or the QBF file
+    # NOTE: the file name should reveal the configurations, e.t., the benchmark name,
+    #  template, num_disjunctions, etc.
+    parser.add_argument('--dump-smt2', dest='dump_smt2', default=False, type=bool,
+                        help="Dump the quantified SMT2 constraint")
+    parser.add_argument('--dump-qbf', dest='dump_qbf', default=False, type=bool,
+                        help="Dump the quantified QBF constraint")
 
     # the following options are related to k-induction
     parser.add_argument('--kind-aux-inv', dest='kind_aux_inv', default=False, type=bool,
@@ -204,17 +214,17 @@ if __name__ == "__main__":
     # the timeout
     parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
     # parser.add_argument('--threads', dest='threads', default=4, type=int, help="threads")
-    g_args = parser.parse_args()
+    g_verifier_args = parser.parse_args()
     """
     A few examples
     python3 prover.py --file benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl --engine efsmt
     python3 prover.py --lang chc --engine efsmt --file benchmarks/chc/bv/2017.ASE_FIB/8bits_unsigned/fib_04.sl_8bits_unsigned.smt2 --template bv_octagon --prevent-over-under-flows 0
     """
 
-    if g_args.lang == "sygus":
-        solve_sygus_file(g_args.file, g_args.engine)
-    elif g_args.lang == "chc":
-        solve_chc_file(g_args.file, g_args.engine)
+    if g_verifier_args.lang == "sygus":
+        solve_sygus_file(g_verifier_args.file, g_verifier_args.engine)
+    elif g_verifier_args.lang == "chc":
+        solve_chc_file(g_verifier_args.file, g_verifier_args.engine)
     else:
-        print("Not supported format {}".format(g_args.lang))
+        print("Not supported format {}".format(g_verifier_args.lang))
         exit(0)

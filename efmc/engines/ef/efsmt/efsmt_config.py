@@ -7,3 +7,5 @@ cvc5_exec = project_root_dir + "/bin_solvers/cvc5"
 caqe_exec = project_root_dir + "/bin_solvers/caqe"
 
 g_bin_solver_timeout = 30
+
+g_efsmt_args = None

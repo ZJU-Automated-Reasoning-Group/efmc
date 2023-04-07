@@ -1,5 +1,8 @@
 
-# A Verification Toolkit
+# EFMC
+
+This toolkit provides a set of engines for verifying properties of programs. The engines are based on different approaches, such as template-based (constraint-based) approach, property-directed reachability (PDR), and K-induction. 
+Each engine has its own strengths and weaknesses, and can be used for different types of programs and properties. In this README, we provide a brief overview of each engine and how to use it.
 
 
 ## 1. The Main Engines
@@ -7,6 +10,7 @@
 - Template-based (Constraint-based) Approach
 - Property-Directed Reachability (PDR)
 - K-Induction
+
 
 ### Template-based (Constraint-based) Approach
 
@@ -32,8 +36,10 @@ python3 prover.py --engine efsmt --template bv_interval --lang chc --file benchm
           pdr (the PDR engine in Z3)
 ~~~~
 
-### Property-Directed Reachability (PDR) Approach
-Currently, we use the one inside Z3 (named `Spacer`)
+### Property-Directed Reachability (PDR)
+
+In EFMC, we use the PDR engine inside Z3, named `Spacer`. To use it, you can run `prover.py` with the `pdr` engine. 
+
 
 Example:
 ~~~~
@@ -41,8 +47,11 @@ python3 prover.py --engine pdr --lang chc --file file.smt2
 ~~~~
 
 
-### Simple K-Induction
-We have implemented a simple one in `efmc/engines/kinduction`.
+### K-Induction
+
+K-induction is a powerful technique for proving safety properties of programs. It is based on the idea of proving that a property holds for the base case  and then proving that if the property holds for some state at a certain time step, it also holds for the next state.
+
+In EFMC, we have implemented a simple version of k-induction in `efmc/engines/kinduction`. To use it, you can run `prover.py` with the `kind` engine.
 
 Example:
 ~~~~

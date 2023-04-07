@@ -155,7 +155,7 @@ def solve_with_bin_smt_v2(logic: str, y, phi: z3.ExprRef, solver_name: str):
 
 
 def demo_solver():
-    cmd = [cvc5_exec, "-q", "--produce-models", '/Users/rainoftime/Work/efmc/efmc/tests/tmp.smt2']
+    cmd = [cvc5_exec, "-q", "--produce-models", 'tmp.smt2']
     p_gene = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     is_timeout_gene = [False]
     timer_gene = Timer(g_bin_solver_timeout, terminate, args=[p_gene, is_timeout_gene])
