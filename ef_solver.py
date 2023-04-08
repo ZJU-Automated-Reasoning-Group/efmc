@@ -26,7 +26,6 @@ def terminate(process, is_timeout: List):
             print("error for interrupting")
             print(ex)
 
-
 def solve_with_bin_qbf(file_name: str, solver_name: str):
     """Call bin QBF solvers
     """
@@ -61,7 +60,6 @@ def solve_with_bin_qbf(file_name: str, solver_name: str):
         print("error for interrupting")
         print(ex)
         return "unknown"
-
 
 def solve_with_bin_smt(file_name: str, solver_name: str):
     """Call bin SMT solvers to solve exists forall
@@ -98,7 +96,6 @@ def solve_with_bin_smt(file_name: str, solver_name: str):
         print("error for interrupting")
         print(ex)
         return "unknown"
-
 
 def signal_handler(sig, frame):
     """The signal_handler function handles signals sent to the process.
@@ -137,10 +134,10 @@ if __name__ == "__main__":
     parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
     g_efsmt_args = parser.parse_args()
 
-    if g_efsmt_args .lang == "smt2":
-        solve_smt2_file(g_efsmt_args .file, g_efsmt_args .smt_solver)
-    elif g_efsmt_args .lang == "qbf":
-        solve_qbf_file(g_efsmt_args .file, g_efsmt_args .qbf_solver)
+    if g_efsmt_args.lang == "smt2":
+        solve_smt2_file(g_efsmt_args.file, g_efsmt_args.smt_solver)
+    elif g_efsmt_args.lang == "qbf":
+        solve_qbf_file(g_efsmt_args.file, g_efsmt_args.qbf_solver)
     else:
-        print("Not supported format {}".format(g_efsmt_args .lang))
+        print("Not supported format {}".format(g_efsmt_args.lang))
         exit(0)
