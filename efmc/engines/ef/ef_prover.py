@@ -17,6 +17,7 @@ from efmc.utils import is_entail
 from efmc.engines.ef.templates import *
 from efmc.engines.ef.efsmt.efsmt_solver import EFSMTSolver
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -170,12 +171,49 @@ class EFProver:
         else:
             print("Invariant check success!")
 
+    def dump_constraint(self, g_verifier_args) -> bool:
+        # global g_verifier_args
+        assert g_verifier_args.dump_smt2 or g_verifier_args.dump_qbf
+        assert g_verifier_args.dump_smt2 != g_verifier_args.dump_qbf
+        qf_vc = self.generate_quantifier_free_vc()
+        ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver)
+        forall_vars = self.sts.all_variables
+        exists_vars = []
+        for ele in self.ct.template_vars:
+            if isinstance(ele, list):
+                for v in ele: exists_vars.append(v)
+            else:
+                exists_vars.append(ele)
+        ef_solver.init(exist_vars=exists_vars, forall_vars=forall_vars, phi=qf_vc)
+
+        # TODO: allowing for controlling the output dir
+        # g_verifier_args.dump_cnt_dir
+        import os
+        # file_name = g_verifier_args.file  # the input instance
+        # print(g_verifier_args.dump_cnt_dir, os.path.basename(g_verifier_args.file))
+        file_name = "{0}/{1}".format(g_verifier_args.dump_cnt_dir, os.path.basename(g_verifier_args.file))
+        file_name += "+{}".format(str(g_verifier_args.template))
+        file_name += "+d{}".format(str(g_verifier_args.num_disjunctions))
+        file_name += "+strength_{}".format(str(g_verifier_args.prop_strengthen))
+        file_name += "+ouflow_{}".format(str(g_verifier_args.prevent_over_under_flows))
+
+        if g_verifier_args.dump_smt2:
+            file_name += ".smt2"
+            print("Dumping SMT constraint to {}".format(file_name))
+            ef_solver.dump_ef_smt_file(smt2_file_name=file_name)
+        elif g_verifier_args.dump_qbf:
+            file_name += ".qdimacs"
+            print("Dumping QBF constraint to {}".format(file_name))
+            ef_solver.dump_qbf_file(qdimacs_file_name=file_name)
+        else:
+            raise NotImplementedError
+
     def solve(self) -> bool:
         """The interface for calling different engines"""
         print("Start solving: ")
         print("Used template: {}".format(str(self.ct.template_type)))
         print("Used logic: {}".format(str(self.logic)))
-        # return self.solve_with_cegar_efsmt()  # FIXME: seems very slow
+        # return self.solve_with_cegis_efsmt()  # FIXME: seems very slow
         if self.solver == "z3api":
             return self.solve_with_z3()
         else:

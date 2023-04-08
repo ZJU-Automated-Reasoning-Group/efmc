@@ -1,3 +1,4 @@
+!benchmarks/chc
 bin_solvers/*
 !bin_solvers/download.py
 scripts/tmptest.py
@@ -10,6 +11,7 @@ efsmt/.pytest_cache
 *.dot
 venv
 *__pycache__/
+*.qdimacs
 
 # for binary solvers (download pre-built binaries, or download the code and build)
 deps/

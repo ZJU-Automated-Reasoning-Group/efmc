@@ -9,7 +9,6 @@ from efmc.utils import big_and
 
 
 class BitVecIntervalTemplate(Template):
-    
 
     def __init__(self, sts: TransitionSystem, **kwargs):
 
@@ -27,7 +26,6 @@ class BitVecIntervalTemplate(Template):
 
         # self.obj_no_overflow = kwargs.get("no_overflow", False)
         # self.obj_no_underflow = kwargs.get("no_underflow", False)
-
 
         self.template_vars = []  # vector of vector
         self.template_index = 0  # number of templates
@@ -109,7 +107,6 @@ class DisjunctiveBitVecIntervalTemplate(Template):
         self.template_index = 0  # number of templates
 
         self.num_disjunctions = kwargs.get("num_disjunctions", 2)
-
 
         self.add_template_vars()
 
