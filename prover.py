@@ -14,7 +14,7 @@ from efmc.engines.pdr.pdr_prover import PDRProver
 from efmc.engines.kinduction.kinduction_prover import KInductionProver
 from efmc.engines.qe import QuantifierEliminationProver
 
-from efmc.utils.global_config import g_verifier_args   # the parsed arguments
+from efmc.utils.global_config import g_verifier_args  # the parsed arguments
 
 logger = logging.getLogger(__name__)
 
@@ -97,8 +97,11 @@ def solve_with_ef(sts: TransitionSystem):
             print("You may try: ", g_int_real_templates)
             exit(0)
 
-    ef_prover.solve()
-    # ef_prover.solve_with_bin_solver()
+    if g_verifier_args.dump_smt2 or g_verifier_args.dump_qbf:
+        ef_prover.dump_constraint(g_verifier_args)
+    else:
+        ef_prover.solve()
+        # ef_prover.solve_with_bin_solver()
 
 
 def solve_chc_file(file_name: str, prover="efsmt"):
@@ -195,12 +198,13 @@ if __name__ == "__main__":
                         help="Enable property strengthening (currently, using 'T = T and Prop' as the template")
 
     # dump the quantified smt2 file or the QBF file
-    # NOTE: the file name should reveal the configurations, e.t., the benchmark name,
-    #  template, num_disjunctions, etc.
-    parser.add_argument('--dump-smt2', dest='dump_smt2', default=False, type=bool,
+    # NOTE: the file name should reveal the configuration, e.g., the benchmark name, template, num_disjunctions, etc.
+    parser.add_argument('--dump-smt2', dest='dump_smt2', default=False, action='store_true',
                         help="Dump the quantified SMT2 constraint")
-    parser.add_argument('--dump-qbf', dest='dump_qbf', default=False, type=bool,
+    parser.add_argument('--dump-qbf', dest='dump_qbf', default=False, action='store_true',
                         help="Dump the quantified QBF constraint")
+    parser.add_argument('--dump-cnt-dir', dest='dump_cnt_dir', default="/tmp", type=str,
+                        help="The dir for storing the dumped constraints")
 
     # the following options are related to k-induction
     parser.add_argument('--kind-aux-inv', dest='kind_aux_inv', default=False, type=bool,

@@ -1,3 +1,4 @@
+#for testing
 SOLVER="$(pwd)/venv/bin/python3"
 #OPTIONS="prover.py --engine efsmt --template power_bv_interval --aux-inv false --lang chc --file"
 OPTIONS="prover.py --engine pdr --aux-inv false --lang sygus --file"

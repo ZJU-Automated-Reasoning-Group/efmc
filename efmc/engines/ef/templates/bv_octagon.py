@@ -57,6 +57,7 @@ class BitVecOctagonTemplate(Template):
                 self.wrap_around_cnts_prime_vars.append(z3.BVSubNoUnderflow(px, py, signed=signed))
                 self.wrap_around_cnts_prime_vars.append(z3.BVAddNoUnderflow(px, py))
 
+        self.template_vars = []
         self.template_vars_for_vars = []  # aux variables for x, y, z, ...
         self.template_vars_for_terms = []  # aux variables for x - y, x + y, x - z, ...
         self.template_index = 0  # number of templates
@@ -78,6 +79,7 @@ class BitVecOctagonTemplate(Template):
             tvars = [z3.BitVec("{}_l".format(str(var)), var.sort().size()),
                      z3.BitVec("{}_u".format(str(var)), var.sort().size())]
             self.template_vars_for_vars.append(tvars)
+            self.template_vars.append(tvars)
 
         # follow interval, but use self.octagon
         for i in range(len(self.octagons)):
@@ -88,6 +90,7 @@ class BitVecOctagonTemplate(Template):
             tvars = [z3.BitVec("{}_l".format(term_name), term.size()),
                      z3.BitVec("{}_u".format(term_name), term.size())]
             self.template_vars_for_terms.append(tvars)
+            self.template_vars.append(tvars)
         # raise NotImplementedError
 
     def get_additional_cnts_for_template_vars(self):
@@ -229,6 +232,7 @@ class DisjunctiveBitVecOctagonTemplate(Template):
                 self.wrap_around_cnts_prime_vars.append(z3.BVSubNoUnderflow(px, py, signed=signed))
                 self.wrap_around_cnts_prime_vars.append(z3.BVAddNoUnderflow(px, py))
 
+        self.template_vars = []  # vector of vector
         self.template_vars_for_vars = []  # aux variables for x, y, z, ...
         self.template_vars_for_terms = []  # aux variables for x - y, x + y, x - z, ...
 
@@ -258,6 +262,7 @@ class DisjunctiveBitVecOctagonTemplate(Template):
                          z3.BitVec("d{0}_{1}_u".format(i, str(v)), v.sort().size())]
                 aux_vars.append(tvars)
             self.template_vars_for_vars.append(aux_vars)
+            self.template_vars.append(tvars)
 
             #  aux variables for x - y, x + y, ...
             aux_vars_for_terms = []
@@ -270,6 +275,7 @@ class DisjunctiveBitVecOctagonTemplate(Template):
                          z3.BitVec("d{0}_{1}_u".format(i, term_name), term.size())]
                 aux_vars_for_terms.append(tvars)
             self.template_vars_for_terms.append(aux_vars_for_terms)
+            self.template_vars.append(tvars)
         # raise NotImplementedError
 
     def get_additional_cnts_for_template_vars(self):

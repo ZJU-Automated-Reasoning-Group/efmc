@@ -196,7 +196,8 @@ class EFBVFormulaTranslator:
         self.qe_level = "word"  # { "bool", "word" }
         self.qe_tactic = "qe2"  # {"qe", "qe2"}
 
-    def to_z3_qbf(self, fml: z3.ExprRef, existential_vars: List[z3.ExprRef], universal_vars: List[z3.ExprRef]):
+    def to_z3_qbf(self, fml: z3.ExprRef, existential_vars: List[z3.ExprRef],
+                  universal_vars: List[z3.ExprRef]) -> z3.ExprRef:
         """Translate an EFSMT(BV) formula to a QBF formula (in z3)
         :param fml: a quantifier-free bit-vector formula
         :param existential_vars: the set of existential quantified bit-vector variables
@@ -218,23 +219,22 @@ class EFBVFormulaTranslator:
         """
         if self.qe_level == "bool":
             # First, convert the EFBV formula to a QBF formula
-            # Second, perform Boolean-level quantifier elimination
+            # Second, perform Boolean-level quantifier elimination to obtin SAT
             qbf_fml = self.to_qbf(fml, existential_vars, universal_vars)
-            # second, use boolean-level QE to convert the QBF formula to SAT
             sat_formula = z3.Then("simplify", self.qe_tactic)(qbf_fml).as_expr()
-            # finally, convert the SAT formula to CNF form
+            # Finally, convert the SAT formula to CNF form
             return z3.Then("simplify", "tseitin-cnf")(sat_formula).as_expr()
         else:
             qbv_fml = z3.ForAll(universal_vars, fml)
-            # first, use word-level QE to build a quantifier-free bit-vec formula
+            # First, use word-level QE to build a quantifier-free bit-vec formula
             qfbv_fml = z3.Then("simplify", self.qe_tactic)(qbv_fml).as_expr()
             # second, convert the bit-vec formula to CNF
             return z3.Then("simplify", "bit-blast", "simplify", "tseitin-cnf")(qfbv_fml).as_expr()
 
     def to_dimacs(self):
-        raise NotImplementedError
-
-    def to_bdd(self):
+        """
+        TODO: reuse or modify self.to_z3_sat to dump DIMACS strings (for caling third-party SAT solvers)?
+        """
         raise NotImplementedError
 
 

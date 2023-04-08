@@ -78,7 +78,7 @@ def run_all_jkind(lus_file):
             xml_path = os.path.join(RESULTS_DIR, lus_file, xml_file)
             lus_path = os.path.join(EXPERIMENTS_DIR, lus_file)
             run_single_jkind(solver, engine_args, xml_path, lus_path)
-            sys.stdout.write(".")
+            sys.stdout.write("../eval")
             sys.stdout.flush()
 
 
