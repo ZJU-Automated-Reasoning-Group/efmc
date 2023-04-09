@@ -180,8 +180,8 @@ class EFProver:
 
     def dump_constraint(self, g_verifier_args) -> bool:
         # global g_verifier_args
-        assert g_verifier_args.dump_smt2 or g_verifier_args.dump_qbf
-        assert g_verifier_args.dump_smt2 != g_verifier_args.dump_qbf
+        assert g_verifier_args.dump_ef_smt2 or g_verifier_args.dump_qbf
+        assert g_verifier_args.dump_ef_smt2 != g_verifier_args.dump_qbf
         qf_vc = self.generate_quantifier_free_vc()
         ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver)
         forall_vars = self.sts.all_variables
@@ -204,7 +204,7 @@ class EFProver:
         file_name += "+strength_{}".format(str(g_verifier_args.prop_strengthen))
         file_name += "+ouflow_{}".format(str(g_verifier_args.prevent_over_under_flows))
 
-        if g_verifier_args.dump_smt2:
+        if g_verifier_args.dump_ef_smt2:
             file_name += ".smt2"
             print("Dumping SMT constraint to {}".format(file_name))
             ef_solver.dump_ef_smt_file(smt2_file_name=file_name)
