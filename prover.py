@@ -23,7 +23,7 @@ g_int_real_templates = ["interval", "power_interval", "zone", "octagon", "poly"]
 # "power_poly"
 g_bv_templates = ["bv_interval", "power_bv_interval", "bv_zone", "power_bv_zone",
                   "bv_octagon", "power_bv_octagon",
-                  "bv_affine", "bv_poly"]
+                  "bv_affine", "bv_poly", "power_bv_poly"]
 
 
 # "power_bv_affine", "power_bv_poly"
@@ -209,7 +209,7 @@ if __name__ == "__main__":
     # the following options are related to k-induction
     parser.add_argument('--kind-aux-inv', dest='kind_aux_inv', default=False, type=bool,
                         help="Use aux invariant for k-induction")
-    parser.add_argument('--kind-k', dest='kind_k', default=20, type=int,
+    parser.add_argument('--kind-k', dest='kind_k', default=30, type=int,
                         help="Set the k value for k-induction")
 
     # the type of the input file, e.g., SyGuS, CHC

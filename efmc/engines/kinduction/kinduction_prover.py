@@ -187,14 +187,14 @@ class KInductionProver(object):
             if s.check() == z3.sat:
                 print("--> Bug found at step %d" % (b + 1))
                 # print(s.model())
-                print("SUCCESS: UNSAFE")
+                print("unsafe")
                 return
 
             f_kind = self.get_k_induction(b)
             logger.debug("   [K-IND]  Checking bound %d..." % (b + 1))
             if is_unsat(f_kind):
                 print("--> The system is proved safe at {}".format((b + 1)))
-                print("SUCCESS: SAFE")
+                print("safe")
                 return
-        print("UNKNOWN")
+        print("unknown")
         return
