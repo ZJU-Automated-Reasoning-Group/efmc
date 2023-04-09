@@ -114,7 +114,7 @@ class EFProver:
             self.ct = BitVecPolyhedronTemplate(self.sts)
         elif template_name == "power_bv_poly":
             self.ct = DisjunctiveBitVecPolyhedronTemplate(self.sts,
-                                                          num_disjunctions=self.num_disjunctions)
+                                                          num_disjunctions=num_disjunctions)
         else:
             self.ct = PolyTemplate(self.sts)
 

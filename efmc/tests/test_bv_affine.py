@@ -7,9 +7,9 @@ from efmc.engines.ef.ef_prover import EFProver
 from efmc.sts import TransitionSystem
 
 
-class TestBitVecPolyhedronTemplate(TestCase):
+class TestBitVecAffineTemplate(TestCase):
 
-    def test_bv_poly(self):
+    def test_bv_affine(self):
         """
         Specify transition system using Z3's python API (a "naive" trick)
         """
@@ -26,8 +26,8 @@ class TestBitVecPolyhedronTemplate(TestCase):
 
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
         ef_prover = EFProver(sts)  # use template and exists-forall solving
-        # ef_prover.set_template("bv_poly")
-        ef_prover.set_template("power_bv_poly", num_disjunctions=2)
+        # ef_prover.set_template("bv_affine")
+        ef_prover.set_template("power_bv_affine", num_disjunctions=2)
         ef_prover.set_solver("z3api")  # Use z3's Python API
         # ef_prover.set_solver("cvc5")
         ef_prover.solve()

@@ -52,10 +52,15 @@ class PDRProver:
         print("PDR starting!!!")
         # print(s.to_smt2())
         start = time.time()
-        if s.check() == z3.sat:
-            print("PDR success time: ", time.time() - start)
+        res = s.check()
+        if res == z3.sat:
+            print("PDR time: ", time.time() - start)
+            print("safe")
             print("Invariant: ", s.model().eval(inv(self.sts.variables)))
+        elif res == z3.unsat:
+            print("PDR time: ", time.time() - start)
+            print("unsafe")
         else:
-            print("PDR fail time: ", time.time() - start)
-            print("PDR fails to prove")
+            print("PDR error")
+            print("unknown")
         print("")

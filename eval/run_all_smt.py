@@ -81,7 +81,7 @@ def solve_formulas(flist):
 
                 ptool = subprocess.Popen(cmd_tool, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 is_timeout = [False]
-                # Give the strfolio process more time to kill z3 binaries first
+                # Give the process more time to kill the binary solvers?
                 timertool = Timer(g_timeout + 3, terminate, args=[ptool, is_timeout])
                 timertool.start()
                 out_tool = ptool.stdout.readlines()
