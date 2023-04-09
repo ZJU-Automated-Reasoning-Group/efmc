@@ -98,7 +98,7 @@ def solve_with_ef(sts: TransitionSystem):
             print("You may try: ", g_int_real_templates)
             exit(0)
 
-    if g_verifier_args.dump_smt2 or g_verifier_args.dump_qbf:
+    if g_verifier_args.dump_ef_smt2 or g_verifier_args.dump_qbf:
         ef_prover.dump_constraint(g_verifier_args)
     else:
         ef_prover.solve()
@@ -200,7 +200,7 @@ if __name__ == "__main__":
 
     # dump the quantified smt2 file or the QBF file
     # NOTE: the file name should reveal the configuration, e.g., the benchmark name, template, num_disjunctions, etc.
-    parser.add_argument('--dump-smt2', dest='dump_smt2', default=False, action='store_true',
+    parser.add_argument('--dump-ef-smt2', dest='dump_ef_smt2', default=False, action='store_true',
                         help="Dump the quantified SMT2 constraint")
     parser.add_argument('--dump-qbf', dest='dump_qbf', default=False, action='store_true',
                         help="Dump the quantified QBF constraint")
