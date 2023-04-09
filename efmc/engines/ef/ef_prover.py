@@ -51,72 +51,79 @@ class EFProver:
 
     def set_template(self, template_name: str, num_disjunctions=2):
         """Set self.ct (the template to use)"""
-        if template_name == "poly":
-            self.ct = PolyTemplate(self.sts)
-        elif template_name == "power_poly":  # bounded, disjunctive polyhedral
-            self.ct = DisjunctivePolyTemplate(self.sts, num_disjunctions=num_disjunctions)
-        elif template_name == "interval":
-            self.ct = IntervalTemplate(self.sts)
-            # the following one uses a < x < b, c < y < d
-            # need to confirm whether it is weaker...
-            # self.ct = IntervalTemplateV2(self.sts)
-        elif template_name == "power_interval":  # bounded, disjunctive interval
-            self.ct = DisjunctiveIntervalTemplate(self.sts, num_disjunctions=num_disjunctions)
-        elif template_name == "zone":
-            if len(self.sts.variables) < 2:
-                self.ct = IntervalTemplate(self.sts)
-            else:
-                self.ct = ZoneTemplate(self.sts)
-        # FIXME: add disjunctive zone
-        elif template_name == "octagon":
-            if len(self.sts.variables) < 2:
-                self.ct = IntervalTemplate(self.sts)
-            else:
-                self.ct = OctagonTemplate(self.sts)
-        # FIXME: add disjunctive octagon
-        # the following domains are for bit-vector programs
-        elif template_name == "bv_interval":
-            self.ct = BitVecIntervalTemplate(self.sts)
-        elif template_name == "power_bv_interval":
-            self.ct = DisjunctiveBitVecIntervalTemplate(self.sts,
-                                                        num_disjunctions=num_disjunctions)
-        elif template_name == "bv_zone":
-            if len(self.sts.variables) < 2:
+        if self.sts.has_bv:
+            # the following domains are for bit-vector programs
+            if template_name == "bv_interval":
                 self.ct = BitVecIntervalTemplate(self.sts)
-            else:
-                self.ct = BitVecZoneTemplate(self.sts,
-                                             no_overflow=self.no_overflow,
-                                             no_underflow=self.no_underflow)
-
-        elif template_name == "power_bv_zone":
-            self.ct = DisjunctiveBitVecZoneTemplate(self.sts,
-                                                    num_disjunctions=num_disjunctions,
+            elif template_name == "power_bv_interval":
+                self.ct = DisjunctiveBitVecIntervalTemplate(self.sts,
+                                                            num_disjunctions=num_disjunctions)
+            elif template_name == "bv_zone":
+                if len(self.sts.variables) < 2:
+                    self.ct = BitVecIntervalTemplate(self.sts)
+                else:
+                    self.ct = BitVecZoneTemplate(self.sts,
+                                                 no_overflow=self.no_overflow,
+                                                 no_underflow=self.no_underflow)
+            elif template_name == "power_bv_zone":
+                self.ct = DisjunctiveBitVecZoneTemplate(self.sts,
+                                                        num_disjunctions=num_disjunctions,
+                                                        no_overflow=self.no_overflow,
+                                                        no_underflow=self.no_underflow)
+            elif template_name == "bv_octagon":
+                if len(self.sts.variables) < 2:
+                    self.ct = BitVecIntervalTemplate(self.sts)
+                else:
+                    self.ct = BitVecOctagonTemplate(self.sts,
                                                     no_overflow=self.no_overflow,
                                                     no_underflow=self.no_underflow)
-        elif template_name == "bv_octagon":
-            if len(self.sts.variables) < 2:
-                self.ct = BitVecIntervalTemplate(self.sts)
+            elif template_name == "power_bv_octagon":
+                self.ct = DisjunctiveBitVecOctagonTemplate(self.sts,
+                                                           num_disjunctions=num_disjunctions,
+                                                           no_overflow=self.no_overflow,
+                                                           no_underflow=self.no_underflow)
+            elif template_name == "bv_affine":
+                self.ct = BitVecAffineTemplate(self.sts)
+            elif template_name == "power_bv_affine":
+                self.ct = DisjunctiveBitVecAffineTemplate(self.sts,
+                                                          nnum_disjunctions=num_disjunctions)
+            elif template_name == "bv_poly":
+                self.ct = BitVecPolyhedronTemplate(self.sts)
+            elif template_name == "power_bv_poly":
+                self.ct = DisjunctiveBitVecPolyhedronTemplate(self.sts,
+                                                              num_disjunctions=num_disjunctions)
             else:
-                self.ct = BitVecOctagonTemplate(self.sts,
-                                                no_overflow=self.no_overflow,
-                                                no_underflow=self.no_underflow)
-        elif template_name == "power_bv_octagon":
-            self.ct = DisjunctiveBitVecOctagonTemplate(self.sts,
-                                                       num_disjunctions=num_disjunctions,
-                                                       no_overflow=self.no_overflow,
-                                                       no_underflow=self.no_underflow)
-        elif template_name == "bv_affine":
-            self.ct = BitVecAffineTemplate(self.sts)
-        elif template_name == "power_bv_affine":
-            self.ct = DisjunctiveBitVecAffineTemplate(self.sts,
-                                                      nnum_disjunctions=num_disjunctions)
-        elif template_name == "bv_poly":
-            self.ct = BitVecPolyhedronTemplate(self.sts)
-        elif template_name == "power_bv_poly":
-            self.ct = DisjunctiveBitVecPolyhedronTemplate(self.sts,
-                                                          num_disjunctions=num_disjunctions)
+                raise NotImplementedError
         else:
-            self.ct = PolyTemplate(self.sts)
+            if template_name == "interval":
+                self.ct = IntervalTemplate(self.sts)
+                # the following one uses a < x < b, c < y < d
+                # need to confirm whether it is weaker...
+                # self.ct = IntervalTemplateV2(self.sts)
+            elif template_name == "power_interval":  # bounded, disjunctive interval
+                self.ct = DisjunctiveIntervalTemplate(self.sts, num_disjunctions=num_disjunctions)
+            elif template_name == "zone":
+                if len(self.sts.variables) < 2:
+                    self.ct = IntervalTemplate(self.sts)
+                else:
+                    self.ct = ZoneTemplate(self.sts)
+            # FIXME: add disjunctive zone
+            elif template_name == "octagon":
+                if len(self.sts.variables) < 2:
+                    self.ct = IntervalTemplate(self.sts)
+                else:
+                    self.ct = OctagonTemplate(self.sts)
+            # FIXME: add disjunctive octagon
+            elif template_name == "affine":
+                self.ct = AffineTemplate(self.sts)
+            elif template_name == "power_affine":
+                self.ct = DisjunctiveAffineTemplate(self.sts, num_disjunctions=num_disjunctions)
+            elif template_name == "poly":
+                self.ct = PolyTemplate(self.sts)
+            elif template_name == "power_poly":  # bounded, disjunctive polyhedral
+                self.ct = DisjunctivePolyTemplate(self.sts, num_disjunctions=num_disjunctions)
+            else:
+                raise NotImplementedError
 
         self.setup_logic()
 

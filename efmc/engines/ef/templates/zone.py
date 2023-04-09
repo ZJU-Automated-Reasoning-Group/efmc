@@ -122,6 +122,7 @@ class ZoneTemplate(Template):
 class DisjunctiveZoneTemplate(Template):
 
     def __init__(self, sts: TransitionSystem, **kwargs):
+        self.template_type = TemplateType.DISJUNCTIVE_ZONE
 
         if sts.has_real:
             self.use_real = True
@@ -130,10 +131,50 @@ class DisjunctiveZoneTemplate(Template):
 
         self.num_disjunctions = kwargs.get("num_disjunctions", 2)
 
-        raise NotImplementedError
+        self.sts = sts
+        self.arity = len(self.sts.variables)
+
+        self.zones = []  # x - y, x - z, y - z, ...
+        for x, y in list(itertools.combinations(self.sts.variables, 2)):
+            self.zones.append(x - y)
+
+        self.prime_zones = []
+        for px, py in list(itertools.combinations(self.sts.prime_variables, 2)):
+            self.prime_zones.append(px - py)
+
+        self.template_vars = []  # vector of vector
+        self.template_index = 0  # number of templates
+
+        self.add_template_vars()
+
+        # pre-compute to reduce redundant calling
+        self.template_cnt_init_and_post = None
+        self.template_cnt_trans = None
+        self.add_template_cnts()
+
 
     def add_template_vars(self):
-        raise NotImplementedError
+        """
+        Add several groups of template vars
+        """
+        for i in range(self.num_disjunctions):
+            vars_for_dis = []
+            for j in range(len(self.zones)):
+                term = self.zones[j]
+                term_vars = get_variables(term)
+                term_name = "{}{}".format(term_vars[0], term_vars[1])
+                self.template_index += 1
+                if self.use_real:
+                    tvars = [z3.Real("d{0}_{1}_l".format(i, term_name)),
+                             z3.Real("d{0}_{1}_u".format(i, term_name))]
+                else:
+                    tvars = [z3.BitVec("d{0}_{1}_l".format(i, term_name)),
+                             z3.BitVec("d{0}_{1}_u".format(i, term_name))]
+                vars_for_dis.append(tvars)
+
+            self.template_vars.append(vars_for_dis)
+        # print(self.template_vars)
+
 
     def add_template_cnts(self):
         raise NotImplementedError

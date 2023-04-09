@@ -19,15 +19,16 @@ from efmc.utils.global_config import g_verifier_args  # the parsed arguments
 logger = logging.getLogger(__name__)
 
 # the invariant templates
-g_int_real_templates = ["interval", "power_interval", "zone", "octagon", "poly"]
+g_int_real_templates = ["interval", "power_interval",
+                        "zone", "octagon",
+                        "affine", "power_affine",
+                        "poly", "power_poly"]
 # "power_poly"
-g_bv_templates = ["bv_interval", "power_bv_interval", "bv_zone", "power_bv_zone",
+g_bv_templates = ["bv_interval", "power_bv_interval",
+                  "bv_zone", "power_bv_zone",
                   "bv_octagon", "power_bv_octagon",
-                  "bv_affine", "bv_poly", "power_bv_poly"]
-
-
-# "power_bv_affine", "power_bv_poly"
-
+                  "bv_poly", "power_bv_poly"]
+# "bv_affine", "power_bv_affine"
 
 def signal_handler(sig, frame):
     """The signal_handler function handles signals sent to the process.
