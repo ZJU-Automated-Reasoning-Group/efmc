@@ -25,8 +25,8 @@ class TestBitVecZoneTemplate(TestCase):
         sts.set_signedness("unsigned")
 
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
-        # ef_prover = EFProver(sts, no_overflow=True, no_underflow=True)
-        ef_prover = EFProver(sts, no_overflow=False, no_underflow=False)
+        # ef_prover = EFProver(sts, no_overflow=True, no_underflow=True, validate_invariant=True)
+        ef_prover = EFProver(sts, no_overflow=False, no_underflow=False, validate_invariant=True)
         # ef_prover.set_template("power_bv_zone", num_disjunctions=2)
         ef_prover.set_template("bv_zone")
         ef_prover.set_solver("z3api")  # Use z3's Python API

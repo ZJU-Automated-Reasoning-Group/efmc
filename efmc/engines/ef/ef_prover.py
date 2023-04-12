@@ -31,14 +31,17 @@ class EFProver:
         self.ct = None  # template type
         self.ignore_post_cond = False  # ignoring the post condition (useful in "purely" invariant generation mode)
         self.logic = "ALL"  # the logic, e.g., BV, LIA, ...
-        self.validate_invaraint = True  # use SMT solvers to validate the correctness of the invariant
         self.inductive_invaraint = None  # the generated invariant (e.g., to be used by other engines)
+        self.print_vc = False
 
         self.seed = kwargs.get("seed", 1)  # random seed
         # use "template = P and template" as the invariant actual template
         self.prop_strengthening = kwargs.get("prop_strengthen", False)
         # the SMT solver for dealing with the EFSMT queries
         self.solver = kwargs.get("solver", "z3api")
+
+        self.validate_invariant = kwargs.get("validate_invariant", False)  # use SMT solvers to validate the correctness of the invariant
+
 
         # prevent over/underflow in the template exprs, e.g., x - y, x + y
         self.no_overflow = kwargs.get("no_overflow", False)
@@ -339,7 +342,8 @@ class EFProver:
         #       phi = self.generate_quantifier_free_vc()
         #     One possible problem is: to build the invariant, we need a model, which
         #     may not be very easy to be parsed if we use a bin solver
-        print(vc)
+        if self.print_vc:
+            print(vc)
         s.add(vc)  # sometimes can be much faster!
         print("EFSMT starting!!!")
         start = time.time()
@@ -352,7 +356,7 @@ class EFProver:
                 # use "template = P and template" as the invariant template
                 inv = z3.And(self.sts.post, self.ct.build_invariant_expr(m, use_prime_variables=False))
                 print("Invariant: ", inv)
-                if self.validate_invaraint:
+                if self.validate_invariant:
                     var_map = []  # x' to x, y' to y
                     for i in range(len(self.sts.variables)):
                         var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
@@ -363,7 +367,7 @@ class EFProver:
             else:
                 inv = self.ct.build_invariant_expr(m, use_prime_variables=False)
                 print("Invariant: ", inv)
-                if self.validate_invaraint:
+                if self.validate_invariant:
                     inv_in_prime_variables = self.ct.build_invariant_expr(m, use_prime_variables=True)
                     self.check_invariant(inv, inv_in_prime_variables)
             self.inductive_invaraint = inv  # preserve the invariant
