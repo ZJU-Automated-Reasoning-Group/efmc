@@ -11,6 +11,8 @@ from typing import List
 import subprocess
 from threading import Timer
 import logging
+import z3
+
 
 from efmc.engines.ef.efsmt.efsmt_config import \
     z3_exec, cvc5_exec, g_bin_solver_timeout, caqe_exec, g_efsmt_args
@@ -97,6 +99,85 @@ def solve_with_bin_smt(file_name: str, solver_name: str):
         print(ex)
         return "unknown"
 
+
+def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, maxloops=None, profiling=False):
+    """ Solves exists x. forall y. phi(x, y) with simple CEGIS
+    TODO: parse a quantified formula, exact x (existential vars), y (universal vars), and phi (the
+      quantifier-free part) automatically.
+    """
+    # x = [item for item in get_vars(phi) if item not in y]
+    # set_param("verbose", 15); set_param("smt.arith.solver", 3)
+    if "IA" in logic:
+        qf_logic = "QF_LIA"
+    elif "RA" in logic:
+        qf_logic = "QF_LRA"
+    elif "BV" in logic:
+        qf_logic = "QF_BV"
+    else:
+        qf_logic = ""
+
+    if qf_logic != "":
+        esolver = z3.SolverFor(qf_logic)
+        fsolver = z3.SolverFor(qf_logic)
+    else:
+        esolver = z3.Solver()
+        fsolver = z3.Solver()
+
+    e_solver_cnts = []  # storing all the queries for profiling
+    f_solver_cnts = []  # storing all the queries for profiling
+    if profiling:
+        e_solver_cnts.append("(set-logic {})".format(qf_logic))
+        f_solver_cnts.append("(set-logic {})".format(qf_logic))
+        for var in x:
+            e_solver_cnts.append("(declare-const {0} {1})".format(var.sexpr(), var.sort().sexpr()))
+        for var in y:
+            f_solver_cnts.append("(declare-const {0} {1})".format(var.sexpr(), var.sort().sexpr()))
+
+    esolver.add(z3.BoolVal(True))
+
+    loops = 0
+    res = z3.unknown
+    while maxloops is None or loops <= maxloops:
+        loops += 1
+        # print("round: ", loops)
+        eres = esolver.check()
+
+        if profiling and loops >= 2:
+            e_solver_cnts.append("(check-sat)")
+
+        if eres == z3.unsat:
+            res = z3.unsat
+            break
+        else:
+            emodel = esolver.model()
+            mappings = [(var, emodel.eval(var, model_completion=True)) for var in x]
+            sub_phi = z3.simplify(z3.substitute(phi, mappings))
+            fsolver.push()
+            fsolver.add(z3.Not(sub_phi))
+
+            if profiling:
+                f_solver_cnts.append("(push)")
+                f_solver_cnts.append("(assert {})".format(z3.Not(sub_phi).sexpr()))
+                f_solver_cnts.append("(check-sat)")
+
+            if fsolver.check() == z3.sat:
+                fmodel = fsolver.model()
+                y_mappings = [(var, fmodel.eval(var, model_completion=True)) for var in y]
+                sub_phi = z3.simplify(z3.substitute(phi, y_mappings))
+                esolver.add(sub_phi)
+                fsolver.pop()
+                if profiling:
+                    e_solver_cnts.append("(assert {})".format(sub_phi.sexpr()))
+                    f_solver_cnts.append("(pop)")
+            else:
+                res = z3.sat
+                break
+    if profiling:
+        print(e_solver_cnts)
+        print(f_solver_cnts)
+    return res
+
+
 def signal_handler(sig, frame):
     """The signal_handler function handles signals sent to the process.
     """
@@ -107,12 +188,15 @@ def signal_handler(sig, frame):
     sys.exit(0)
 
 
-def solve_smt2_file(filename, solver_name):
-    return False
+def demo_efsmt():
+    import time
+    x, y, z = z3.BitVecs("x y z", 16)
+    # x, y, z = z3.Reals("x y z")
+    fmla = z3.Implies(z3.And(y > 0, y < 10), y - 2 * x < 7)
 
-
-def solve_qbf_file(filename, solver_name):
-    return False
+    start = time.time()
+    simple_cegis_efsmt("BV", [x], [y], fmla, profiling=True)
+    print("time: ", time.time() - start)
 
 
 if __name__ == "__main__":
@@ -124,6 +208,9 @@ if __name__ == "__main__":
     signal.signal(signal.SIGABRT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
+    demo_efsmt()
+    exit(0)
+
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
     parser.add_argument('--smt-solver', dest='smt_solver', default='z3', type=str,
@@ -134,10 +221,3 @@ if __name__ == "__main__":
     parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
     g_efsmt_args = parser.parse_args()
 
-    if g_efsmt_args.lang == "smt2":
-        solve_smt2_file(g_efsmt_args.file, g_efsmt_args.smt_solver)
-    elif g_efsmt_args.lang == "qbf":
-        solve_qbf_file(g_efsmt_args.file, g_efsmt_args.qbf_solver)
-    else:
-        print("Not supported format {}".format(g_efsmt_args.lang))
-        exit(0)
