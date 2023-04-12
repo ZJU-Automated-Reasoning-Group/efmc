@@ -195,7 +195,7 @@ if __name__ == "__main__":
     parser.add_argument('--prevent-over-under-flows', dest='prevent_over_under_flows', default=0, type=int,
                         help="Preventing over/under flows in the template expressions, e.g., x - y, x + y")
     # T' = T and P (where T is the original template, and P is the property)
-    parser.add_argument('--prop-strengthen', dest='prop_strengthen', default=False, type=bool,
+    parser.add_argument('--prop-strengthen', dest='prop_strengthen', default=False, action='store_true',
                         help="Enable property strengthening (currently, using 'T = T and Prop' as the template")
 
     # dump the quantified smt2 file or the QBF file
@@ -208,7 +208,7 @@ if __name__ == "__main__":
                         help="The dir for storing the dumped constraints")
 
     # the following options are related to k-induction
-    parser.add_argument('--kind-aux-inv', dest='kind_aux_inv', default=False, type=bool,
+    parser.add_argument('--kind-aux-inv', dest='kind_aux_inv', default=False, action='store_true',
                         help="Use aux invariant for k-induction")
     parser.add_argument('--kind-k', dest='kind_k', default=30, type=int,
                         help="Set the k value for k-induction")
