@@ -24,7 +24,7 @@ class TestBitVecIntervalTemplate(TestCase):
         sts.from_z3_cnts([all_vars, init, trans, post])
         sts.set_signedness("unsigned")
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
-        ef_prover = EFProver(sts)  # use template and exists-forall solving
+        ef_prover = EFProver(sts, validate_invariant=True)
         ef_prover.set_template("bv_interval")
         ef_prover.set_solver("z3api")  # Use z3's Python API
 

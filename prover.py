@@ -28,6 +28,8 @@ g_bv_templates = ["bv_interval", "power_bv_interval",
                   "bv_zone", "power_bv_zone",
                   "bv_octagon", "power_bv_octagon",
                   "bv_poly", "power_bv_poly"]
+
+
 # "bv_affine", "power_bv_affine"
 
 def signal_handler(sig, frame):
@@ -71,9 +73,11 @@ def solve_with_ef(sts: TransitionSystem):
     if sts.has_bv:
         if g_verifier_args.prevent_over_under_flows > 0:
             ef_prover = EFProver(sts, prop_strengthen=g_verifier_args.prop_strengthen,
+                                 validate_invariant=g_verifier_args.validate_invariant,
                                  no_overflow=True, no_underflow=True)
         else:
             ef_prover = EFProver(sts, prop_strengthen=g_verifier_args.prop_strengthen,
+                                 validate_invariant=g_verifier_args.validate_invariant,
                                  no_overflow=False, no_underflow=False)
         if g_verifier_args.template in g_bv_templates:
             # ef_prover.set_template("bv_interval")
@@ -86,7 +90,8 @@ def solve_with_ef(sts: TransitionSystem):
             print("You may try: ", g_bv_templates)
             exit(0)
     else:
-        ef_prover = EFProver(sts, prop_strengthen=g_verifier_args.prop_strengthen)
+        ef_prover = EFProver(sts, prop_strengthen=g_verifier_args.prop_strengthen,
+                             validate_invariant=g_verifier_args.validate_invariant, )
         if g_verifier_args.template in g_int_real_templates:
             ef_prover.set_template(g_verifier_args.template, num_disjunctions=g_verifier_args.num_disjunctions)
             # the default one is "z3api"
@@ -197,6 +202,8 @@ if __name__ == "__main__":
     # T' = T and P (where T is the original template, and P is the property)
     parser.add_argument('--prop-strengthen', dest='prop_strengthen', default=False, action='store_true',
                         help="Enable property strengthening (currently, using 'T = T and Prop' as the template")
+    parser.add_argument('--validate-invariant', dest='validate_invariant', default=False, action='store_true',
+                        help="Validate the correctness of the invariant")
 
     # dump the quantified smt2 file or the QBF file
     # NOTE: the file name should reveal the configuration, e.g., the benchmark name, template, num_disjunctions, etc.

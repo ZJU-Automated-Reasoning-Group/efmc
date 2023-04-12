@@ -13,9 +13,9 @@ class InvariantGenerator(object):
         self.sts = sts
 
     def generate_via_ef(self):
-        ef_prover = EFProver(self.sts)  # use template and exists-forall solving
+        ef_prover = EFProver(self.sts, validate_invariant=True)
         ef_prover.ignore_post_cond = True  # an important flag
-        ef_prover.validate_invaraint = False  # do not check the invarinat after generating..
+        ef_prover.validate_invariant = False  # do not check the invarinat after generating..
         if self.sts.has_bv:
             ef_prover.set_template("bv_interval")
         else:

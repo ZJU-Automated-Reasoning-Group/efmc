@@ -23,7 +23,7 @@ class TestEFSMT(TestCase):
         sts.from_z3_cnts([all_vars, init, trans, post])
 
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
-        ef_prover = EFProver(sts)  # use template and exists-forall solving
+        ef_prover = EFProver(sts, validate_invariant=True)
         ef_prover.set_template("power_interval", num_disjunctions=2)
         success = ef_prover.solve()
         assert True
@@ -43,7 +43,7 @@ class TestEFSMT(TestCase):
         sts.from_z3_cnts([all_vars, init, trans, post])
 
         # Supported conjunctive domains: interval, zone, (bounded) polyhedrons, etc.
-        ef_prover = EFProver(sts)  # use template and exists-forall solving
+        ef_prover = EFProver(sts, validate_invariant=True)
         ef_prover.set_template("power_interval", num_disjunctions=2)
         ef_prover.set_solver("z3api")  # Use z3's Python API
         # ef_prover.set_solver("cvc5")
