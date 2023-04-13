@@ -13,7 +13,7 @@ import z3
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse
 
 g_bitvector_width = 32
-g_bitvector_signedness = "unsigned"
+g_bitvector_signedness = "signed"
 
 
 def sygus2chc(tt: str) -> str:
@@ -84,9 +84,11 @@ def sygus2chc(tt: str) -> str:
 def rep_operand(op: str) -> str:
     if g_bitvector_signedness == "signed":
         rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
+                     "div": "bvudiv",
                      ">=": "bvsge", "<=": "bvsle", ">": "bvsgt", "<": "bvslt"}
     else:
         rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
+                     "div": "bvsdiv",
                      ">=": "bvuge", "<=": "bvule", ">": "bvugt", "<": "bvult"}
 
     if op in rep_rules:
@@ -258,15 +260,17 @@ def process_file(filename: str, target_dir: str):
         # s.set("timeout", 1000)
         # print(s.to_smt2())
         # print(s.check())
-        # print("XXXXXXX")
         filename_base = os.path.basename(filename)
-        new_file_name = target_dir + filename_base + ".smt2"
+        # new_file_name = target_dir + filename_base + ".smt2"
+        new_file_name = target_dir + filename_base + \
+                        "_{0}bits_{1}".format(str(g_bitvector_width), g_bitvector_signedness) + ".smt2"
+
         with open(new_file_name, "w") as new_f:
+            print("Writing to ", new_file_name)
             new_f.write(fml_str)
             new_f.close()
 
         f.close()
-
 
 def process_folder(path: str, target_dir: str):
     flist = []  # path to smtlib2 files
@@ -283,8 +287,10 @@ if __name__ == '__main__':
     # tt = "(and (<= x! (+ x y)) (< y! (+ x y)))"
     # print(ira2bv(tt))
     # test_main()
-    target_dir = "~/Work"
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    # process_file(dir_path +  "/benchmarks/sygus-inv/LIA/2017.ASE_FiB/minor3.sl", target_dir)
-    # process_file(dir_path + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_09s.sl", target_dir)
-    process_folder(dir_path + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB", target_dir)
+    from pathlib import Path
+    project_root_dir = str(Path(__file__).parent.parent)
+    print(project_root_dir)
+
+    target_dir = project_root_dir + "/tmp_files/"
+    print(project_root_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
+    process_folder(project_root_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB", target_dir)

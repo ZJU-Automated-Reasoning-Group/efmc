@@ -1,3 +1,4 @@
+tmp_files/*
 !benchmarks/chc
 bin_solvers/*
 !bin_solvers/download.py
