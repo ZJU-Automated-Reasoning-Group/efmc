@@ -13,7 +13,8 @@ from pysmt.shortcuts import EqualsOrIff
 from pysmt.shortcuts import Portfolio
 from pysmt.shortcuts import Symbol, And
 from pysmt.shortcuts import binary_interpolant, sequence_interpolant
-from pysmt.typing import INT, REAL
+from pysmt.typing import INT, REAL, BVType
+# BV1, BV8, BV16, BV32, BV64, BV128
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +23,19 @@ logger = logging.getLogger(__name__)
 
 
 def to_pysmt_vars(z3vars: [z3.ExprRef]):
-    return [Symbol(v.decl().name(),
-                   INT if v.is_int() else REAL) for v in z3vars]
+    res = []
+    for v in z3vars:
+        if z3.is_int(v):
+            res.append(Symbol(v.decl().name(), INT))
+        elif z3.is_real(v):
+            res.append(Symbol(v.decl().name(), REAL))
+        elif z3.is_bv(v):
+            res.append(Symbol(v.decl().name(), BVType(v.sort().size())))
+        else:
+            raise NotImplementedError
+    return res
+    # return [Symbol(v.decl().name(),
+    #              INT if v.is_int() else REAL) for v in z3vars]
 
 
 class PySMTSolver(z3.Solver):
@@ -37,7 +49,8 @@ class PySMTSolver(z3.Solver):
         FIXME: if we do not call "pysmt_vars = ...", z3 will report naming warning..
         """
         zvs = z3.z3util.get_vars(zf)
-        pysmt_vars = [Symbol(v.decl().name(), INT if v.is_int() else REAL) for v in zvs]
+        # pysmt_vars = [Symbol(v.decl().name(), INT if v.is_int() else REAL) for v in zvs]
+        pysmt_vars = to_pysmt_vars(zvs)
         z3s = Solver(name='z3')
         pysmt_fml = z3s.converter.back(zf)
         return pysmt_vars, pysmt_fml
@@ -126,8 +139,7 @@ class PySMTSolver(z3.Solver):
         """Solves exists x. forall y. phi(x, y)"""
 
         _, phi = PySMTSolver.convert(z3fml)
-        # target_logic = get_logic(pysmt_fml)
-        y = to_pysmt_vars(uvars)
+        y = to_pysmt_vars(uvars)  # universally quantified
         y = set(y)
         x = phi.get_free_variables() - y
 
@@ -148,14 +160,7 @@ class PySMTSolver(z3.Solver):
                     fmodel = get_model(Not(sub_phi),
                                        logic=logic, solver_name=fsolver_name)
                     if fmodel is None:
-                        # a trick for returning a Z3 model
-                        # TODO: in some versions, we can directly build a model object?
-                        #   Another strategy is to use the converter inside pySMT?
-                        for i in range(len(evars)):
-                            self.add(evars[i] == esolver.get_value(list(x)[i]))
-                        self.check()
-                        return self.model()
-                        # return tau
+                        return True
                     else:
                         sigma = {v: fmodel[v] for v in y}
                         sub_phi = phi.substitute(sigma).simplify()
