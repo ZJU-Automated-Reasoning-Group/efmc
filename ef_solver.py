@@ -13,29 +13,13 @@ from threading import Timer
 import logging
 import z3
 
-"""
-模版方法的引擎实验
-.smt2文件，.qdimacs (QBF), dimacs(CNF)
-xxx.smt2+interval+yy+.smt2
-xxx.smt2+interval+yyy+.qdiamcs
-xxx.sy+interval+xxx+.smt2
-....
-
-对比不同模版，对比其他验证工具 (z3 py API)
-"""
-
-""""
-3.to各种BOOL
-
-- QBF: 需要找几个引擎 @孙家辉
-- BDD： Q3B
-- SAT: 我要完善实现
-"""
-
 from efmc.engines.ef.efsmt.efsmt_config import \
     z3_exec, cvc5_exec, g_bin_solver_timeout, caqe_exec, g_efsmt_args
 
+
+
 logger = logging.getLogger(__name__)
+
 
 def terminate(process, is_timeout: List):
     if process.poll() is None:
@@ -45,6 +29,7 @@ def terminate(process, is_timeout: List):
         except Exception as ex:
             print("error for interrupting")
             print(ex)
+
 
 def solve_with_bin_qbf(file_name: str, solver_name: str):
     """Call bin QBF solvers
@@ -80,6 +65,7 @@ def solve_with_bin_qbf(file_name: str, solver_name: str):
         print("error for interrupting")
         print(ex)
         return "unknown"
+
 
 def solve_with_bin_smt(file_name: str, solver_name: str):
     """Call bin SMT solvers to solve exists forall
@@ -118,82 +104,25 @@ def solve_with_bin_smt(file_name: str, solver_name: str):
         return "unknown"
 
 
-def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, maxloops=None, profiling=False):
-    """ Solves exists x. forall y. phi(x, y) with simple CEGIS
-    TODO: parse a quantified formula, exact x (existential vars), y (universal vars), and phi (the
-      quantifier-free part) automatically.
+def ground_quantifier(qexpr):
     """
-    # x = [item for item in get_vars(phi) if item not in y]
-    # set_param("verbose", 15); set_param("smt.arith.solver", 3)
-    if "IA" in logic:
-        qf_logic = "QF_LIA"
-    elif "RA" in logic:
-        qf_logic = "QF_LRA"
-    elif "BV" in logic:
-        qf_logic = "QF_BV"
-    else:
-        qf_logic = ""
+    Seems this can only handle exists x . fml, or forall x.fml?
+    FIXME: it seems that this can be very slow?
+    """
+    from z3.z3util import get_vars
+    body = qexpr.body()
+    forall_vars = list()
+    for i in range(qexpr.num_vars()):
+        vi_name = qexpr.var_name(i)
+        vi_sort = qexpr.var_sort(i)
+        vi = z3.Const(vi_name, vi_sort)
+        forall_vars.append(vi)
 
-    if qf_logic != "":
-        esolver = z3.SolverFor(qf_logic)
-        fsolver = z3.SolverFor(qf_logic)
-    else:
-        esolver = z3.Solver()
-        fsolver = z3.Solver()
+    # Substitute the free variables in body with the expression in var_list.
+    body = z3.substitute_vars(body, *forall_vars)
+    exists_vars = [x for x in get_vars(body) if x not in forall_vars]
+    return exists_vars, forall_vars, body
 
-    e_solver_cnts = []  # storing all the queries for profiling
-    f_solver_cnts = []  # storing all the queries for profiling
-    if profiling:
-        e_solver_cnts.append("(set-logic {})".format(qf_logic))
-        f_solver_cnts.append("(set-logic {})".format(qf_logic))
-        for var in x:
-            e_solver_cnts.append("(declare-const {0} {1})".format(var.sexpr(), var.sort().sexpr()))
-        for var in y:
-            f_solver_cnts.append("(declare-const {0} {1})".format(var.sexpr(), var.sort().sexpr()))
-
-    esolver.add(z3.BoolVal(True))
-
-    loops = 0
-    res = z3.unknown
-    while maxloops is None or loops <= maxloops:
-        loops += 1
-        # print("round: ", loops)
-        eres = esolver.check()
-
-        if profiling and loops >= 2:
-            e_solver_cnts.append("(check-sat)")
-
-        if eres == z3.unsat:
-            res = z3.unsat
-            break
-        else:
-            emodel = esolver.model()
-            mappings = [(var, emodel.eval(var, model_completion=True)) for var in x]
-            sub_phi = z3.simplify(z3.substitute(phi, mappings))
-            fsolver.push()
-            fsolver.add(z3.Not(sub_phi))
-
-            if profiling:
-                f_solver_cnts.append("(push)")
-                f_solver_cnts.append("(assert {})".format(z3.Not(sub_phi).sexpr()))
-                f_solver_cnts.append("(check-sat)")
-
-            if fsolver.check() == z3.sat:
-                fmodel = fsolver.model()
-                y_mappings = [(var, fmodel.eval(var, model_completion=True)) for var in y]
-                sub_phi = z3.simplify(z3.substitute(phi, y_mappings))
-                esolver.add(sub_phi)
-                fsolver.pop()
-                if profiling:
-                    e_solver_cnts.append("(assert {})".format(sub_phi.sexpr()))
-                    f_solver_cnts.append("(pop)")
-            else:
-                res = z3.sat
-                break
-    if profiling:
-        print(e_solver_cnts)
-        print(f_solver_cnts)
-    return res
 
 
 def signal_handler(sig, frame):
@@ -208,12 +137,13 @@ def signal_handler(sig, frame):
 
 def demo_efsmt():
     import time
+    from efmc.smttools.pysmt_solver import PySMTSolver
     x, y, z = z3.BitVecs("x y z", 16)
-    # x, y, z = z3.Reals("x y z")
     fmla = z3.Implies(z3.And(y > 0, y < 10), y - 2 * x < 7)
-
+    # print(ground_quantifier(z3.ForAll(y, fmla)))
     start = time.time()
-    simple_cegis_efsmt("BV", [x], [y], fmla, profiling=True)
+    sol = PySMTSolver()
+    print(sol.efsmt(evars=[x], uvars=[y], z3fml=fmla))
     print("time: ", time.time() - start)
 
 
@@ -238,4 +168,3 @@ if __name__ == "__main__":
     parser.add_argument('--lang', dest='lang', default='smt2', type=str, help="The input format: smt2 or qbf")
     parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
     g_efsmt_args = parser.parse_args()
-
