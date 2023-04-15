@@ -134,9 +134,43 @@ class EFSMTSolver:
         """Dump the constraint from the ef engine
         """
         fml_str = "(set-logic {})\n".format(self.logic)
-        sol = z3.Solver()
-        sol.add(z3.ForAll(self.forall_vars, self.phi))
-        fml_str += sol.to_smt2()
+
+        dump_strategy = 1
+        if dump_strategy == 1:
+
+            # there are duplicates in self.exists_vars???
+            exits_vars_names = set()
+            for v in self.exists_vars:
+                name = str(v)
+                if name not in exits_vars_names:
+                    exits_vars_names.add(name)
+                    fml_str += "(declare-const {0} {1})\n".format(v.sexpr(), v.sort().sexpr())
+
+            quant_vars = "("
+            for v in self.forall_vars:
+                quant_vars += "({0} {1}) ".format(v.sexpr(), v.sort().sexpr())
+            quant_vars += ")\n"
+
+            quant_fml_body = "(and \n"
+            s = z3.Solver()
+            s.add(self.phi)
+            # self.phi is in the form of
+            #  and (Init, Trans, Post)
+            assert (z3.is_app(self.phi))
+            for fml in self.phi.children():
+                quant_fml_body += "  {}\n".format(fml.sexpr())
+            quant_fml_body += ")"
+
+            fml_body = "(assert (forall {0} {1}))\n".format(quant_vars, quant_fml_body)
+            fml_str += fml_body
+            fml_str += "(check-sat)\n"
+        else:
+            # Another more direct strategy
+            # But we cannot see the definition of the VC clearly
+            sol = z3.Solver()
+            sol.add(z3.ForAll(self.forall_vars, self.phi))
+            fml_str += sol.to_smt2()
+
         tmp = open(smt2_file_name, "w")
         tmp.write(fml_str)
         tmp.close()

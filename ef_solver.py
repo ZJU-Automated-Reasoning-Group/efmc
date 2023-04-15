@@ -13,6 +13,24 @@ from threading import Timer
 import logging
 import z3
 
+"""
+模版方法的引擎实验
+.smt2文件，.qdimacs (QBF), dimacs(CNF)
+xxx.smt2+interval+yy+.smt2
+xxx.smt2+interval+yyy+.qdiamcs
+xxx.sy+interval+xxx+.smt2
+....
+
+对比不同模版，对比其他验证工具 (z3 py API)
+"""
+
+""""
+3.to各种BOOL
+
+- QBF: 需要找几个引擎 @孙家辉
+- BDD： Q3B
+- SAT: 我要完善实现
+"""
 
 from efmc.engines.ef.efsmt.efsmt_config import \
     z3_exec, cvc5_exec, g_bin_solver_timeout, caqe_exec, g_efsmt_args
