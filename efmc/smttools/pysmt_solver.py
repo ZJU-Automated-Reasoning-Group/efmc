@@ -134,7 +134,7 @@ class PySMTSolver(z3.Solver):
         return z3_seq_itp
 
     def efsmt(self, evars: [z3.ExprRef], uvars: [z3.ExprRef], z3fml: z3.ExprRef, logic=AUTO, maxloops=None,
-              esolver_name=None, fsolver_name=None,
+              esolver_name="z3", fsolver_name="z3",
               verbose=False):
         """Solves exists x. forall y. phi(x, y)"""
 
