@@ -74,7 +74,8 @@ class EFBV2BoolAux:
         expr_clauses = []
         universal_vars = []
         existential_vars = []
-        auxiliary_boolean_vars = []
+        aux_bool_vars = []
+
         for clause in self.bool_clauses:
             expr_cls = []
             for numeric_lit in clause:
@@ -90,6 +91,10 @@ class EFBV2BoolAux:
                         universal_vars.append(z3_var)
                     elif numeric_var in self.existential_bools:
                         existential_vars.append(z3_var)
+                    else:
+                        if z3_var not in aux_bool_vars:
+                            aux_bool_vars.append(z3_var)
+
                 z3_lit = z3.Not(z3_var) if numeric_lit < 0 else z3_var
                 expr_cls.append(z3_lit)
             expr_clauses.append(z3.Or(expr_cls))
@@ -102,6 +107,8 @@ class EFBV2BoolAux:
         # { NOET a trick for eliminating a subset of aux variables that are
         #     equivalent with existential or universal variables
         # FIXME: I forgot what algorithms the following code follow
+        """
+        auxiliary_boolean_vars = []
         replace_mappings = []
         cared_vars_length = len(self.existential_bools) + len(self.universal_bools)
 
@@ -119,17 +126,21 @@ class EFBV2BoolAux:
         # NOTE: the line below removes a subset of aux variables
         simplified_fml = z3.simplify(z3.substitute(fml, replace_mappings))
         # } End of the trick for eliminating a subset of aux variables.
-
+        
         # the following loop collects the remaining aux variables
-        for var in get_vars(simplified_fml):
+        for var in get_vars(simplified_fml):   # get_vars can be slow!!!!
             if not (var in universal_vars or var in existential_vars):
                 auxiliary_boolean_vars.append(var)
-
+        """
+        simplified_fml = fml   # do not use the above "fancy simplification"
         # TODO: remove universal vars that do not appear in simplified_fml?
-        if len(auxiliary_boolean_vars) >= 1:
-            cnt = z3.ForAll(universal_vars, z3.Exists(auxiliary_boolean_vars, simplified_fml))
+        if len(aux_bool_vars) >= 1:
+            cnt = z3.ForAll(universal_vars, z3.Exists(aux_bool_vars, simplified_fml))
+            # cnt = z3.Exists(existential_vars,
+            #                z3.ForAll(universal_vars, z3.Exists(aux_bool_vars, simplified_fml)))
         else:
             cnt = z3.ForAll(universal_vars, simplified_fml)
+        print("Finishing generating QBF CNT...")
         return cnt
 
     def to_qbf_qdimacs(self) -> str:
@@ -166,7 +177,9 @@ class EFBV2BoolAux:
         num_clauses = len(self.bool_clauses)
         fml_str = ["c QBF from EFSMT(BV)",
                    "p cnf {0} {1}".format(str(num_vars), str(num_clauses)),
-                   "e {} 0".format(" ".join([str(v) for v in self.existential_bools])),
+                   # FIXME: should we keep the next line or not?
+                   #  i.e, Exits X . Forall Y. Exists Z . P(X, Y, Z)
+                   # "e {} 0".format(" ".join([str(v) for v in self.existential_bools])),
                    "a {} 0".format(" ".join([str(v) for v in self.universal_bools])),
                    "e {} 0".format(" ".join([str(v) for v in aux_bool_vars]))]
 
@@ -175,6 +188,7 @@ class EFBV2BoolAux:
             cls_str.append(" 0")
             fml_str.append(" ".join(cls_str))
 
+        print("Finishing generating QBF CNT...")
         return "\n".join(fml_str) + "\n"
 
 
