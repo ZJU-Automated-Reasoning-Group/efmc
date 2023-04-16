@@ -4,7 +4,7 @@ Augmenting Z3 using PySMT, e.g., interpolant generation
 """
 import logging
 import z3
-from pysmt.logics import AUTO
+from pysmt.logics import AUTO , QF_BV
 from pysmt.oracles import get_logic
 # from pysmt.smtlib.parser import SmtLibParser
 # from pysmt.exceptions import SolverReturnedUnknownResultError
@@ -133,7 +133,7 @@ class PySMTSolver(z3.Solver):
             z3_seq_itp.append(Solver(name='z3').converter.convert(cnt))
         return z3_seq_itp
 
-    def efsmt(self, evars: [z3.ExprRef], uvars: [z3.ExprRef], z3fml: z3.ExprRef, logic=AUTO, maxloops=None,
+    def efsmt(self, evars: [z3.ExprRef], uvars: [z3.ExprRef], z3fml: z3.ExprRef, logic=QF_BV, maxloops=None,
               esolver_name="z3", fsolver_name="z3",
               verbose=False):
         """Solves exists x. forall y. phi(x, y)"""
@@ -151,7 +151,7 @@ class PySMTSolver(z3.Solver):
                 loops += 1
                 eres = esolver.solve()
                 if not eres:
-                    return False
+                    return z3.unsat
                 else:
                     tau = {v: esolver.get_value(v) for v in x}
                     sub_phi = phi.substitute(tau).simplify()
@@ -160,7 +160,7 @@ class PySMTSolver(z3.Solver):
                     fmodel = get_model(Not(sub_phi),
                                        logic=logic, solver_name=fsolver_name)
                     if fmodel is None:
-                        return True
+                        return z3.sat
                     else:
                         sigma = {v: fmodel[v] for v in y}
                         sub_phi = phi.substitute(sigma).simplify()
