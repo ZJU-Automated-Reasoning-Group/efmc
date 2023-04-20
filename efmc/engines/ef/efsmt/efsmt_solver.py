@@ -197,7 +197,7 @@ class EFSMTSolver:
         """Translate EFSMT(BV) to QBF (preserve the quantifiers)
         """
         assert self.initialized
-        logger.debug("EFSMT solver: {}".format(self.solver))
+        print("EFSMT solver: {}".format(self.solver))
         # 1. Quantifier instanta
         if self.solver == "z3":
             return solve_with_bin_smt(self.logic, self.exists_vars, self.forall_vars, self.phi, "z3")

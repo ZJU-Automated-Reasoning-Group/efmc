@@ -106,8 +106,11 @@ def solve_with_ef(sts: TransitionSystem):
     if g_verifier_args.dump_ef_smt2 or g_verifier_args.dump_qbf:
         ef_prover.dump_constraint(g_verifier_args)
     else:
-        ef_prover.solve()
-        # ef_prover.solve_with_bin_solver()
+        res = ef_prover.solve()
+        if res == "sat":
+            print("safe")
+        else:
+            print("unknown")
 
 
 def solve_chc_file(file_name: str, prover="efsmt"):
