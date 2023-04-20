@@ -11,7 +11,8 @@ import z3
 from efmc.engines.ef.efsmt.efsmt_utils import solve_with_bin_smt, solve_with_bin_qbf
 from efmc.engines.ef.efsmt.efbv_to_bool import EFBVFormulaTranslator
 from efmc.smttools.pysmt_solver import PySMTSolver
-from efmc.utils import big_and
+
+# from efmc.utils import big_and
 
 logger = logging.getLogger(__name__)
 
@@ -197,22 +198,30 @@ class EFSMTSolver:
         """
         assert self.initialized
         logger.debug("EFSMT solver: {}".format(self.solver))
+        # 1. Quantifier instanta
         if self.solver == "z3":
-            return solve_with_bin_smt(self.logic, self.forall_vars, self.phi, "z3")
+            return solve_with_bin_smt(self.logic, self.exists_vars, self.forall_vars, self.phi, "z3")
         elif self.solver == "cvc5":
-            return solve_with_bin_smt(self.logic, self.forall_vars, self.phi, "cvc5")
+            return solve_with_bin_smt(self.logic, self.exists_vars, self.forall_vars, self.phi, "cvc5")
         elif self.solver == "btor":
-            return solve_with_bin_smt(self.logic, self.forall_vars, self.phi, "boolector2")
-        elif self.solver == "yices2":
-            return solve_with_bin_smt(self.logic, self.forall_vars, self.phi, "yices2")
-        elif self.solver == "cegis":
-            # FIXME: the following code uses Z3's API. Should we support other engines?
-            return self.solve_with_simple_cegis()
+            return solve_with_bin_smt(self.logic, self.exists_vars, self.forall_vars, self.phi, "boolector2")
+        # TODO: Bitzullia (new solver)
+        # elif self.solver == "yices2":
+        #    return solve_with_bin_smt(self.logic, elf.exists_vars, self.forall_vars, self.phi, "yices2")
+
+        # 2. Bit-blasting
         elif self.solver == "z3qbf":
             return self.solve_with_z3_qbf()
         elif self.solver == "caqe":
             # return self.solve_with_z3_qbf()
             return self.solve_with_third_party_qbf("caqe")
+        # TODO: i3b (BDD-based), z3-based QE+SAT
+
+        # 3. Simple cegis-based
+        elif self.solver == "cegis":
+            # TODO: other engines in pysmt
+            return self.solve_with_simple_cegis()
+
         else:
             raise NotImplementedError
 
