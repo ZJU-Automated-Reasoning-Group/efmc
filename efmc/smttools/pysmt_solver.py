@@ -151,7 +151,7 @@ class PySMTSolver(z3.Solver):
                 loops += 1
                 eres = esolver.solve()
                 if not eres:
-                    return False
+                    return "unsat"
                 else:
                     tau = {v: esolver.get_value(v) for v in x}
                     sub_phi = phi.substitute(tau).simplify()
@@ -160,12 +160,13 @@ class PySMTSolver(z3.Solver):
                     fmodel = get_model(Not(sub_phi),
                                        logic=logic, solver_name=fsolver_name)
                     if fmodel is None:
-                        return True
+                        return "sat"
                     else:
                         sigma = {v: fmodel[v] for v in y}
                         sub_phi = phi.substitute(sigma).simplify()
                         if verbose: print("%d: Sigma = %s" % (loops, sigma))
                         esolver.add_assertion(sub_phi)
+            return "unknown"
 
 
 def test():
