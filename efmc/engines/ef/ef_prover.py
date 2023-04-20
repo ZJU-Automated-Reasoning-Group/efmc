@@ -17,7 +17,6 @@ from efmc.utils import is_entail
 from efmc.engines.ef.templates import *
 from efmc.engines.ef.efsmt.efsmt_solver import EFSMTSolver
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -40,8 +39,8 @@ class EFProver:
         # the SMT solver for dealing with the EFSMT queries
         self.solver = kwargs.get("solver", "z3api")
 
-        self.validate_invariant = kwargs.get("validate_invariant", False)  # use SMT solvers to validate the correctness of the invariant
-
+        self.validate_invariant = kwargs.get("validate_invariant",
+                                             False)  # use SMT solvers to validate the correctness of the invariant
 
         # prevent over/underflow in the template exprs, e.g., x - y, x + y
         self.no_overflow = kwargs.get("no_overflow", False)
@@ -241,7 +240,9 @@ class EFProver:
             # print("exists vars: ", exists_vars)
             # print("forall vars: ", forall_vars)
             ef_solver.init(exist_vars=exists_vars, forall_vars=forall_vars, phi=qf_vc)
-            return ef_solver.solve()
+            res = ef_solver.solve()
+            return res
+            # print("res..", res)
 
     def generate_vc(self) -> z3.ExprRef:
         """ Generate VC (Version 1)
@@ -332,7 +333,7 @@ class EFProver:
         logger.debug("Finish generating VC")
         return z3.ForAll(self.sts.all_variables, qf_vc)
 
-    def solve_with_z3(self) -> bool:
+    def solve_with_z3(self) -> str:
         """This is the main entrance for the verification"""
         s = z3.SolverFor(self.logic)
         vc = self.generate_vc2()
@@ -345,7 +346,7 @@ class EFProver:
         if self.print_vc:
             print(vc)
         s.add(vc)  # sometimes can be much faster!
-        print("EFSMT starting!!!")
+        print("EFSMT starting (via z3py API)!!!")
         start = time.time()
         # print(s.to_smt2())
         check_res = s.check()
@@ -371,11 +372,11 @@ class EFProver:
                     inv_in_prime_variables = self.ct.build_invariant_expr(m, use_prime_variables=True)
                     self.check_invariant(inv, inv_in_prime_variables)
             self.inductive_invaraint = inv  # preserve the invariant
-            return True
+            return "sat"
         else:
             print("EFSMT fail time: ", time.time() - start)
             print("Cannot verify using the template!")
             print(check_res)
             if check_res == z3.unknown:
                 print(s.reason_unknown())
-            return False
+            return "unsat"

@@ -23,7 +23,7 @@ def terminate(process, is_timeout: List):
         is_timeout : List
             A list containing a single boolean item. If the process exceeds the timeout limit, the boolean item will be
             set to True.
-        """
+    """
     if process.poll() is None:
         try:
             process.terminate()
@@ -118,6 +118,7 @@ def solve_with_bin_smt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
             cmd = [cvc5_exec, "-q", "--produce-models", tmp_filename]
         else:
             cmd = [z3_exec, tmp_filename]
+        # print(cmd)
         p_gene = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         is_timeout_gene = [False]
         timer_gene = Timer(g_bin_solver_timeout, terminate, args=[p_gene, is_timeout_gene])
