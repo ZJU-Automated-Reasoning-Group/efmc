@@ -10,13 +10,42 @@ import z3
 
 from efmc.engines.ef.efsmt.efsmt_utils import solve_with_bin_smt, solve_with_bin_qbf
 from efmc.engines.ef.efsmt.efbv_to_bool import EFBVFormulaTranslator
+from efmc.smttools.pysmt_solver import PySMTSolver
+from efmc.utils import big_and
 
 logger = logging.getLogger(__name__)
 
 
-def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, maxloops=None, profiling=False):
-    """ Solves exists x. forall y. phi(x, y) with simple CEGIS
+def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, maxloops=None,
+                       profiling=False):
+    """Solve the EFSMT file using CEGIS (implemented using PySMT)
+     Solves exists x. forall y. phi(x, y) with simple CEGIS
+    :param logics: the logic of the quantified formula, e.g., LIA, BV
+    :param x: existentially quantified variables
+    :param y: universally quantified variables
+    :param phi: the quantifier-fre part phi(x, y)
+    :param maxloops: the number of iterations in each the CEGIS-style algorithms
+    :param profiling: dump some information?
     """
+    from pysmt.logics import QF_BV, QF_LIA, QF_LRA, AUTO
+    if "IA" in logic:
+        qf_logic = QF_LIA
+    elif "RA" in logic:
+        qf_logic = QF_LRA
+    elif "BV" in logic:
+        qf_logic = QF_BV
+    else:
+        qf_logic = AUTO
+
+    sol = PySMTSolver()
+    return sol.efsmt(evars=x, uvars=y, z3fml=phi,
+                     logic=qf_logic, maxloops=maxloops,
+                     esolver_name="z3", fsolver_name="z3")
+
+
+"""
+def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, maxloops=None,
+                       profiling=False):
     # x = [item for item in get_vars(phi) if item not in y]
     # set_param("verbose", 15); set_param("smt.arith.solver", 3)
     if "IA" in logic:
@@ -35,16 +64,6 @@ def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
         esolver = z3.Solver()
         fsolver = z3.Solver()
 
-    e_solver_cnts = []  # storing all the queries for profiling
-    f_solver_cnts = []  # storing all the queries for profiling
-    if profiling:
-        e_solver_cnts.append("(set-logic {})".format(qf_logic))
-        f_solver_cnts.append("(set-logic {})".format(qf_logic))
-        for var in x:
-            e_solver_cnts.append("(declare-const {0} {1})".format(var.sexpr(), var.sort().sexpr()))
-        for var in y:
-            f_solver_cnts.append("(declare-const {0} {1})".format(var.sexpr(), var.sort().sexpr()))
-
     esolver.add(z3.BoolVal(True))
 
     loops = 0
@@ -53,10 +72,6 @@ def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
         loops += 1
         # print("round: ", loops)
         eres = esolver.check()
-
-        if profiling and loops >= 2:
-            e_solver_cnts.append("(check-sat)")
-
         if eres == z3.unsat:
             res = z3.unsat
             break
@@ -67,27 +82,17 @@ def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
             fsolver.push()
             fsolver.add(z3.Not(sub_phi))
 
-            if profiling:
-                f_solver_cnts.append("(push)")
-                f_solver_cnts.append("(assert {})".format(z3.Not(sub_phi).sexpr()))
-                f_solver_cnts.append("(check-sat)")
-
             if fsolver.check() == z3.sat:
                 fmodel = fsolver.model()
                 y_mappings = [(var, fmodel.eval(var, model_completion=True)) for var in y]
                 sub_phi = z3.simplify(z3.substitute(phi, y_mappings))
                 esolver.add(sub_phi)
                 fsolver.pop()
-                if profiling:
-                    e_solver_cnts.append("(assert {})".format(sub_phi.sexpr()))
-                    f_solver_cnts.append("(pop)")
             else:
                 res = z3.sat
                 break
-    # if profiling:
-    #    print(e_solver_cnts)
-    #    print(f_solver_cnts)
     return res
+"""
 
 
 def solve_z3qbf(fml: z3.ExprRef):
@@ -213,8 +218,9 @@ class EFSMTSolver:
 
     def solve_with_simple_cegis(self):
         """Solve with a CEGIS-style algorithm, which consists of a "forall solver" and an "exists solver"
+
+        This can be slow (perhaps not a good idea for NRA) Maybe good for LRA or BV?
         """
-        """This can be slow (perhaps not a good idea for NRA) Maybe good for LRA or BV?"""
         print("Simple, sequential, CEGIS-style EFSMT!")
         z3_res = simple_cegis_efsmt(self.logic, self.exists_vars, self.forall_vars, self.phi)
         return z3_res
@@ -239,7 +245,6 @@ class EFSMTSolver:
         Use third-party SAT solvers... (do we need?)
         """
         raise NotImplementedError
-
 
 
 def demo_efsmt():
