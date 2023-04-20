@@ -4,7 +4,7 @@ Augmenting Z3 using PySMT, e.g., interpolant generation
 """
 import logging
 import z3
-from pysmt.logics import AUTO
+from pysmt.logics import AUTO , QF_BV
 from pysmt.oracles import get_logic
 # from pysmt.smtlib.parser import SmtLibParser
 # from pysmt.exceptions import SolverReturnedUnknownResultError
@@ -133,7 +133,7 @@ class PySMTSolver(z3.Solver):
             z3_seq_itp.append(Solver(name='z3').converter.convert(cnt))
         return z3_seq_itp
 
-    def efsmt(self, evars: [z3.ExprRef], uvars: [z3.ExprRef], z3fml: z3.ExprRef, logic=AUTO, maxloops=None,
+    def efsmt(self, evars: [z3.ExprRef], uvars: [z3.ExprRef], z3fml: z3.ExprRef, logic=QF_BV, maxloops=None,
               esolver_name="z3", fsolver_name="z3",
               verbose=False):
         """Solves exists x. forall y. phi(x, y)"""

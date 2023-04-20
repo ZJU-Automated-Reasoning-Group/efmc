@@ -65,8 +65,8 @@ if __name__ == "__main__":
     import argparse
 
     # demo_efsmt()
-    solve_efsmt_file("/Users/rainoftime/Desktop/xx.smt2", "z3")
-    exit(0)
+    # solve_efsmt_file("/Users/rainoftime/Desktop/xx.smt2", "z3")
+    # exit(0)
 
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
@@ -74,4 +74,4 @@ if __name__ == "__main__":
                         help="Specify the SMT engine used by PySMT")
     # parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
     g_args = parser.parse_args()
-    solve_g_efsmt_args(g_args.file, g_args.smt_oracle)
+    solve_efsmt_file(g_args.file, g_args.smt_oracle)

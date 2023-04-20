@@ -1,213 +1,119 @@
 # coding: utf8
 import os
-# import sys
 import subprocess
 from threading import Timer
 from typing import List
 import csv
-# import signal``
-# import psutil
-# import zlib
+import json
+import itertools
+import signal
 
 
-g_input_type = "chc"
+LANG=["chc"]
+METHOD=["efsmt"]
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 all_template=["bv_interval", "power_bv_interval",
-                  "bv_zone", "power_bv_zone",
-                  "bv_octagon", "power_bv_octagon",
-                  "bv_poly", "power_bv_poly"]
-g_run_efsmt,g_run_pdr,g_run_kind= True,False,False
-No_constraint_output=True
-MAXTIME=10
-GOAL_PATH="/benchmarks/chc/bv/2017.ASE_FIB/32bits_unsigned"
+              "bv_zone", "power_bv_zone",
+              "bv_octagon", "power_bv_octagon",
+              "bv_poly", "power_bv_poly"]
+
+MAXTIME=1
+GOAL_PATH="/Benchmark"
+Processed_PATH="/SafeBenchmark"
 
 #################### By KJY #########################
-def csv_create(method,lang,results_list):
-    header=['file_name','error?','template','constraint','solve or not','invariant','config']
-    first_last_slash_index = GOAL_PATH.rfind('/', 0,)  
-    file_name = GOAL_PATH[first_last_slash_index+1:]
-    csv_name=file_name+"_"+method+"_"+lang+".csv"
-    with open(csv_name,'w',newline='') as file:
-        writer=csv.writer(file)
-        writer.writerow(header)
-        writer.writerows(results_list)
+# def csv_create(method,lang,results_list):
+#     header=['file_name','error?','template','constraint','solve or not','invariant','config']
+#     first_last_slash_index = GOAL_PATH.rfind('/', 0,)  
+#     file_name = GOAL_PATH[first_last_slash_index+1:]
+#     csv_name=file_name+"_"+method+"_"+lang+".csv"
+#     with open(csv_name,'w',newline='') as file:
+#         writer=csv.writer(file)
+#         writer.writerow(header)
+#         writer.writerows(results_list)
 
-def parsing_kind_output(file_path,lines):
-    second_last_slash_index = file_path.rfind('/', 0, file_path.rfind('/'))  
-    file_path = file_path[second_last_slash_index+1:]
-    CHC_read = False
-    kind_success = False
-    time = 0.0
-    kind_solve = True
+def parsing_out(file_path,template,lines,mode='kind'):
+    result_dict={'template':template,'file':file_path[file_path.rfind('/')+1:],'method':mode}
+    
+    CHC_read=False
+    Method_start=False
+    TimeOut=False
+    overflow=False
+    underflow=False
+    exec_time = -1
     config=""
-    template="no_template"
-    invariant=""
-    error=''
+    safe=False
+    unknown=False
+    error=False
     for line in lines:
         if "Finish parsing CHC file" in line:
-            CHC_read = True
+            CHC_read=True
             continue
 
-        if "K-induction starts" in line:
-            kind_success = True
-        
-        if "time:" in line:
-            time = float(line.split()[-1])
-            config+='time:'+str(time)+'\n'
-            
-        if "unknown" in line:
-            config+="program safety:unknown"
-            break
-        
-        if "unsafe" in line:
-            config+="program safety:unsafe"
-            break
-        
-        if "safe" in line:
-            config+="program safety:safe"
-            break
-    if not CHC_read or not kind_success:
-        error="out of maxtime"+str(MAXTIME)+"s"
-    if error:
-        template='no_template'
-        output_str=''
-        kind_solve=False
-        invariant=''
-    if No_constraint_output:
-        output_str=""
-    result=[file_path,error,template,output_str,kind_solve,invariant,config]
-    print(result)
-    return result
-
-def parsing_pdr_output(file_path,lines):
-    second_last_slash_index = file_path.rfind('/', 0, file_path.rfind('/'))  
-    file_path = file_path[second_last_slash_index+1:]
-    CHC_read = False
-    PDR_success = False
-    time = 0.0
-    pdr_solve = True
-    config=""
-    template="no_template"
-    invariant=""
-    error=''
-    for line in lines:
-        if "Finish parsing CHC file" in line:
-            CHC_read = True
+        if "K-induction starts" in line or "PDR starting!!!" in line or "Start solving" in line:
+            Method_start=True
             continue
-
-        if "PDR starting!!!" in line:
-            PDR_success = True
         
         if "time:" in line:
-            time = float(line.split()[-1])
-            config+='time:'+str(time)+'\n'
+            exec_time = float(line.split()[-1])
+            continue
+        
+        if "Timeout" in line:
+            exec_time=MAXTIME
+            TimeOut=True
+            break
             
-        if "PDR error" in line:
-            error="unexpected error occur in pdr"
-            pdr_solve=False
+        if "unknown" in line or "Cannot verify using the template!" in line:
+            unknown=True
+            continue
         
         if "unsafe" in line:
-            config+="program safety:unsafe"
-            break
+            safe=False
+            continue
         elif "safe" in line:
-            config+="program safety:safe"
-            break
-    if error:
-        error=error
-    elif not CHC_read or not PDR_success:
-        error="out of maxtime"+str(MAXTIME)+"s"
-    if error:
-        template='no_template'
-        output_str=''
-        pdr_solve=False
-        invariant=''
-    if No_constraint_output:
-        output_str=""
-    result=[file_path,error,template,output_str,pdr_solve,invariant,config]
-    return result
-
-def parsing_efsmt_output(file_path,template,lines):       
-    second_last_slash_index = file_path.rfind('/', 0, file_path.rfind('/'))  
-    file_path = file_path[second_last_slash_index+1:]
-    CHC_read = False
-    overflow = False
-    over_flow_read = False
-    underflow = False
-    solving = False
-    constraint=False
-    output_str = ""
-    NO_BV=False
-    EFSMT_success = False
-    fail_time = 0.0
-    template_solve = True
-    config=""
-    invariant=""
-    for line in lines:
-        if "Finish parsing CHC file" in line:
-            CHC_read = True
+            safe=True
             continue
-        
+        # pdr specific
+        if "PDR error" in line:
+            error=True
+            break
+
+        # efsmt specific
         if "prevent over/under flow" in line:
             words = line.split()
             overflow = eval(words[-2])
             underflow = eval(words[-1])
-            config+='overflow:'+str(overflow)+'\n'
-            config+='underflow:'+str(underflow)+'\n'
+    result_dict['time']=exec_time
+    if TimeOut:
+        result_dict['timeout']=True
+        result_dict['unknown']=True
+        return result_dict
+    
+    if error or not Method_start or not CHC_read:
+        result_dict['unexpected_error']=True
+        return result_dict
+    
+    if METHOD=='efsmt':
+        result_dict['overflow']=overflow
+        result_dict['underflow']=underflow
+    
+    if unknown:
+        result_dict['unknown']=unknown
+    else:
+        result_dict['safe']=safe
+    
+    return result_dict
 
-        if "Start solving: " in line:
-            solving = True
-        
-        if "Used template:" in line:
-            template = line.split(":")[-1].strip()
-            
-        if "EFSMT starting!!!" in line:
-            EFSMT_success = True
-            constraint=False
-        
-        if "EFSMT fail time:" in line:
-            fail_time = float(line.split()[-1])
-            
-        if "Cannot verify using the template!" in line:
-            template_solve = False
-        
-        if constraint:
-            output_str += line
-            output_str+='\n'
-        
-        if "Used logic:" in line:
-            logic = line.split(":")[-1].strip()
-            if "BV" not in logic:
-                NO_BV=True
-            constraint=True
-            config+='Not_BV?:'+str(NO_BV)+'\n'
-    error=''
-    if not CHC_read or not EFSMT_success:
-        error="out of maxtime"+str(MAXTIME)+"s"
-    if error:
-        output_str=''
-        template_solve=False
-        invariant=''
-    if No_constraint_output:
-        output_str=""
-    result=[file_path,error,template,output_str,template_solve,invariant,config]
-    return result
 #####################################################
 
-def find_smt2_files(path: str) -> List[str]:
-    files_list = []  # path to smtlib2 files
-    # print(path)
-    for root, dirs, files in os.walk(path):
-        for filename in files:
-            tt = os.path.splitext(filename)[1]
-            if tt == '.smt2' or tt == '.sl':
-                files_list.append(os.path.join(root, filename))
-    return files_list
+
 
 
 def terminate(process: subprocess.Popen, is_timeout: List[bool]):
     if process.poll() is None:
         try:
             # process.terminate()
-            process.kill()  # ?
+            os.kill(process.pid,signal.SIGKILL)
             is_timeout[0] = True
         except Exception as es:
             # print("error for interrupting")
@@ -222,7 +128,10 @@ def solve_with_bin_solver(cmd: List[str], timeout: int) -> str:
     is_timeout = [False]
     timer = Timer(timeout, terminate, args=[p, is_timeout])
     timer.start()
-    out = p.stdout.readlines()
+    out= p.stdout.readlines()
+    if is_timeout[0]:
+        out.append(str.encode(f"Timeout: Method '{METHOD}' timed out after {timeout} seconds.\n"))
+    timer.cancel()
     # for i in out:
     #     print(str(i))
     out = ' '.join([str(element.decode('UTF-8')) for element in out])
@@ -234,69 +143,85 @@ def solve_with_bin_solver(cmd: List[str], timeout: int) -> str:
     return out
 
 
-def solve_file(file_path: str,template):
-    cur_dir = os.path.dirname(os.path.realpath(__file__))
-    if g_input_type == "sygus":
-        if g_run_efsmt:
-            cmd = ["python3", cur_dir + "/prover.py", "--engine", "efsmt", "--lang", "sygus", "--file", file_path]
-            out = solve_with_bin_solver(cmd, MAXTIME)
-        if g_run_pdr:
-            cmd = ["python3", cur_dir + "/prover.py", "--engine", "pdr", "--lang", "sygus", "--file", file_path]
-            out = solve_with_bin_solver(cmd, MAXTIME)
-    elif g_input_type == "chc":
-        if g_run_efsmt:
-            cmd = ["python3", cur_dir + "/prover.py", "--engine", "efsmt",
-                   "--template", str(template), "--lang", "chc", "--file", file_path]
-            out = solve_with_bin_solver(cmd, MAXTIME)
-        if g_run_pdr:
-            cmd = ["python3", cur_dir + "/prover.py", "--engine", "pdr", "--lang", "chc", "--file", file_path]
-            # print(cmd)
-            out = solve_with_bin_solver(cmd, MAXTIME)
-        if g_run_kind:
-            cmd = ["python3", cur_dir + "/prover.py", "--engine", "kind", "--lang", "chc", "--file", file_path]
-            # print(cmd)
-            out = solve_with_bin_solver(cmd, MAXTIME)
+def solve_file(file_path,ef_template):
+    if ef_template=='None':
+        cmd = ["python3", CUR_DIR + "/prover.py", "--engine", METHOD, "--lang", LANG,"--file", file_path]
     else:
-        print("Unsupported frontend: ", g_input_type)
-        exit(0)
+        cmd = ["python3", CUR_DIR + "/prover.py", "--engine", METHOD, "--lang", LANG, "--template", ef_template ,"--file", file_path]
+    out = solve_with_bin_solver(cmd, MAXTIME)
     lines = out.split('\n')
     print(lines)
-    if g_run_efsmt:
-        return parsing_efsmt_output(file_path,template,lines)
-    if g_run_pdr:
-        return parsing_pdr_output(file_path,lines)
-    if g_run_kind:
-        return parsing_kind_output(file_path,lines)
+    return parsing_out(file_path,ef_template,lines,mode=METHOD)
+    
+    
 
-def solve_dir(path: str):
-    all_files = find_smt2_files(path)
-    # for file in all_files:
-    #     print(file)
-    if g_run_efsmt:
-        method="efsmt"
-    elif g_run_pdr:
-        method="pdr"
-    else:
-        method="kind"
-    result=[]
-    for file in all_files:
-        if method=="efsmt":
-            for template in all_template:
-                print("Solving: ", file)
-                result.append(solve_file(file,template))
+def three_method_compare(root):
+    file_list=[]
+    result_list=[]
+    result_dir='./result'
+    if not os.path.isdir("result"):
+        os.mkdir("result")
+    # get all .smt2 [chc format]
+    for dirpath, _, filenames in os.walk(root):
+        for filename in filenames:
+            if filename.endswith('.smt2'):
+                file_path = os.path.join(dirpath, filename)
+                file_list.append(file_path)
+    
+    for file_path in file_list:
+        relative_path = os.path.relpath(file_path, root)
+        no_ext_path, _ = os.path.splitext(relative_path)
+        new_path = os.path.join(result_dir, no_ext_path)
+        new_dir = os.path.dirname(new_path)
+        
+        if not os.path.exists(new_dir):
+            os.makedirs(new_dir)
+        
+        new_path+="_"+str(METHOD)+"_"+str(LANG)
+        if METHOD!='efsmt':
+            save_path=new_path+".json"
+            result = solve_file(file_path,'None')
+            with open(save_path, 'w') as f:
+                json.dump(result,f,indent=4)
+            result_list.append(result)
         else:
-            print("Solving: ", file)
-            result.append(solve_file(file,""))
-    csv_create(method,g_input_type,result)
+            for template in all_template:
+                save_path=new_path+"_"+str(template)+".json"
+                result=solve_file(file_path,template)
+                with open(save_path, 'w') as f:
+                    json.dump(result,f,indent=4)
+                result_list.append(result)
+    
+    # data_process(result_list)
+    return
 
+def Initial():
+    if LANG not in ['chc','sygus']:
+        print("Unexpected language used in verfication.")
+    if METHOD not in ['kind','pdr','efsmt']:
+        print("Unexpected method used in verfication.")
+    if LANG=='sygus' and METHOD=='kind':
+        print("do not combine sygus and kind, which is not a valid combination")
+        return False
+    return True
 
+# 
 if __name__ == "__main__":
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    if g_input_type == "sygus":
-        solve_dir(current_dir + GOAL_PATH)
-    elif g_input_type == "chc":
-        solve_dir(current_dir + GOAL_PATH)
-    else:
-        print("Input type not supported!")
-        exit(0)
+    import argparse
+    parser=argparse.ArgumentParser()
+    parser.add_argument('-l','--lang',type=str,nargs='+',default=LANG)
+    parser.add_argument('-m','--method',type=str,nargs='+',default=METHOD)
+    parser.add_argument('-p','--goal_path',default=GOAL_PATH)
+    parser.add_argument('-ns','--nosafe',action='store_true')
+    parser.add_argument('-t','--time',default=MAXTIME)
+    args=parser.parse_args()
+    MAXTIME=int(args.time)
+    if not args.nosafe:
+        GOAL_PATH=args.goal_path
+        for Language,Method in itertools.product(args.lang,args.method):
+            LANG=Language
+            METHOD=Method
+            run=Initial()
+            if run:
+                three_method_compare(CUR_DIR + GOAL_PATH)
     
