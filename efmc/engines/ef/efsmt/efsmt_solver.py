@@ -8,104 +8,11 @@ from typing import List
 
 import z3
 
-from efmc.engines.ef.efsmt.efsmt_utils import solve_with_bin_smt, solve_with_bin_qbf
+from efmc.engines.ef.efsmt.efsmt_bin_solvers import solve_with_bin_smt, solve_with_bin_qbf
+from efmc.engines.ef.efsmt.efsmt_cegis_solvers import simple_cegis_efsmt
 from efmc.engines.ef.efsmt.efbv_to_bool import EFBVFormulaTranslator
-from efmc.smttools.pysmt_solver import PySMTSolver
-
-# from efmc.utils import big_and
 
 logger = logging.getLogger(__name__)
-
-
-def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, maxloops=None,
-                       profiling=False):
-    """Solve the EFSMT file using CEGIS (implemented using PySMT)
-     Solves exists x. forall y. phi(x, y) with simple CEGIS
-    :param logics: the logic of the quantified formula, e.g., LIA, BV
-    :param x: existentially quantified variables
-    :param y: universally quantified variables
-    :param phi: the quantifier-fre part phi(x, y)
-    :param maxloops: the number of iterations in each the CEGIS-style algorithms
-    :param profiling: dump some information?
-    """
-    from pysmt.logics import QF_BV, QF_LIA, QF_LRA, AUTO
-    if "IA" in logic:
-        qf_logic = QF_LIA
-    elif "RA" in logic:
-        qf_logic = QF_LRA
-    elif "BV" in logic:
-        qf_logic = QF_BV
-    else:
-        qf_logic = AUTO
-
-    sol = PySMTSolver()
-    return sol.efsmt(evars=x, uvars=y, z3fml=phi,
-                     logic=qf_logic, maxloops=maxloops,
-                     esolver_name="z3", fsolver_name="z3")
-
-
-"""
-def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, maxloops=None,
-                       profiling=False):
-    # x = [item for item in get_vars(phi) if item not in y]
-    # set_param("verbose", 15); set_param("smt.arith.solver", 3)
-    if "IA" in logic:
-        qf_logic = "QF_LIA"
-    elif "RA" in logic:
-        qf_logic = "QF_LRA"
-    elif "BV" in logic:
-        qf_logic = "QF_BV"
-    else:
-        qf_logic = ""
-
-    if qf_logic != "":
-        esolver = z3.SolverFor(qf_logic)
-        fsolver = z3.SolverFor(qf_logic)
-    else:
-        esolver = z3.Solver()
-        fsolver = z3.Solver()
-
-    esolver.add(z3.BoolVal(True))
-
-    loops = 0
-    res = z3.unknown
-    while maxloops is None or loops <= maxloops:
-        loops += 1
-        # print("round: ", loops)
-        eres = esolver.check()
-        if eres == z3.unsat:
-            res = z3.unsat
-            break
-        else:
-            emodel = esolver.model()
-            mappings = [(var, emodel.eval(var, model_completion=True)) for var in x]
-            sub_phi = z3.simplify(z3.substitute(phi, mappings))
-            fsolver.push()
-            fsolver.add(z3.Not(sub_phi))
-
-            if fsolver.check() == z3.sat:
-                fmodel = fsolver.model()
-                y_mappings = [(var, fmodel.eval(var, model_completion=True)) for var in y]
-                sub_phi = z3.simplify(z3.substitute(phi, y_mappings))
-                esolver.add(sub_phi)
-                fsolver.pop()
-            else:
-                res = z3.sat
-                break
-    return res
-"""
-
-
-def solve_z3qbf(fml: z3.ExprRef):
-    """Solve Exists X Forall Y Exists Z . P(...), which is translated from an exists-forall bit-vector instance
-    NOTE: We do not need to explicitly specify the first Exists
-    Z: the aux Boolean vars (e.g., introduced by the bit-blasting and CNF transformer?)
-    """
-    logger.debug("Solving QBF via Z3")
-    sol = z3.Solver()
-    sol.add(fml)
-    res = sol.check()
-    return res
 
 
 class EFSMTSolver:
@@ -131,10 +38,6 @@ class EFSMTSolver:
         self.forall_vars = forall_vars
         self.phi = phi
         self.initialized = True
-
-    def dump_cegis_smt_files(self):
-        print("Profiling the simple, sequential, CEGIS-style EFSMT!")
-        simple_cegis_efsmt(self.logic, self.exists_vars, self.forall_vars, self.phi, profiling=True)
 
     def dump_ef_smt_file(self, smt2_file_name: str):
         """Dump the constraint from the ef engine
@@ -198,7 +101,7 @@ class EFSMTSolver:
         """
         assert self.initialized
         print("EFSMT solver: {}".format(self.solver))
-        # 1. Quantifier instanta
+        # 1. Quantifier instantiation
         if self.solver == "z3":
             return solve_with_bin_smt(self.logic, self.exists_vars, self.forall_vars, self.phi, "z3")
         elif self.solver == "cvc5":
@@ -213,7 +116,6 @@ class EFSMTSolver:
         elif self.solver == "z3qbf":
             return self.solve_with_z3_qbf()
         elif self.solver == "caqe":
-            # return self.solve_with_z3_qbf()
             return self.solve_with_third_party_qbf("caqe")
         # TODO: i3b (BDD-based), z3-based QE+SAT
 
@@ -237,7 +139,11 @@ class EFSMTSolver:
     def solve_with_z3_qbf(self):
         assert self.logic == "BV" or self.logic == "UFBV"
         fml_manager = EFBVFormulaTranslator()
-        return solve_z3qbf(fml_manager.to_z3_qbf(self.phi, self.exists_vars, self.forall_vars))
+        sol = z3.Solver()
+        vc = fml_manager.to_z3_qbf(self.phi, self.exists_vars, self.forall_vars)
+        sol.add(vc)
+        res = sol.check()
+        return res
 
     def solve_with_z3_sat(self, y: List[z3.ExprRef], phi: z3.ExprRef):
         raise NotImplementedError

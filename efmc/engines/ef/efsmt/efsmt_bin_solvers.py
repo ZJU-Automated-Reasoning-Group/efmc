@@ -1,3 +1,6 @@
+"""
+For calling SMT QBF etc?
+"""
 import os
 import time
 from typing import List
@@ -46,7 +49,7 @@ def solve_with_bin_qbf(fml_str: str, solver_name: str):
             cmd = [caqe_exec, tmp_filename]
         else:
             cmd = [caqe_exec, tmp_filename]
-        print(cmd)
+        # print(cmd)
         p_gene = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         is_timeout_gene = [False]
         timer_gene = Timer(g_bin_solver_timeout, terminate, args=[p_gene, is_timeout_gene])
@@ -89,6 +92,7 @@ def solve_with_bin_smt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
             exits_vars_names.add(name)
             fml_str += "(declare-const {0} {1})\n".format(v.sexpr(), v.sort().sexpr())
 
+    # Create a string containing the quantified variables
     quant_vars = "("
     for v in y:
         quant_vars += "({0} {1}) ".format(v.sexpr(), v.sort().sexpr())
