@@ -4,6 +4,7 @@ from typing import List
 import subprocess
 from threading import Timer
 import logging
+import uuid
 
 import z3
 
@@ -36,8 +37,8 @@ def solve_with_bin_qbf(fml_str: str, solver_name: str):
     """Call bin QBF solvers
     """
     logger.debug("Solving QBF via {}".format(solver_name))
-    tmp = open("/tmp/temp.qdimacs", "w")
-    tmp_filename = "/tmp/temp.qdimacs"
+    tmp_filename = "/tmp/{}_temp.qdimacs".format(str(uuid.uuid1()))
+    tmp = open(tmp_filename, "w")
     try:
         tmp.write(fml_str)
         tmp.close()
@@ -74,17 +75,40 @@ def solve_with_bin_qbf(fml_str: str, solver_name: str):
             os.remove(tmp_filename)
 
 
-def solve_with_bin_smt(logic: str, y, phi: z3.ExprRef, solver_name: str):
+def solve_with_bin_smt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, solver_name: str):
     """Call bin SMT solvers to solve exists forall
     In this version, we create a temp file, and ...
     """
     logger.debug("Solving EFSMT(BV) via {}".format(solver_name))
     fml_str = "(set-logic {})\n".format(logic)
-    sol = z3.Solver()
-    sol.add(z3.ForAll(y, phi))
-    fml_str += sol.to_smt2()
-    tmp = open("/tmp/temp.smt2", "w")
-    tmp_filename = "/tmp/temp.smt2"
+    # there are duplicates in self.exists_vars???
+    exits_vars_names = set()
+    for v in x:
+        name = str(v)
+        if name not in exits_vars_names:
+            exits_vars_names.add(name)
+            fml_str += "(declare-const {0} {1})\n".format(v.sexpr(), v.sort().sexpr())
+
+    quant_vars = "("
+    for v in y:
+        quant_vars += "({0} {1}) ".format(v.sexpr(), v.sort().sexpr())
+    quant_vars += ")\n"
+
+    quant_fml_body = "(and \n"
+    s = z3.Solver()
+    s.add(phi)
+    # self.phi is in the form of
+    #  and (Init, Trans, Post)
+    assert (z3.is_app(phi))
+    for fml in phi.children():
+        quant_fml_body += "  {}\n".format(fml.sexpr())
+    quant_fml_body += ")"
+    fml_body = "(assert (forall {0} {1}))\n".format(quant_vars, quant_fml_body)
+    fml_str += fml_body
+    fml_str += "(check-sat)\n"
+
+    tmp_filename = "/tmp/{}_temp.smt2".format(str(uuid.uuid1()))
+    tmp = open(tmp_filename, "w")
     try:
         tmp.write(fml_str)
         tmp.close()
