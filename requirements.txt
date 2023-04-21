@@ -1,3 +1,4 @@
 PySMT==0.9.1.dev139
 z3-solver==4.8.10
 psutil~=5.9.0
+Cython~=0.29.34
