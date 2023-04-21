@@ -3,7 +3,7 @@
 The uniformed interface for solving Exists-ForAll problems
 """
 import logging
-from enum import Enum
+# from enum import Enum
 from typing import List
 
 import z3
@@ -171,7 +171,7 @@ def demo_efsmt():
     start = time.time()
     solver = EFSMTSolver(logic="BV", solver="cegis")
     solver.init(exist_vars=[x], forall_vars=[y], phi=fmla)
-    solver.dump_cegis_smt_files()
+    # solver.dump_cegis_smt_files()
     print("time: ", time.time() - start)
 
 

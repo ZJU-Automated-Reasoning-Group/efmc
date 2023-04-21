@@ -47,16 +47,26 @@ def demo_efsmt():
 
 
 def solve_efsmt_file(file_name: str, smt_oracle: str):
-    """Solve the EFSMT file using CEGIS (implemented using PySMT)
-    :param file_name: the quantified SMT instance
-    :param smt_oracle: the SMT engine used by PySMT"""
+    """
+    Solve the EFSMT problem given a file name and an SMT oracle.
+     Parameters:
+    file_name (str): The name of the file containing the SMT2 formula.
+    smt_oracle (str): The name of the SMT oracle to use.
+     Returns:
+    sol (PySMTSolver): The solution to the EFSMT problem.
+    """
+    # Parse the SMT2 file into a Z3 formula.
     fml = big_and(z3.parse_smt2_file(file_name))
+     # Ground the quantifiers in the formula.
     exists_vars, forall_vars, qf_fml = ground_quantifier(fml)
+     # Start the timer.
     start = time.time()
+     # Create a PySMTSolver object.
     sol = PySMTSolver()
+     # Solve the EFSMT problem.
     print(sol.efsmt(evars=exists_vars, uvars=forall_vars, z3fml=qf_fml,
                     esolver_name=smt_oracle, fsolver_name=smt_oracle))
-
+     # Print the time taken.
     print("time: ", time.time() - start)
 
 
