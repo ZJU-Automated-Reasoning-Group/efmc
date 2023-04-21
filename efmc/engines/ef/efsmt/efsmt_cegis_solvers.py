@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, maxloops=None,
-                       profiling=False):
+                       profiling=False , pysmt_solver="z3"):
     """
     A function to solve EFSMT using the CEGIS algorithm
     :param logic: The logic to use for solving
@@ -30,7 +30,7 @@ def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
     sol = PySMTSolver()
     return sol.efsmt(evars=x, uvars=y, z3fml=phi,
                      logic=qf_logic, maxloops=maxloops,
-                     esolver_name="z3", fsolver_name="z3")
+                     esolver_name=pysmt_solver, fsolver_name=pysmt_solver)
 
 
 """
