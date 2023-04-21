@@ -8,7 +8,7 @@ NOTE:
 
 import logging
 import time
-from enum import Enum
+# from enum import Enum
 
 import z3
 
