@@ -46,6 +46,8 @@ class EFProver:
         self.no_overflow = kwargs.get("no_overflow", False)
         self.no_underflow = kwargs.get("no_underflow", False)
 
+        self.pysmt_solver = kwargs.get("pysmt_solver" , "z3")
+
         print("prevent over/under flow? ", self.no_overflow, self.no_underflow)
 
     def set_solver(self, solver_name: str):
@@ -228,7 +230,7 @@ class EFProver:
         else:
             qf_vc = self.generate_quantifier_free_vc()
             print("EFSMT starting!!!")
-            ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver)
+            ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver, pysmt_solver=self.pysmt_solver)
             forall_vars = self.sts.all_variables
             exists_vars = []
             for ele in self.ct.template_vars:

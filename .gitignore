@@ -2,6 +2,7 @@ tmp_files/*
 !benchmarks/chc
 bin_solvers/*
 !bin_solvers/download.py
+!bin_solvers/download.sh
 scripts/tmptest.py
 scripts/tmpbench.py
 tmp.py

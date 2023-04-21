@@ -29,6 +29,7 @@ class EFSMTSolver:
         self.solver = kwargs.get("solver", "z3")
 
         self.initialized = False
+        self.pysmt_solver = kwargs.get("pysmt_solver", "z3")
 
     def set_tactic(self, name: str):
         raise NotImplementedError
@@ -109,19 +110,26 @@ class EFSMTSolver:
         elif self.solver == "btor":
             return solve_with_bin_smt(self.logic, self.exists_vars, self.forall_vars, self.phi, "boolector2")
         # TODO: Bitzullia (new solver)
-        # elif self.solver == "yices2":
-        #    return solve_with_bin_smt(self.logic, elf.exists_vars, self.forall_vars, self.phi, "yices2")
-
+        elif self.solver == "yices2":
+            return solve_with_bin_smt(self.logic, self.exists_vars, self.forall_vars, self.phi, "yices2")
+        elif self.solver == "mathsat":
+            return solve_with_bin_smt(self.logic, self.exists_vars, self.forall_vars, self.phi, "mathsat")
+        elif self.solver == "bitwuzla":
+            return solve_with_bin_smt(self.logic, self.exists_vars, self.forall_vars, self.phi, "bitwuzla")
+        
         # 2. Bit-blasting
         elif self.solver == "z3qbf":
             return self.solve_with_z3_qbf()
         elif self.solver == "caqe":
             return self.solve_with_third_party_qbf("caqe")
-        # TODO: i3b (BDD-based), z3-based QE+SAT
-
+        # TODO: q3b (BDD-based), z3-based QE+SAT
+        elif self.solver == "q3b":
+            return solve_with_bin_smt(self.logic, self.exists_vars, self.forall_vars, self.phi, "q3b")
+        
         # 3. Simple cegis-based
         elif self.solver == "cegis":
             # TODO: other engines in pysmt
+            print("solving via cegis_solver")
             return self.solve_with_simple_cegis()
 
         else:
@@ -133,7 +141,7 @@ class EFSMTSolver:
         This can be slow (perhaps not a good idea for NRA) Maybe good for LRA or BV?
         """
         print("Simple, sequential, CEGIS-style EFSMT!")
-        z3_res = simple_cegis_efsmt(self.logic, self.exists_vars, self.forall_vars, self.phi)
+        z3_res = simple_cegis_efsmt(self.logic, self.exists_vars, self.forall_vars, self.phi, pysmt_solver=self.pysmt_solver)
         return z3_res
 
     def solve_with_z3_qbf(self):

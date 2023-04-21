@@ -74,11 +74,11 @@ def solve_with_ef(sts: TransitionSystem):
         if g_verifier_args.prevent_over_under_flows > 0:
             ef_prover = EFProver(sts, prop_strengthen=g_verifier_args.prop_strengthen,
                                  validate_invariant=g_verifier_args.validate_invariant,
-                                 no_overflow=True, no_underflow=True)
+                                 no_overflow=True, no_underflow=True, pysmt_solver=g_verifier_args.pysmt_solver)
         else:
             ef_prover = EFProver(sts, prop_strengthen=g_verifier_args.prop_strengthen,
                                  validate_invariant=g_verifier_args.validate_invariant,
-                                 no_overflow=False, no_underflow=False)
+                                 no_overflow=False, no_underflow=False, pysmt_solver=g_verifier_args.pysmt_solver)
         if g_verifier_args.template in g_bv_templates:
             # ef_prover.set_template("bv_interval")
             ef_prover.set_template(g_verifier_args.template, num_disjunctions=g_verifier_args.num_disjunctions)
@@ -91,7 +91,7 @@ def solve_with_ef(sts: TransitionSystem):
             exit(0)
     else:
         ef_prover = EFProver(sts, prop_strengthen=g_verifier_args.prop_strengthen,
-                             validate_invariant=g_verifier_args.validate_invariant, )
+                             validate_invariant=g_verifier_args.validate_invariant,pysmt_solver=g_verifier_args.pysmt_solver )
         if g_verifier_args.template in g_int_real_templates:
             ef_prover.set_template(g_verifier_args.template, num_disjunctions=g_verifier_args.num_disjunctions)
             # the default one is "z3api"
@@ -223,6 +223,9 @@ if __name__ == "__main__":
     parser.add_argument('--kind-k', dest='kind_k', default=30, type=int,
                         help="Set the k value for k-induction")
 
+    # Set cegis_solver's backend
+    parser.add_argument('--pysmt-solver', dest='pysmt_solver', default="z3", type=str,
+                        help="Set pysmt-solver for cegis_solver's backend")
     # the type of the input file, e.g., SyGuS, CHC
     parser.add_argument('--lang', dest='lang', default='sygus', type=str, help="The input format: sygus or chc")
 
