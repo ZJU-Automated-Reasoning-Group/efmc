@@ -4,7 +4,7 @@ Augmenting Z3 using PySMT, e.g., interpolant generation
 """
 import logging
 import z3
-from pysmt.logics import AUTO , QF_BV
+from pysmt.logics import QF_BV  # AUTO
 from pysmt.oracles import get_logic
 # from pysmt.smtlib.parser import SmtLibParser
 # from pysmt.exceptions import SolverReturnedUnknownResultError
@@ -112,12 +112,12 @@ class PySMTSolver(z3.Solver):
                 iteration += 1
                 if iteration >= bound: break
 
-    def binary_interpolant(self, fml_a: z3.BoolRef, fml_b: z3.BoolRef, logic=None):
+    def binary_interpolant(self, fml_a: z3.BoolRef, fml_b: z3.BoolRef, solver_name="z3", logic=None):
         """ Binary interpolant"""
         _, pysmt_fml_a = PySMTSolver.convert(fml_a)
         _, pysmt_fml_b = PySMTSolver.convert(fml_b)
 
-        itp = binary_interpolant(pysmt_fml_a, pysmt_fml_b)
+        itp = binary_interpolant(pysmt_fml_a, pysmt_fml_b, solver_name=solver_name, logic=logic)
         return Solver(name='z3').converter.convert(itp)
 
     def sequence_interpolant(self, formulas: [z3.ExprRef]):

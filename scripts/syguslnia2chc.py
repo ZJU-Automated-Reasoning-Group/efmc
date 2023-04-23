@@ -6,6 +6,11 @@ Converting SyGuS(Inv) benchmarks to CHC instances
 
     sygus2chcbv: translate to bv semantics (not semantic-preserving!)
       - E.g., from SyGuS(LIA) to CHC(BV)
+
+        TODO: C  -> SyGuS(LIA) -> CHC(BV). Try??
+
+        CVC5sy: SyGuS(BV),...
+        TODO: CHC(BV) --> SyGuS(BV)
 """
 
 import os
