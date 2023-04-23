@@ -244,13 +244,13 @@ class EFProver:
             print("EFSMT starting!!!")
             ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver, pysmt_solver=self.pysmt_solver)
             forall_vars = self.sts.all_variables
-            exists_vars = []
-            for ele in self.ct.template_vars:
-                if isinstance(ele, list):
-
-                    for v in ele: exists_vars.append(v)
-                else:
-                    exists_vars.append(ele)
+            # exists_vars = []
+            # for ele in self.ct.template_vars:
+            #    if isinstance(ele, list):
+            #        for v in ele: exists_vars.append(v)
+            #    else:
+            #        exists_vars.append(ele)
+            exists_vars = extract_all(self.ct.template_vars)
             # print("qf part of vc: ", qf_vc)
             # print("exists vars: ", exists_vars)
             # print("forall vars: ", forall_vars)
