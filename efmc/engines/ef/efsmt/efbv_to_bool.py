@@ -16,7 +16,7 @@ import logging
 from typing import List
 
 import z3
-from z3.z3util import get_vars
+# from z3.z3util import get_vars
 
 from efmc.smttools.mapped_blast import translate_smt2formula_to_numeric_clauses
 
@@ -28,6 +28,13 @@ class EFBV2BoolAux:
         self.universal_bools = []
         self.existential_bools = []
         self.bool_clauses = []
+
+    def flattening_qf_fml(self, fml: z3.ExprRef):
+        """
+        The flattening_af_fml function takes a bit-vector formula and translates it to a Boolean formula.
+        """
+        bv2bool, bool2id, header, bool_clauses = translate_smt2formula_to_numeric_clauses(fml)
+        return bool2id, bool_clauses
 
     def flattening(self, fml: z3.ExprRef, existential_vars: List[z3.ExprRef], universal_vars: List[z3.ExprRef]):
         """
@@ -231,10 +238,11 @@ class EFBVFormulaTranslator:
         """Translate an EFSMT(BV) formula to a SAT formula
         :return: a quantifier-free Boolean formula (in z3)
         """
+        print("Translating to Boolean formula in Z3")
         if self.qe_level == "bool":
             # First, convert the EFBV formula to a QBF formula
             # Second, perform Boolean-level quantifier elimination to obtin SAT
-            qbf_fml = self.to_qbf(fml, existential_vars, universal_vars)
+            qbf_fml = self.to_z3_qbf(fml, existential_vars, universal_vars)
             sat_formula = z3.Then("simplify", self.qe_tactic)(qbf_fml).as_expr()
             # Finally, convert the SAT formula to CNF form
             return z3.Then("simplify", "tseitin-cnf")(sat_formula).as_expr()
@@ -243,13 +251,32 @@ class EFBVFormulaTranslator:
             # First, use word-level QE to build a quantifier-free bit-vec formula
             qfbv_fml = z3.Then("simplify", self.qe_tactic)(qbv_fml).as_expr()
             # second, convert the bit-vec formula to CNF
-            return z3.Then("simplify", "bit-blast", "simplify", "tseitin-cnf")(qfbv_fml).as_expr()
+            # return z3.Then("simplify", "bit-blast", "simplify", "tseitin-cnf")(qfbv_fml).as_expr()
+            return z3.Then("simplify", "bit-blast")(qfbv_fml).as_expr()
 
-    def to_dimacs(self):
+    def to_dimacs_str(self, fml: z3.BoolRef, existential_vars: List[z3.ExprRef], universal_vars: List[z3.ExprRef]):
+        """Translate an EFSMT(BV) formula to a SAT formula
+        1. First, perform quantifier elimination (currently, at bit-vector level)
+        2. Second, perform bit-blasting
         """
-        TODO: reuse or modify self.to_z3_sat to dump DIMACS strings (for caling third-party SAT solvers)?
-        """
-        raise NotImplementedError
+        print("Translating to DIMACS")
+        z3_sat_fml = self.to_z3_sat(fml, existential_vars, universal_vars)
+        translator = EFBV2BoolAux()
+        bool2id, bool_clauses = translator.flattening_qf_fml(z3_sat_fml)
+        num_vars = len(bool2id)
+        num_clauses = len(bool_clauses)
+
+        fml_str = ["c SAT from EFSMT(BV)",
+                   "p cnf {0} {1}".format(str(num_vars), str(num_clauses)),
+                   ]
+
+        for cls in bool_clauses:
+            cls_str = [str(lit) for lit in cls]
+            cls_str.append(" 0")
+            fml_str.append(" ".join(cls_str))
+
+        print("Finishing generating SAT CNT...")
+        return "\n".join(fml_str) + "\n"
 
 
 def demo_efbv2bool():

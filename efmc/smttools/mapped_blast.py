@@ -33,8 +33,8 @@ def proj_id_last(var, n_proj_vars, n_vars):
 
 
 def bitblast(formula: z3.ExprRef):
-    # input_vars = [x for x in collect_vars(formula)] # this might be slow?
-    input_vars = get_vars(formula)
+    input_vars = [x for x in collect_vars(formula)] # this might be slow?
+    # input_vars = get_vars(formula)  # FIXME: get_vars is from z3, but it can be VERY slow...
     # map bits in the bv input vars
     map_clauses, map_vars, bv2bool = map_bitvector(input_vars)
     # print(bv2bool)
