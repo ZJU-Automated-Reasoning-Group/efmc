@@ -13,7 +13,7 @@ import z3
 
 from efmc.smttools.smtlib_solver import SMTLIBSolver
 from efmc.engines.ef.efsmt.efsmt_config import \
-    z3_exec, cvc5_exec, g_bin_solver_timeout, caqe_exec ,\
+    z3_exec, cvc5_exec, g_bin_solver_timeout, caqe_exec, \
     btor_exec, bitwuzla_exec, yices_exec, math_exec, q3b_exec
 
 logger = logging.getLogger(__name__)
@@ -86,31 +86,43 @@ def solve_with_bin_smt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
     logger.debug("Solving EFSMT(BV) via {}".format(solver_name))
     fml_str = "(set-logic {})\n".format(logic)
     # there are duplicates in self.exists_vars???
-    exits_vars_names = set()
-    for v in x:
-        name = str(v)
-        if name not in exits_vars_names:
-            exits_vars_names.add(name)
-            fml_str += "(declare-const {0} {1})\n".format(v.sexpr(), v.sort().sexpr())
+    dump_strategy = 1
 
-    # Create a string containing the quantified variables
-    quant_vars = "("
-    for v in y:
-        quant_vars += "({0} {1}) ".format(v.sexpr(), v.sort().sexpr())
-    quant_vars += ")\n"
+    if dump_strategy == 1:
+        # there are duplicates in self.exists_vars???
+        exits_vars_names = set()
+        for v in x:
+            name = str(v)
+            if name not in exits_vars_names:
+                exits_vars_names.add(name)
+                fml_str += "(declare-const {0} {1})\n".format(v.sexpr(), v.sort().sexpr())
+        # print(exits_vars_names)
 
-    quant_fml_body = "(and \n"
-    s = z3.Solver()
-    s.add(phi)
-    # self.phi is in the form of
-    #  and (Init, Trans, Post)
-    assert (z3.is_app(phi))
-    for fml in phi.children():
-        quant_fml_body += "  {}\n".format(fml.sexpr())
-    quant_fml_body += ")"
-    fml_body = "(assert (forall {0} {1}))\n".format(quant_vars, quant_fml_body)
-    fml_str += fml_body
-    fml_str += "(check-sat)\n"
+
+        quant_vars = "("
+        for v in y:
+            quant_vars += "({0} {1}) ".format(v.sexpr(), v.sort().sexpr())
+        quant_vars += ")\n"
+
+        quant_fml_body = "(and \n"
+        s = z3.Solver()
+        s.add(phi)
+        # self.phi is in the form of
+        #  and (Init, Trans, Post)
+        assert (z3.is_app(phi))
+        for fml in phi.children():
+            quant_fml_body += "  {}\n".format(fml.sexpr())
+        quant_fml_body += ")"
+
+        fml_body = "(assert (forall {0} {1}))\n".format(quant_vars, quant_fml_body)
+        fml_str += fml_body
+        fml_str += "(check-sat)\n"
+    else:
+        # Another more direct strategy
+        # But we cannot see the definition of the VC clearly
+        sol = z3.Solver()
+        sol.add(z3.ForAll(y, phi))
+        fml_str += sol.to_smt2()
 
     tmp_filename = "/tmp/{}_temp.smt2".format(str(uuid.uuid1()))
     tmp = open(tmp_filename, "w")
@@ -124,13 +136,13 @@ def solve_with_bin_smt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
         elif solver_name == "btor":
             cmd = [btor_exec, tmp_filename]
         elif solver_name == "yices2":
-            cmd = [yices_exec , tmp_filename]
+            cmd = [yices_exec, tmp_filename]
         elif solver_name == "mathsat":
-            cmd = [math_exec , tmp_filename]
+            cmd = [math_exec, tmp_filename]
         elif solver_name == "bitwuzla":
-            cmd = [bitwuzla_exec , tmp_filename]
+            cmd = [bitwuzla_exec, tmp_filename]
         elif solver_name == "q3b":
-            cmd = [q3b_exec , tmp_filename]
+            cmd = [q3b_exec, tmp_filename]
         else:
             print("Can not find corresponding solver")
             cmd = [z3_exec, tmp_filename]

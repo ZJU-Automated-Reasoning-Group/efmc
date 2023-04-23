@@ -48,7 +48,6 @@ class EFSMTSolver:
 
         dump_strategy = 1
         if dump_strategy == 1:
-
             # there are duplicates in self.exists_vars???
             exits_vars_names = set()
             for v in self.exists_vars:
@@ -197,6 +196,10 @@ class EFSMTSolver:
         """
         Translate EFSMT(BV) to SAT, and call a third-party SAT solver
 
+        cd(cadical103), cd15(cadical153),
+        gc3(gluecard3), gc4(glucard4), g3(glucose3), g4(glucose4),
+        lgl(lingeling), mcb(maplechrono), mcm(maplecm), mpl(maplesat)
+        mg3(mergesat3), mc(minicard), m22(minisat22, mgh(minsatgh)
         sat_solvers_in_pysat = ['cd', 'cd15', 'gc3', 'gc4', 'g3',
                         'g4', 'lgl', 'mcb', 'mpl', 'mg3',
                         'mc', 'm22', 'mgh']
