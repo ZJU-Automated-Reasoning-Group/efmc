@@ -13,7 +13,8 @@ import z3
 
 from efmc.smttools.smtlib_solver import SMTLIBSolver
 from efmc.engines.ef.efsmt.efsmt_config import \
-    z3_exec, cvc5_exec, g_bin_solver_timeout, caqe_exec
+    z3_exec, cvc5_exec, g_bin_solver_timeout, caqe_exec ,\
+    btor_exec, bitwuzla_exec, yices_exec, math_exec, q3b_exec
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +121,18 @@ def solve_with_bin_smt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
             cmd = [z3_exec, tmp_filename]
         elif solver_name == "cvc5":
             cmd = [cvc5_exec, "-q", "--produce-models", tmp_filename]
+        elif solver_name == "btor":
+            cmd = [btor_exec, tmp_filename]
+        elif solver_name == "yices2":
+            cmd = [yices_exec , tmp_filename]
+        elif solver_name == "mathsat":
+            cmd = [math_exec , tmp_filename]
+        elif solver_name == "bitwuzla":
+            cmd = [bitwuzla_exec , tmp_filename]
+        elif solver_name == "q3b":
+            cmd = [q3b_exec , tmp_filename]
         else:
+            print("Can not find corresponding solver")
             cmd = [z3_exec, tmp_filename]
         # print(cmd)
         p_gene = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
