@@ -20,6 +20,17 @@ from efmc.engines.ef.efsmt.efsmt_solver import EFSMTSolver
 logger = logging.getLogger(__name__)
 
 
+def extract_all(lst):
+    """extract all elements from nested lists"""
+    results = []
+    for elem in lst:
+        if isinstance(elem, list):
+            results.extend(extract_all(elem))
+        else:
+            results.append(elem)
+    return results
+
+
 class EFProver:
     """
     Exists-Forall SMT Solving for Inductive Invariant Inference
@@ -189,12 +200,13 @@ class EFProver:
         qf_vc = self.generate_quantifier_free_vc()
         ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver)
         forall_vars = self.sts.all_variables
-        exists_vars = []
-        for ele in self.ct.template_vars:
-            if isinstance(ele, list):
-                for v in ele: exists_vars.append(v)
-            else:
-                exists_vars.append(ele)
+        # exists_vars = []
+        # for ele in self.ct.template_vars:
+        #    if isinstance(ele, list):
+        #        for v in ele: exists_vars.append(v)
+        #    else:
+        #        exists_vars.append(ele)
+        exists_vars = extract_all(self.ct.template_vars)
         ef_solver.init(exist_vars=exists_vars, forall_vars=forall_vars, phi=qf_vc)
 
         # TODO: allowing for controlling the output dir
@@ -235,6 +247,7 @@ class EFProver:
             exists_vars = []
             for ele in self.ct.template_vars:
                 if isinstance(ele, list):
+
                     for v in ele: exists_vars.append(v)
                 else:
                     exists_vars.append(ele)
