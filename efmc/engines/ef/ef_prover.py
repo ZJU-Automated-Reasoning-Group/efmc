@@ -240,17 +240,15 @@ class EFProver:
         if self.solver == "z3api":
             return self.solve_with_z3()
         else:
+            # call third-party solvers via EFSMTSolver
+            #   1. Dump to SMT-LIB2 file and call a binary solver (e.g., cvc5, z3..)
+            #   2. Translate to various Boolean formats and use corresponding solvers
+            #   3. Use PySMT-based implementation of the CEGIS-based solver
             qf_vc = self.generate_quantifier_free_vc()
             print("EFSMT starting!!!")
             ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver, pysmt_solver=self.pysmt_solver)
             forall_vars = self.sts.all_variables
-            # exists_vars = []
-            # for ele in self.ct.template_vars:
-            #    if isinstance(ele, list):
-            #        for v in ele: exists_vars.append(v)
-            #    else:
-            #        exists_vars.append(ele)
-            exists_vars = extract_all(self.ct.template_vars)
+            exists_vars = extract_all(self.ct.template_vars)  # self.ct.template_vars can be a nested list
             # print("qf part of vc: ", qf_vc)
             # print("exists vars: ", exists_vars)
             # print("forall vars: ", forall_vars)

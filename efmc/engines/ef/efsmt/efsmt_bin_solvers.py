@@ -1,5 +1,5 @@
 """
-For calling SMT QBF etc?
+For calling SMT and QBF solvers
 """
 import os
 import time
