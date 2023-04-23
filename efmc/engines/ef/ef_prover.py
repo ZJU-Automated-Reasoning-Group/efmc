@@ -249,6 +249,9 @@ class EFProver:
             ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver, pysmt_solver=self.pysmt_solver)
             forall_vars = self.sts.all_variables
             exists_vars = extract_all(self.ct.template_vars)  # self.ct.template_vars can be a nested list
+            # print(self.ct.template_vars)
+            # print(exists_vars)
+            # exit(0)
             # print("qf part of vc: ", qf_vc)
             # print("exists vars: ", exists_vars)
             # print("forall vars: ", forall_vars)
