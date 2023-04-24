@@ -133,7 +133,7 @@ def solve_with_bin_smt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
             cmd = [z3_exec, tmp_filename]
         elif solver_name == "cvc5":
             cmd = [cvc5_exec, "-q", "--produce-models", tmp_filename]
-        elif solver_name == "btor":
+        elif solver_name == "btor" or solver_name == "boolector":
             cmd = [btor_exec, tmp_filename]
         elif solver_name == "yices2":
             cmd = [yices_exec, tmp_filename]
