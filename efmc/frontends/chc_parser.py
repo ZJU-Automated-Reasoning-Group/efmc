@@ -1,12 +1,10 @@
-# coding: utf-8
-from __future__ import print_function
-
-import z3
-
 """
 Actually, we also support replacing "inv" by a function body
 TODO: so, do we need to transform the CHC to our transition system first?
 """
+from __future__ import print_function
+
+import z3
 
 
 def visitor(exp, seen):
@@ -70,6 +68,10 @@ def modify(expression, fn):
 
 
 def test_replace():
+    """
+    Replace a function named XX with a concrete definition
+    This can be useful in many contexts
+    """
     x, y = z3.Ints('x y')
     fml = x + x + y > 2
     seen = {}
@@ -143,36 +145,20 @@ def test_parse():
 
 class CHCParser:
     """
-    NOTE: we assume that the input strictly follows the SyGuS inv style
+    NOTE: we assume that the input strictly follows the SyGuS(invariant) style
         The first assertion: pre
         The second assertion: trans
         The third assertion (or "goal"): post
      Besides, the goal should be in the form of
          inv => post
      Instead of
-         inv and P => post (this can be be transformed to the above form)
+         inv and P => post (this can be transformed to the above form)
     """
     fmls = []
 
     def __init__(self, inputs: str, to_real: bool):
         self.to_real = False
         self.parse_chc_string(inputs)
-
-    def parse_chc_file(self, filename: str):
-        """
-        This is for parring z3's special format of CHC?
-        TODO: sometimes, chc separates assertions and goal (i.g., the post-cond)?
-        """
-        fp = z3.Fixedpoint()
-        # fp.set("print-certificate", True)
-        # NOTE: important, the return value is the query.
-        rules = fp.get_rules()
-        queries = fp.parse_file(filename)
-        assert len(rules) == 2
-        assert len(queries) == 1
-        for r in fp.get_rules():
-            self.sol.add(r)
-        self.sol.add(z3.Not(queries[0]))
 
     def parse_chc_string(self, chc: str):
         self.fmls = z3.parse_smt2_string(chc)

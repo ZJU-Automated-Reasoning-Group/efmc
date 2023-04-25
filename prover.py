@@ -61,7 +61,7 @@ def solve_with_k_induction(sts: TransitionSystem):
     kind_prover = KInductionProver(sts)
     if g_verifier_args.kind_aux_inv:
         kind_prover.use_aux_invariant = True
-    kind_prover.solve(30)
+    kind_prover.solve(int(g_verifier_args.kind_k))
 
 
 def solve_with_ef(sts: TransitionSystem):
@@ -246,12 +246,18 @@ if __name__ == "__main__":
     # the timeout
     parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
     # parser.add_argument('--threads', dest='threads', default=4, type=int, help="threads")
+
+    parser.add_argument( '--verbose', dest='verbosity', default=1, type=int, help='verbosity level')
+
+
     g_verifier_args = parser.parse_args()
     """
     A few examples
     python3 prover.py --file benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl --engine efsmt
     python3 prover.py --lang chc --engine efsmt --file benchmarks/chc/bv/2017.ASE_FIB/8bits_unsigned/fib_04.sl_8bits_unsigned.smt2 --template bv_octagon --prevent-over-under-flows 0
     """
+    if g_verifier_args.verbosity == 2:
+        logging.basicConfig(level=logging.DEBUG)
 
     if g_verifier_args.lang == "sygus":
         solve_sygus_file(g_verifier_args.file, g_verifier_args.engine)
