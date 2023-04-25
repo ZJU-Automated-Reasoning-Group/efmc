@@ -118,13 +118,19 @@ def solve_chc_file(file_name: str, prover="efsmt"):
     :param file_name: the CHC file
     :param prover: strategy
     """
+    # global g_verifier_args
     all_vars, init, trans, post = parse_chc(file_name, to_real_type=False)
     print("Finish parsing CHC file")
     sts = TransitionSystem()
     sts.from_z3_cnts([all_vars, init, trans, post])
     if sts.has_bv:
-        # TODO: enforce to add this (or, infer automatically)
-        sts.set_signedness("signed")
+        if g_verifier_args.signedness == "signed":
+            sts.set_signedness("signed")
+        elif g_verifier_args.signedness == "unsigned":
+            sts.set_signedness("unsigned")
+        else:
+            print("error, unsupported signedness")
+            exit(0)
 
     # Currently, CHC is only used for bv?
     if prover == "efsmt":
@@ -156,7 +162,13 @@ def solve_sygus_file(filename: str, prover="all"):
     if sts.has_bv:
         # TODO: enforce to add this (or, infer automatically)
         #  e.g., check whether there are bvsle, bvslt, ... in the formula
-        sts.set_signedness("unsigned")
+        if g_verifier_args.signedness == "signed":
+            sts.set_signedness("signed")
+        elif g_verifier_args.signedness == "unsigned":
+            sts.set_signedness("unsigned")
+        else:
+            print("error, unsupported signedness")
+            exit(0)
 
     # print(sts)
     if prover == "efsmt":
@@ -196,6 +208,8 @@ if __name__ == "__main__":
     # the following options are related to template-based invariant generation
     parser.add_argument('--template', dest='template', default='interval', type=str,
                         help="The invariant template (only useful when the --engine=efsmt")
+    parser.add_argument('--signedness', dest='signedness', default='signed', type=str,
+                        help="The signedness of the bit-vector variables (signed or unsigned)")
     parser.add_argument('--num-disjunctions', dest='num_disjunctions', default=1, type=int,
                         help="Set the number of disjunctions (for disjunctive invariant)")
     parser.add_argument('--smt-solver', dest='smt_solver', default='z3api', type=str,

@@ -10,7 +10,15 @@ Converting SyGuS(Inv) benchmarks to CHC instances
         TODO: C  -> SyGuS(LIA) -> CHC(BV). Try??
 
         CVC5sy: SyGuS(BV),...
-        TODO: CHC(BV) --> SyGuS(BV)
+        TODO:1. CHC(BV) --> SyGuS(BV) 才能跑CVC5Sy
+             2. SYGuS(LIA) --> SyGuS(BV)
+             3. CHC(LIA) --> SyGuS(BV), CHC(BV)
+
+                CVC5Sy: 1或2，任意一个
+
+        我们有的 (FIXME)
+               SyGuS(LIA) --> CHC(BV)
+
 """
 
 import os
@@ -171,6 +179,7 @@ def sygus2chcbv(tt):
     # chc_lira_str = sygus2chc(tt)
     ss = SyGusInVParser(tt, to_real=False)
     all_vars, init, trans, post = ss.get_transition_system()
+    # [x, y, x!, y!], Pre(x, y), T(x, y, x!, y!), Post(x, y)
     #  NOTE: I assume that variables in all_vars are "sorted".
     init_vars = all_vars[0: int(len(all_vars) / 2)]
     trans_vars = all_vars[int(len(all_vars) / 2):]
@@ -197,6 +206,7 @@ def sygus2chcbv(tt):
     bv_init_cnt = "(assert (forall ({}) \n " \
                   "      (=> {} (inv {}))))\n".format(" ".join(bv_init_vars_sig),
                                                       ira2bv(init.sexpr()),
+                                                      # init: z3.ExprRef
                                                       " ".join(bv_init_vars))
     # print(bv_init_cnt)
     bv_fml_str += bv_init_cnt
@@ -214,6 +224,7 @@ def sygus2chcbv(tt):
                    "      (=> (and (inv {}) {}) (inv {}))))\n".format(" ".join(bv_all_vars_sig),
                                                                       " ".join(bv_init_vars),
                                                                       ira2bv(trans.sexpr()),
+                                                                      # trans: z3.ExprRef
                                                                       " ".join(bv_trans_vars))
 
     # print(bv_trans_cnt)
