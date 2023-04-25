@@ -15,7 +15,7 @@ from multiprocessing import Process, cpu_count, Queue
 
 import seaborn as sns
 import matplotlib.pyplot as plt
-NUM_DISJUNCTIVE = 0
+NUM_DISJUNCTIONS = 0
 LANG = "chc"
 METHOD = "efsmt"
 SMT = "z3"
@@ -220,9 +220,9 @@ def solve_file(file_path, ef_template, smt_solver, cegis_solver):
         cmd.append(cegis_solver)
     if STRENGTHEN:
         cmd.append("--prop-strengthen")
-    if NUM_DISJUNCTIVE:
-        cmd.append("--num-disjunctive")
-        cmd.append(str(NUM_DISJUNCTIVE))
+    if NUM_DISJUNCTIONS:
+        cmd.append("--num-disjunctions")
+        cmd.append(str(NUM_DISJUNCTIONS))
     out, duration = solve_with_bin_solver(cmd, MAXTIME)
     lines = out.split('\n')
     print(lines)
@@ -259,9 +259,9 @@ def find_safe(root, num_of_thread):
             if not os.path.exists(new_path):
                 os.makedirs(new_path)
             for template in templates:
-                if NUM_DISJUNCTIVE and "power" not in template:
+                if NUM_DISJUNCTIONS and "power" not in template:
                     continue
-                result, duration_time = solve_file(
+                result, duration_time = solve_file( 
                     file, template, SMT, CEGIS_SMT)
                 result['time'] = duration_time
                 if CEGIS_SMT == 'none':
@@ -353,6 +353,7 @@ def count_values(row_data):
     count_T = 0
     count_F = 0
     count_U = 0
+    count_X =0
     for _, value in row_data.items():
         if "T" in value:
             count_T += 1
@@ -360,7 +361,9 @@ def count_values(row_data):
             count_F += 1
         elif "U" in value:
             count_U += 1
-    return count_T, count_F, count_U
+        elif "X" in value:
+            count_X+=1
+    return count_T, count_F, count_U,count_X
 
 
 if __name__ == "__main__":
@@ -400,7 +403,7 @@ if __name__ == "__main__":
         help='Execute all the comparation and output the corresponding results.')
     parser.add_argument(
         '-d',
-        '--num-disjuntive',
+        '--num-disjunctions',
         type=int,
         default=0
     )
@@ -412,11 +415,11 @@ if __name__ == "__main__":
     LANG = args.lang
     STRENGTHEN = args.prop_strengthen
     MAXTIME = int(args.time)
-    NUM_DISJUNCTIVE = args.num_disjunctive
+    NUM_DISJUNCTIONS = args.num_disjunctions
 
     figure_name = "Experiment"
-    if NUM_DISJUNCTIVE:
-        figure_name += "_dis_" + str(NUM_DISJUNCTIVE)
+    if NUM_DISJUNCTIONS:
+        figure_name += "_dis_" + str(NUM_DISJUNCTIONS)
     if STRENGTHEN:
         figure_name += "_strengthen"
     if MAXTIME:
@@ -454,6 +457,7 @@ if __name__ == "__main__":
             safe_file.append(data['file'])
     safe_file = list(set(safe_file))
 
+    #mode=1 -> output csv to learn the result of the efmc
     if "1" in paint_mode:
         row_names = set()
         for data in data_list:
@@ -476,7 +480,9 @@ if __name__ == "__main__":
                     data.get(
                         'template',
                         '_notemp'))
-                if data.get('safe', -1) != -1:
+                if data.get('timeout'):
+                    value="X"
+                elif data.get('safe', -1) != -1:
                     if data['safe']:
                         value = "T"
                     else:
@@ -493,15 +499,15 @@ if __name__ == "__main__":
         with open(figure_name + ".csv", "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile)
             # 写入标题行
-            writer.writerow([""] + safe_file + ["T", "F", "U"])
+            writer.writerow([""] + safe_file + ["T", "F", "U","X"])
             # 写入数据行
             for row_name in row_names:
                 row_data = table[row_name]
-                count_T, count_F, count_U = count_values(row_data)
+                count_T, count_F, count_U ,count_X= count_values(row_data)
                 row = [f"{row_name[0]}_{row_name[1]}_{row_name[2]}"] + [row_data[file]
-                                                                        for file in safe_file] + [count_T, count_F, count_U]
+                                                                        for file in safe_file] + [count_T, count_F, count_U,count_X]
                 writer.writerow(row)
-
+    #mode=2 -> output the figure about the max solving rate of efsmt,pdr,kind.
     if "2" in paint_mode:
         time_data = {}
         count_data = {}
@@ -595,3 +601,47 @@ if __name__ == "__main__":
             else:
                 label = f"{key[0]}_{key[1]}"
             print(f"{label}: {verification_rate:.2f}%")
+
+    #mode=3 -> RQ1 : Compare the difference template with different template.
+    if "3" in paint_mode:
+        efsmt_data = [
+            data for data in data_list if data["method"] == "efsmt" and data["file"] in safe_file
+        ]
+
+        cumulative_time_data = {}
+        for data in efsmt_data:
+            key = (data["smt_solver"], data["template"])
+            if key not in cumulative_time_data:
+                cumulative_time_data[key] = [0] * len(safe_file)
+            file_idx = safe_file.index(data["file"])
+            cumulative_time_data[key][file_idx] = data["time"]
+
+        for key, time_list in cumulative_time_data.items():
+            cumulative_time_data[key] = list(itertools.accumulate(time_list))
+
+        smt_solvers = sorted(list(set([data["smt_solver"] for data in efsmt_data])))
+        for smt_solver in smt_solvers:
+            plt.figure(figsize=(12, 6))
+            plt.title(f"SMT Solver: {smt_solver}")
+
+            plot_data = {
+                key: cumulative_time_data[key]
+                for key in cumulative_time_data.keys()
+                if key[0] == smt_solver
+            }
+            marker_cycle = itertools.cycle(("o", "v", "s", "p", "*", "h", "H", "+", "x", "D", "|", "_"))
+
+            for key, values in plot_data.items():
+                label = f"{key[0]}_{key[1]}"
+                sns.lineplot(
+                    x=range(1, len(safe_file) + 1),
+                    y=cumulative_time_data[key],
+                    label=label,
+                    marker=next(marker_cycle),
+                )
+
+            plt.xlabel("File Index")
+            plt.ylabel("Cumulative Time (s)")
+            plt.legend()
+            plt.savefig(figure_name+"_smt_"+smt_solver+"_template_comp.png",dpi=300)
+            
