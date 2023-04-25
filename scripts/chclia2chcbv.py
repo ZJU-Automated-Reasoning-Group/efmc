@@ -1,85 +1,13 @@
 """
-Converting SyGuS(Inv) benchmarks to CHC instances
-
-    sygus2chc: preserves the variable types
-      - E.g., from SyGuS(LIA) to CHC(LIA)
-
-    sygus2chcbv: translate to bv semantics (not semantic-preserving!)
-      - E.g., from SyGuS(LIA) to CHC(BV)
-
+CHC(LIA) to CHC(BV)
 """
-
 import os
 import z3
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse_sexpression
+from efmc.frontends.chc_parser import CHCParser, ground_quantifier
 
 g_bitvector_width = 32
 g_bitvector_signedness = "signed"
-
-
-def sygus2chc(tt: str) -> str:
-    # ss = SyGusInVParser("\n".join(tt_arr), to_real=False)
-    from z3 import Function, IntSort, BoolSort
-    # chc_lira_str = sygus2chc(tt)
-    ss = SyGusInVParser(tt, to_real=False)
-    all_vars, init, trans, post = ss.get_transition_system()
-    #  NOTE: I assume that variables in all_vars are "sorted".
-    init_vars = all_vars[0: int(len(all_vars) / 2)]
-    trans_vars = all_vars[int(len(all_vars) / 2):]
-    # print("all vars: ", all_vars)
-    # print("init vars: ", init_vars)
-    # init_vars = get_vars(init) # not good?
-    inv_sig = "(declare-fun inv ("
-    for _ in range(len(init_vars)):
-        inv_sig += "Int "
-    inv_sig += ") Bool)\n"
-
-    fml_str = "(set-logic HORN)\n"
-    fml_str += inv_sig
-
-    # init cnt
-    init_vars_sig = []
-    ira_init_vars = []
-    for var in init_vars:
-        init_vars_sig.append("({0} {1})".format(str(var), "Int"))
-        ira_init_vars.append(str(var))
-    print("init_vars: ", init_vars)
-    init_cnt = "(assert (forall ({}) \n " \
-               "      (=> {} (inv {}))))\n".format(" ".join(init_vars_sig),
-                                                   init.sexpr(),
-                                                   " ".join(ira_init_vars))
-    # print(bv_init_cnt)
-    fml_str += init_cnt
-
-    # trans cnt
-    all_vars_sig = []
-    trans_vars = [str(var) for var in trans_vars]
-    ira_all_vars = []
-    for var in all_vars:
-        all_vars_sig.append("({} {})".format(str(var), "Int"))
-        ira_all_vars.append(str(var))
-    # print("all vars sig: ", all_vars_sig)
-
-    bv_trans_cnt = "(assert (forall ({0}) \n " \
-                   "      (=> (and (inv {1}) {2}) (inv {3}))))\n".format(" ".join(all_vars_sig),
-                                                                         " ".join(ira_init_vars),
-                                                                         trans.sexpr(),
-                                                                         " ".join(trans_vars))
-
-    # print(bv_trans_cnt)
-    fml_str += bv_trans_cnt
-
-    # Post cnt
-    post_cnt = "(assert (forall ({}) \n " \
-                  "      (=> (inv {}) {})))\n".format(" ".join(init_vars_sig),
-                                                      " ".join(ira_init_vars),
-                                                      post.sexpr()
-                                                      )
-
-    # print(bv_post_cnt)
-    fml_str += post_cnt
-    fml_str += "(check-sat)\n"
-    return fml_str
 
 
 def rep_operand(op: str) -> str:
@@ -160,13 +88,11 @@ def ira2bv(tt: str) -> str:
     return " ".join(to_bv_sexpr_misc(parse_sexpression(tt)))
 
 
-def sygus2chcbv(tt):
-    """
-    FIXME: how to convert constants...
-    """
-    # chc_lira_str = sygus2chc(tt)
-    ss = SyGusInVParser(tt, to_real=False)
+def chclia2chcbv(tt):
+    # ss = SyGusInVParser(tt, to_real=False)
+    ss = CHCParser(tt, to_real=False)
     all_vars, init, trans, post = ss.get_transition_system()
+    # print(all_vars, init, trans, post)
     # [x, y, x!, y!], Pre(x, y), T(x, y, x!, y!), Post(x, y)
     #  NOTE: I assume that variables in all_vars are "sorted".
     init_vars = all_vars[0: int(len(all_vars) / 2)]
@@ -228,53 +154,92 @@ def sygus2chcbv(tt):
     # print(bv_post_cnt)
     bv_fml_str += bv_post_cnt
     bv_fml_str += "(check-sat)\n"
-    return bv_fml_str
+
+    # In the multi-phase benchmark, x1, y1, .. are used to denote
+    # prime variables. However, our transition system will only regard
+    # variables named x!, y!, .. as prime variables
+
+    #1. First, replace the var names
+    fmls = z3.parse_smt2_string(bv_fml_str)
+    assert len(fmls) == 3
+    trans_fml = fmls[1]
+    trans_body, trans_vars_list = ground_quantifier(trans_fml)
+    mappings = []  # for replacing the var names
+    # [(x0, x), (y0, y), (x1, x!), (y1, y!)]
+    for var in trans_vars_list:
+        if str(var).endswith("1"):
+            new_var_name = str(var)[:-1] + "!"
+        elif str(var).endswith("0"):
+            new_var_name = str(var)[:-1]
+        new_var = z3.BitVec(new_var_name, var.sort())
+        mappings.append((var, new_var))
+
+    # replace the variables in init, trans, post with new var names
+    new_init_qf = z3.substitute(ground_quantifier(fmls[0])[0], mappings)
+    new_trans_qf = z3.substitute(trans_body, mappings)
+    new_post_qf = z3.substitute(ground_quantifier(fmls[2])[0], mappings)
+
+    # 2. Second, create the quantified formula
+    sol = z3.Solver()
+    from z3.z3util import get_vars
+    new_init_post_vars_list = get_vars(new_post_qf)
+    new_trans_vars_list = get_vars(new_trans_qf)
+
+    sol.add(z3.ForAll(new_init_post_vars_list, new_init_qf))  # init
+    sol.add(z3.ForAll(new_trans_vars_list, new_trans_qf))
+    sol.add(z3.ForAll(new_init_post_vars_list, new_post_qf))
+    final_fml_str = "(set-logic HORN)\n"
+    final_fml_str += sol.sexpr()
+    final_fml_str += "(check-sat)\n"
+
+    return final_fml_str
 
 
 def test_main():
-    tt = [
-        ";\n",
-        "(set-logic LIA)",
-        " (synth-inv inv_fun ((x Int) (y Int)))\n",
-        "(define-fun pre_fun ((x Int) (y Int)) Bool (and (= x 1) (= y 1))) ",
-        "(define-fun trans_fun ((x Int) (y Int) (x! Int) (y! Int)) Bool (and (= x! (+ x y)) (= y! (+ x y))))",
-        "(define-fun post_fun ((x Int) (y Int)) Bool (>= y 1))",
-        "(inv-constraint inv_fun pre_fun trans_fun post_fun)",
-        "(check-synth)"
-        "; xxx"]
+    tt = """
+        (set-logic HORN)
+(declare-fun inv (Int Int) Bool)
+(assert (forall ((y0 Int) (x0 Int)) (=> (and (= x0 0) (= y0 5000)) (inv x0 y0))))
+(assert (forall ((y1 Int) (x1 Int) (y0 Int) (x0 Int))
+  (let ((a!1 (and (inv x0 y0)
+                  (= x1 (+ x0 1))
+                  (= y1 (ite (>= x0 5000) (+ y0 1) y0)))))
+    (=> a!1 (inv x1 y1)))))
+(assert (forall ((x0 Int) (y0 Int))
+  (=> (and (inv x0 y0) (= x0 10000) (not (= y0 x0))) false)))
+(check-sat)"""
 
     # print(sygus2chc(tt))
-    new_ctx = z3.Context()
-    fml_str = sygus2chcbv(tt)
+    # new_ctx = z3.Context()
+    fml_str = chclia2chcbv(tt)
+
     print(fml_str)
-    s = z3.Solver(ctx=new_ctx)
-    s.from_string(fml_str)
-    print(s)
+    # print(fml_str)
 
 
 def process_file(filename: str, target_dir: str):
+
     print("Processing ", filename)
-    with open(filename, "r") as f:
-        content = f.read()
-        fml_str = sygus2chcbv(content)
-        # fml_str = sygus2chc(content)
-        # print(fml_str)
-        # s = SolverFor("HORN")
-        # s.add(And(parse_smt2_string(fml_str)))
-        # s.set("timeout", 1000)
-        # print(s.to_smt2())
-        # print(s.check())
-        filename_base = os.path.basename(filename)
-        # new_file_name = target_dir + filename_base + ".smt2"
-        new_file_name = target_dir + filename_base + \
-                        "_{0}bits_{1}".format(str(g_bitvector_width), g_bitvector_signedness) + ".smt2"
+    try:
+        with open(filename, "r") as f:
+            content = f.read()
+            fml_str = chclia2chcbv(content)
+            filename_base = os.path.basename(filename)
+            # new_file_name = target_dir + filename_base + ".smt2"
+            new_file_name = target_dir + filename_base + \
+                            "_{0}bits_{1}".format(str(g_bitvector_width), g_bitvector_signedness) + ".smt2"
 
-        with open(new_file_name, "w") as new_f:
-            print("Writing to ", new_file_name)
-            new_f.write(fml_str)
-            new_f.close()
+            with open(new_file_name, "w") as new_f:
+                print("Writing to ", new_file_name)
+                new_f.write(fml_str)
+                new_f.close()
 
-        f.close()
+            f.close()
+    except Exception as ex:
+        print(ex)
+        # if "mod" in str(ex):
+            # os.remove(filename)
+
 
 def process_folder(path: str, target_dir: str):
     flist = []  # path to smtlib2 files
@@ -288,13 +253,12 @@ def process_folder(path: str, target_dir: str):
 
 
 if __name__ == '__main__':
-    # tt = "(and (<= x! (+ x y)) (< y! (+ x y)))"
-    # print(ira2bv(tt))
     # test_main()
+    # exit(0)
     from pathlib import Path
+
     project_root_dir = str(Path(__file__).parent.parent)
     print(project_root_dir)
 
     target_dir = project_root_dir + "/tmp_files/"
-    print(project_root_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
-    process_folder(project_root_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB", target_dir)
+    process_folder(project_root_dir + "/benchmarks/chc/lia/multi-phase/multi-phase_unsafe", target_dir)

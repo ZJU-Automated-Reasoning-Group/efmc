@@ -40,7 +40,7 @@ def tokenize(chars: str) -> list:
     return chars.replace('(', ' ( ').replace(')', ' ) ').replace('" "', 'space').split()
 
 
-def parse(program: str) -> Expr:
+def parse_sexpression(program: str) -> Expr:
     """Read an S-expression from a string."""
     return read_from_tokens(tokenize(program))
 
@@ -121,7 +121,7 @@ def get_terms_prods(cmd):
 def get_grammar(lines: [str]):
     s_exprs = []
     for line in lines:
-        s_exprs.append(parse(line))
+        s_exprs.append(parse_sexpression(line))
     for s in s_exprs:
         if s[0] == "synth-fun":
             start_sym = get_start(s)
@@ -181,7 +181,7 @@ class SyGusInVParser:
         """
         lines = input_to_list(inputs)
         for line in lines:
-            slist = parse(line)
+            slist = parse_sexpression(line)
             # print(slist)
             if isinstance(slist, List):
                 cmd_name = slist[0]
