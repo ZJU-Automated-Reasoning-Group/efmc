@@ -3,8 +3,6 @@ CHC(LIA) to SYGUS(BV)
 """
 import os
 import z3
-import sys
-sys.path.append("/efmc")
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse_sexpression
 from efmc.frontends.chc_parser import CHCParser, ground_quantifier
 
@@ -91,7 +89,7 @@ def ira2bv(tt: str) -> str:
     return " ".join(to_bv_sexpr_misc(parse_sexpression(tt)))
 
 
-def chclia2chcbv(tt):
+def chclia2sygusbv(tt):
     # ss = SyGusInVParser(tt, to_real=False)
     ss = CHCParser(tt, to_real=False)
     all_vars, init, trans, post = ss.get_transition_system()
@@ -177,7 +175,7 @@ def test_main():
 
     # print(sygus2chc(tt))
     # new_ctx = z3.Context()
-    fml_str = chclia2chcbv(tt)
+    fml_str = chclia2sygusbv(tt)
 
     print(fml_str)
     # print(fml_str)
@@ -189,7 +187,7 @@ def process_file(filename: str, target_dir: str):
     try:
         with open(filename, "r") as f:
             content = f.read()
-            fml_str = chclia2chcbv(content)
+            fml_str = chclia2sygusbv(content)
             filename_base = os.path.basename(filename)
             # new_file_name = target_dir + filename_base + ".smt2"
             new_file_name = target_dir + filename_base + \
