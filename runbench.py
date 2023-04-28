@@ -6,12 +6,13 @@ from threading import Timer
 import time
 from typing import List
 import csv
+from tqdm import tqdm
 import shutil
 import json
 import itertools
 
 import signal
-from multiprocessing import Process, cpu_count, Queue
+from multiprocessing import Process, cpu_count, Queue,Manager,Lock
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -28,7 +29,7 @@ BENCHMARK_DIR = "/Benchmark"
 Processed_PATH = "/SafeBenchmark"
 RESULT_DIR = "./Result"
 ENDWITH = '.smt2'
-
+pbar_lock  =Lock()
 traverse_lang = ['none']
 traverse_method = ['none']
 traverse_solver = ['none']
@@ -42,6 +43,9 @@ all_template = ["bv_interval", "power_bv_interval",
                 "bv_zone", "power_bv_zone",
                 "bv_octagon", "power_bv_octagon",
                 "bv_poly", "power_bv_poly"]
+all_sat_solver=['z3sat','cd', 'cd15', 'gc3', 'gc4', 'g3',
+                             'g4', 'lgl', 'mcb', 'mpl', 'mg3',
+                             'mc', 'm22', 'mgh']  
 all_endwith = ['c', 'smt2', 'sl']
 
 
@@ -69,7 +73,7 @@ def parsing_out(file_path, template, lines, mode='kind'):
     overflow = False
     underflow = False
     # exec_time = -1
-    config = ""
+    # config = ""
     safe = False
     unknown = False
     error = False
@@ -196,7 +200,6 @@ def solve_with_bin_solver(cmd: List[str], timeout: int) -> str:
 
 
 def solve_file(file_path, ef_template, smt_solver, cegis_solver):
-    print(file_path)
     cmd = [
         "python3",
         CUR_DIR +
@@ -240,7 +243,6 @@ def find_safe(root, num_of_thread):
             if filename.endswith("." + END_WITH):
                 file_path = os.path.join(dirpath, filename)
                 file_list.append(file_path)
-                print(file_path)
 
     if METHOD == 'efsmt':
         templates = all_template
@@ -250,7 +252,6 @@ def find_safe(root, num_of_thread):
     def multi_func(files, result_queue):
         result_list = []
         for file in files:
-            print(file)
             file_name = os.path.splitext(os.path.basename(file))[0]
             relative_path = os.path.relpath(file, root)
             no_ext_path, _ = os.path.splitext(relative_path)
@@ -273,8 +274,9 @@ def find_safe(root, num_of_thread):
                         template + "_cegis_smt_" + CEGIS_SMT + ".json"
                     result['cegis_solver'] = CEGIS_SMT
                 result['origin_relpath'] = relative_path
-                with open(save_path, 'w') as f:
-                    json.dump(result, f, indent=4)
+                
+                # with open(save_path, 'w') as f:
+                #     json.dump(result, f, indent=4)
                 result_list.append(result)
         result_queue.put(result_list)
 
@@ -282,7 +284,9 @@ def find_safe(root, num_of_thread):
     remainder = len(file_list) % num_of_thread
     processes = []
     result_queue = Queue()
-
+    
+    processes = []
+    
     for i in range(num_of_thread):
         start_index = i * num_of_file + min(i, remainder)
         end_index = (i + 1) * num_of_file + min(i + 1, remainder)
@@ -291,15 +295,15 @@ def find_safe(root, num_of_thread):
         process.start()
         processes.append(process)
 
-    all_results = []
-    for _ in range(num_of_thread):
-        all_results.extend(result_queue.get())
-
     for process in processes:
         process.join()
 
+    
+    all_results = []
+    for _ in range(num_of_thread):
+        all_results.extend(result_queue.get())
     data_process(all_results)
-    return
+    return all_results
 
 
 def Initial():
@@ -325,14 +329,10 @@ def option_set(args):
     global traverse_method
     global traverse_solver
     global traverse_cegis_solver
-    if args.select_safe:
-        traverse_lang = all_lang
-        traverse_method = all_method
-        traverse_solver = all_solver
+    traverse_lang = all_lang
+    traverse_method = all_method
+    traverse_solver = all_solver
     if args.complete_experiment:
-        traverse_lang = all_lang
-        traverse_method = all_method
-        traverse_solver = all_solver
         traverse_cegis_solver = all_pysmt_solver
     pass
 
@@ -393,10 +393,10 @@ if __name__ == "__main__":
         type=str,
         nargs='+',
         default="none")
-    parser.add_argument(
-        '--select-safe',
-        action='store_true',
-        help='Select all the safe benchmark.')
+    # parser.add_argument(
+    #     '--select-safe',
+    #     action='store_true',
+    #     help='Select all the safe benchmark.')
     parser.add_argument(
         '--complete-experiment',
         default=False,
@@ -408,6 +408,10 @@ if __name__ == "__main__":
         default=0
     )
     args = parser.parse_args()
+    save_dir = './Result'
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    save_dir+='/'
     paint_mode = args.paint_mode
     CEGIS_SMT = args.cegis_smt
     SMT = args.smt_solver
@@ -430,27 +434,31 @@ if __name__ == "__main__":
     # select the benchmark with safe property
 
     BENCHMARK_DIR = args.goal_path
-    if args.select_safe:
-        for Language, Method, Solver, Ceg_Solver in itertools.product(
-                traverse_lang, traverse_method, traverse_solver, traverse_cegis_solver):
-            LANG = Language
-            if LANG == 'sygus':
-                continue
-            END_WITH = depend_on_Lang(LANG)
-            METHOD = Method
-            SMT = Solver
-            CEGIS_SMT = Ceg_Solver
-            run = Initial()
-            if run:
-                find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
-    data_list = []
-    for root, dirs, files in os.walk(RESULT_DIR):
-        for file_name in files:
-            if file_name.endswith(".json"):
-                json_file_path = os.path.join(root, file_name)
-                with open(json_file_path, "r") as file:
-                    data = json.load(file)
-                data_list.append(data)
+    
+    total_iterations = (
+        len(traverse_lang) *
+        len(traverse_method) *
+        len(traverse_solver) *
+        len(traverse_cegis_solver)
+    )
+    count=0
+
+    for Language, Method, Solver, Ceg_Solver in itertools.product(
+            traverse_lang, traverse_method, traverse_solver, traverse_cegis_solver):
+        LANG = Language
+        if LANG == 'sygus':
+            continue
+        END_WITH = depend_on_Lang(LANG)
+        METHOD = Method
+        SMT = Solver
+        CEGIS_SMT = Ceg_Solver
+        run = Initial()
+        print("---------------------------------------")
+        print(f"The process of total task is:{count}/{total_iterations}")
+        count+=1
+        if run:
+            data_list=find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
+        print("---------------------------------------")
     safe_file = []
     for data in data_list:
         if 'safe' in data and data['safe']:
@@ -496,7 +504,7 @@ if __name__ == "__main__":
                 else:
                     value = "Err"
                 table[row_name][data['file']] = value
-        with open(figure_name + ".csv", "w", newline="", encoding="utf-8") as csvfile:
+        with open(save_dir+figure_name + ".csv", "w", newline="", encoding="utf-8") as csvfile:
             writer = csv.writer(csvfile)
             # 写入标题行
             writer.writerow([""] + safe_file + ["T", "F", "U","X"])
@@ -582,7 +590,7 @@ if __name__ == "__main__":
         plt.ylabel("Cumulative Time")
         plt.title("Cumulative Time vs. File Index")
         plt.legend()
-        plt.savefig(figure_name + ".png", dpi=300)
+        plt.savefig(save_dir+figure_name + ".png", dpi=300)
 
         print("Efsmt methods with the highest cumulative verification rate:")
         for key in top_verification_rate_efsmt:
@@ -602,7 +610,7 @@ if __name__ == "__main__":
                 label = f"{key[0]}_{key[1]}"
             print(f"{label}: {verification_rate:.2f}%")
 
-    #mode=3 -> RQ1 : Compare the difference template with different template.
+    #mode=3 -> RQ1 : Compare the difference template while fix smt_solver.
     if "3" in paint_mode:
         efsmt_data = [
             data for data in data_list if data["method"] == "efsmt" and data["file"] in safe_file
@@ -643,5 +651,47 @@ if __name__ == "__main__":
             plt.xlabel("File Index")
             plt.ylabel("Cumulative Time (s)")
             plt.legend()
-            plt.savefig(figure_name+"_smt_"+smt_solver+"_template_comp.png",dpi=300)
+            plt.savefig(save_dir+figure_name+"_smt_"+smt_solver+"_template_comp.png",dpi=300)
+    
+    if "4" in paint_mode:
+        efsmt_data = [
+            data for data in data_list if data["method"] == "efsmt" and data["file"] in safe_file
+        ]
+
+        cumulative_time_data = {}
+        for data in efsmt_data:
+            key = (data["smt_solver"], data["template"])
+            if key not in cumulative_time_data:
+                cumulative_time_data[key] = [0] * len(safe_file)
+            file_idx = safe_file.index(data["file"])
+            cumulative_time_data[key][file_idx] = data["time"]
+
+        for key, time_list in cumulative_time_data.items():
+            cumulative_time_data[key] = list(itertools.accumulate(time_list))
+
+        templates = sorted(list(set([data["template"] for data in efsmt_data])))
+        for template in templates:
+            plt.figure(figsize=(12, 6))
+            plt.title(f"Template: {template}")
+
+            plot_data = {
+                key: cumulative_time_data[key]
+                for key in cumulative_time_data.keys()
+                if key[1] == template
+            }
+            marker_cycle = itertools.cycle(("o", "v", "s", "p", "*", "h", "H", "+", "x", "D", "|", "_"))
+
+            for key, values in plot_data.items():
+                label = f"{key[0]}_{key[1]}"
+                sns.lineplot(
+                    x=range(1, len(safe_file) + 1),
+                    y=cumulative_time_data[key],
+                    label=label,
+                    marker=next(marker_cycle),
+                )
+
+            plt.xlabel("File Index")
+            plt.ylabel("Cumulative Time (s)")
+            plt.legend()
+            plt.savefig(save_dir+figure_name+"_template_"+template+"_smt_comp.png", dpi=300)
             
