@@ -57,6 +57,10 @@ cargo build --release # may fail , haven't fixed yet
 eval "cd $current_dir"
 
 
+# download eld
+wget https://github.com/uuverifiers/eldarica/releases/download/v2.0.9/eldarica-bin-2.0.9.zip
+
+
 # extract all zip/gz files
 eval "find . -maxdepth 1 -type f -name '*.gz' | xargs -I{} tar xvf {}"
 eval "find . -maxdepth 1 -type f -name '*.zip' | xargs -I{} unzip {}"
@@ -75,7 +79,7 @@ eval "cd $current_dir"
 
 
 mkdir bin
-smt_binaries=("yices-smt2" "bitwuzla" "boolector" "z3" "mathsat" "q3b" "cvc5-Linux" "caqe")
+smt_binaries=("yices-smt2" "bitwuzla" "boolector" "z3" "mathsat" "q3b" "cvc5-Linux" "caqe" "eld")
 match=""
 flag=false
 for binary in "${smt_binaries[@]}"
