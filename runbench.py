@@ -38,7 +38,7 @@ traverse_cegis_solver = ['none']
 all_lang = ['chc', 'sygus']
 all_method = ['kind', 'pdr', 'efsmt']
 all_solver = ['z3', 'cvc5', 'btor', 'yices2', 'mathsat', 'bitwuzla']
-all_pysmt_solver = ['z3', 'msat', 'yices', 'bdd', 'picosat', 'btor']
+all_pysmt_solver = ['z3', 'msat', 'yices', 'btor']
 all_template = ["bv_interval", "power_bv_interval",
                 "bv_zone", "power_bv_zone",
                 "bv_octagon", "power_bv_octagon",
@@ -140,7 +140,7 @@ def parsing_out(file_path, template, lines, mode='kind'):
 def data_process(results):
     file_name = []
     save_safe_dir = CUR_DIR + Processed_PATH
-    origin_path = CUR_DIR + BENCHMARK_DIR
+    origin_path = CUR_DIR+BENCHMARK_DIR
     if not os.path.isdir('SafeBenchmark'):
         os.mkdir('SafeBenchmark')
     for result in results:
