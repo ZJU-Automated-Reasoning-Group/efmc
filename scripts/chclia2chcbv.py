@@ -3,8 +3,6 @@ CHC(LIA) to CHC(BV)
 """
 import os
 import z3
-import sys
-sys.path.append("../")
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse_sexpression
 from efmc.frontends.chc_parser import CHCParser, ground_quantifier
 
