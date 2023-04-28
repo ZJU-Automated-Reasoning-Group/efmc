@@ -20,7 +20,7 @@ NUM_DISJUNCTIONS = 0
 LANG = "chc"
 METHOD = "efsmt"
 SMT = "z3"
-CEGIS_SMT = "z3"
+CEGIS_SMT = "z3"1
 END_WITH = "smt2"
 MAXTIME = 1
 STRENGTHEN = False
@@ -275,8 +275,8 @@ def find_safe(root, num_of_thread):
                     result['cegis_solver'] = CEGIS_SMT
                 result['origin_relpath'] = relative_path
                 
-                # with open(save_path, 'w') as f:
-                #     json.dump(result, f, indent=4)
+                with open(save_path, 'w') as f:
+                    json.dump(result, f, indent=4)
                 result_list.append(result)
         result_queue.put(result_list)
 
