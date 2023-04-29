@@ -7,6 +7,12 @@ import os
 import signal
 import sys
 import psutil
+import subprocess
+from threading import Timer
+import time
+import signal
+from multiprocessing import Process, cpu_count, Queue,Manager,Lock
+from typing import List
 from efmc.sts import TransitionSystem
 from efmc.frontends import parse_sygus, parse_chc
 from efmc.engines.ef.ef_prover import EFProver
@@ -40,6 +46,28 @@ def signal_handler(sig, frame):
     for child in parent.children(recursive=True):
         child.kill()
     sys.exit(0)
+
+def terminate(process: subprocess.Popen, is_timeout: List[bool]):
+    if process.poll() is None:
+        try:
+            # process.terminate()
+            os.kill(process.pid, signal.SIGKILL)
+            is_timeout[0] = True
+        except Exception as es:
+            # print("error for interrupting")
+            print(es)
+            pass
+
+def solve_with_bin_solver(cmd: List[str], timeout=3600) -> str:
+    """ cmd should be a complete cmd"""
+    is_timeout = [False]
+
+    p = subprocess.Popen(cmd ,stderr=subprocess.STDOUT)
+    timer = Timer(timeout, terminate, args=[p, is_timeout])
+    timer.start()
+    p.wait()
+    timer.cancel()
+
 
 
 def solve_with_qe(sts: TransitionSystem):
@@ -119,6 +147,11 @@ def solve_chc_file(file_name: str, prover="efsmt"):
     :param prover: strategy
     """
     # global g_verifier_args
+    if prover == "eld":
+        cmd = ["./bin_solvers/bin/eld" , file_name]
+        solve_with_bin_solver(cmd, g_verifier_args.timeout)
+        return
+    
     all_vars, init, trans, post = parse_chc(file_name, to_real_type=False)
     print("Finish parsing CHC file")
     sts = TransitionSystem()
@@ -155,6 +188,10 @@ def solve_sygus_file(filename: str, prover="all"):
     # FIXME: To use abstract domains and to preserve completeness,
     #   I cast integer variables to reals (this can be bad?) when parsing.
     #   A better idea is to transform the transition system after the parsing
+    if prover == "cvc5sys":
+        cmd = ["./bin_solvers/bin/cvc5-Linux" , filename]
+        solve_with_bin_solver(cmd, g_verifier_args.timeout)
+        return
     all_vars, init, trans, post = parse_sygus(filename, to_real_type=False)
     print("Finish parsing SyGuS file")
     sts = TransitionSystem()
