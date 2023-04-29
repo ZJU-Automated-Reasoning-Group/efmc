@@ -79,7 +79,7 @@ eval "cd $current_dir"
 
 
 mkdir bin
-smt_binaries=("yices-smt2" "bitwuzla" "boolector" "z3" "mathsat" "q3b" "cvc5-Linux" "caqe" "eld")
+smt_binaries=("yices-smt2" "bitwuzla" "boolector" "z3" "mathsat" "q3b" "cvc5-Linux" "caqe")
 match=""
 flag=false
 for binary in "${smt_binaries[@]}"
@@ -100,3 +100,4 @@ eval "find . -maxdepth 1 -type f -name '*.gz' | xargs -I{} rm -f {}"
 eval "find . -maxdepth 1 -type f -name '*.zip' | xargs -I{} rm -f {}"
 eval "chmod +x ./bin/cvc5-Linux"
 
+eval "ln -s /efmc/bin_solvers/eldarica/eld /efmc/bin_solvers/bin/eld"
