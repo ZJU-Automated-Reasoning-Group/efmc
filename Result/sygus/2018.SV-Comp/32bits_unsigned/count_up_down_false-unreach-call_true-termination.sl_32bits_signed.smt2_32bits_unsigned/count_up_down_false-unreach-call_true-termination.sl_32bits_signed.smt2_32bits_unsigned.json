@@ -1,9 +1,0 @@
-{
-    "file": "count_up_down_false-unreach-call_true-termination.sl_32bits_signed.smt2_32bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 6.215038537979126,
-    "message": [
-        "infeasible",
-        ""
-    ]
-}

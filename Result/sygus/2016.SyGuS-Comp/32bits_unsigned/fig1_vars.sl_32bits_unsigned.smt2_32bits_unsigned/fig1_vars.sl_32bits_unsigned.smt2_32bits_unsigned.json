@@ -1,9 +1,0 @@
-{
-    "file": "fig1_vars.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 6.102630376815796,
-    "message": [
-        "infeasible",
-        ""
-    ]
-}

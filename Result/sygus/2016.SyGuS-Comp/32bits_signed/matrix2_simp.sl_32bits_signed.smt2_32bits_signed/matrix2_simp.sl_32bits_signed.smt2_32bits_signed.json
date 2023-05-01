@@ -1,9 +1,0 @@
-{
-    "file": "matrix2_simp.sl_32bits_signed.smt2_32bits_signed.sl",
-    "unexpected_error": true,
-    "time": 6.622715950012207,
-    "message": [
-        "infeasible",
-        ""
-    ]
-}

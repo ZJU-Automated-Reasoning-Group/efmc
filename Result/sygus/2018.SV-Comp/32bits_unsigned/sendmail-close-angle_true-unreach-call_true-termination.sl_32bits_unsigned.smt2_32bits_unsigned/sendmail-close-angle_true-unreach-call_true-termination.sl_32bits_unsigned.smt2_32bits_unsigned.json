@@ -1,9 +1,0 @@
-{
-    "file": "sendmail-close-angle_true-unreach-call_true-termination.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 6.91159200668335,
-    "message": [
-        "infeasible",
-        ""
-    ]
-}

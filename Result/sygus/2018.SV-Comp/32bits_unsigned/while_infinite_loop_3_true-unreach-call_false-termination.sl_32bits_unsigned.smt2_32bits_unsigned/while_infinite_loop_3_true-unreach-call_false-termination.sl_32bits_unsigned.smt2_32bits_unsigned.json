@@ -1,9 +1,0 @@
-{
-    "file": "while_infinite_loop_3_true-unreach-call_false-termination.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 8.069492816925049,
-    "message": [
-        "infeasible",
-        ""
-    ]
-}

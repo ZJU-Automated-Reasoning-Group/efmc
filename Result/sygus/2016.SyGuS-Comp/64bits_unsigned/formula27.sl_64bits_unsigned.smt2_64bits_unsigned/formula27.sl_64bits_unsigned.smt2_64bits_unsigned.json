@@ -1,9 +1,0 @@
-{
-    "file": "formula27.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 9.756422758102417,
-    "message": [
-        "infeasible",
-        ""
-    ]
-}

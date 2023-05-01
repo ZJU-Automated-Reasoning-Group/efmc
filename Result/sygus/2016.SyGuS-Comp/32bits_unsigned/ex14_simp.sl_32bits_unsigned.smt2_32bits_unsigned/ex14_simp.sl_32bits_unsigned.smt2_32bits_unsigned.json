@@ -1,9 +1,0 @@
-{
-    "file": "ex14_simp.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 6.500072240829468,
-    "message": [
-        "infeasible",
-        ""
-    ]
-}

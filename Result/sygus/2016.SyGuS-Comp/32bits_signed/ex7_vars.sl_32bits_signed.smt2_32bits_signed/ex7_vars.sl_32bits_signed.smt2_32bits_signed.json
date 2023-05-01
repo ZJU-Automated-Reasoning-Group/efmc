@@ -1,9 +1,0 @@
-{
-    "file": "ex7_vars.sl_32bits_signed.smt2_32bits_signed.sl",
-    "unexpected_error": true,
-    "time": 5.037692070007324,
-    "message": [
-        "infeasible",
-        ""
-    ]
-}

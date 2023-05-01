@@ -1,9 +1,0 @@
-{
-    "file": "s_split_36.smt2safe_64bits_unsigned.smt2_64bits_signed.sl",
-    "unexpected_error": true,
-    "time": 5.231212377548218,
-    "message": [
-        "infeasible",
-        ""
-    ]
-}

@@ -1,9 +1,0 @@
-{
-    "file": "trex3.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 8.16005802154541,
-    "message": [
-        "infeasible",
-        ""
-    ]
-}

@@ -1,9 +1,0 @@
-{
-    "file": "ex11.sl_32bits_signed.smt2_32bits_signed.sl",
-    "unexpected_error": true,
-    "time": 7.691141128540039,
-    "message": [
-        "infeasible",
-        ""
-    ]
-}
