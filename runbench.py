@@ -258,7 +258,9 @@ def find_safe(root, num_of_thread):
 
     def multi_func(files, result_queue,ef_template):
         result_list = []
+        print("hand 1")
         for file in files:
+            print(file)
             file_name = os.path.splitext(os.path.basename(file))[0]
             relative_path = os.path.relpath(file, root)
             no_ext_path, _ = os.path.splitext(relative_path)
@@ -278,6 +280,7 @@ def find_safe(root, num_of_thread):
             with open(save_path, 'w') as f:
                 json.dump(result, f, indent=4)
             result_list.append(result)
+        print("hand 2")
         result_queue.put(result_list)
 
     num_of_file = len(file_list) // num_of_thread
@@ -321,7 +324,7 @@ def depend_on_Lang():
 
 if __name__ == "__main__":
     
-    timeout = 30
+    timeout = 120
     timer = Timer(timeout, capture_trace)
     timer.start()
 
