@@ -1,0 +1,20 @@
+{
+    "template": "power_bv_octagon",
+    "smt_solver": "q3b",
+    "file": "fib_04.sl_32bits_signed.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 1,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: q3b",
+        " unknown",
+        " Timeout: Method 'efsmt' timed out after 1 seconds.",
+        ""
+    ]
+}

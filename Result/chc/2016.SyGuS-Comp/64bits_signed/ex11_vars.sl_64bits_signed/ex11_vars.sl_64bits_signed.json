@@ -1,0 +1,14 @@
+{
+    "file": "ex11_vars.sl_64bits_signed.smt2",
+    "safe": false,
+    "time": 7.694747447967529,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.1369333267211914",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

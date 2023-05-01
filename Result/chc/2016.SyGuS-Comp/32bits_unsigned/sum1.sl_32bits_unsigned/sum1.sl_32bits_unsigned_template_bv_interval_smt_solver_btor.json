@@ -1,0 +1,21 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "btor",
+    "file": "sum1.sl_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 8.215753316879272,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: btor",
+        " Can not find corresponding solver",
+        " unknown",
+        ""
+    ]
+}

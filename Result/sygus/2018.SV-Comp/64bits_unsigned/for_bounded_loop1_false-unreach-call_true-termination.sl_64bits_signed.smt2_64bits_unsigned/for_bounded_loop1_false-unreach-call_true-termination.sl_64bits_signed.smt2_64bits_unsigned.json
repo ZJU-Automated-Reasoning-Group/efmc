@@ -1,0 +1,11 @@
+{
+    "file": "for_bounded_loop1_false-unreach-call_true-termination.sl_64bits_signed.smt2_64bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 5.4233620166778564,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((n (_ BitVec 64)) (y (_ BitVec 64)) (x (_ BitVec 64)) (i (_ BitVec 64))) Bool (or (bvslt i n) (= #b0000000000000000000000000000000000000000000000000000000000000000 x)))",
+        " )",
+        ""
+    ]
+}

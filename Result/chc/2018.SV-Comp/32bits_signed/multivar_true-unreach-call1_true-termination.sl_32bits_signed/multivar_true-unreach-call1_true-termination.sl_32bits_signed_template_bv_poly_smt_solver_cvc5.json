@@ -1,0 +1,20 @@
+{
+    "template": "bv_poly",
+    "smt_solver": "cvc5",
+    "file": "multivar_true-unreach-call1_true-termination.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 35.401480197906494,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_POLYHEDRON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cvc5",
+        " unknown",
+        ""
+    ]
+}

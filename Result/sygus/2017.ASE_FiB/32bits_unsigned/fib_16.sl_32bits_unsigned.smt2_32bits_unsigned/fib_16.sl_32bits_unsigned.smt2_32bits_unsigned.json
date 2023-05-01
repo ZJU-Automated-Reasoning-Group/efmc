@@ -1,0 +1,11 @@
+{
+    "file": "fib_16.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 9.402278661727905,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((j (_ BitVec 32)) (i (_ BitVec 32)) (y (_ BitVec 32)) (x (_ BitVec 32))) Bool (or (not (= i j)) (not (= #b00000000000000000000000000000000 x)) (= #b00000000000000000000000000000000 y)))",
+        " )",
+        ""
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "file": "ex11.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 6.8913655281066895,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.712740421295166",
+        " safe",
+        " Invariant:  And(Or(Not(Extract(2, 2, c) == 1), c == 4),",
+        "     Extract(63, 3, c) == 0)",
+        " ",
+        ""
+    ]
+}

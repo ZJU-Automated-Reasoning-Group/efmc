@@ -1,0 +1,20 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "q3b",
+    "file": "trex3_vars.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 37.124210596084595,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: q3b",
+        " unknown",
+        ""
+    ]
+}

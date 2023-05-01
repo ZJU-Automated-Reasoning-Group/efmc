@@ -1,0 +1,11 @@
+{
+    "file": "sum1.sl_64bits_signed.smt2_64bits_signed.sl",
+    "unexpected_error": true,
+    "time": 4.919963121414185,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((sn (_ BitVec 64)) (n (_ BitVec 64)) (i (_ BitVec 64))) Bool (or (not (bvslt n i)) (= n sn) (= #b0000000000000000000000000000000000000000000000000000000000000000 sn)))",
+        " )",
+        ""
+    ]
+}

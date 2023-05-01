@@ -1,0 +1,11 @@
+{
+    "file": "cggmp.sl_64bits_signed.smt2_64bits_signed.sl",
+    "unexpected_error": true,
+    "time": 8.852246046066284,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((j (_ BitVec 64)) (i (_ BitVec 64))) Bool (or (not (bvslt j i)) (= #b0000000000000000000000000000000000000000000000000000000000000110 j)))",
+        " )",
+        ""
+    ]
+}

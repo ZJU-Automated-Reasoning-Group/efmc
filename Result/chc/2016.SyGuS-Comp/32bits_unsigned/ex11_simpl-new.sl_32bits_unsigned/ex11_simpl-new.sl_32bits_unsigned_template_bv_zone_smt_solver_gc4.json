@@ -1,0 +1,25 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "gc4",
+    "file": "ex11_simpl-new.sl_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 13.19869327545166,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: gc4",
+        " Quantifier elimination + SAT solving",
+        " Translating to DIMACS",
+        " Translating to Boolean formula in Z3",
+        " Finishing generating SAT CNT...",
+        " Calling SAT solver gc4",
+        " unknown",
+        ""
+    ]
+}

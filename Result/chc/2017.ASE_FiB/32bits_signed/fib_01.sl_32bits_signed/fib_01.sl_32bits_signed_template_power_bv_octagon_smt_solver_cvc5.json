@@ -1,0 +1,20 @@
+{
+    "template": "power_bv_octagon",
+    "smt_solver": "cvc5",
+    "file": "fib_01.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 37.0547308921814,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cvc5",
+        " unknown",
+        ""
+    ]
+}

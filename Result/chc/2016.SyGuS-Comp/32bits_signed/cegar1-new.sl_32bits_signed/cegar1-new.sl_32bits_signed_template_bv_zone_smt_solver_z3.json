@@ -1,0 +1,20 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "z3",
+    "file": "cegar1-new.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 4.556905508041382,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: z3",
+        " safe",
+        ""
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "template": "bv_poly",
+    "smt_solver": "z3",
+    "file": "formula25.sl_64bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 32.96464562416077,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_POLYHEDRON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: z3",
+        " unknown",
+        ""
+    ]
+}

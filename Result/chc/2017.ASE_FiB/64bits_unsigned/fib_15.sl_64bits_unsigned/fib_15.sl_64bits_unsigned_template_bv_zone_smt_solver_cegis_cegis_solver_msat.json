@@ -1,0 +1,23 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "cegis",
+    "cegis_solver": "msat",
+    "file": "fib_15.sl_64bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 32.06172180175781,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cegis",
+        " solving via cegis_solver",
+        " Simple, sequential, CEGIS-style EFSMT!",
+        " safe",
+        ""
+    ]
+}

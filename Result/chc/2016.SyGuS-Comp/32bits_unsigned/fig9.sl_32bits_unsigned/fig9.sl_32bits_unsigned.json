@@ -1,0 +1,15 @@
+{
+    "file": "fig9.sl_32bits_unsigned.smt2",
+    "safe": true,
+    "time": 0.961235523223877,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.0007243156433105469",
+        " safe",
+        " Invariant:  True",
+        " ",
+        ""
+    ]
+}

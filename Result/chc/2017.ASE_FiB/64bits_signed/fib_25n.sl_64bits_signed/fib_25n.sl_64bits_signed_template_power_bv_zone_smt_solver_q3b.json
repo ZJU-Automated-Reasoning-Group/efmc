@@ -1,0 +1,20 @@
+{
+    "template": "power_bv_zone",
+    "smt_solver": "q3b",
+    "file": "fib_25n.sl_64bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 42.53657102584839,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: q3b",
+        " unknown",
+        ""
+    ]
+}

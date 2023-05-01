@@ -1,0 +1,20 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "cvc5",
+    "file": "for_bounded_loop1_false-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 36.494741678237915,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cvc5",
+        " unknown",
+        ""
+    ]
+}

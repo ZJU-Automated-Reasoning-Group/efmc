@@ -1,0 +1,14 @@
+{
+    "file": "fig1_vars.sl_64bits_signed.smt2",
+    "safe": false,
+    "time": 4.117764711380005,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.37030768394470215",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

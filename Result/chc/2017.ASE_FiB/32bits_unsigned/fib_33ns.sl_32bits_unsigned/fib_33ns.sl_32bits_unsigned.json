@@ -1,0 +1,11 @@
+{
+    "file": "fib_33ns.sl_32bits_unsigned.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "WARNING: creating large table of size 4294967296 for relation inv!compr_arg_2!1",
+        " Timeout: Method 'pdr' timed out after 60 seconds.",
+        ""
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "template": "power_bv_poly",
+    "smt_solver": "q3b",
+    "file": "sum4.sl_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 36.363605976104736,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_POLYHEDRON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: q3b",
+        " unknown",
+        ""
+    ]
+}

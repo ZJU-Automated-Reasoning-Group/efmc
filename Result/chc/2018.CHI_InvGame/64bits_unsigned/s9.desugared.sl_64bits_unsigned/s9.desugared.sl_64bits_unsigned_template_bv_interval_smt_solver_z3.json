@@ -1,0 +1,20 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "z3",
+    "file": "s9.desugared.sl_64bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 26.5707790851593,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: z3",
+        " unknown",
+        ""
+    ]
+}

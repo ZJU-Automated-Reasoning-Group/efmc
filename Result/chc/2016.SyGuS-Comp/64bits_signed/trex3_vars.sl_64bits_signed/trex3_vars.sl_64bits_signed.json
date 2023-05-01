@@ -1,0 +1,14 @@
+{
+    "file": "trex3_vars.sl_64bits_signed.smt2",
+    "safe": false,
+    "time": 0.8581547737121582,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.013459444046020508",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

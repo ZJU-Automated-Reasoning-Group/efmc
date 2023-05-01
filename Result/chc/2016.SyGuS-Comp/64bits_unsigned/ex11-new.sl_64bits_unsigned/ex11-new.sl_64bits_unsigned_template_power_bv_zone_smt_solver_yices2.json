@@ -1,0 +1,20 @@
+{
+    "template": "power_bv_zone",
+    "smt_solver": "yices2",
+    "file": "ex11-new.sl_64bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 6.412642002105713,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: yices2",
+        " unknown",
+        ""
+    ]
+}

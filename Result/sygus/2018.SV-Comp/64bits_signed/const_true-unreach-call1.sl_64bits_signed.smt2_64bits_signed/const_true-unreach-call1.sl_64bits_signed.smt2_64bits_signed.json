@@ -1,0 +1,11 @@
+{
+    "file": "const_true-unreach-call1.sl_64bits_signed.smt2_64bits_signed.sl",
+    "unexpected_error": true,
+    "time": 9.8152596950531,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((y (_ BitVec 64)) (x (_ BitVec 64))) Bool (and (= #b0000000000000000000000000000000000000000000000000000000000000000 y) (= #b0000000000000000000000000000000000000000000000000000000000000001 x)))",
+        " )",
+        ""
+    ]
+}

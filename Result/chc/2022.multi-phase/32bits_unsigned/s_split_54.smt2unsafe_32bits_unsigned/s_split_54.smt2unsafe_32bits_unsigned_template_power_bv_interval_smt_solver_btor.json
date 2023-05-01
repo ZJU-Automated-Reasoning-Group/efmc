@@ -1,0 +1,21 @@
+{
+    "template": "power_bv_interval",
+    "smt_solver": "btor",
+    "file": "s_split_54.smt2unsafe_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 7.108553171157837,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: btor",
+        " Can not find corresponding solver",
+        " safe",
+        ""
+    ]
+}

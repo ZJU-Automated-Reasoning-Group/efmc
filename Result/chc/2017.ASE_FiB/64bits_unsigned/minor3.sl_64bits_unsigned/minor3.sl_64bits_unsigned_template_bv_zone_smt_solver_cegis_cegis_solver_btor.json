@@ -1,0 +1,23 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "cegis",
+    "cegis_solver": "btor",
+    "file": "minor3.sl_64bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 17.291452884674072,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cegis",
+        " solving via cegis_solver",
+        " Simple, sequential, CEGIS-style EFSMT!",
+        " unknown",
+        ""
+    ]
+}

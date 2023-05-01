@@ -1,0 +1,12 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "z3qbf",
+    "file": "fib_11.sl_32bits_signed.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 1,
+    "message": [
+        "Timeout: Method 'efsmt' timed out after 1 seconds.",
+        ""
+    ]
+}

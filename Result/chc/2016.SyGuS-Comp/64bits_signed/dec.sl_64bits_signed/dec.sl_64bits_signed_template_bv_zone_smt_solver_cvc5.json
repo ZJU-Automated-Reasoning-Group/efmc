@@ -1,0 +1,20 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "cvc5",
+    "file": "dec.sl_64bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 5.092574119567871,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cvc5",
+        " safe",
+        ""
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "file": "while_infinite_loop_3_true-unreach-call_false-termination.sl_32bits_signed.smt2",
+    "safe": true,
+    "time": 1.0000863075256348,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.001074075698852539",
+        " safe",
+        " Invariant:  x == 0",
+        " ",
+        ""
+    ]
+}

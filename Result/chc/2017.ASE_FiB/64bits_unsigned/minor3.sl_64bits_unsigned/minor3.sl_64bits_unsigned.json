@@ -1,0 +1,15 @@
+{
+    "file": "minor3.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 2.4258759021759033,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.2908506393432617",
+        " safe",
+        " Invariant:  And(Extract(63, 3, y) == 0, ULE(Extract(2, 0, y), 5))",
+        " ",
+        ""
+    ]
+}

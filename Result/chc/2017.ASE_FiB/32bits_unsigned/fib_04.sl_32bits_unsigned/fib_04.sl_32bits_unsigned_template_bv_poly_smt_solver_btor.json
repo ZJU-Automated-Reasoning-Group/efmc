@@ -1,0 +1,21 @@
+{
+    "template": "bv_poly",
+    "smt_solver": "btor",
+    "file": "fib_04.sl_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 6.830856800079346,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_POLYHEDRON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: btor",
+        " Can not find corresponding solver",
+        " safe",
+        ""
+    ]
+}

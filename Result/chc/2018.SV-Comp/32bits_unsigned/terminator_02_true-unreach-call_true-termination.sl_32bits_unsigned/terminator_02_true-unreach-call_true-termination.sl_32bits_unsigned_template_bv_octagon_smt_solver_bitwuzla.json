@@ -1,0 +1,20 @@
+{
+    "template": "bv_octagon",
+    "smt_solver": "bitwuzla",
+    "file": "terminator_02_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 4.693909168243408,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: bitwuzla",
+        " safe",
+        ""
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "z3",
+    "file": "cegar1_vars-new.sl_64bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 7.047979354858398,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: z3",
+        " unknown",
+        ""
+    ]
+}

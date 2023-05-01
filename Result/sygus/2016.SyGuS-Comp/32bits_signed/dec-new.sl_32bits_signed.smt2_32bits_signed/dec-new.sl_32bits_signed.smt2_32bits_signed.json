@@ -1,0 +1,11 @@
+{
+    "file": "dec-new.sl_32bits_signed.smt2_32bits_signed.sl",
+    "unexpected_error": true,
+    "time": 8.883472204208374,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((x (_ BitVec 32))) Bool (or (bvslt #b00000000000000000000000000000000 x) (= #b00000000000000000000000000000000 x)))",
+        " )",
+        ""
+    ]
+}

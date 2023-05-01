@@ -1,0 +1,9 @@
+{
+    "file": "dec_vars-new.sl_32bits_signed.smt2_32bits_signed.sl",
+    "unexpected_error": true,
+    "time": 10.611376762390137,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

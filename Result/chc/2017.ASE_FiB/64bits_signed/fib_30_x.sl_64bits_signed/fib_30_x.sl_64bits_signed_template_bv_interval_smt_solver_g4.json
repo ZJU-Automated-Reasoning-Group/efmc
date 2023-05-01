@@ -1,0 +1,12 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "g4",
+    "file": "fib_30_x.sl_64bits_signed.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'efsmt' timed out after 60 seconds.",
+        ""
+    ]
+}

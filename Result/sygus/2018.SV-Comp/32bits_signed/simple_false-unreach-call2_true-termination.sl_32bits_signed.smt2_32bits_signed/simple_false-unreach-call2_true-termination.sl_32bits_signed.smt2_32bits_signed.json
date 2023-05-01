@@ -1,0 +1,9 @@
+{
+    "file": "simple_false-unreach-call2_true-termination.sl_32bits_signed.smt2_32bits_signed.sl",
+    "unexpected_error": true,
+    "time": 6.069787979125977,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

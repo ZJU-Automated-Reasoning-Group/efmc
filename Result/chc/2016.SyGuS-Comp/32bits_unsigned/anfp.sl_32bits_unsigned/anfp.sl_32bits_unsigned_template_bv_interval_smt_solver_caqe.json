@@ -1,0 +1,23 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "caqe",
+    "file": "anfp.sl_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 51.355132818222046,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: caqe",
+        " Finishing generating QBF CNT...",
+        " c CommonSolverConfig { filename: Some(\"/tmp/28b6bbb0-e83c-11ed-aa28-0242ac110004_temp.qdimacs\"), verbosity: Warn, statistics: None, specific: CaqeSpecificSolverConfig { options: SolverOptions { abstraction: AbstractionOptions { reuse_b_literals: Some(Partial), reuse_t_literals: Some(Partial), additional_t_literal_constraints: Some(Partial), additional_b_literal_constraints: false, equivalence_constraints: true, universal_reuse_b_literals: true, replace_t_literal_by_variable: true }, expansion: ExpansionOptions { expansion_refinement: Some(Full), dependency_schemes: false, conflict_clause_expansion: true, hamming_heuristics: false }, strong_unsat_refinement: false, refinement_literal_subsumption: false, miniscoping: true, build_conflict_clauses: false, flip_assignments_from_sat_solver: false, skip_levels: None }, qdimacs_output: false, preprocessor: None } }",
+        " ",
+        " unknown",
+        ""
+    ]
+}

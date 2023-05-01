@@ -1,0 +1,20 @@
+{
+    "template": "bv_octagon",
+    "smt_solver": "mathsat",
+    "file": "anfp.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 3.4805896282196045,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: mathsat",
+        " unknown",
+        ""
+    ]
+}

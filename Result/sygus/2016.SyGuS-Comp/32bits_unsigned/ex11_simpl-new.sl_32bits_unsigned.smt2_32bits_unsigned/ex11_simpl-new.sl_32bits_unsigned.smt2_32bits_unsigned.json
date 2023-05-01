@@ -1,0 +1,9 @@
+{
+    "file": "ex11_simpl-new.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 5.80099892616272,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

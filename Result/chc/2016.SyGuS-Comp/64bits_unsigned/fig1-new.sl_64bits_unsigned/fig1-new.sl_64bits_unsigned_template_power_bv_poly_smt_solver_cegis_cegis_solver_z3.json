@@ -1,0 +1,23 @@
+{
+    "template": "power_bv_poly",
+    "smt_solver": "cegis",
+    "cegis_solver": "z3",
+    "file": "fig1-new.sl_64bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 11.3462655544281,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_POLYHEDRON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cegis",
+        " solving via cegis_solver",
+        " Simple, sequential, CEGIS-style EFSMT!",
+        " unknown",
+        ""
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "template": "bv_octagon",
+    "smt_solver": "cegis",
+    "cegis_solver": "yices",
+    "file": "s_split_45.smt2safe_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 26.79358720779419,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cegis",
+        " solving via cegis_solver",
+        " Simple, sequential, CEGIS-style EFSMT!",
+        " safe",
+        ""
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "template": "bv_octagon",
+    "smt_solver": "btor",
+    "file": "underapprox_true-unreach-call2_true-termination.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 24.835888147354126,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: btor",
+        " Can not find corresponding solver",
+        " safe",
+        ""
+    ]
+}

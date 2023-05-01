@@ -1,0 +1,20 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "q3b",
+    "file": "s_split_05.smt2safe_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 10.73267388343811,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: q3b",
+        " safe",
+        ""
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "template": "bv_octagon",
+    "smt_solver": "bitwuzla",
+    "file": "fib_05_x.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 37.450921297073364,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: bitwuzla",
+        " unknown",
+        ""
+    ]
+}

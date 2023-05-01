@@ -1,0 +1,9 @@
+{
+    "file": "non-lin-ineq-2.desugared.sl_64bits_signed.smt2_64bits_signed.sl",
+    "unexpected_error": true,
+    "time": 1.332043170928955,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "template": "power_bv_interval",
+    "smt_solver": "cegis",
+    "cegis_solver": "msat",
+    "file": "sqrt-more-rows-swap-columns.sl_64bits_unsigned.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'efsmt' timed out after 60 seconds.",
+        ""
+    ]
+}

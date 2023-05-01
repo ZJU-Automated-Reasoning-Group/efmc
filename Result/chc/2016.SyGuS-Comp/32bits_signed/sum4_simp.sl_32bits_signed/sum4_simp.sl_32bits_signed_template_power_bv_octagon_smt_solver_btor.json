@@ -1,0 +1,21 @@
+{
+    "template": "power_bv_octagon",
+    "smt_solver": "btor",
+    "file": "sum4_simp.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 10.474321126937866,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: btor",
+        " Can not find corresponding solver",
+        " unknown",
+        ""
+    ]
+}

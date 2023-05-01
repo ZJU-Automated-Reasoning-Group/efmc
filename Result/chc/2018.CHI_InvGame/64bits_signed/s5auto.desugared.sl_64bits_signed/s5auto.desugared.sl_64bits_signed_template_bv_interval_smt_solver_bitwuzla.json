@@ -1,0 +1,20 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "bitwuzla",
+    "file": "s5auto.desugared.sl_64bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 34.3850634098053,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: bitwuzla",
+        " unknown",
+        ""
+    ]
+}

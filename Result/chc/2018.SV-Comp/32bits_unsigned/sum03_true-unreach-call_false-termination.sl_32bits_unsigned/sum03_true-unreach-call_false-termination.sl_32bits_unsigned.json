@@ -1,0 +1,11 @@
+{
+    "file": "sum03_true-unreach-call_false-termination.sl_32bits_unsigned.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "WARNING: creating large table of size 4294967296 for relation inv!compr_arg_1!1!compr_arg_1!2",
+        " Timeout: Method 'pdr' timed out after 60 seconds.",
+        ""
+    ]
+}

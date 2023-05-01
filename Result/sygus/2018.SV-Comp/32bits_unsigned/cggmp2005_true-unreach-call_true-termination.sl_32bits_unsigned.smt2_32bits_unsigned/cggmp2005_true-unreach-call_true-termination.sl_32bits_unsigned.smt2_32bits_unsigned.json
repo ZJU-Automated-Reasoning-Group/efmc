@@ -1,0 +1,11 @@
+{
+    "file": "cggmp2005_true-unreach-call_true-termination.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 5.665385723114014,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((j (_ BitVec 32)) (i (_ BitVec 32))) Bool (or (not (bvult j i)) (= #b00000000000000000000000000000110 j)))",
+        " )",
+        ""
+    ]
+}

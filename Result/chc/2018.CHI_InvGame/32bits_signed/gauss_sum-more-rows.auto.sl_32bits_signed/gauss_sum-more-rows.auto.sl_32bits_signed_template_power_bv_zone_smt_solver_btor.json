@@ -1,0 +1,21 @@
+{
+    "template": "power_bv_zone",
+    "smt_solver": "btor",
+    "file": "gauss_sum-more-rows.auto.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 36.26004767417908,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: btor",
+        " Can not find corresponding solver",
+        " unknown",
+        ""
+    ]
+}

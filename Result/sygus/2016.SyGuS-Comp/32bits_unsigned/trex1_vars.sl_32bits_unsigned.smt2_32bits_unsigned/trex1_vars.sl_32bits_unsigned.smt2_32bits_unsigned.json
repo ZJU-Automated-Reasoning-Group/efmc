@@ -1,0 +1,11 @@
+{
+    "file": "trex1_vars.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 6.125559329986572,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((z3 (_ BitVec 32)) (z2 (_ BitVec 32)) (z1 (_ BitVec 32)) (y (_ BitVec 32)) (x (_ BitVec 32))) Bool (or (bvult x y) (not (bvult x #b00000000000000000000000000000001))))",
+        " )",
+        ""
+    ]
+}

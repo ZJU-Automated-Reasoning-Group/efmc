@@ -1,0 +1,21 @@
+{
+    "template": "bv_octagon",
+    "smt_solver": "btor",
+    "file": "s_split_46.smt2safe_64bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 19.571809768676758,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: btor",
+        " Can not find corresponding solver",
+        " unknown",
+        ""
+    ]
+}

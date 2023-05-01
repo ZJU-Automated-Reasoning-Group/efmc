@@ -1,0 +1,11 @@
+{
+    "file": "NetBSD_loop_true-unreach-call_true-termination.sl_32bits_signed.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 8.072296619415283,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((glob2_pathlim_off (_ BitVec 32)) (glob2_pathbuf_off (_ BitVec 32)) (glob2_p_off (_ BitVec 32)) (bound_off (_ BitVec 32)) (pathbuf_off (_ BitVec 32)) (MAXPATHLEN (_ BitVec 32))) Bool (or (bvslt glob2_pathlim_off glob2_p_off) (and (not (bvslt #b00000000000000000000000000000000 glob2_p_off)) (bvslt glob2_p_off (bvadd MAXPATHLEN #b00000000000000000000000000000001)))))",
+        " )",
+        ""
+    ]
+}

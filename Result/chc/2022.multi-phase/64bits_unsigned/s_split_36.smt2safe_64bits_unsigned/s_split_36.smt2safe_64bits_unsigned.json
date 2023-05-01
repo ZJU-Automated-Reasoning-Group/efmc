@@ -1,0 +1,14 @@
+{
+    "file": "s_split_36.smt2safe_64bits_unsigned.smt2",
+    "safe": false,
+    "time": 0.7557241916656494,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.02746748924255371",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

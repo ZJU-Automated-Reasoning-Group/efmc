@@ -1,0 +1,20 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "z3",
+    "file": "sum1_vars.sl_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 11.003153562545776,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: z3",
+        " unknown",
+        ""
+    ]
+}

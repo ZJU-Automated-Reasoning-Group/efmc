@@ -1,0 +1,9 @@
+{
+    "file": "matrix2_simp.sl_64bits_signed.smt2_64bits_signed.sl",
+    "unexpected_error": true,
+    "time": 5.987512826919556,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

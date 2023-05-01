@@ -1,0 +1,20 @@
+{
+    "template": "bv_octagon",
+    "smt_solver": "yices2",
+    "file": "multivar_true-unreach-call1_true-termination.sl_64bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 4.413418531417847,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: yices2",
+        " unknown",
+        ""
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "file": "anfp.sl_32bits_signed.smt2_32bits_signed.sl",
+    "unexpected_error": true,
+    "time": 7.705311298370361,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((y (_ BitVec 32)) (x (_ BitVec 32))) Bool (or (bvslt y #b00000000000000000000001111101000) (not (bvslt x y))))",
+        " )",
+        ""
+    ]
+}

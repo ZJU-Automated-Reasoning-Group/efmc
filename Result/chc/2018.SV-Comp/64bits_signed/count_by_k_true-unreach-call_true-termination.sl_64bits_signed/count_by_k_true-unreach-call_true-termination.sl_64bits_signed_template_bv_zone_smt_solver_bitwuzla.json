@@ -1,0 +1,20 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "bitwuzla",
+    "file": "count_by_k_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 36.055434226989746,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: bitwuzla",
+        " unknown",
+        ""
+    ]
+}

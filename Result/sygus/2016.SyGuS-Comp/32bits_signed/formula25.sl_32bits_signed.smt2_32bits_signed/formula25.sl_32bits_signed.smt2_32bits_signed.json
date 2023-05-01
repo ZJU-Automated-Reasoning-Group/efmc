@@ -1,0 +1,9 @@
+{
+    "file": "formula25.sl_32bits_signed.smt2_32bits_signed.sl",
+    "unexpected_error": true,
+    "time": 5.694320917129517,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

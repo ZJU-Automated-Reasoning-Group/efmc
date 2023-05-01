@@ -1,0 +1,20 @@
+{
+    "template": "power_bv_interval",
+    "smt_solver": "yices2",
+    "file": "while_infinite_loop_4_false-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 5.064194917678833,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: yices2",
+        " unknown",
+        ""
+    ]
+}

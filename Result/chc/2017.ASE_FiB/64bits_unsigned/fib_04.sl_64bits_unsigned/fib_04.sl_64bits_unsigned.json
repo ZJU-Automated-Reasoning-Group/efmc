@@ -1,0 +1,15 @@
+{
+    "file": "fib_04.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 5.099679231643677,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.0024940967559814453",
+        " safe",
+        " Invariant:  True",
+        " ",
+        ""
+    ]
+}

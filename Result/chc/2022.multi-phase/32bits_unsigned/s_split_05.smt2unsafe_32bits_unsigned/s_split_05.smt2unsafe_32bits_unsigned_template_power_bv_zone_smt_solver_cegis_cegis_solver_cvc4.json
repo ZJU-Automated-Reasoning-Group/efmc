@@ -1,0 +1,23 @@
+{
+    "template": "power_bv_zone",
+    "smt_solver": "cegis",
+    "cegis_solver": "cvc4",
+    "file": "s_split_05.smt2unsafe_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 15.284331798553467,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cegis",
+        " solving via cegis_solver",
+        " Simple, sequential, CEGIS-style EFSMT!",
+        " safe",
+        ""
+    ]
+}

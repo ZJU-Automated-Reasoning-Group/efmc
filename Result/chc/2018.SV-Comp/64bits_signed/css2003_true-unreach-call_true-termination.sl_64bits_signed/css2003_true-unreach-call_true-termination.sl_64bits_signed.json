@@ -1,0 +1,15 @@
+{
+    "file": "css2003_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 18.12070345878601,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  12.95838189125061",
+        " safe",
+        " Invariant:  And(k + i <= 2, 1 <= i, 1 <= k + i)",
+        " ",
+        ""
+    ]
+}

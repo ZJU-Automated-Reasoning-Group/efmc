@@ -1,0 +1,10 @@
+{
+    "file": "cegar2_vars.sl_64bits_signed.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'pdr' timed out after 60 seconds.",
+        ""
+    ]
+}

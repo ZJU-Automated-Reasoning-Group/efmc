@@ -1,0 +1,15 @@
+{
+    "file": "sum3.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 5.469700574874878,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.221142053604126",
+        " safe",
+        " Invariant:  sn == x",
+        " ",
+        ""
+    ]
+}

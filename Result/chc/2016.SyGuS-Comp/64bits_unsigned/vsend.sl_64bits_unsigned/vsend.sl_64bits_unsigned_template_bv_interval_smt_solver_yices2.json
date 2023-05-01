@@ -1,0 +1,20 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "yices2",
+    "file": "vsend.sl_64bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 9.157388925552368,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: yices2",
+        " safe",
+        ""
+    ]
+}

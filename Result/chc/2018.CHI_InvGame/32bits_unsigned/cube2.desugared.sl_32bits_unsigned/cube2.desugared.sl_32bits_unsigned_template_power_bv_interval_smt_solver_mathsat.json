@@ -1,0 +1,20 @@
+{
+    "template": "power_bv_interval",
+    "smt_solver": "mathsat",
+    "file": "cube2.desugared.sl_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 7.091855764389038,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: mathsat",
+        " unknown",
+        ""
+    ]
+}

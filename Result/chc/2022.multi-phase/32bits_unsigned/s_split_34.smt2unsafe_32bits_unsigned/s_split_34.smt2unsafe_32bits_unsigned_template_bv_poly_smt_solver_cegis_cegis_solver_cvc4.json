@@ -1,0 +1,23 @@
+{
+    "template": "bv_poly",
+    "smt_solver": "cegis",
+    "cegis_solver": "cvc4",
+    "file": "s_split_34.smt2unsafe_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 2.4145703315734863,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_POLYHEDRON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cegis",
+        " solving via cegis_solver",
+        " Simple, sequential, CEGIS-style EFSMT!",
+        " safe",
+        ""
+    ]
+}

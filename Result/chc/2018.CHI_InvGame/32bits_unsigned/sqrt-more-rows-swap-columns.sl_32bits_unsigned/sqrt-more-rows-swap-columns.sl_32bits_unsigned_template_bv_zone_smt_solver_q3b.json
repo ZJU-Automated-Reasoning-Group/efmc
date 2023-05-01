@@ -1,0 +1,20 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "q3b",
+    "file": "sqrt-more-rows-swap-columns.sl_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 39.005438566207886,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: q3b",
+        " unknown",
+        ""
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "btor",
+    "file": "fib_23_x.sl_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 7.24319863319397,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: btor",
+        " Can not find corresponding solver",
+        " safe",
+        ""
+    ]
+}

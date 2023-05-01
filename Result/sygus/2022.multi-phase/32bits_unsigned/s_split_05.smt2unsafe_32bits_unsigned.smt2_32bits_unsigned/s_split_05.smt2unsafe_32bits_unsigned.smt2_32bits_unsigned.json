@@ -1,0 +1,13 @@
+{
+    "file": "s_split_05.smt2unsafe_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 6.970761060714722,
+    "message": [
+        "(error \"Parse Error: /efmc/Benchmark/sygus/2022.multi-phase/32bits_unsigned/s_split_05.smt2unsafe_32bits_unsigned.smt2_32bits_unsigned.sl:10.66: Sequence terminated early by token: '('.",
+        " ",
+        "   ...( and ( bvule x y ) ( not ( = ( ( _ extract (_ bv31 32) (_ bv1 32) ) z...",
+        "                                                   ^",
+        " \")",
+        ""
+    ]
+}

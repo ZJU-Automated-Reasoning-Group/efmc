@@ -1,0 +1,11 @@
+{
+    "file": "s9.desugared.sl_64bits_signed.smt2_64bits_signed.sl",
+    "unexpected_error": true,
+    "time": 6.6742165088653564,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((l (_ BitVec 64)) (k (_ BitVec 64)) (j (_ BitVec 64)) (i (_ BitVec 64))) Bool (or (bvslt j k) (= (bvmul l (bvmul k j)) i)))",
+        " )",
+        ""
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "template": "power_bv_zone",
+    "smt_solver": "gc4",
+    "file": "s_split_28.smt2unsafe_64bits_unsigned.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'efsmt' timed out after 60 seconds.",
+        ""
+    ]
+}

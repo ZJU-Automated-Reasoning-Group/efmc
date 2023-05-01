@@ -1,0 +1,17 @@
+{
+    "file": "cegar2_vars-new.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 6.351974725723267,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  5.344602584838867",
+        " safe",
+        " Invariant:  And(Not(m == 0),",
+        "     Or(Not(ULE(n, m)), Extract(63, 1, n) == 0),",
+        "     Not(x == 0))",
+        " ",
+        ""
+    ]
+}

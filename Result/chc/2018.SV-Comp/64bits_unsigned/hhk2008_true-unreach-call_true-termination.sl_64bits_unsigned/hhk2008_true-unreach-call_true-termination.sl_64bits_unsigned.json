@@ -1,0 +1,10 @@
+{
+    "file": "hhk2008_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'pdr' timed out after 60 seconds.",
+        ""
+    ]
+}

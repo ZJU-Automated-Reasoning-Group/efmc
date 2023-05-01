@@ -1,0 +1,11 @@
+{
+    "file": "simple_vardep_true-unreach-call1_true-termination.sl_64bits_signed.smt2_64bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 2.1560561656951904,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((k (_ BitVec 64)) (j (_ BitVec 64)) (i (_ BitVec 64))) Bool (or (bvslt k #b0000000000000000000000000000000000001111111111111111111111111111) (= (bvadd j i) k)))",
+        " )",
+        ""
+    ]
+}

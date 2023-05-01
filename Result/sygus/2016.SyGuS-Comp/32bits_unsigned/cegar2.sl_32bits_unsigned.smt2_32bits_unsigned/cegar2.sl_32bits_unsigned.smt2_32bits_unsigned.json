@@ -1,0 +1,11 @@
+{
+    "file": "cegar2.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 9.23935055732727,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((m (_ BitVec 32)) (n (_ BitVec 32)) (x (_ BitVec 32))) Bool (or (bvult x n) (bvult m n) (= #b00000000000000000000000000000000 n)))",
+        " )",
+        ""
+    ]
+}

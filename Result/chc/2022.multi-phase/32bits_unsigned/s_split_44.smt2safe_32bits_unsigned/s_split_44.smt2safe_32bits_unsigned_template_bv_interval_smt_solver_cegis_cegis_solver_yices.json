@@ -1,0 +1,13 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "cegis",
+    "cegis_solver": "yices",
+    "file": "s_split_44.smt2safe_32bits_unsigned.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'efsmt' timed out after 60 seconds.",
+        ""
+    ]
+}

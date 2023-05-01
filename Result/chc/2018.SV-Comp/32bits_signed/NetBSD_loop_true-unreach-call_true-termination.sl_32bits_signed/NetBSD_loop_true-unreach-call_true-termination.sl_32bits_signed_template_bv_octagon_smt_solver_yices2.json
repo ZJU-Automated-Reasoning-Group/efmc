@@ -1,0 +1,20 @@
+{
+    "template": "bv_octagon",
+    "smt_solver": "yices2",
+    "file": "NetBSD_loop_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 8.522573232650757,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: yices2",
+        " safe",
+        ""
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "file": "s_split_36.smt2safe_64bits_signed.smt2",
+    "safe": true,
+    "time": 28.530347108840942,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  22.05311155319214",
+        " safe",
+        " Invariant:  Or(Extract(63, 63, x) == 1, 18446744073709551615 + y <= x)",
+        " ",
+        ""
+    ]
+}

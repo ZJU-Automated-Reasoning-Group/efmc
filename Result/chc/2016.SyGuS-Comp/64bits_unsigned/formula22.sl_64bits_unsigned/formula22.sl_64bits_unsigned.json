@@ -1,0 +1,15 @@
+{
+    "file": "formula22.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 6.800344228744507,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.8966057300567627",
+        " safe",
+        " Invariant:  ULE(x1, x2)",
+        " ",
+        ""
+    ]
+}

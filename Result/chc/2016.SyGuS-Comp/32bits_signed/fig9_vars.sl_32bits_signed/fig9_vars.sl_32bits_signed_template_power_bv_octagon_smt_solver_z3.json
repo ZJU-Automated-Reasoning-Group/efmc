@@ -1,0 +1,20 @@
+{
+    "template": "power_bv_octagon",
+    "smt_solver": "z3",
+    "file": "fig9_vars.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 20.7194881439209,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: z3",
+        " safe",
+        ""
+    ]
+}

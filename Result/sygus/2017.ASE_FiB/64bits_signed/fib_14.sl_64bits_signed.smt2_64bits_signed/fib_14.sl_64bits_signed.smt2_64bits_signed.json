@@ -1,0 +1,11 @@
+{
+    "file": "fib_14.sl_64bits_signed.smt2_64bits_signed.sl",
+    "unexpected_error": true,
+    "time": 2.517301321029663,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((m (_ BitVec 64)) (j (_ BitVec 64)) (a (_ BitVec 64))) Bool (or (not (bvslt m j)) (and (not (bvslt a (bvneg m))) (not (bvslt m a)))))",
+        " )",
+        ""
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "file": "underapprox_true-unreach-call2_true-termination.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 3.0648958683013916,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.12155818939208984",
+        " safe",
+        " Invariant:  Or(Not(6 <= x), x == 6)",
+        " ",
+        ""
+    ]
+}

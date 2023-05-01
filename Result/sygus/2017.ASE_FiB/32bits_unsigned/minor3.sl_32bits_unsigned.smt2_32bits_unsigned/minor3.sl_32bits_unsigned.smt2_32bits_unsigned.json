@@ -1,0 +1,13 @@
+{
+    "file": "minor3.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 8.127882957458496,
+    "message": [
+        "(error \"Parse Error: /efmc/Benchmark/sygus/2017.ASE_FiB/32bits_unsigned/minor3.sl_32bits_unsigned.smt2_32bits_unsigned.sl:10.32: Sequence terminated early by token: '('.",
+        " ",
+        "          ( and ( = ( ( _ extract (_ bv31 32) (_ bv3 32) ) y ) #b00000000...",
+        "                                   ^",
+        " \")",
+        ""
+    ]
+}

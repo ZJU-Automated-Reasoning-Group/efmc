@@ -1,0 +1,15 @@
+{
+    "file": "ex11_vars-new.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 6.6431965827941895,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.9233698844909668",
+        " safe",
+        " Invariant:  And(c <= n, Not(c == n), Not(Extract(63, 63, c) == 1))",
+        " ",
+        ""
+    ]
+}

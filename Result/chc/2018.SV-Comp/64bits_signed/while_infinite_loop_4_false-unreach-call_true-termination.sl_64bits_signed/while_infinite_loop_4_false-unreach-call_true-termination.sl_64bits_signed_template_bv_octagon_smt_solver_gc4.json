@@ -1,0 +1,25 @@
+{
+    "template": "bv_octagon",
+    "smt_solver": "gc4",
+    "file": "while_infinite_loop_4_false-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 8.679022312164307,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: gc4",
+        " Quantifier elimination + SAT solving",
+        " Translating to DIMACS",
+        " Translating to Boolean formula in Z3",
+        " Finishing generating SAT CNT...",
+        " Calling SAT solver gc4",
+        " unknown",
+        ""
+    ]
+}

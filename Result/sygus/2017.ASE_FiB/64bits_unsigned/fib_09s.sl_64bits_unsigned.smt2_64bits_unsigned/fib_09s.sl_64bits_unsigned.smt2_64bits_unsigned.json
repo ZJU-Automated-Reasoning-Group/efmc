@@ -1,0 +1,13 @@
+{
+    "file": "fib_09s.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 6.320504188537598,
+    "message": [
+        "(error \"Parse Error: /efmc/Benchmark/sygus/2017.ASE_FiB/64bits_unsigned/fib_09s.sl_64bits_unsigned.smt2_64bits_unsigned.sl:10.12: Symbol r is not declared.",
+        " ",
+        "          ( t r u e ))",
+        "              ^",
+        " \")",
+        ""
+    ]
+}

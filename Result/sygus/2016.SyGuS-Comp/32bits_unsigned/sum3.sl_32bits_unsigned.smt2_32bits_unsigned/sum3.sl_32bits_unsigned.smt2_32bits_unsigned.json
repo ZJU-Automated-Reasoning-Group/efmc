@@ -1,0 +1,11 @@
+{
+    "file": "sum3.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 9.165333032608032,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((sn (_ BitVec 32)) (x (_ BitVec 32))) Bool (= x sn))",
+        " )",
+        ""
+    ]
+}

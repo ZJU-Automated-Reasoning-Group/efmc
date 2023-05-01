@@ -1,0 +1,23 @@
+{
+    "template": "bv_zone",
+    "smt_solver": "cegis",
+    "cegis_solver": "msat",
+    "file": "s_split_28.smt2safe_32bits_signed.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cegis",
+        " solving via cegis_solver",
+        " Simple, sequential, CEGIS-style EFSMT!",
+        " unknown",
+        " Timeout: Method 'efsmt' timed out after 60 seconds.",
+        ""
+    ]
+}

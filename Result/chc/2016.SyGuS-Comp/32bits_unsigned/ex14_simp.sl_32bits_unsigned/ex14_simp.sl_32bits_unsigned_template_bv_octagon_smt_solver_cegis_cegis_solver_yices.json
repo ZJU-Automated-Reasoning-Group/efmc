@@ -1,0 +1,13 @@
+{
+    "template": "bv_octagon",
+    "smt_solver": "cegis",
+    "cegis_solver": "yices",
+    "file": "ex14_simp.sl_32bits_unsigned.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'efsmt' timed out after 60 seconds.",
+        ""
+    ]
+}
