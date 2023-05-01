@@ -237,8 +237,7 @@ def solve_file(file_path, ef_template, smt_solver, cegis_solver,file_name):
         cmd.append(str(NUM_DISJUNCTIONS))
     out, duration = solve_with_bin_solver(cmd, MAXTIME)
     lines = out.split('\n')
-    print(lines)
-    return parsing_out(file_path, lines,result), duration,file_name
+    return parsing_out(file_path, lines,result), duration,file_name,lines
 
 
 def find_safe(root, num_of_thread):
@@ -265,9 +264,12 @@ def find_safe(root, num_of_thread):
                 os.makedirs(new_path)
             if NUM_DISJUNCTIONS and "power" not in ef_template:
                 continue
-            result, duration_time,file_name = solve_file( 
+            result, duration_time,file_name,message = solve_file( 
                 file, ef_template, SMT, CEGIS_SMT,file_name)
             result['time'] = duration_time
+            result['message']=message
+            print('file:',file_name)
+            print('message:',message)
             save_path = new_path + file_name+".json"
             with open(save_path, 'w') as f:
                 json.dump(result, f, indent=4)
