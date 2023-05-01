@@ -1,9 +1,0 @@
-{
-    "file": "fib_01.sl_32bits_signed.smt2_32bits_signed.sl",
-    "unexpected_error": true,
-    "time": 1.0078353881835938,
-    "message": [
-        "infeasible",
-        ""
-    ]
-}
