@@ -26,7 +26,7 @@ TEMPLATE="none"
 MAXTIME = 5
 STRENGTHEN = False
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-BENCHMARK_DIR = "/Benchmark"
+BENCHMARK_DIR = "/small_benchmarks"
 RESULT_DIR = "/Result"
 ENDWITH = '.smt2'
 pbar_lock  =Lock()
@@ -96,11 +96,11 @@ def parsing_out(file_path, lines,result_dict):
             unknown = True
             continue
 
-        if "unsafe" in line or "infeasible" in line:
+        if "unsafe" in line or "infeasible" in line or "unsat" in line:
             safe = False
             unknown=False
             continue
-        elif "safe" in line or "define-fun inv_fun" in line:
+        elif "safe" in line or "define-fun inv_fun" in line or "sat" in line:
             safe = True
             unknown=False
             continue
@@ -162,7 +162,8 @@ def terminate(process: subprocess.Popen, is_timeout: List[bool]):
     if process.poll() is None:
         try:
             # process.terminate()
-            os.kill(process.pid, signal.SIGKILL)
+            process.kill()
+            # os.kill(process.pid, signal.SIGKILL)
             is_timeout[0] = True
         except Exception as es:
             # print("error for interrupting")
