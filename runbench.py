@@ -2,7 +2,7 @@
 import os
 import subprocess
 import glob
-from threading import Timer,current_thread
+from threading import Timer, current_thread
 import time
 from typing import List
 import csv
@@ -13,7 +13,7 @@ import traceback
 import itertools
 import atexit
 import signal
-from multiprocessing import Process, cpu_count, Queue,Manager
+from multiprocessing import Process, cpu_count, Queue, Manager
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -23,7 +23,7 @@ METHOD = "efsmt"
 SMT = "z3"
 CEGIS_SMT = "z3"
 END_WITH = "smt2"
-TEMPLATE="none"
+TEMPLATE = "none"
 MAXTIME = 5
 STRENGTHEN = False
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -38,21 +38,23 @@ traverse_cegis_solver = ['none']
 
 all_method = ['kind', 'pdr', 'efsmt']
 all_solver = ['z3', 'cvc5', 'btor', 'yices2', 'mathsat', 'bitwuzla']
-all_bit_blasting_solver=['z3qbf','caqe','q3b']
-all_cegis_solver = ['z3', 'msat', 'yices', 'btor','cvc4'] #TODO:加注释
+all_bit_blasting_solver = ['z3qbf', 'caqe', 'q3b']
+all_cegis_solver = ['z3', 'msat', 'yices', 'btor', 'cvc4']  # TODO:加注释
 all_template = ["bv_interval", "power_bv_interval",
                 "bv_zone", "power_bv_zone",
                 "bv_octagon", "power_bv_octagon",
                 "bv_poly", "power_bv_poly"]
-#'cd','gc3','g3','mcb','m22', 'mgh','mpl', 'mg3',
-all_sat_solver=['cd15',  'gc4', 'g4', 'lgl',  
-                             'mc', ]
+# 'cd','gc3','g3','mcb','m22', 'mgh','mpl', 'mg3',
+all_sat_solver = ['cd15',  'gc4', 'g4', 'lgl',
+                  'mc', ]
 all_endwith = ['smt2', 'sl']
 running_subprocesses = []
+
 
 def capture_trace():
     stack_trace = traceback.format_stack()
     print(stack_trace[-5:-2])
+
 
 def kill_subprocesses():
     for p in running_subprocesses:
@@ -63,9 +65,11 @@ def kill_subprocesses():
         except Exception as e:
             print(f"Failed to kill subprocess: {e}")
 
+
 atexit.register(kill_subprocesses)
 
-def parsing_out(file_path, lines,result_dict):
+
+def parsing_out(file_path, lines, result_dict):
     result_dict.update({
         'file': file_path[file_path.rfind('/') + 1:]})
 
@@ -103,11 +107,11 @@ def parsing_out(file_path, lines,result_dict):
 
         if "unsafe" in line or "infeasible" in line or "unsat" in line:
             safe = False
-            unknown=False
+            unknown = False
             continue
         elif "safe" in line or "define-fun inv_fun" in line or "sat" in line:
             safe = True
-            unknown=False
+            unknown = False
             continue
         # pdr specific
         if "PDR error" in line or "Traceback (most recent call last)" in line:
@@ -202,8 +206,8 @@ def solve_with_bin_solver(cmd: List[str], timeout: int) -> str:
     return out, end_time - start_time
 
 
-def solve_file(file_path, ef_template, smt_solver, cegis_solver,file_name):
-    result={}
+def solve_file(file_path, ef_template, smt_solver, cegis_solver, file_name):
+    result = {}
     cmd = [
         "python3",
         CUR_DIR +
@@ -215,53 +219,56 @@ def solve_file(file_path, ef_template, smt_solver, cegis_solver,file_name):
         "--file",
         file_path
     ]
+    file_name += "_method_"+METHOD
+    result['method'] = METHOD
+    file_name += "_lang_"+LANG
+    result['lang'] = LANG
     if ef_template != "none":
-        file_name+="_template_"+ef_template
-        result['template']=ef_template
+        file_name += "_template_"+ef_template
+        result['template'] = ef_template
         cmd.append("--template")
         cmd.append(ef_template)
     if smt_solver != "none":
-        file_name+="_smt_solver_"+smt_solver
-        result['smt_solver']=smt_solver
+        file_name += "_smt_solver_"+smt_solver
+        result['smt_solver'] = smt_solver
         cmd.append("--smt-solver")
         cmd.append(smt_solver)
         # cmd.append("--validate-invariant")
     if cegis_solver != "none":
-        file_name+="_cegis_solver_"+cegis_solver
-        result['cegis_solver']=cegis_solver
+        file_name += "_cegis_solver_"+cegis_solver
+        result['cegis_solver'] = cegis_solver
         cmd.append("--pysmt-solver")
         cmd.append(cegis_solver)
     if STRENGTHEN:
-        file_name+="_strengthen_"+STRENGTHEN
-        result['strengthen']=STRENGTHEN
+        file_name += "_strengthen_"+STRENGTHEN
+        result['strengthen'] = STRENGTHEN
         cmd.append("--prop-strengthen")
     if NUM_DISJUNCTIONS:
-        file_name+="_disjunctions_"+NUM_DISJUNCTIONS
-        result['num_disjunctions']=NUM_DISJUNCTIONS
+        file_name += "_disjunctions_"+NUM_DISJUNCTIONS
+        result['num_disjunctions'] = NUM_DISJUNCTIONS
         cmd.append("--num-disjunctions")
         cmd.append(str(NUM_DISJUNCTIONS))
     out, duration = solve_with_bin_solver(cmd, MAXTIME)
     lines = out.split('\n')
-    return parsing_out(file_path, lines,result), duration,file_name,lines
+    return parsing_out(file_path, lines, result), duration, file_name, lines
 
 
 def find_safe(root, num_of_thread):
     file_list = []
 
-    if not os.path.exists(CUR_DIR+ RESULT_DIR):
-        os.makedirs(CUR_DIR+ RESULT_DIR)
+    if not os.path.exists(CUR_DIR + RESULT_DIR):
+        os.makedirs(CUR_DIR + RESULT_DIR)
     # get all .smt2 [chc format]
     for dirpath, _, filenames in os.walk(root):
         for filename in filenames:
             if filename.endswith("." + END_WITH):
                 file_path = os.path.join(dirpath, filename)
                 file_list.append(file_path)
-                
-    def multi_func(files,ef_template):
+
+    def multi_func(files, ef_template):
         result_list = []
-        print("hand 1")
         for file in files:
-            #print(file)
+            # print(file)
             file_name = os.path.splitext(os.path.basename(file))[0]
             relative_path = os.path.relpath(file, root)
             no_ext_path, _ = os.path.splitext(relative_path)
@@ -271,16 +278,15 @@ def find_safe(root, num_of_thread):
                 os.makedirs(new_path)
             if NUM_DISJUNCTIONS and "power" not in ef_template:
                 continue
-            result, duration_time,file_name,message = solve_file( 
-                file, ef_template, SMT, CEGIS_SMT,file_name)
+            result, duration_time, file_name, message = solve_file(
+                file, ef_template, SMT, CEGIS_SMT, file_name)
             result['time'] = duration_time
-            result['message']=message
-            print('file:',file_name)
-            print('message:',message)
+            result['message'] = message
+            print('file:', file_name)
+            print('message:', message)
             save_path = new_path + file_name+".json"
             with open(save_path, 'w') as f:
                 json.dump(result, f, indent=4)
-        print("hand 2")
         print(os.getpid())
         return
 
@@ -288,27 +294,22 @@ def find_safe(root, num_of_thread):
     remainder = len(file_list) % num_of_thread
     processes = []
     result_queue = Queue()
-    
+
     processes = []
-    
+
     for i in range(num_of_thread):
         start_index = i * num_of_file + min(i, remainder)
         end_index = (i + 1) * num_of_file + min(i + 1, remainder)
-        print("each thread handling",end_index - start_index)
+        print("each thread handling", end_index - start_index)
         process = Process(target=multi_func, args=(
-            file_list[start_index:end_index],TEMPLATE))
+            file_list[start_index:end_index], TEMPLATE))
         process.start()
-        # print(i,num_of_thread,start_index,end_index)
-        processes.append(process)
-    cnt = num_of_thread 
-    for process in processes:
-        #process.join()
-        cnt -= 1
-        print("running threads = " , cnt)
-    print("\n\n\n\n")
-    print("nothing",os.getpid())
+        # processes.append(process)
 
-    
+    # cnt = num_of_thread
+    # for process in processes:
+        # process.join()
+
     # all_results = []
     # for _ in range(num_of_thread):
     #     all_results.extend(result_queue.get())
@@ -317,11 +318,12 @@ def find_safe(root, num_of_thread):
 
 
 def depend_on_Method():
-    if METHOD in ['efsmt','pdr','eld']:
+    if METHOD in ['efsmt', 'pdr', 'eld']:
         return 'chc'
     else:
         return 'sygus'
-    
+
+
 def depend_on_Lang():
     if LANG == 'chc':
         return 'smt2'
@@ -330,7 +332,7 @@ def depend_on_Lang():
 
 
 if __name__ == "__main__":
-    
+
     timeout = 120
     timer = Timer(timeout, capture_trace)
     timer.start()
@@ -354,80 +356,79 @@ if __name__ == "__main__":
         default=0
     )
     args = parser.parse_args()
-    save_dir = CUR_DIR+ '/Result'
+    save_dir = CUR_DIR + '/Result'
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
-    save_dir+='/'
+    save_dir += '/'
     STRENGTHEN = args.prop_strengthen
     MAXTIME = int(args.time)
     NUM_DISJUNCTIONS = args.num_disjunctions
-    print("main pid = " , os.getpid())
+    print("main pid = ", os.getpid())
     print("Used Thread Number", cpu_count())
     # select the benchmark with safe property
 
     BENCHMARK_DIR = args.goal_path
-    count=0
+    count = 0
     print("---------------------------------------")
     print("---------------------------------------")
     print("-------All Template in efsmt---------")
-    traverse_method=['efsmt']
-    traverse_solver=all_solver+all_bit_blasting_solver+all_sat_solver
-    traverse_cegis_solver=['none']
-    traverse_template=all_template
-    for Method, Solver, Ceg_Solver,Template in itertools.product(
-            traverse_method, traverse_solver, traverse_cegis_solver,traverse_template):
+    traverse_method = ['efsmt']
+    traverse_solver = all_solver+all_bit_blasting_solver+all_sat_solver
+    traverse_cegis_solver = ['none']
+    traverse_template = all_template
+    for Method, Solver, Ceg_Solver, Template in itertools.product(
+            traverse_method, traverse_solver, traverse_cegis_solver, traverse_template):
         METHOD = Method
         SMT = Solver
-        LANG= depend_on_Method()
+        LANG = depend_on_Method()
         END_WITH = depend_on_Lang()
         CEGIS_SMT = Ceg_Solver
-        TEMPLATE=Template
+        TEMPLATE = Template
         running_subprocesses.clear()
         find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
         print("focus!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     print("---------------Finish------------------")
     print("---------------------------------------")
     print("---------------------------------------")
-    
+
     print("---------------------------------------")
     print("---------------------------------------")
     print("-------Cegis Solver in efsmt---------")
-    traverse_method=['efsmt']
-    traverse_solver=['cegis']
-    traverse_cegis_solver=all_cegis_solver
-    traverse_template=all_template
-    for Method, Solver, Ceg_Solver,Template in itertools.product(
-            traverse_method, traverse_solver, traverse_cegis_solver,traverse_template):
+    traverse_method = ['efsmt']
+    traverse_solver = ['cegis']
+    traverse_cegis_solver = all_cegis_solver
+    traverse_template = all_template
+    for Method, Solver, Ceg_Solver, Template in itertools.product(
+            traverse_method, traverse_solver, traverse_cegis_solver, traverse_template):
         METHOD = Method
         SMT = Solver
-        LANG= depend_on_Method()
+        LANG = depend_on_Method()
         END_WITH = depend_on_Lang()
         CEGIS_SMT = Ceg_Solver
-        TEMPLATE=Template
+        TEMPLATE = Template
         running_subprocesses.clear()
         find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
     print("---------------Finish------------------")
     print("---------------------------------------")
     print("---------------------------------------")
-    
+
     print("---------------------------------------")
     print("---------------------------------------")
     print("-------Other Engine in efsmt---------")
-    traverse_method=['cvc5sys','pdr','eld']
-    traverse_solver=['none']
-    traverse_cegis_solver=['none']
-    traverse_template=['none']
-    for Method, Solver, Ceg_Solver,Template in itertools.product(
-            traverse_method, traverse_solver, traverse_cegis_solver,traverse_template):
+    traverse_method = ['cvc5sys', 'pdr', 'eld']
+    traverse_solver = ['none']
+    traverse_cegis_solver = ['none']
+    traverse_template = ['none']
+    for Method, Solver, Ceg_Solver, Template in itertools.product(
+            traverse_method, traverse_solver, traverse_cegis_solver, traverse_template):
         METHOD = Method
         SMT = Solver
-        LANG= depend_on_Method()
+        LANG = depend_on_Method()
         END_WITH = depend_on_Lang()
         CEGIS_SMT = Ceg_Solver
-        TEMPLATE=Template
+        TEMPLATE = Template
         running_subprocesses.clear()
         find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
     print("---------------Finish------------------")
     print("---------------------------------------")
     print("---------------------------------------")
-    
