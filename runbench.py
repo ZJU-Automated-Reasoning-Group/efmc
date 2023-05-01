@@ -9,10 +9,11 @@ import csv
 from tqdm import tqdm
 import shutil
 import json
+import traceback
 import itertools
 import atexit
 import signal
-from multiprocessing import Process, cpu_count, Queue,Manager,Lock
+from multiprocessing import Process, cpu_count, Queue,Manager
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -29,7 +30,6 @@ CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 BENCHMARK_DIR = "/small_benchmarks"
 RESULT_DIR = "/Result"
 ENDWITH = '.smt2'
-pbar_lock  =Lock()
 traverse_template = ['none']
 traverse_method = ['none']
 traverse_solver = ['none']
@@ -48,6 +48,10 @@ all_sat_solver=['cd15',  'gc4', 'g4', 'lgl',
                              'mc', ]
 all_endwith = ['smt2', 'sl']
 running_subprocesses = []
+
+def capture_trace():
+    stack_trace = traceback.format_stack()
+    print("".join(stack_trace))
 
 def kill_subprocesses():
     for p in running_subprocesses:
@@ -316,6 +320,11 @@ def depend_on_Lang():
 
 
 if __name__ == "__main__":
+    
+    timeout = 30
+    timer = Timer(timeout, capture_trace)
+    timer.start()
+
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('-l', '--lang', type=str, nargs='+', default="none")
