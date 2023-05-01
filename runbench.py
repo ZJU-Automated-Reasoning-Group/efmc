@@ -2,7 +2,7 @@
 import os
 import subprocess
 import glob
-from threading import Timer
+from threading import Timer,current_thread
 import time
 from typing import List
 import csv
@@ -27,7 +27,8 @@ TEMPLATE="none"
 MAXTIME = 5
 STRENGTHEN = False
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-BENCHMARK_DIR = "/small_benchmarks"
+# BENCHMARK_DIR = "/small_benchmarks"
+BENCHMARK_DIR = "/Benchmark"
 RESULT_DIR = "/Result"
 ENDWITH = '.smt2'
 traverse_template = ['none']
@@ -51,7 +52,7 @@ running_subprocesses = []
 
 def capture_trace():
     stack_trace = traceback.format_stack()
-    print("".join(stack_trace))
+    print(stack_trace[-5:-2])
 
 def kill_subprocesses():
     for p in running_subprocesses:
@@ -255,12 +256,12 @@ def find_safe(root, num_of_thread):
             if filename.endswith("." + END_WITH):
                 file_path = os.path.join(dirpath, filename)
                 file_list.append(file_path)
-
-    def multi_func(files, result_queue,ef_template):
+                
+    def multi_func(files,ef_template):
         result_list = []
         print("hand 1")
         for file in files:
-            print(file)
+            #print(file)
             file_name = os.path.splitext(os.path.basename(file))[0]
             relative_path = os.path.relpath(file, root)
             no_ext_path, _ = os.path.splitext(relative_path)
@@ -279,9 +280,9 @@ def find_safe(root, num_of_thread):
             save_path = new_path + file_name+".json"
             with open(save_path, 'w') as f:
                 json.dump(result, f, indent=4)
-            result_list.append(result)
         print("hand 2")
-        result_queue.put(result_list)
+        print(os.getpid())
+        return
 
     num_of_file = len(file_list) // num_of_thread
     remainder = len(file_list) % num_of_thread
@@ -293,13 +294,19 @@ def find_safe(root, num_of_thread):
     for i in range(num_of_thread):
         start_index = i * num_of_file + min(i, remainder)
         end_index = (i + 1) * num_of_file + min(i + 1, remainder)
+        print("each thread handling",end_index - start_index)
         process = Process(target=multi_func, args=(
-            file_list[start_index:end_index], result_queue,TEMPLATE))
+            file_list[start_index:end_index],TEMPLATE))
         process.start()
+        # print(i,num_of_thread,start_index,end_index)
         processes.append(process)
-
+    cnt = num_of_thread 
     for process in processes:
-        process.join()
+        #process.join()
+        cnt -= 1
+        print("running threads = " , cnt)
+    print("\n\n\n\n")
+    print("nothing",os.getpid())
 
     
     # all_results = []
@@ -354,7 +361,7 @@ if __name__ == "__main__":
     STRENGTHEN = args.prop_strengthen
     MAXTIME = int(args.time)
     NUM_DISJUNCTIONS = args.num_disjunctions
-
+    print("main pid = " , os.getpid())
     print("Used Thread Number", cpu_count())
     # select the benchmark with safe property
 
@@ -377,6 +384,7 @@ if __name__ == "__main__":
         TEMPLATE=Template
         running_subprocesses.clear()
         find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
+        print("focus!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     print("---------------Finish------------------")
     print("---------------------------------------")
     print("---------------------------------------")
