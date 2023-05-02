@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "fib_09s.sl_32bits_unsigned.smt2",
+    "file": "fib_09s",
     "unexpected_error": true,
     "time": 45.22303342819214,
     "message": [

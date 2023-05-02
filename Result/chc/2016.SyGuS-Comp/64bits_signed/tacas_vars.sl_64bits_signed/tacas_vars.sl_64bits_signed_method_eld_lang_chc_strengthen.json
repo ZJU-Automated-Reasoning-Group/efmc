@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "tacas_vars.sl_64bits_signed.smt2",
-    "unknown": true,
+    "file": "tacas_vars",
     "time": 9.550657272338867,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

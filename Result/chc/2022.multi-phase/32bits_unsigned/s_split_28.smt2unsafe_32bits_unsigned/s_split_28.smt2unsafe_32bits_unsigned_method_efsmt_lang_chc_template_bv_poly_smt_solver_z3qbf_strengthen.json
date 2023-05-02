@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "s_split_28.smt2unsafe_32bits_unsigned.smt2",
+    "file": "s_split_28",
     "unexpected_error": true,
     "time": 5.095753192901611,
     "message": [

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "bitwuzla",
-    "file": "cegar2_vars-new.sl_64bits_signed.smt2",
+    "file": "cegar2_vars-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

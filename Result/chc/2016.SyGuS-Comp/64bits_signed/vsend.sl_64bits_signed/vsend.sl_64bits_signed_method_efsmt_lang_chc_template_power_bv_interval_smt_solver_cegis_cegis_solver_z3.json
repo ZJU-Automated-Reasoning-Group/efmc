@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "vsend.sl_64bits_signed.smt2",
+    "file": "vsend",
     "unexpected_error": true,
     "time": 6.092860698699951,
     "message": [

@@ -1,9 +1,0 @@
-{
-    "template": "bv_interval",
-    "smt_solver": "z3",
-    "file": "jm2006_true-unreach-call_true-termination.sl_32bits_signed.smt2",
-    "overflow": false,
-    "underflow": false,
-    "unknown": true,
-    "time": 1.2631909847259521
-}

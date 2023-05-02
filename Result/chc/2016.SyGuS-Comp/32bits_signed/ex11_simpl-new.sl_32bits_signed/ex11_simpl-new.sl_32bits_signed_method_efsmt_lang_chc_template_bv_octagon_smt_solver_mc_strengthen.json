@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "mc",
     "strengthen": true,
-    "file": "ex11_simpl-new.sl_32bits_signed.smt2",
+    "file": "ex11_simpl-new",
     "overflow": false,
     "underflow": false,
     "safe": true,

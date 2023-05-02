@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "ex11_simpl.sl_32bits_signed.smt2",
+    "file": "ex11_simpl",
     "unexpected_error": true,
     "time": 7.1212358474731445,
     "message": [

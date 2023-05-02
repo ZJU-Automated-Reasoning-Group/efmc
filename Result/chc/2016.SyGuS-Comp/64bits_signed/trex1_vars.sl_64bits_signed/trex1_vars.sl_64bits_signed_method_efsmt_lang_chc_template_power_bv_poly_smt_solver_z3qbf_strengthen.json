@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "trex1_vars.sl_64bits_signed.smt2",
+    "file": "trex1_vars",
     "unexpected_error": true,
     "time": 16.85291862487793,
     "message": [

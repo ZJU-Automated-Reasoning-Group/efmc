@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "trex3.sl_64bits_signed.smt2",
+    "file": "trex3",
     "unexpected_error": true,
     "time": 50.40073919296265,
     "message": [

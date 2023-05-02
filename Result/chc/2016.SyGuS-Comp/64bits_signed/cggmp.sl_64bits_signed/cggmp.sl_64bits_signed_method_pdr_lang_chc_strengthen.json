@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "cggmp.sl_64bits_signed.smt2",
+    "file": "cggmp",
     "safe": true,
     "time": 56.59519147872925,
     "message": [

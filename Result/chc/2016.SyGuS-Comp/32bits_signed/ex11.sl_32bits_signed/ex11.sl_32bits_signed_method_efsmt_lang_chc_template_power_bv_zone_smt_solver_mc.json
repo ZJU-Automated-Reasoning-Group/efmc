@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "mc",
-    "file": "ex11.sl_32bits_signed.smt2",
+    "file": "ex11",
     "unexpected_error": true,
     "time": 9.170917510986328,
     "message": [

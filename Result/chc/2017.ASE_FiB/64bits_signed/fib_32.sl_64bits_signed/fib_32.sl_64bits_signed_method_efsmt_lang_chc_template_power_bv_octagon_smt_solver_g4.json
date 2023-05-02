@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "g4",
-    "file": "fib_32.sl_64bits_signed.smt2",
+    "file": "fib_32",
     "timeout": true,
     "unknown": true,
     "time": 60,

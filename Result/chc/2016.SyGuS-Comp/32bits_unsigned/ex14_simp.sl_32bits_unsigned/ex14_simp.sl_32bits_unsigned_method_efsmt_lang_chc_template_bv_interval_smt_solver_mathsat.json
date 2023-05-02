@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "mathsat",
-    "file": "ex14_simp.sl_32bits_unsigned.smt2",
+    "file": "ex14_simp",
     "overflow": false,
     "underflow": false,
     "unknown": true,

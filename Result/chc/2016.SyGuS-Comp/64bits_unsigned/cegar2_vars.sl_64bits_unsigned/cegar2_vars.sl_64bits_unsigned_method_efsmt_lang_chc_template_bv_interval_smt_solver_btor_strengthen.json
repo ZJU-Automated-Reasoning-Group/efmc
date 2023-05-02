@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "btor",
     "strengthen": true,
-    "file": "cegar2_vars.sl_64bits_unsigned.smt2",
+    "file": "cegar2_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

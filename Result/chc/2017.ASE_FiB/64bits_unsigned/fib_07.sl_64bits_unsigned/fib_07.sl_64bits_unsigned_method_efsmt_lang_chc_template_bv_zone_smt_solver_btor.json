@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "btor",
-    "file": "fib_07.sl_64bits_unsigned.smt2",
+    "file": "fib_07",
     "overflow": false,
     "underflow": false,
     "unknown": true,

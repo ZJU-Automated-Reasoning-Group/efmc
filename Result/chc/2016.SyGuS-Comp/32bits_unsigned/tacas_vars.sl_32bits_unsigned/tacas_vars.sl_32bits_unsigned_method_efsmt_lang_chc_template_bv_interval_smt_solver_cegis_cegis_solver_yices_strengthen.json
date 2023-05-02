@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "tacas_vars.sl_32bits_unsigned.smt2",
+    "file": "tacas_vars",
     "unexpected_error": true,
     "time": 3.9595627784729004,
     "message": [

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "yices2",
-    "file": "prod-bin.desugared.sl_64bits_unsigned.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 4.163009881973267,
     "message": [

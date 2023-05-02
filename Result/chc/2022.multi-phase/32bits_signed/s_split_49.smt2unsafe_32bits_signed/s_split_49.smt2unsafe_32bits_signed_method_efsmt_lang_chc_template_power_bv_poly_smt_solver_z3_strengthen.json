@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "s_split_49.smt2unsafe_32bits_signed.smt2",
+    "file": "s_split_49",
     "overflow": false,
     "underflow": false,
     "unknown": true,

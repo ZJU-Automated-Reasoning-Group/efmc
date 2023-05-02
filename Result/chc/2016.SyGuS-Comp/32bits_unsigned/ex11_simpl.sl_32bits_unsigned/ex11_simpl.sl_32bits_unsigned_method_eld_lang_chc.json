@@ -1,7 +1,7 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "ex11_simpl.sl_32bits_unsigned.smt2",
+    "file": "ex11_simpl",
     "safe": false,
     "time": 8.583874464035034,
     "message": [

@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "cggmp-new.sl_32bits_signed.smt2",
+    "file": "cggmp-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

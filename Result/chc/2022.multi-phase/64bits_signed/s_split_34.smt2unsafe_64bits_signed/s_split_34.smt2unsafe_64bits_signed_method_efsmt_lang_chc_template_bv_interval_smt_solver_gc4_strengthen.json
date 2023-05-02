@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "s_split_34.smt2unsafe_64bits_signed.smt2",
+    "file": "s_split_34",
     "unexpected_error": true,
     "time": 7.08227014541626,
     "message": [

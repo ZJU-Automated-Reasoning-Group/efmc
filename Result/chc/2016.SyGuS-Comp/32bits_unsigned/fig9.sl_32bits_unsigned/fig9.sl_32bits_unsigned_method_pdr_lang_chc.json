@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "fig9.sl_32bits_unsigned.smt2",
+    "file": "fig9",
     "safe": true,
     "time": 0.5224051475524902,
     "message": [

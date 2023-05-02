@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "trex3_vars.sl_32bits_signed.smt2",
+    "file": "trex3_vars",
     "unexpected_error": true,
     "time": 12.178939819335938,
     "message": [

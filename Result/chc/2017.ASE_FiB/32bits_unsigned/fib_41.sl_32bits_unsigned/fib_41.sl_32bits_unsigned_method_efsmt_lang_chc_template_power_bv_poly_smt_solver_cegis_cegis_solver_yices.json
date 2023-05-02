@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "fib_41.sl_32bits_unsigned.smt2",
+    "file": "fib_41",
     "unexpected_error": true,
     "time": 5.599378347396851,
     "message": [

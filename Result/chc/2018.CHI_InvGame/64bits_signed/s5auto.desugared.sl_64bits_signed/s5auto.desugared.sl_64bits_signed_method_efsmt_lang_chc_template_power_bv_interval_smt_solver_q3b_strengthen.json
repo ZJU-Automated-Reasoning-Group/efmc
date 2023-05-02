@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "s5auto.desugared.sl_64bits_signed.smt2",
+    "file": "s5auto.desugared",
     "overflow": false,
     "underflow": false,
     "unknown": true,

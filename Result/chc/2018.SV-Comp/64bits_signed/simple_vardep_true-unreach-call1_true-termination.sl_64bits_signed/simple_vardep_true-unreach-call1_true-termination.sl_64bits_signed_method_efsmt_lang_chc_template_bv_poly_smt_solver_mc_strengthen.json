@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "mc",
     "strengthen": true,
-    "file": "simple_vardep_true-unreach-call1_true-termination.sl_64bits_signed.smt2",
+    "file": "simple_vardep_true-unreach-call1_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

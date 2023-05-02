@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "s_split_48.smt2safe_64bits_signed.smt2",
+    "file": "s_split_48",
     "unexpected_error": true,
     "time": 9.03163456916809,
     "message": [

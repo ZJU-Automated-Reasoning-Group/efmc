@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "sum3.sl_64bits_signed.smt2",
+    "file": "sum3",
     "safe": true,
     "time": 4.878031015396118,
     "message": [

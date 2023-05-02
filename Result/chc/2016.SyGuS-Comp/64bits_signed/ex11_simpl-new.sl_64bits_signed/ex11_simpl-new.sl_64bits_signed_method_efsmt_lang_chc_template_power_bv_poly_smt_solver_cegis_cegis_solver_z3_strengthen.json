@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "ex11_simpl-new.sl_64bits_signed.smt2",
+    "file": "ex11_simpl-new",
     "unexpected_error": true,
     "time": 9.13363242149353,
     "message": [

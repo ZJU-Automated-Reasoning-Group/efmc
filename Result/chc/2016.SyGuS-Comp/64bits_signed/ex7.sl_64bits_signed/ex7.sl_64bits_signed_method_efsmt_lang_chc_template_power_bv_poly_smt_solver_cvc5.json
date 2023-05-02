@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "cvc5",
-    "file": "ex7.sl_64bits_signed.smt2",
+    "file": "ex7",
     "overflow": false,
     "underflow": false,
     "unknown": true,

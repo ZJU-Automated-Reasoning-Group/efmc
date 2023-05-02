@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "dec_simpl.sl_32bits_signed.smt2",
+    "file": "dec_simpl",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "btor",
     "strengthen": true,
-    "file": "cegar2_vars-new.sl_64bits_signed.smt2",
+    "file": "cegar2_vars-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

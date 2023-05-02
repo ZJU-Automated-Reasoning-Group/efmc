@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cvc5",
     "strengthen": true,
-    "file": "ex7_vars.sl_32bits_signed.smt2",
+    "file": "ex7_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

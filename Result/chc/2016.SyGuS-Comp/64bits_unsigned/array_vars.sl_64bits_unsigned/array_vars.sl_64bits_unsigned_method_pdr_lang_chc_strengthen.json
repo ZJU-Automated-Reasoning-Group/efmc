@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "array_vars.sl_64bits_unsigned.smt2",
+    "file": "array_vars",
     "safe": true,
     "time": 5.869231700897217,
     "message": [

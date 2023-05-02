@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "fib_05_x.sl_32bits_signed.smt2",
+    "file": "fib_05_x",
     "unexpected_error": true,
     "time": 6.490559816360474,
     "message": [

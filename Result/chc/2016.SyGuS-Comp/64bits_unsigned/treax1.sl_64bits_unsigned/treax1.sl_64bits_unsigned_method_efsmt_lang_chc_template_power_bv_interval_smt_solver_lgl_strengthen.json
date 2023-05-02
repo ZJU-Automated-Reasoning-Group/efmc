@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "treax1.sl_64bits_unsigned.smt2",
+    "file": "treax1",
     "timeout": true,
     "unknown": true,
     "time": 60,

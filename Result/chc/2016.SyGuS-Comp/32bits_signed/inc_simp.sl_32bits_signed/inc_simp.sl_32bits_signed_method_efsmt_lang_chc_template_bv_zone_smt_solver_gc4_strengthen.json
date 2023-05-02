@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "inc_simp.sl_32bits_signed.smt2",
+    "file": "inc_simp",
     "overflow": false,
     "underflow": false,
     "safe": true,

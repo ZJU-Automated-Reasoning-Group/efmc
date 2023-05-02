@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "cegar1_vars-new.sl_64bits_unsigned.smt2",
+    "file": "cegar1_vars-new",
     "safe": true,
     "time": 3.6632156372070312,
     "message": [

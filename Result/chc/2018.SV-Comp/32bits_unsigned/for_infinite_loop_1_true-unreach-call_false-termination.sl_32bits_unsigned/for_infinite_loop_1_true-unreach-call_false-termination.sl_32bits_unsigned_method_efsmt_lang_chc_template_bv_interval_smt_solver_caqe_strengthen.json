@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "for_infinite_loop_1_true-unreach-call_false-termination.sl_32bits_unsigned.smt2",
+    "file": "for_infinite_loop_1_true-unreach-call_false-termination",
     "unexpected_error": true,
     "time": 5.763324499130249,
     "message": [

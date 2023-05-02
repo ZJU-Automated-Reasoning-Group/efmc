@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "gj2007_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "gj2007_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 4.322356939315796,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cvc5",
     "strengthen": true,
-    "file": "cegar1_vars.sl_32bits_signed.smt2",
+    "file": "cegar1_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

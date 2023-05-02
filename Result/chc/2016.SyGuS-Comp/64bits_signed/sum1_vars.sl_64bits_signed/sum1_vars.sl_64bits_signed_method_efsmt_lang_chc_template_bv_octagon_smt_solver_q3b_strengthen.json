@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "sum1_vars.sl_64bits_signed.smt2",
+    "file": "sum1_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

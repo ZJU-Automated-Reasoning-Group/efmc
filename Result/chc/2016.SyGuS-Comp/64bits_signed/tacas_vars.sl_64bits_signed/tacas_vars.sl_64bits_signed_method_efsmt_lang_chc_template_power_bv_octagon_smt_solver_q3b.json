@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "q3b",
-    "file": "tacas_vars.sl_64bits_signed.smt2",
+    "file": "tacas_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

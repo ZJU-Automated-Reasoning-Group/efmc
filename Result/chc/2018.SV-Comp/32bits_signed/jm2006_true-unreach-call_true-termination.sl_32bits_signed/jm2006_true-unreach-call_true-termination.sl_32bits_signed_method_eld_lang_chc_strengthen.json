@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "jm2006_true-unreach-call_true-termination.sl_32bits_signed.smt2",
-    "unknown": true,
+    "file": "jm2006_true-unreach-call_true-termination",
     "time": 13.16890263557434,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

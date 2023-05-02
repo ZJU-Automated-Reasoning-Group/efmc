@@ -1,10 +1,10 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "sqrt-more-rows-swap-columns.sl_32bits_unsigned.smt2",
-    "unknown": true,
+    "file": "sqrt-more-rows-swap-columns",
     "time": 9.154316425323486,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

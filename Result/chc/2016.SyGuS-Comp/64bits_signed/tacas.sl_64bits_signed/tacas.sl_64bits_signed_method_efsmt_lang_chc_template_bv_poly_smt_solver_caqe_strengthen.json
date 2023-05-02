@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "tacas.sl_64bits_signed.smt2",
+    "file": "tacas",
     "unexpected_error": true,
     "time": 9.566650629043579,
     "message": [

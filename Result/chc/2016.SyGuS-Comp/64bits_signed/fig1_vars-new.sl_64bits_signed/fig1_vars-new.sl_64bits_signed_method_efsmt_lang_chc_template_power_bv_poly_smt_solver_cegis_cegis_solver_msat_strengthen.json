@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "fig1_vars-new.sl_64bits_signed.smt2",
+    "file": "fig1_vars-new",
     "unexpected_error": true,
     "time": 6.35666036605835,
     "message": [

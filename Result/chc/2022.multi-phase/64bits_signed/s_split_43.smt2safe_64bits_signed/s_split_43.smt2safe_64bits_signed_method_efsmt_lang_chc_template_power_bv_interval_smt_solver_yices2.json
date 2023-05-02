@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "yices2",
-    "file": "s_split_43.smt2safe_64bits_signed.smt2",
+    "file": "s_split_43",
     "overflow": false,
     "underflow": false,
     "unknown": true,

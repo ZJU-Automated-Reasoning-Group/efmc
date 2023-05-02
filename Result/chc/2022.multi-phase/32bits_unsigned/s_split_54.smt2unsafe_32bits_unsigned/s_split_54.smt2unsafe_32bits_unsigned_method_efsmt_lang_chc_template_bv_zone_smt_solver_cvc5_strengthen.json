@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cvc5",
     "strengthen": true,
-    "file": "s_split_54.smt2unsafe_32bits_unsigned.smt2",
+    "file": "s_split_54",
     "overflow": false,
     "underflow": false,
     "unknown": true,

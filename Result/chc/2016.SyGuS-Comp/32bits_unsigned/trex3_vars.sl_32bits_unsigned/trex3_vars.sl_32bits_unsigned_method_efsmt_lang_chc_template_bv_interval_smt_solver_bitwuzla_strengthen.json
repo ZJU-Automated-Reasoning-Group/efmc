@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "trex3_vars.sl_32bits_unsigned.smt2",
+    "file": "trex3_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "sorin03.desugared.sl_64bits_signed.smt2",
+    "file": "sorin03.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

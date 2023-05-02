@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "g4",
-    "file": "ex11_vars.sl_32bits_unsigned.smt2",
+    "file": "ex11_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "count_by_2_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "count_by_2_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 7.217037916183472,
     "message": [

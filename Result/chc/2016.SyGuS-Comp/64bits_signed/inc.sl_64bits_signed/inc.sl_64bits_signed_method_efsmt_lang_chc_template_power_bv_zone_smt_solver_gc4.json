@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "gc4",
-    "file": "inc.sl_64bits_signed.smt2",
+    "file": "inc",
     "unexpected_error": true,
     "time": 2.533705234527588,
     "message": [

@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sorin03.desugared.sl_64bits_signed.smt2",
+    "file": "sorin03.desugared",
     "unexpected_error": true,
     "time": 23.287017345428467,
     "message": [

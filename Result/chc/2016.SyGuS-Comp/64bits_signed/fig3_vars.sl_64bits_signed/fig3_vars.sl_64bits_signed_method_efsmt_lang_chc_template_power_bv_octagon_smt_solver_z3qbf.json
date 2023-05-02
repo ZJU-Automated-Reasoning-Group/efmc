@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "z3qbf",
-    "file": "fig3_vars.sl_64bits_signed.smt2",
+    "file": "fig3_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

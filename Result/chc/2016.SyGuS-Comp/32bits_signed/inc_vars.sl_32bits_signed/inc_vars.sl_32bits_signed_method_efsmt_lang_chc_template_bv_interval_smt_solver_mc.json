@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "mc",
-    "file": "inc_vars.sl_32bits_signed.smt2",
+    "file": "inc_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

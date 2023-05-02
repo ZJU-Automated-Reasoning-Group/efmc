@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "prod-bin.desugared.sl_64bits_unsigned.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 7.576606750488281,
     "message": [

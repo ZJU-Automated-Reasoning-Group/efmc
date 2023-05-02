@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "non-lin-ineq-3.desugared.sl_32bits_unsigned.smt2",
+    "file": "non-lin-ineq-3.desugared",
     "unexpected_error": true,
     "time": 5.7353925704956055,
     "message": [

@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "ex11_vars.sl_64bits_signed.smt2",
+    "file": "ex11_vars",
     "safe": false,
     "time": 0.6356682777404785,
     "message": [

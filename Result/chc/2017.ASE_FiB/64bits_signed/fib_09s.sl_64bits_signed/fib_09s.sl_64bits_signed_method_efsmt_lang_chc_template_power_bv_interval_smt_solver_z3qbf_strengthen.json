@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "fib_09s.sl_64bits_signed.smt2",
+    "file": "fib_09s",
     "unexpected_error": true,
     "time": 15.297436237335205,
     "message": [

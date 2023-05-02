@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "sum4_simp.sl_32bits_signed.smt2",
+    "file": "sum4_simp",
     "unexpected_error": true,
     "time": 7.218297243118286,
     "message": [

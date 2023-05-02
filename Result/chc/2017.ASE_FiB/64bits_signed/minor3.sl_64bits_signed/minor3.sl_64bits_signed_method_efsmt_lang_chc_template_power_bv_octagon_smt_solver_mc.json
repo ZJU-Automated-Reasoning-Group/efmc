@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "mc",
-    "file": "minor3.sl_64bits_signed.smt2",
+    "file": "minor3",
     "timeout": true,
     "unknown": true,
     "time": 60,

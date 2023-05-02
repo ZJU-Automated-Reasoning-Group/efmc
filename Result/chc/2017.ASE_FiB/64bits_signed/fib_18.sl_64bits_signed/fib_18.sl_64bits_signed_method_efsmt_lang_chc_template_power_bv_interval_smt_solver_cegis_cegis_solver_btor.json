@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "fib_18.sl_64bits_signed.smt2",
+    "file": "fib_18",
     "timeout": true,
     "unknown": true,
     "time": 60,

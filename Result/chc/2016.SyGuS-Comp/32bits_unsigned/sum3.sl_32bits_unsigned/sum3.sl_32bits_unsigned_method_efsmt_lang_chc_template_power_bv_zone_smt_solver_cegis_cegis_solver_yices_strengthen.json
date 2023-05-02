@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "sum3.sl_32bits_unsigned.smt2",
+    "file": "sum3",
     "unexpected_error": true,
     "time": 3.943405866622925,
     "message": [

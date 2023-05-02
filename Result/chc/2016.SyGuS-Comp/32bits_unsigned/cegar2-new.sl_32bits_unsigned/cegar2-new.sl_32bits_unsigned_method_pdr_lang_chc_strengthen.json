@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "cegar2-new.sl_32bits_unsigned.smt2",
+    "file": "cegar2-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

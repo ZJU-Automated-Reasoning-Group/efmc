@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "cegar2_vars-new.sl_64bits_unsigned.smt2",
+    "file": "cegar2_vars-new",
     "unexpected_error": true,
     "time": 32.30117392539978,
     "message": [

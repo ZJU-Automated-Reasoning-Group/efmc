@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "const_false-unreach-call1.sl_32bits_unsigned.smt2",
-    "unknown": true,
+    "file": "const_false-unreach-call1",
     "time": 10.2000253200531,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

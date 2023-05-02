@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "simple_vardep_true-unreach-call1_true-termination.sl_32bits_signed.smt2",
+    "file": "simple_vardep_true-unreach-call1_true-termination",
     "unexpected_error": true,
     "time": 8.760133504867554,
     "message": [

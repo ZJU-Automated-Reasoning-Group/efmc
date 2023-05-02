@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "mc",
-    "file": "prod-bin.desugared.sl_64bits_signed.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 1.8945746421813965,
     "message": [

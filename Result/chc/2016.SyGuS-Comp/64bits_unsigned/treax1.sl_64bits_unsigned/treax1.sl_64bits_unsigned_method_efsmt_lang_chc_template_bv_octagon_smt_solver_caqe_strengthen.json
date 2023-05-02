@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "treax1.sl_64bits_unsigned.smt2",
+    "file": "treax1",
     "unexpected_error": true,
     "time": 8.950406789779663,
     "message": [

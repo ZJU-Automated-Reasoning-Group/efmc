@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "s9.desugared.sl_64bits_unsigned.smt2",
+    "file": "s9.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

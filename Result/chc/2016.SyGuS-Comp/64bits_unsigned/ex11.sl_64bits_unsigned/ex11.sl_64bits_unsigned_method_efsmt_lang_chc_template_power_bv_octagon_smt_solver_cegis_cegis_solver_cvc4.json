@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "ex11.sl_64bits_unsigned.smt2",
+    "file": "ex11",
     "unexpected_error": true,
     "time": 8.00827169418335,
     "message": [

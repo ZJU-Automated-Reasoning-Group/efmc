@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "yices2",
-    "file": "underapprox_false-unreach-call1_true-termination.sl_32bits_signed.smt2",
+    "file": "underapprox_false-unreach-call1_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

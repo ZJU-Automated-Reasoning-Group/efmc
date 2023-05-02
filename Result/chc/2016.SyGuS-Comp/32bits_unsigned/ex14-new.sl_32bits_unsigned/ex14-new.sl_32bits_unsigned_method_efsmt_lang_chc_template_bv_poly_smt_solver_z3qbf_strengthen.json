@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "ex14-new.sl_32bits_unsigned.smt2",
+    "file": "ex14-new",
     "unexpected_error": true,
     "time": 3.4938859939575195,
     "message": [

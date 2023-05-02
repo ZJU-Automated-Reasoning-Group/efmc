@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "matrix2_simp.sl_64bits_signed.smt2",
+    "file": "matrix2_simp",
     "unexpected_error": true,
     "time": 14.414361953735352,
     "message": [

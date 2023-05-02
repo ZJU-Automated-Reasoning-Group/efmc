@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "prod-bin.desugared.sl_64bits_signed.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 0.37491822242736816,
     "message": [

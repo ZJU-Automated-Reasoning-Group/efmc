@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "s_split_35.smt2unsafe_32bits_signed.smt2",
+    "file": "s_split_35",
     "unexpected_error": true,
     "time": 59.738444566726685,
     "message": [

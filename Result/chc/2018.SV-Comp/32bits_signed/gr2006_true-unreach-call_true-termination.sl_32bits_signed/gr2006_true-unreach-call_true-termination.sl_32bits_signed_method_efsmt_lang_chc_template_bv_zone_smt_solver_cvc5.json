@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "cvc5",
-    "file": "gr2006_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "gr2006_true-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

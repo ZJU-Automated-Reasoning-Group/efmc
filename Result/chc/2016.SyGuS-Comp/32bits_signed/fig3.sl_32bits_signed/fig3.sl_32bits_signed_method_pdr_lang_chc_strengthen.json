@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "fig3.sl_32bits_signed.smt2",
+    "file": "fig3",
     "timeout": true,
     "unknown": true,
     "time": 60,

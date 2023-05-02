@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "cegar1_vars.sl_32bits_unsigned.smt2",
+    "file": "cegar1_vars",
     "unexpected_error": true,
     "time": 20.86182475090027,
     "message": [

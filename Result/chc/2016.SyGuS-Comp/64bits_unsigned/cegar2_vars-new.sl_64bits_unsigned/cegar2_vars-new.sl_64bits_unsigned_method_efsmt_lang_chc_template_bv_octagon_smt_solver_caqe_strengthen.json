@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "cegar2_vars-new.sl_64bits_unsigned.smt2",
+    "file": "cegar2_vars-new",
     "unexpected_error": true,
     "time": 44.38919520378113,
     "message": [

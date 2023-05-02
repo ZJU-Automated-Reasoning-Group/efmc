@@ -1,9 +1,0 @@
-{
-    "template": "bv_interval",
-    "smt_solver": "z3",
-    "file": "sum01_bug02_sum01_bug02_base.sl_32bits_signed.smt2",
-    "overflow": false,
-    "underflow": false,
-    "unknown": true,
-    "time": 1.2530889511108398
-}

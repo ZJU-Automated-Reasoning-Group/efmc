@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "btor",
     "strengthen": true,
-    "file": "non-lin-ineq-4.desugared.sl_32bits_unsigned.smt2",
+    "file": "non-lin-ineq-4.desugared",
     "overflow": false,
     "underflow": false,
     "unknown": true,

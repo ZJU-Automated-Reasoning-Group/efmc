@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "vardep.sl_32bits_unsigned.smt2",
+    "file": "vardep",
     "unexpected_error": true,
     "time": 7.836066722869873,
     "message": [

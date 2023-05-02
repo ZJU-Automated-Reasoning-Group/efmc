@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "q3b",
-    "file": "ex11_simpl.sl_32bits_unsigned.smt2",
+    "file": "ex11_simpl",
     "overflow": false,
     "underflow": false,
     "unknown": true,

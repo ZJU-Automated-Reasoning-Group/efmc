@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "sorin03.desugared.sl_32bits_unsigned.smt2",
+    "file": "sorin03.desugared",
     "unexpected_error": true,
     "time": 7.711418390274048,
     "message": [

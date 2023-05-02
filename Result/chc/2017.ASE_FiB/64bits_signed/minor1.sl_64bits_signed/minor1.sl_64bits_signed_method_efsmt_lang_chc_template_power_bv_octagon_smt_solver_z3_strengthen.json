@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "minor1.sl_64bits_signed.smt2",
+    "file": "minor1",
     "unexpected_error": true,
     "time": 5.619037866592407,
     "message": [

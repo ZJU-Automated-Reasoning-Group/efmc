@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "s11.desugared.sl_32bits_signed.smt2",
+    "file": "s11.desugared",
     "unexpected_error": true,
     "time": 6.398055076599121,
     "message": [

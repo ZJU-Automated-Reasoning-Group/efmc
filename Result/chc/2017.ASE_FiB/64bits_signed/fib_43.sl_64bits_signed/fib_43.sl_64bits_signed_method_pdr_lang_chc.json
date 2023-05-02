@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "fib_43.sl_64bits_signed.smt2",
+    "file": "fib_43",
     "safe": false,
     "time": 4.072160005569458,
     "message": [

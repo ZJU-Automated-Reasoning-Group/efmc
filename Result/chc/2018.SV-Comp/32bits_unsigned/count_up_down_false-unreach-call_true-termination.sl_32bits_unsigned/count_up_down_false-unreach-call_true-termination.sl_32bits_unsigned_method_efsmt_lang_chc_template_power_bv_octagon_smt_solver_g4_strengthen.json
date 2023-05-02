@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "g4",
     "strengthen": true,
-    "file": "count_up_down_false-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "count_up_down_false-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

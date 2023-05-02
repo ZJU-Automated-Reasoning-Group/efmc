@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "gc4",
-    "file": "tacas_vars.sl_32bits_signed.smt2",
+    "file": "tacas_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

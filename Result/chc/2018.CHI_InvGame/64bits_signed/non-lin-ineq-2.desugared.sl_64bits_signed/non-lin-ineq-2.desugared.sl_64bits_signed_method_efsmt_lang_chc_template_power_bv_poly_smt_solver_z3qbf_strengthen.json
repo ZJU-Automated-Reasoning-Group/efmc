@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "non-lin-ineq-2.desugared.sl_64bits_signed.smt2",
+    "file": "non-lin-ineq-2.desugared",
     "unexpected_error": true,
     "time": 8.564635753631592,
     "message": [

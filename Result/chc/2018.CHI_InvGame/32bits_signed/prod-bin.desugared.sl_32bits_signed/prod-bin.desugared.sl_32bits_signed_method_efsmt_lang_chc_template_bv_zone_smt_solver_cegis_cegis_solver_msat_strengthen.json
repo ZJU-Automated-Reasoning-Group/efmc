@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "prod-bin.desugared.sl_32bits_signed.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 5.208698749542236,
     "message": [

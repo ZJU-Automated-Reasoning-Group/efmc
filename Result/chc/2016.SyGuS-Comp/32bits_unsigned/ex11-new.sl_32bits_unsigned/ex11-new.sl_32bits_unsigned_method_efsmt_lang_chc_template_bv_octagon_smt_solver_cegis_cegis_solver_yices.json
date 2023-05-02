@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "ex11-new.sl_32bits_unsigned.smt2",
+    "file": "ex11-new",
     "overflow": false,
     "underflow": false,
     "safe": true,

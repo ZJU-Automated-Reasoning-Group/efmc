@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "inc_vars.sl_64bits_unsigned.smt2",
+    "file": "inc_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

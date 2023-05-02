@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "while_infinite_loop_4_false-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "while_infinite_loop_4_false-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 6.635498046875,
     "message": [

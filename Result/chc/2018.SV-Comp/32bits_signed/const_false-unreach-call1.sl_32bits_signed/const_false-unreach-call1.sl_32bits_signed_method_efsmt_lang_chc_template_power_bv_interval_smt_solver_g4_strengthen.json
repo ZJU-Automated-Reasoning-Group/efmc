@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "g4",
     "strengthen": true,
-    "file": "const_false-unreach-call1.sl_32bits_signed.smt2",
+    "file": "const_false-unreach-call1",
     "timeout": true,
     "unknown": true,
     "time": 60,

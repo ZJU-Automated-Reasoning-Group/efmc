@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "dec_vars-new.sl_64bits_signed.smt2",
+    "file": "dec_vars-new",
     "unexpected_error": true,
     "time": 18.51857089996338,
     "message": [

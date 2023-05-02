@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "prod-bin.desugared.sl_64bits_signed.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 6.864611864089966,
     "message": [

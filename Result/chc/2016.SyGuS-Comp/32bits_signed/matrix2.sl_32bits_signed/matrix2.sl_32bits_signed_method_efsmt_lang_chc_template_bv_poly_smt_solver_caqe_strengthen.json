@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "matrix2.sl_32bits_signed.smt2",
+    "file": "matrix2",
     "unexpected_error": true,
     "time": 7.456053256988525,
     "message": [

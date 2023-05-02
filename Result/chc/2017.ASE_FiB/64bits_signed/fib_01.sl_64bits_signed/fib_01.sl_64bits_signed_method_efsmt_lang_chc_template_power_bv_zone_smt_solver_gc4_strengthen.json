@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "fib_01.sl_64bits_signed.smt2",
+    "file": "fib_01",
     "timeout": true,
     "unknown": true,
     "time": 60,

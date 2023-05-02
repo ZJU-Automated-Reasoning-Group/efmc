@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "s_split_35.smt2safe_32bits_signed.smt2",
+    "file": "s_split_35",
     "unexpected_error": true,
     "time": 15.557302474975586,
     "message": [

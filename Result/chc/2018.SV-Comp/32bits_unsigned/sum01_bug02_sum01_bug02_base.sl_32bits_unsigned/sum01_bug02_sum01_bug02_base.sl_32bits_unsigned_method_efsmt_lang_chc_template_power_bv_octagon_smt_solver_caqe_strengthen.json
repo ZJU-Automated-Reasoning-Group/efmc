@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sum01_bug02_sum01_bug02_base.sl_32bits_unsigned.smt2",
+    "file": "sum01_bug02_sum01_bug02_base",
     "unexpected_error": true,
     "time": 10.717061519622803,
     "message": [

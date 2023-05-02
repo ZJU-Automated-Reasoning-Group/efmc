@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "mc",
-    "file": "dec_vars.sl_64bits_unsigned.smt2",
+    "file": "dec_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "ex14.sl_64bits_unsigned.smt2",
+    "file": "ex14",
     "safe": true,
     "time": 0.7311127185821533,
     "message": [

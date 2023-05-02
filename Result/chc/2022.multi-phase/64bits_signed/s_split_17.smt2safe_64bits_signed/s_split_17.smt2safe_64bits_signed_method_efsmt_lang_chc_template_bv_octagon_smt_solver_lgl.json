@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "lgl",
-    "file": "s_split_17.smt2safe_64bits_signed.smt2",
+    "file": "s_split_17",
     "timeout": true,
     "unknown": true,
     "time": 60,

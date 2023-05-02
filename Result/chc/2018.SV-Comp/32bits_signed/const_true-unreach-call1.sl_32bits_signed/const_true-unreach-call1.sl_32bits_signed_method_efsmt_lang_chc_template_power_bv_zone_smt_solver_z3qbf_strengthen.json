@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "const_true-unreach-call1.sl_32bits_signed.smt2",
+    "file": "const_true-unreach-call1",
     "unexpected_error": true,
     "time": 6.3872857093811035,
     "message": [

@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sum03_true-unreach-call_false-termination.sl_64bits_signed.smt2",
+    "file": "sum03_true-unreach-call_false-termination",
     "unexpected_error": true,
     "time": 8.004651546478271,
     "message": [

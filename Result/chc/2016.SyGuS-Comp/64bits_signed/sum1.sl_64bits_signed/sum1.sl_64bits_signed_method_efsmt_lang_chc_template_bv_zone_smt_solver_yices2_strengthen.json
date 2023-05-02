@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "yices2",
     "strengthen": true,
-    "file": "sum1.sl_64bits_signed.smt2",
+    "file": "sum1",
     "overflow": false,
     "underflow": false,
     "safe": true,

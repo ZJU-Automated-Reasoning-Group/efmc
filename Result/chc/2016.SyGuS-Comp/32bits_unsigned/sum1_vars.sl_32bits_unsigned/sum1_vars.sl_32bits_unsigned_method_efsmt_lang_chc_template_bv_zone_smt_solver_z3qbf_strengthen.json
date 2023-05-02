@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "sum1_vars.sl_32bits_unsigned.smt2",
+    "file": "sum1_vars",
     "unexpected_error": true,
     "time": 19.277913808822632,
     "message": [

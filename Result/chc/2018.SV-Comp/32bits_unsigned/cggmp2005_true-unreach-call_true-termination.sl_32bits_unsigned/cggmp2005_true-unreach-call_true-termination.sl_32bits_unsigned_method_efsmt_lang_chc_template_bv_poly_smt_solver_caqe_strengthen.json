@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "cggmp2005_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "cggmp2005_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 7.515484571456909,
     "message": [

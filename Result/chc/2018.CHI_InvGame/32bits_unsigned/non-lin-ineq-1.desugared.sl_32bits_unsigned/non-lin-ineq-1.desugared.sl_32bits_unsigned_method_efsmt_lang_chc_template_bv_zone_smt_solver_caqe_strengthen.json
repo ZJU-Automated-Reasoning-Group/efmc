@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "non-lin-ineq-1.desugared.sl_32bits_unsigned.smt2",
+    "file": "non-lin-ineq-1.desugared",
     "unexpected_error": true,
     "time": 4.540604829788208,
     "message": [

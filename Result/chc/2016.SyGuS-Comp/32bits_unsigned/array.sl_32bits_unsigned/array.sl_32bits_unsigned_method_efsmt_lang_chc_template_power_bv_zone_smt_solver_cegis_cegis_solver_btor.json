@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "array.sl_32bits_unsigned.smt2",
+    "file": "array",
     "overflow": false,
     "underflow": false,
     "unknown": true,

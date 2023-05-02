@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "q3b",
-    "file": "const_false-unreach-call1.sl_32bits_unsigned.smt2",
+    "file": "const_false-unreach-call1",
     "overflow": false,
     "underflow": false,
     "unknown": true,

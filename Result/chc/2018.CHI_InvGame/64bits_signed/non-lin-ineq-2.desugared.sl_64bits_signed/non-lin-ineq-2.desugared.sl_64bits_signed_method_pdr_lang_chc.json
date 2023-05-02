@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "non-lin-ineq-2.desugared.sl_64bits_signed.smt2",
+    "file": "non-lin-ineq-2.desugared",
     "safe": false,
     "time": 0.9129588603973389,
     "message": [

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "z3",
-    "file": "count_by_k_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "count_by_k_true-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

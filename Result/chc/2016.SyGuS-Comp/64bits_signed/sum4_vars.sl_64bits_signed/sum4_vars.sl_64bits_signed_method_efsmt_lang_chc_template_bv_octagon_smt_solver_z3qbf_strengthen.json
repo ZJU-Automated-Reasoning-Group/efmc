@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "sum4_vars.sl_64bits_signed.smt2",
+    "file": "sum4_vars",
     "unexpected_error": true,
     "time": 24.802040100097656,
     "message": [

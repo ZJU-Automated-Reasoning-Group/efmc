@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "mc",
-    "file": "cegar1.sl_32bits_unsigned.smt2",
+    "file": "cegar1",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -1,10 +1,10 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "fig1_vars.sl_64bits_signed.smt2",
-    "unknown": true,
+    "file": "fig1_vars",
     "time": 9.651618719100952,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

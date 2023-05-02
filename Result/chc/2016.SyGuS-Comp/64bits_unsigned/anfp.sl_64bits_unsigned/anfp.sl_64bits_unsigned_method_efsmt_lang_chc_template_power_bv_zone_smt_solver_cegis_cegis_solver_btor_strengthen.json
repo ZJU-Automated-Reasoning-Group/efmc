@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "anfp.sl_64bits_unsigned.smt2",
+    "file": "anfp",
     "unexpected_error": true,
     "time": 6.768867254257202,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "dec_simpl-new.sl_64bits_unsigned.smt2",
+    "file": "dec_simpl-new",
     "unexpected_error": true,
     "time": 3.422683000564575,
     "message": [

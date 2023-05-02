@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "formula22.sl_64bits_unsigned.smt2",
+    "file": "formula22",
     "unexpected_error": true,
     "time": 1.743910312652588,
     "message": [

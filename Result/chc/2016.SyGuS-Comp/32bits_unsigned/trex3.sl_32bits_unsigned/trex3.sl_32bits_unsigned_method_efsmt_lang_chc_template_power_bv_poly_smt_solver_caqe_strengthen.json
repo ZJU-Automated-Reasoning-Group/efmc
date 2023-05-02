@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "trex3.sl_32bits_unsigned.smt2",
+    "file": "trex3",
     "unexpected_error": true,
     "time": 8.663697719573975,
     "message": [

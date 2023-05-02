@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "cegar2-new.sl_64bits_signed.smt2",
+    "file": "cegar2-new",
     "unexpected_error": true,
     "time": 8.328756093978882,
     "message": [

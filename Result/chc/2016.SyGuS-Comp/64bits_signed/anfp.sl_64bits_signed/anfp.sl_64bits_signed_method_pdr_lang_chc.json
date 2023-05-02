@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "anfp.sl_64bits_signed.smt2",
+    "file": "anfp",
     "timeout": true,
     "unknown": true,
     "time": 60,

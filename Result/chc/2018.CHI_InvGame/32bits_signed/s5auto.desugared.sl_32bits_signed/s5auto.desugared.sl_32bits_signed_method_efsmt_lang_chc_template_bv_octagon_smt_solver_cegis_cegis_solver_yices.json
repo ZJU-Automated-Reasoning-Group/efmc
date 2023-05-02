@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "s5auto.desugared.sl_32bits_signed.smt2",
+    "file": "s5auto.desugared",
     "overflow": false,
     "underflow": false,
     "unknown": true,

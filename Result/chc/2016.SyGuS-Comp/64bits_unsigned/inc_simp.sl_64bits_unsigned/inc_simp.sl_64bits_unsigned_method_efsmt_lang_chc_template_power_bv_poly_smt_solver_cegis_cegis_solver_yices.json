@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "inc_simp.sl_64bits_unsigned.smt2",
+    "file": "inc_simp",
     "overflow": false,
     "underflow": false,
     "unknown": true,

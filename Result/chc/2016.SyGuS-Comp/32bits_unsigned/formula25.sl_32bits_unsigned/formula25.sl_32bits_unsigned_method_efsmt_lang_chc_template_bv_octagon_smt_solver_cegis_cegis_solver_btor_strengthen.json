@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "formula25.sl_32bits_unsigned.smt2",
+    "file": "formula25",
     "unexpected_error": true,
     "time": 16.09374213218689,
     "message": [

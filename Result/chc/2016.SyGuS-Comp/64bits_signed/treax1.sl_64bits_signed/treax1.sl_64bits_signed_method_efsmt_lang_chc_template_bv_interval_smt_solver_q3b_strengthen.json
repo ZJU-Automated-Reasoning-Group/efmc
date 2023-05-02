@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "treax1.sl_64bits_signed.smt2",
+    "file": "treax1",
     "overflow": false,
     "underflow": false,
     "unknown": true,

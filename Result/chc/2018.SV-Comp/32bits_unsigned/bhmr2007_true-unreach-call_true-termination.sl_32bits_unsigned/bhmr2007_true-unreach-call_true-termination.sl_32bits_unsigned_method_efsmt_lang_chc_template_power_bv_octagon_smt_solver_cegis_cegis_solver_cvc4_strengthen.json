@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "bhmr2007_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "bhmr2007_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 9.352282762527466,
     "message": [

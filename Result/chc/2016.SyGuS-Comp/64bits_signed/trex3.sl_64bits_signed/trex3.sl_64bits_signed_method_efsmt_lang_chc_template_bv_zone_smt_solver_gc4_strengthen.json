@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "trex3.sl_64bits_signed.smt2",
+    "file": "trex3",
     "timeout": true,
     "unknown": true,
     "time": 60,

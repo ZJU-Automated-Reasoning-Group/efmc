@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "sorin04.desugared.sl_32bits_signed.smt2",
+    "file": "sorin04.desugared",
     "unexpected_error": true,
     "time": 5.7718346118927,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sum3.sl_64bits_unsigned.smt2",
+    "file": "sum3",
     "unexpected_error": true,
     "time": 9.564404487609863,
     "message": [

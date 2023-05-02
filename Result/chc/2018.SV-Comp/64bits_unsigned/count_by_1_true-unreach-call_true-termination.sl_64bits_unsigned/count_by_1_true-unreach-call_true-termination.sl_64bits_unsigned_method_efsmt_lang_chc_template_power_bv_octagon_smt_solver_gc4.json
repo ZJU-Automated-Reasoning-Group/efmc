@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "gc4",
-    "file": "count_by_1_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "count_by_1_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 7.560710430145264,
     "message": [

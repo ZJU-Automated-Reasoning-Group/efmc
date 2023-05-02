@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "gr2006_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "gr2006_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 6.524732351303101,
     "message": [

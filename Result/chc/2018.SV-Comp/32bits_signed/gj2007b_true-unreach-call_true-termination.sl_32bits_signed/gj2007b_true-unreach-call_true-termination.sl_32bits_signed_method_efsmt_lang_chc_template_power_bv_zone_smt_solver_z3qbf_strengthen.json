@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "gj2007b_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "gj2007b_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 7.893452167510986,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "fib_20.sl_64bits_signed.smt2",
+    "file": "fib_20",
     "timeout": true,
     "unknown": true,
     "time": 60,

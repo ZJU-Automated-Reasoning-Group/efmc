@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "s_split_48.smt2unsafe_32bits_unsigned.smt2",
+    "file": "s_split_48",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "NetBSD_loop_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "NetBSD_loop_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 8.363842964172363,
     "message": [

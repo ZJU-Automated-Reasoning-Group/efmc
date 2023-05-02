@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "cd15",
-    "file": "s_split_42.smt2unsafe_64bits_signed.smt2",
+    "file": "s_split_42",
     "timeout": true,
     "unknown": true,
     "time": 60,

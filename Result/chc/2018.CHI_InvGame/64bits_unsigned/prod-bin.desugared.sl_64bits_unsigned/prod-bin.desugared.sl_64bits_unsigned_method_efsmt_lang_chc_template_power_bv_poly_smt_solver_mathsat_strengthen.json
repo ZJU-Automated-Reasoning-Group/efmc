@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "prod-bin.desugared.sl_64bits_unsigned.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 3.495224952697754,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "simple_vardep_true-unreach-call1_true-termination.sl_64bits_unsigned.smt2",
+    "file": "simple_vardep_true-unreach-call1_true-termination",
     "unexpected_error": true,
     "time": 10.547645568847656,
     "message": [

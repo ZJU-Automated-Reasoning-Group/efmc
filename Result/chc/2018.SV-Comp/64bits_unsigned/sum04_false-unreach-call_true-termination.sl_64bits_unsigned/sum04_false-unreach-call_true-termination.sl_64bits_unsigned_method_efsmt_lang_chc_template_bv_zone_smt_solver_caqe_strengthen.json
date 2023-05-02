@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sum04_false-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "sum04_false-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 6.345286846160889,
     "message": [

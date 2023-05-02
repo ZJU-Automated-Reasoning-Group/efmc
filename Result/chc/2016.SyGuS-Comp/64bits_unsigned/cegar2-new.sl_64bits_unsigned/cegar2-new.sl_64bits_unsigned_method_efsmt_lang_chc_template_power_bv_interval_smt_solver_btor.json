@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "btor",
-    "file": "cegar2-new.sl_64bits_unsigned.smt2",
+    "file": "cegar2-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

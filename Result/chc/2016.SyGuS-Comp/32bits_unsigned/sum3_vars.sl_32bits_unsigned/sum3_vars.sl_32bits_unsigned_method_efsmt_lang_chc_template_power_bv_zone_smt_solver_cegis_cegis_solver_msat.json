@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "sum3_vars.sl_32bits_unsigned.smt2",
+    "file": "sum3_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

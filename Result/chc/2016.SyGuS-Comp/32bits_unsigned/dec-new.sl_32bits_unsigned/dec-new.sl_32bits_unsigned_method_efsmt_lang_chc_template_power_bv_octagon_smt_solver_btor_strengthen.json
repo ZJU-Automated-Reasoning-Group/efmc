@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "btor",
     "strengthen": true,
-    "file": "dec-new.sl_32bits_unsigned.smt2",
+    "file": "dec-new",
     "unexpected_error": true,
     "time": 4.7528910636901855,
     "message": [

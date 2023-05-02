@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "fib_11.sl_32bits_unsigned.smt2",
+    "file": "fib_11",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "css2003_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "css2003_true-unreach-call_true-termination",
     "safe": true,
     "time": 1.0990877151489258,
     "message": [

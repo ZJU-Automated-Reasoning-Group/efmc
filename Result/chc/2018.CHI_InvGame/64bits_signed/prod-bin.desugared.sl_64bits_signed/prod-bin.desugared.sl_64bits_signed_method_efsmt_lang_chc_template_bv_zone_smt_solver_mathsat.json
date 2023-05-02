@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "mathsat",
-    "file": "prod-bin.desugared.sl_64bits_signed.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 2.822232723236084,
     "message": [

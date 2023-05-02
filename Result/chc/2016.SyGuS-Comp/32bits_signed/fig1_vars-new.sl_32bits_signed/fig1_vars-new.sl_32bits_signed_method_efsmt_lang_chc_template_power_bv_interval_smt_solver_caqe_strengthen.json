@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "fig1_vars-new.sl_32bits_signed.smt2",
+    "file": "fig1_vars-new",
     "unexpected_error": true,
     "time": 7.5170347690582275,
     "message": [

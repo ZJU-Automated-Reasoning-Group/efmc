@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "yices2",
-    "file": "prod-bin.desugared.sl_32bits_signed.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 5.881885766983032,
     "message": [

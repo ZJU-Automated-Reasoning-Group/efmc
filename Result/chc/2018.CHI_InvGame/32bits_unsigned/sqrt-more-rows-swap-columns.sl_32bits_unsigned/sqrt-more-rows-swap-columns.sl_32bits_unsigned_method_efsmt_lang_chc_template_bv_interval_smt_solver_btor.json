@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "btor",
-    "file": "sqrt-more-rows-swap-columns.sl_32bits_unsigned.smt2",
+    "file": "sqrt-more-rows-swap-columns",
     "overflow": false,
     "underflow": false,
     "unknown": true,

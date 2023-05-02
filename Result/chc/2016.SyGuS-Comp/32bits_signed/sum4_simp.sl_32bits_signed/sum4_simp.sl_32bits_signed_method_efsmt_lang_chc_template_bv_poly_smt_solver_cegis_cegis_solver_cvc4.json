@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "sum4_simp.sl_32bits_signed.smt2",
+    "file": "sum4_simp",
     "timeout": true,
     "unknown": true,
     "time": 60,

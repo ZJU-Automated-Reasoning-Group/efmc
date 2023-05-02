@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "prod-bin.desugared.sl_64bits_signed.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 9.474014282226562,
     "message": [

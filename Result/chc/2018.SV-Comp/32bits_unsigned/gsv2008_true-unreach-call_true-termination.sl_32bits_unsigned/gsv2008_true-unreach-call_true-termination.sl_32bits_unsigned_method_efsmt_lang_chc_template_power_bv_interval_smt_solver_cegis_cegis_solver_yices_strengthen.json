@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "gsv2008_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "gsv2008_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 4.53037691116333,
     "message": [

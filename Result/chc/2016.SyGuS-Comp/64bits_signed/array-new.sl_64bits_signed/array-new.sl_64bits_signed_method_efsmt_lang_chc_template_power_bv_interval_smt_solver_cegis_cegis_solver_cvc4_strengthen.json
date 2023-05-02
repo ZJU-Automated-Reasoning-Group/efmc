@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "array-new.sl_64bits_signed.smt2",
+    "file": "array-new",
     "unexpected_error": true,
     "time": 6.1758246421813965,
     "message": [

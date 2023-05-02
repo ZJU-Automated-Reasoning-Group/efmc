@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "fib_41.sl_64bits_unsigned.smt2",
+    "file": "fib_41",
     "unexpected_error": true,
     "time": 30.16125178337097,
     "message": [

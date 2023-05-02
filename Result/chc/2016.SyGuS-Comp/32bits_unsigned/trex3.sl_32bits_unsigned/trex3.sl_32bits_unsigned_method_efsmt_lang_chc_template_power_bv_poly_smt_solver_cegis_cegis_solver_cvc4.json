@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "trex3.sl_32bits_unsigned.smt2",
+    "file": "trex3",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "bhmr2007_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "bhmr2007_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 7.531160831451416,
     "message": [

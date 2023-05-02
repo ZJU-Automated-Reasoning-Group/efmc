@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "lgl",
-    "file": "simple_false-unreach-call2_true-termination.sl_32bits_unsigned.smt2",
+    "file": "simple_false-unreach-call2_true-termination",
     "unexpected_error": true,
     "time": 2.597280740737915,
     "message": [

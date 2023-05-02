@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "yices2",
     "strengthen": true,
-    "file": "jm2006_variant_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "jm2006_variant_true-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

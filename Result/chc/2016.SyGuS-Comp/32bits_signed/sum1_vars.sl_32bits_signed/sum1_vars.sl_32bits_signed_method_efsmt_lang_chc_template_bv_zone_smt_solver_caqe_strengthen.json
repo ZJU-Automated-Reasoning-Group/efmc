@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sum1_vars.sl_32bits_signed.smt2",
+    "file": "sum1_vars",
     "unexpected_error": true,
     "time": 10.73067331314087,
     "message": [

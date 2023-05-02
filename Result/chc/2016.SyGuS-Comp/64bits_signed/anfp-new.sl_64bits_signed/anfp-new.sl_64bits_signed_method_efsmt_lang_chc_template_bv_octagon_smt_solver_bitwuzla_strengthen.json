@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "anfp-new.sl_64bits_signed.smt2",
+    "file": "anfp-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

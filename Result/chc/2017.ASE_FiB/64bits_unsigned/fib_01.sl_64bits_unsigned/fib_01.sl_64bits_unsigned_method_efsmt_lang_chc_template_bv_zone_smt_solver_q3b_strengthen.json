@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "fib_01.sl_64bits_unsigned.smt2",
+    "file": "fib_01",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "g4",
-    "file": "fig1-new.sl_64bits_unsigned.smt2",
+    "file": "fig1-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

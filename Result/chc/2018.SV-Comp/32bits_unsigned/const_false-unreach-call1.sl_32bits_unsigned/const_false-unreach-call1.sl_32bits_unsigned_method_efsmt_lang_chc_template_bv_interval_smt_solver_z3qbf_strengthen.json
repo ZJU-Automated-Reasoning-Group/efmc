@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "const_false-unreach-call1.sl_32bits_unsigned.smt2",
+    "file": "const_false-unreach-call1",
     "unexpected_error": true,
     "time": 6.637039422988892,
     "message": [

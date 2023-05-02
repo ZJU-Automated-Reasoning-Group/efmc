@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "s_split_17.smt2safe_32bits_signed.smt2",
+    "file": "s_split_17",
     "timeout": true,
     "unknown": true,
     "time": 60,

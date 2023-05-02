@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "cvc5",
     "strengthen": true,
-    "file": "dec_simpl.sl_32bits_signed.smt2",
+    "file": "dec_simpl",
     "overflow": false,
     "underflow": false,
     "safe": true,

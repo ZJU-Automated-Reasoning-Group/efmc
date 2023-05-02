@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "mc",
     "strengthen": true,
-    "file": "matrix2_simp.sl_64bits_signed.smt2",
+    "file": "matrix2_simp",
     "timeout": true,
     "unknown": true,
     "time": 60,

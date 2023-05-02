@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "s_split_05.smt2safe_64bits_signed.smt2",
+    "file": "s_split_05",
     "unexpected_error": true,
     "time": 13.5961172580719,
     "message": [

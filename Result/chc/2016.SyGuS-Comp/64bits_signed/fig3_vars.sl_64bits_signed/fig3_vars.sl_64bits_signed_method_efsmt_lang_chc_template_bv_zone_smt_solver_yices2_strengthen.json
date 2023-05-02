@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "yices2",
     "strengthen": true,
-    "file": "fig3_vars.sl_64bits_signed.smt2",
+    "file": "fig3_vars",
     "overflow": false,
     "underflow": false,
     "safe": true,

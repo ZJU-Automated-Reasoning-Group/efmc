@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "q3b",
-    "file": "fig9.sl_32bits_unsigned.smt2",
+    "file": "fig9",
     "overflow": false,
     "underflow": false,
     "safe": true,

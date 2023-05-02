@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "hhk2008_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "hhk2008_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 4.435058355331421,
     "message": [

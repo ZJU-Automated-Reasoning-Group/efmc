@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "s_split_30.smt2unsafe_32bits_signed.smt2",
+    "file": "s_split_30",
     "unexpected_error": true,
     "time": 14.642225503921509,
     "message": [

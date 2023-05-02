@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "minor3.sl_64bits_unsigned.smt2",
+    "file": "minor3",
     "safe": true,
     "time": 0.5280332565307617,
     "message": [

@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "ex_23_vars.sl_64bits_unsigned.smt2",
+    "file": "ex_23_vars",
     "unexpected_error": true,
     "time": 15.09184217453003,
     "message": [

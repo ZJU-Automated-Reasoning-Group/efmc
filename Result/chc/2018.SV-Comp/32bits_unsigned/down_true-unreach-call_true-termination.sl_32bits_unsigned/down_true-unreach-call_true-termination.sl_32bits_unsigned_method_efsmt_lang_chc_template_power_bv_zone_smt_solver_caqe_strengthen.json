@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "down_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "down_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 8.312710523605347,
     "message": [

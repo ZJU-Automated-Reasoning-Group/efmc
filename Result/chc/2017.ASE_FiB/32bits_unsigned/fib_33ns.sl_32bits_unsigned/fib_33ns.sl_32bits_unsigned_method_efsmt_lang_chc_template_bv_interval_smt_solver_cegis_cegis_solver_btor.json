@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "fib_33ns.sl_32bits_unsigned.smt2",
+    "file": "fib_33ns",
     "timeout": true,
     "unknown": true,
     "time": 60,

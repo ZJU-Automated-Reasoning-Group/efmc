@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "lgl",
-    "file": "fib_15.sl_64bits_signed.smt2",
+    "file": "fib_15",
     "timeout": true,
     "unknown": true,
     "time": 60,

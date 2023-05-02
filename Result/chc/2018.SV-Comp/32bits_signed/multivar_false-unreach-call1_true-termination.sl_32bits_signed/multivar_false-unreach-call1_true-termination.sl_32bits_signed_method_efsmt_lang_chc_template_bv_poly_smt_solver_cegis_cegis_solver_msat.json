@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "multivar_false-unreach-call1_true-termination.sl_32bits_signed.smt2",
+    "file": "multivar_false-unreach-call1_true-termination",
     "overflow": false,
     "underflow": false,
     "safe": true,

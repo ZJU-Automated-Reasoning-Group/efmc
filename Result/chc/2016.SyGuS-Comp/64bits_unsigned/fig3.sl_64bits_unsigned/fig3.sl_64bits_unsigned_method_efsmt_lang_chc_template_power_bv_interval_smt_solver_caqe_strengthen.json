@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "fig3.sl_64bits_unsigned.smt2",
+    "file": "fig3",
     "unexpected_error": true,
     "time": 6.615157127380371,
     "message": [

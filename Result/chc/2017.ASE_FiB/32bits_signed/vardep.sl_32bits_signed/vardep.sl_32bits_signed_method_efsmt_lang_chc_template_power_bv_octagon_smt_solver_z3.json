@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "z3",
-    "file": "vardep.sl_32bits_signed.smt2",
+    "file": "vardep",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "ex11.sl_32bits_unsigned.smt2",
+    "file": "ex11",
     "unexpected_error": true,
     "time": 5.427635669708252,
     "message": [

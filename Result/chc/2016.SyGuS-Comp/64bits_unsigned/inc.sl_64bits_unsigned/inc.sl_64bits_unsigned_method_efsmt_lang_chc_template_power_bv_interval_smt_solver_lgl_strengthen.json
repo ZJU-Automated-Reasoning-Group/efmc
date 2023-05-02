@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "inc.sl_64bits_unsigned.smt2",
+    "file": "inc",
     "timeout": true,
     "unknown": true,
     "time": 60,

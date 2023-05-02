@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "s5auto.desugared.sl_64bits_unsigned.smt2",
+    "file": "s5auto.desugared",
     "unexpected_error": true,
     "time": 13.442168235778809,
     "message": [

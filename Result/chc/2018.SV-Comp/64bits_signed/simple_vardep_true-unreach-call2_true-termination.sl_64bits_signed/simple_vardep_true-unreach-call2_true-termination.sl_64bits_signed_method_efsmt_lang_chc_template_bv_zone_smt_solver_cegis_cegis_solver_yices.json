@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "simple_vardep_true-unreach-call2_true-termination.sl_64bits_signed.smt2",
+    "file": "simple_vardep_true-unreach-call2_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "yices2",
-    "file": "sum03_true-unreach-call_false-termination.sl_32bits_unsigned.smt2",
+    "file": "sum03_true-unreach-call_false-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "underapprox_true-unreach-call2_true-termination.sl_64bits_unsigned.smt2",
+    "file": "underapprox_true-unreach-call2_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

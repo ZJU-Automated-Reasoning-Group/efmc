@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "NetBSD_loop_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "NetBSD_loop_true-unreach-call_true-termination",
     "safe": true,
     "time": 0.5238258838653564,
     "message": [

@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "sorin04.desugared.sl_32bits_unsigned.smt2",
+    "file": "sorin04.desugared",
     "unexpected_error": true,
     "time": 3.4119884967803955,
     "message": [

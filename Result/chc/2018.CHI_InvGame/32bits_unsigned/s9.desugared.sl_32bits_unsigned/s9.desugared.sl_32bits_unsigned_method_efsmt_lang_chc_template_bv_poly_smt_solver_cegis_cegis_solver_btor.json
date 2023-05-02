@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "s9.desugared.sl_32bits_unsigned.smt2",
+    "file": "s9.desugared",
     "unexpected_error": true,
     "time": 10.053485631942749,
     "message": [

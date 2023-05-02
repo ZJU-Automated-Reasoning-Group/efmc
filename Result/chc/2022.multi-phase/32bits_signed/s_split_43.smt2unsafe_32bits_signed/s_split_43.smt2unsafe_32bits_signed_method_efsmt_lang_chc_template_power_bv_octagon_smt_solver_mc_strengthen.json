@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "mc",
     "strengthen": true,
-    "file": "s_split_43.smt2unsafe_32bits_signed.smt2",
+    "file": "s_split_43",
     "timeout": true,
     "unknown": true,
     "time": 60,

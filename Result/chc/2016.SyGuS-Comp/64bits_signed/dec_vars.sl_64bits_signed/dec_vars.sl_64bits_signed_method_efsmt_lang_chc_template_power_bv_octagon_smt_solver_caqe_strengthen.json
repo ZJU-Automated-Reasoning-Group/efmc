@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "dec_vars.sl_64bits_signed.smt2",
+    "file": "dec_vars",
     "unexpected_error": true,
     "time": 18.717195749282837,
     "message": [

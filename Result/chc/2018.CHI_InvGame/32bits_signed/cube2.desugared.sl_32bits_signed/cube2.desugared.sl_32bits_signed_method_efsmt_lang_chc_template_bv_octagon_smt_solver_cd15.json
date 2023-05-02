@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "cd15",
-    "file": "cube2.desugared.sl_32bits_signed.smt2",
+    "file": "cube2.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

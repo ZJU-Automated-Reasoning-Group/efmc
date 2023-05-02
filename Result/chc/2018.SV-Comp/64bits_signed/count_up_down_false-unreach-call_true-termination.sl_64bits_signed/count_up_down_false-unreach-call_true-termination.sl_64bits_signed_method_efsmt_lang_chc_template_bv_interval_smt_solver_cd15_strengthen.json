@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "count_up_down_false-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "count_up_down_false-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 10.805115461349487,
     "message": [

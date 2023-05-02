@@ -1,7 +1,7 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "sum3_vars.sl_64bits_unsigned.smt2",
+    "file": "sum3_vars",
     "safe": true,
     "time": 9.381397485733032,
     "message": [

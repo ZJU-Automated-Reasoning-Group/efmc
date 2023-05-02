@@ -1,10 +1,10 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "while_infinite_loop_4_false-unreach-call_true-termination.sl_32bits_unsigned.smt2",
-    "unknown": true,
+    "file": "while_infinite_loop_4_false-unreach-call_true-termination",
     "time": 11.066879987716675,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

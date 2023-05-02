@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "ex14-new.sl_64bits_signed.smt2",
+    "file": "ex14-new",
     "safe": true,
     "time": 20.410646200180054,
     "message": [

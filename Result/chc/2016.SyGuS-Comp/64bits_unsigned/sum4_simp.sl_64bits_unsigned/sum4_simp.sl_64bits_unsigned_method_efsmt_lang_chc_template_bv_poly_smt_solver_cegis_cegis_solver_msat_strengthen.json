@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "sum4_simp.sl_64bits_unsigned.smt2",
+    "file": "sum4_simp",
     "unexpected_error": true,
     "time": 4.624592304229736,
     "message": [

@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "cegar1_vars-new.sl_32bits_unsigned.smt2",
+    "file": "cegar1_vars-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

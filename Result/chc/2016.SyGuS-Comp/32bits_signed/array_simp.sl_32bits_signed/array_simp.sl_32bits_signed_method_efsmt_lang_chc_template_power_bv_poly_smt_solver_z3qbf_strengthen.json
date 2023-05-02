@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "array_simp.sl_32bits_signed.smt2",
+    "file": "array_simp",
     "unexpected_error": true,
     "time": 7.790008544921875,
     "message": [

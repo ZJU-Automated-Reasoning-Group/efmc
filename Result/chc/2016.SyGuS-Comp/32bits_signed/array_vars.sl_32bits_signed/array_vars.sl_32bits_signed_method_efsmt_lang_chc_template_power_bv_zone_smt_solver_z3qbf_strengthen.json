@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "array_vars.sl_32bits_signed.smt2",
+    "file": "array_vars",
     "unexpected_error": true,
     "time": 22.857919931411743,
     "message": [

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "gc4",
-    "file": "fib_19.sl_64bits_unsigned.smt2",
+    "file": "fib_19",
     "timeout": true,
     "unknown": true,
     "time": 60,

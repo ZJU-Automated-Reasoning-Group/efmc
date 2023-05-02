@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "sum1.sl_64bits_unsigned.smt2",
+    "file": "sum1",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "yices2",
-    "file": "dec-new.sl_32bits_unsigned.smt2",
+    "file": "dec-new",
     "unexpected_error": true,
     "time": 5.736454725265503,
     "message": [

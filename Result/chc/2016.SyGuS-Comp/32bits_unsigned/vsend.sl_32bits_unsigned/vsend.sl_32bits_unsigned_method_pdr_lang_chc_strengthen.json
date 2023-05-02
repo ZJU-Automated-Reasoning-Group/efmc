@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "vsend.sl_32bits_unsigned.smt2",
+    "file": "vsend",
     "safe": true,
     "time": 1.286055326461792,
     "message": [

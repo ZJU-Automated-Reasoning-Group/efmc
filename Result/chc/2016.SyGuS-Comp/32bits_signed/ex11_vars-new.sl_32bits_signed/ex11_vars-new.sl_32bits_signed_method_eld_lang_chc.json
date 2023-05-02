@@ -1,10 +1,10 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "ex11_vars-new.sl_32bits_signed.smt2",
-    "unknown": true,
+    "file": "ex11_vars-new",
     "time": 9.60857105255127,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

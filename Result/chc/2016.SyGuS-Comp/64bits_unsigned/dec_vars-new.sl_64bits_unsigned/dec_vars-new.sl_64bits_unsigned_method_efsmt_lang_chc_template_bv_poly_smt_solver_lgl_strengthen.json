@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "dec_vars-new.sl_64bits_unsigned.smt2",
+    "file": "dec_vars-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

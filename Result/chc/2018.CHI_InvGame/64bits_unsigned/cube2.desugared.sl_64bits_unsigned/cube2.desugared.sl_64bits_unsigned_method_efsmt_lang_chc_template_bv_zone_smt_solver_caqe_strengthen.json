@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "cube2.desugared.sl_64bits_unsigned.smt2",
+    "file": "cube2.desugared",
     "unexpected_error": true,
     "time": 8.012393951416016,
     "message": [

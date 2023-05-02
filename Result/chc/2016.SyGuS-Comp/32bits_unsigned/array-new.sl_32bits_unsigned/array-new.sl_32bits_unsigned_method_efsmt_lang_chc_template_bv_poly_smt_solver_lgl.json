@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "lgl",
-    "file": "array-new.sl_32bits_unsigned.smt2",
+    "file": "array-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "yices2",
-    "file": "sorin04.desugared.sl_32bits_signed.smt2",
+    "file": "sorin04.desugared",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "s_split_54.smt2safe_64bits_signed.smt2",
+    "file": "s_split_54",
     "timeout": true,
     "unknown": true,
     "time": 60,

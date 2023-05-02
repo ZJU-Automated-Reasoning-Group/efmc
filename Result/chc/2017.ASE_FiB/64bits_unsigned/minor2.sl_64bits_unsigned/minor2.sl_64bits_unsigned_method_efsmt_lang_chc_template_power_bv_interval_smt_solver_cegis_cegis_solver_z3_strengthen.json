@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "minor2.sl_64bits_unsigned.smt2",
+    "file": "minor2",
     "unexpected_error": true,
     "time": 6.613548040390015,
     "message": [

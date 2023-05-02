@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "gauss_sum-more-rows.auto.sl_32bits_signed.smt2",
+    "file": "gauss_sum-more-rows.auto",
     "unexpected_error": true,
     "time": 7.842129707336426,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "mc",
     "strengthen": true,
-    "file": "fig1-new.sl_64bits_unsigned.smt2",
+    "file": "fig1-new",
     "unexpected_error": true,
     "time": 10.712805271148682,
     "message": [

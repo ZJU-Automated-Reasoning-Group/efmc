@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "mc",
-    "file": "dec_simpl-new.sl_64bits_unsigned.smt2",
+    "file": "dec_simpl-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

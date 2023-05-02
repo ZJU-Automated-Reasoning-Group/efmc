@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "cvc5",
     "strengthen": true,
-    "file": "minor2.sl_64bits_signed.smt2",
+    "file": "minor2",
     "overflow": false,
     "underflow": false,
     "unknown": true,

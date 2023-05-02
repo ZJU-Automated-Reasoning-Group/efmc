@@ -1,10 +1,10 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "sum01_bug02_sum01_bug02_base.sl_64bits_unsigned.smt2",
-    "unknown": true,
+    "file": "sum01_bug02_sum01_bug02_base",
     "time": 9.722402572631836,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

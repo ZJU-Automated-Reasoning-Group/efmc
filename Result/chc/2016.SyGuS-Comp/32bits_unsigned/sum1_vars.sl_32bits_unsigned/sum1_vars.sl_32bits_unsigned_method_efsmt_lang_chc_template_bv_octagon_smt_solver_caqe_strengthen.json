@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sum1_vars.sl_32bits_unsigned.smt2",
+    "file": "sum1_vars",
     "unexpected_error": true,
     "time": 25.829749822616577,
     "message": [

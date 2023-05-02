@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "trex3.sl_32bits_unsigned.smt2",
+    "file": "trex3",
     "unexpected_error": true,
     "time": 13.99041199684143,
     "message": [

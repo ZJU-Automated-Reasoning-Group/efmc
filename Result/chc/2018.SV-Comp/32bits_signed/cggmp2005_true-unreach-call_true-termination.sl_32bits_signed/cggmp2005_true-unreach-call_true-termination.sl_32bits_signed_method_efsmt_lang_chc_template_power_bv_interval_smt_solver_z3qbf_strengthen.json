@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "cggmp2005_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "cggmp2005_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 9.210455894470215,
     "message": [

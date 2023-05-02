@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "ex11_simpl-new.sl_64bits_unsigned.smt2",
-    "unknown": true,
+    "file": "ex11_simpl-new",
     "time": 10.06822156906128,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

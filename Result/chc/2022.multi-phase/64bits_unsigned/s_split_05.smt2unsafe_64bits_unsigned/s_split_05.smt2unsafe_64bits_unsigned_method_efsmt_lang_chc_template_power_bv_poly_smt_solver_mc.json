@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "mc",
-    "file": "s_split_05.smt2unsafe_64bits_unsigned.smt2",
+    "file": "s_split_05",
     "timeout": true,
     "unknown": true,
     "time": 60,

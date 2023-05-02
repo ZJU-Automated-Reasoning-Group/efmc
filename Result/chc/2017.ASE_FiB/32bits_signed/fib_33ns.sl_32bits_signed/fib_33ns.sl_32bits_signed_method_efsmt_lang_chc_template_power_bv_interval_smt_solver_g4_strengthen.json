@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "g4",
     "strengthen": true,
-    "file": "fib_33ns.sl_32bits_signed.smt2",
+    "file": "fib_33ns",
     "timeout": true,
     "unknown": true,
     "time": 60,

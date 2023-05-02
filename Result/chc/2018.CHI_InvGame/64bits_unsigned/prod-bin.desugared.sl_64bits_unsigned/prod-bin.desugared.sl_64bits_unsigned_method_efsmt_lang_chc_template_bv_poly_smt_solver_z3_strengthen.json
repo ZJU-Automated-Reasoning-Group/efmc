@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "prod-bin.desugared.sl_64bits_unsigned.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 5.0152976512908936,
     "message": [

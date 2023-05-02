@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "vardep.sl_64bits_unsigned.smt2",
+    "file": "vardep",
     "unexpected_error": true,
     "time": 5.56463360786438,
     "message": [

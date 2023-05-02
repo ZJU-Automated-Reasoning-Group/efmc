@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "mathsat",
-    "file": "trex3.sl_32bits_signed.smt2",
+    "file": "trex3",
     "overflow": false,
     "underflow": false,
     "unknown": true,

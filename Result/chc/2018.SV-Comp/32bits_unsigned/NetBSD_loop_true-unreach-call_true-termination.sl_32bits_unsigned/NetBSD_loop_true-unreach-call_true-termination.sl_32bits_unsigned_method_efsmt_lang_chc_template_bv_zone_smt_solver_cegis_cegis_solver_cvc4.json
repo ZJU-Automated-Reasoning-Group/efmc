@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "NetBSD_loop_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "NetBSD_loop_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 34.974360704422,
     "message": [

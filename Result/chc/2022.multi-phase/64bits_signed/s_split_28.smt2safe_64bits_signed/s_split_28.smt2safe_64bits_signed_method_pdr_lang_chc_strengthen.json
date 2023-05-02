@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "s_split_28.smt2safe_64bits_signed.smt2",
+    "file": "s_split_28",
     "safe": true,
     "time": 11.830341339111328,
     "message": [

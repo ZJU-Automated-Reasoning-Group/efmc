@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "fib_25n.sl_64bits_signed.smt2",
+    "file": "fib_25n",
     "unexpected_error": true,
     "time": 10.537819147109985,
     "message": [

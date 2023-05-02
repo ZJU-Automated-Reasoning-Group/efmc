@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "sum4_vars.sl_32bits_signed.smt2",
-    "unknown": true,
+    "file": "sum4_vars",
     "time": 9.876009464263916,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

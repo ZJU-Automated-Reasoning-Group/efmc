@@ -1,9 +1,0 @@
-{
-    "template": "bv_interval",
-    "smt_solver": "z3",
-    "file": "fib_44.sl_32bits_unsigned.smt2",
-    "overflow": false,
-    "underflow": false,
-    "unknown": true,
-    "time": 0.6154994964599609
-}

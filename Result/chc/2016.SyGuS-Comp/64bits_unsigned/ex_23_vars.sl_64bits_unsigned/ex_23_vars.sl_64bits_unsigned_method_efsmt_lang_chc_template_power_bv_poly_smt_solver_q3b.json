@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "q3b",
-    "file": "ex_23_vars.sl_64bits_unsigned.smt2",
+    "file": "ex_23_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "cvc5",
-    "file": "s9.desugared.sl_64bits_unsigned.smt2",
+    "file": "s9.desugared",
     "overflow": false,
     "underflow": false,
     "unknown": true,

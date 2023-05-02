@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "jm2006_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "jm2006_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 14.252681255340576,
     "message": [

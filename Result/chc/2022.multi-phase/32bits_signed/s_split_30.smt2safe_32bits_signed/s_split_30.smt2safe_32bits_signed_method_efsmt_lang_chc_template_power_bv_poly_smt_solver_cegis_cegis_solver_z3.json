@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "s_split_30.smt2safe_32bits_signed.smt2",
+    "file": "s_split_30",
     "unexpected_error": true,
     "time": 7.055656433105469,
     "message": [

@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "fib_07.sl_64bits_signed.smt2",
+    "file": "fib_07",
     "unexpected_error": true,
     "time": 10.214817762374878,
     "message": [

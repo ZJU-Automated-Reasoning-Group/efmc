@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "yices2",
-    "file": "formula25.sl_64bits_signed.smt2",
+    "file": "formula25",
     "overflow": false,
     "underflow": false,
     "unknown": true,

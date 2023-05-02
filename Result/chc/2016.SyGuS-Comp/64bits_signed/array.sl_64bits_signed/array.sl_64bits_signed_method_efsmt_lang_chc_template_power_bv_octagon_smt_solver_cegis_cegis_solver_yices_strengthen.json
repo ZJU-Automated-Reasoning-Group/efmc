@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "array.sl_64bits_signed.smt2",
+    "file": "array",
     "unexpected_error": true,
     "time": 10.763205528259277,
     "message": [

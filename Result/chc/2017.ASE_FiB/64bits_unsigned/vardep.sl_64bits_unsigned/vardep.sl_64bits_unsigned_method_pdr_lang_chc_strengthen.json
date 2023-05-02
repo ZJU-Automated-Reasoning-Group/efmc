@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "vardep.sl_64bits_unsigned.smt2",
+    "file": "vardep",
     "safe": true,
     "time": 3.945366621017456,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "cube2.desugared.sl_64bits_unsigned.smt2",
+    "file": "cube2.desugared",
     "unexpected_error": true,
     "time": 20.187472581863403,
     "message": [

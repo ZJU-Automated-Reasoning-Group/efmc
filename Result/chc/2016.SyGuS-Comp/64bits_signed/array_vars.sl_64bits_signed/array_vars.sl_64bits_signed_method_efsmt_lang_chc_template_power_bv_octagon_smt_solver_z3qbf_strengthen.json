@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "array_vars.sl_64bits_signed.smt2",
+    "file": "array_vars",
     "unexpected_error": true,
     "time": 17.222565412521362,
     "message": [

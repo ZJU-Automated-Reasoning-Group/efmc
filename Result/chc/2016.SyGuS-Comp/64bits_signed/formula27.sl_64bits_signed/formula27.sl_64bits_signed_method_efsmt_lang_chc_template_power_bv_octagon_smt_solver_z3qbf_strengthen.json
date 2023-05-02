@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "formula27.sl_64bits_signed.smt2",
+    "file": "formula27",
     "unexpected_error": true,
     "time": 32.41792321205139,
     "message": [

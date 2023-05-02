@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "cd15",
-    "file": "sorin03.desugared.sl_64bits_unsigned.smt2",
+    "file": "sorin03.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

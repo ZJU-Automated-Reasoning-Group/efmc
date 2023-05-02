@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "const_true-unreach-call1.sl_64bits_signed.smt2",
+    "file": "const_true-unreach-call1",
     "unexpected_error": true,
     "time": 7.720217943191528,
     "message": [

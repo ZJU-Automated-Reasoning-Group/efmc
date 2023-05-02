@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "dec_vars.sl_64bits_signed.smt2",
+    "file": "dec_vars",
     "unexpected_error": true,
     "time": 12.611594676971436,
     "message": [

@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "vardep.sl_64bits_unsigned.smt2",
+    "file": "vardep",
     "unexpected_error": true,
     "time": 10.554283857345581,
     "message": [

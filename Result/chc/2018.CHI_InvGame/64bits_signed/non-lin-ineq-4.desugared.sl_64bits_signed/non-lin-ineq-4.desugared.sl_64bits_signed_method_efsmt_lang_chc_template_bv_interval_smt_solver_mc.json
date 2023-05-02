@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "mc",
-    "file": "non-lin-ineq-4.desugared.sl_64bits_signed.smt2",
+    "file": "non-lin-ineq-4.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

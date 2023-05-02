@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "cd15",
-    "file": "s_split_07.smt2unsafe_32bits_signed.smt2",
+    "file": "s_split_07",
     "overflow": false,
     "underflow": false,
     "unknown": true,

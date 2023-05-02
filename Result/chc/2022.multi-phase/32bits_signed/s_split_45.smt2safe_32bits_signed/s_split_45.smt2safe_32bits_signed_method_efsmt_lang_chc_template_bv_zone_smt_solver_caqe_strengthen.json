@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "s_split_45.smt2safe_32bits_signed.smt2",
+    "file": "s_split_45",
     "unexpected_error": true,
     "time": 5.590838670730591,
     "message": [

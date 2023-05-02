@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "s_split_04.smt2unsafe_32bits_unsigned.smt2",
+    "file": "s_split_04",
     "timeout": true,
     "unknown": true,
     "time": 60,

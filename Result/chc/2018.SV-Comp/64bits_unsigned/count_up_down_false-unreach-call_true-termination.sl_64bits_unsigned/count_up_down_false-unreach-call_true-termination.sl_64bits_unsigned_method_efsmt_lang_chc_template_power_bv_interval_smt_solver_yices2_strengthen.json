@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "yices2",
     "strengthen": true,
-    "file": "count_up_down_false-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "count_up_down_false-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

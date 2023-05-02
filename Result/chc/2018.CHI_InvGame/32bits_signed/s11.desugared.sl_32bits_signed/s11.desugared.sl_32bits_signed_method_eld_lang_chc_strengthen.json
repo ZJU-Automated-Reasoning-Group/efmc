@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "s11.desugared.sl_32bits_signed.smt2",
-    "unknown": true,
+    "file": "s11.desugared",
     "time": 9.828515768051147,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "s_split_44.smt2safe_64bits_signed.smt2",
+    "file": "s_split_44",
     "unexpected_error": true,
     "time": 10.722522497177124,
     "message": [

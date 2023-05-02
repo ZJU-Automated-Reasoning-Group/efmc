@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "caqe",
-    "file": "cegar1.sl_64bits_signed.smt2",
+    "file": "cegar1",
     "timeout": true,
     "unknown": true,
     "time": 60,

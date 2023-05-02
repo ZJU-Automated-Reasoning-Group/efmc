@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "s_split_54.smt2safe_64bits_signed.smt2",
+    "file": "s_split_54",
     "unexpected_error": true,
     "time": 7.8563385009765625,
     "message": [

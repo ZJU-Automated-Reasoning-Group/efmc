@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "count_by_1_variant_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "count_by_1_variant_true-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "safe": true,

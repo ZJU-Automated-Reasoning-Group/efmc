@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "array-new.sl_64bits_unsigned.smt2",
+    "file": "array-new",
     "unexpected_error": true,
     "time": 6.913927316665649,
     "message": [

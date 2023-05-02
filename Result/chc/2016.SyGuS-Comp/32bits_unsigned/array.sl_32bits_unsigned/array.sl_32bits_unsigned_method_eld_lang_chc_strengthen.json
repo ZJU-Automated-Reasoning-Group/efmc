@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "array.sl_32bits_unsigned.smt2",
-    "unknown": true,
+    "file": "array",
     "time": 13.199890851974487,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

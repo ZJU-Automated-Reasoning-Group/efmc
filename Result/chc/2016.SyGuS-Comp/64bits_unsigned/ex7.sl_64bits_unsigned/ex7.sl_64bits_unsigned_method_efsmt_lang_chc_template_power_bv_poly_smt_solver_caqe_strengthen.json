@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "ex7.sl_64bits_unsigned.smt2",
+    "file": "ex7",
     "unexpected_error": true,
     "time": 13.012444019317627,
     "message": [

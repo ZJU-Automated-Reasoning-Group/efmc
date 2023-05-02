@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "count_by_nondet_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "count_by_nondet_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 7.234737396240234,
     "message": [

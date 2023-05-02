@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "cube2.desugared.sl_64bits_unsigned.smt2",
+    "file": "cube2.desugared",
     "unexpected_error": true,
     "time": 9.882440567016602,
     "message": [

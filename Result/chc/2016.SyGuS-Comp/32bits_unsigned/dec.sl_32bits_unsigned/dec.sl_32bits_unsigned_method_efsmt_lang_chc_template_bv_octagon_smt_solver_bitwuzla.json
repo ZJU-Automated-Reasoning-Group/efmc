@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "bitwuzla",
-    "file": "dec.sl_32bits_unsigned.smt2",
+    "file": "dec",
     "overflow": false,
     "underflow": false,
     "safe": true,

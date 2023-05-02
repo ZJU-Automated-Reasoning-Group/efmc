@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "fib_09s.sl_64bits_unsigned.smt2",
+    "file": "fib_09s",
     "unexpected_error": true,
     "time": 11.30490756034851,
     "message": [

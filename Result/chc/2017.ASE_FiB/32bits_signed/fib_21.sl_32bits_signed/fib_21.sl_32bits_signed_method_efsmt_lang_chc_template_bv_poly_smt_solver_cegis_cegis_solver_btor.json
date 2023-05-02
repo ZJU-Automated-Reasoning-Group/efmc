@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "fib_21.sl_32bits_signed.smt2",
+    "file": "fib_21",
     "timeout": true,
     "unknown": true,
     "time": 60,

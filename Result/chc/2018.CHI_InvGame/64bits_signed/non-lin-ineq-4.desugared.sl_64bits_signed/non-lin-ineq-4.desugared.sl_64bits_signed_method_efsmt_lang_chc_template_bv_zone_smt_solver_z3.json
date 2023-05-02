@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "z3",
-    "file": "non-lin-ineq-4.desugared.sl_64bits_signed.smt2",
+    "file": "non-lin-ineq-4.desugared",
     "overflow": false,
     "underflow": false,
     "unknown": true,

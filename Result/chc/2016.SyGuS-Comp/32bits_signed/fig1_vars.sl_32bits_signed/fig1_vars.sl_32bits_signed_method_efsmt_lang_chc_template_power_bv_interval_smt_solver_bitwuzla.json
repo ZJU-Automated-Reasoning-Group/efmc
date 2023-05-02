@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "bitwuzla",
-    "file": "fig1_vars.sl_32bits_signed.smt2",
+    "file": "fig1_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

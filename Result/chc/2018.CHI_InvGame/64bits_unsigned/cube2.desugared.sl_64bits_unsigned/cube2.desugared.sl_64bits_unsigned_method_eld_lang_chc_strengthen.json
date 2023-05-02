@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "cube2.desugared.sl_64bits_unsigned.smt2",
-    "unknown": true,
+    "file": "cube2.desugared",
     "time": 13.933471202850342,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "dec_vars-new.sl_32bits_signed.smt2",
+    "file": "dec_vars-new",
     "unexpected_error": true,
     "time": 4.280508518218994,
     "message": [

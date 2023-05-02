@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "ex11_simpl-new.sl_64bits_signed.smt2",
+    "file": "ex11_simpl-new",
     "overflow": false,
     "underflow": false,
     "safe": true,

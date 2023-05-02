@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "simple_false-unreach-call2_true-termination.sl_32bits_signed.smt2",
+    "file": "simple_false-unreach-call2_true-termination",
     "unexpected_error": true,
     "time": 5.359302282333374,
     "message": [

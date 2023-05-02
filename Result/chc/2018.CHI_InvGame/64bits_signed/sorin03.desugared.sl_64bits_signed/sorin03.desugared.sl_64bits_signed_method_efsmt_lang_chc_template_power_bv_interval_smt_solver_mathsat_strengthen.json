@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "sorin03.desugared.sl_64bits_signed.smt2",
+    "file": "sorin03.desugared",
     "overflow": false,
     "underflow": false,
     "unknown": true,

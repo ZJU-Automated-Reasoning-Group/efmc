@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "sum01_bug02_sum01_bug02_base.sl_64bits_unsigned.smt2",
+    "file": "sum01_bug02_sum01_bug02_base",
     "safe": false,
     "time": 35.45902347564697,
     "message": [

@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "ex23.sl_64bits_unsigned.smt2",
+    "file": "ex23",
     "timeout": true,
     "unknown": true,
     "time": 60,

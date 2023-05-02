@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "cd15",
-    "file": "dec.sl_64bits_signed.smt2",
+    "file": "dec",
     "unexpected_error": true,
     "time": 5.9679718017578125,
     "message": [

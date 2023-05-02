@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "s10.desugared.sl_64bits_signed.smt2",
+    "file": "s10.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

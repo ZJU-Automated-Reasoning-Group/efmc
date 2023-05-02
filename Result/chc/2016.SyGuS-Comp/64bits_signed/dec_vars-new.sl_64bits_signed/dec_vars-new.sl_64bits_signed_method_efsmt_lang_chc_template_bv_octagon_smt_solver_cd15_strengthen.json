@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "dec_vars-new.sl_64bits_signed.smt2",
+    "file": "dec_vars-new",
     "unexpected_error": true,
     "time": 56.4655921459198,
     "message": [

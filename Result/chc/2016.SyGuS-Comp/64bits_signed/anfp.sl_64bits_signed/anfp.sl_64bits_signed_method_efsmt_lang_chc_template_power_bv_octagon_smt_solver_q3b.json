@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "q3b",
-    "file": "anfp.sl_64bits_signed.smt2",
+    "file": "anfp",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "gr2006_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "gr2006_true-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

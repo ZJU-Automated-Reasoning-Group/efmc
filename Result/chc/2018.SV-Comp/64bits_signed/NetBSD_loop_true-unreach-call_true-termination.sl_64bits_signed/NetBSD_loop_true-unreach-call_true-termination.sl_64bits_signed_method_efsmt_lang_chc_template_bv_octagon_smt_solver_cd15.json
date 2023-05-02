@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "cd15",
-    "file": "NetBSD_loop_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "NetBSD_loop_true-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "formula27.sl_64bits_unsigned.smt2",
+    "file": "formula27",
     "unexpected_error": true,
     "time": 7.137089729309082,
     "message": [

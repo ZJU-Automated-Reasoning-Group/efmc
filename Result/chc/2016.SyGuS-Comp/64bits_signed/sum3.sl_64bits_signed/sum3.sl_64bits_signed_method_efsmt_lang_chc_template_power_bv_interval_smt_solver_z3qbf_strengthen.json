@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "sum3.sl_64bits_signed.smt2",
+    "file": "sum3",
     "unexpected_error": true,
     "time": 7.7858664989471436,
     "message": [

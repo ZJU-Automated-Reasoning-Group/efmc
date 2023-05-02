@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "matrix2.sl_32bits_signed.smt2",
+    "file": "matrix2",
     "unexpected_error": true,
     "time": 11.855937242507935,
     "message": [

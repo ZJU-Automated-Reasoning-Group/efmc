@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "gsv2008_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "gsv2008_true-unreach-call_true-termination",
     "safe": true,
     "time": 1.1129481792449951,
     "message": [

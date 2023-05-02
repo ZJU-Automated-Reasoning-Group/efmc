@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "z3",
-    "file": "trex1_vars.sl_32bits_unsigned.smt2",
+    "file": "trex1_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

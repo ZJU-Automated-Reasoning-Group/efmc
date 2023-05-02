@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "cvc5",
-    "file": "gauss_sum-more-rows.auto.sl_32bits_signed.smt2",
+    "file": "gauss_sum-more-rows.auto",
     "overflow": false,
     "underflow": false,
     "unknown": true,

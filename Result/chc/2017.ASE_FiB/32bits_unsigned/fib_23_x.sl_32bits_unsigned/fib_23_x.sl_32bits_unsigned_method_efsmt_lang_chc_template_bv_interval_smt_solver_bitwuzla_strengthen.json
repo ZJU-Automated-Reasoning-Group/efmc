@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "fib_23_x.sl_32bits_unsigned.smt2",
+    "file": "fib_23_x",
     "overflow": false,
     "underflow": false,
     "unknown": true,

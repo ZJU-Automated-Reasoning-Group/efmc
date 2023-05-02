@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "mathsat",
-    "file": "inc_simp.sl_32bits_signed.smt2",
+    "file": "inc_simp",
     "overflow": false,
     "underflow": false,
     "unknown": true,

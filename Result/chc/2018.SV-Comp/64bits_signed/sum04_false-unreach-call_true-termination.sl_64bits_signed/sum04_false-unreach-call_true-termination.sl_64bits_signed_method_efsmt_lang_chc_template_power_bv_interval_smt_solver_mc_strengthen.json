@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "mc",
     "strengthen": true,
-    "file": "sum04_false-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "sum04_false-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

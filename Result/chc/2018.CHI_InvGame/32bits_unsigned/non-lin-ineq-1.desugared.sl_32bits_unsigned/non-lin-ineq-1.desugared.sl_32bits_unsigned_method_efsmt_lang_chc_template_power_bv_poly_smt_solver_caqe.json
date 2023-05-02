@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "caqe",
-    "file": "non-lin-ineq-1.desugared.sl_32bits_unsigned.smt2",
+    "file": "non-lin-ineq-1.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

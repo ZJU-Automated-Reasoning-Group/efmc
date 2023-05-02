@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cvc5",
     "strengthen": true,
-    "file": "fib_09s.sl_32bits_signed.smt2",
+    "file": "fib_09s",
     "overflow": false,
     "underflow": false,
     "unknown": true,

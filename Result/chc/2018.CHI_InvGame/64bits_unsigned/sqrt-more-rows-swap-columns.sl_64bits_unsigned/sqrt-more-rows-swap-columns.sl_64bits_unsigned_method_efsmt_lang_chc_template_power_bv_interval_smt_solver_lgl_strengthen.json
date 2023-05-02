@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "sqrt-more-rows-swap-columns.sl_64bits_unsigned.smt2",
+    "file": "sqrt-more-rows-swap-columns",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "s11.desugared.sl_64bits_signed.smt2",
+    "file": "s11.desugared",
     "unexpected_error": true,
     "time": 12.039276361465454,
     "message": [

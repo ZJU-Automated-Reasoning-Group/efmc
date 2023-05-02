@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "mathsat",
-    "file": "fib_23_x.sl_32bits_signed.smt2",
+    "file": "fib_23_x",
     "overflow": false,
     "underflow": false,
     "unknown": true,

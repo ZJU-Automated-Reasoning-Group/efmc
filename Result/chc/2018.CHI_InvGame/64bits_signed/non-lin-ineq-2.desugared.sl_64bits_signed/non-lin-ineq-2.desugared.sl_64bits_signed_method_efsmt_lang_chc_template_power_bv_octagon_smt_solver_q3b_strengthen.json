@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "non-lin-ineq-2.desugared.sl_64bits_signed.smt2",
+    "file": "non-lin-ineq-2.desugared",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "bitwuzla",
-    "file": "underapprox_true-unreach-call2_true-termination.sl_32bits_unsigned.smt2",
+    "file": "underapprox_true-unreach-call2_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

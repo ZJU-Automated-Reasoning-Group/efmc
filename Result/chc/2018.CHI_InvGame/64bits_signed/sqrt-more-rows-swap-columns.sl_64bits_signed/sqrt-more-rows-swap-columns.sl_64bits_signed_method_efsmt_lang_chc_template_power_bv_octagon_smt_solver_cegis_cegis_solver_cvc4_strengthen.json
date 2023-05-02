@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "sqrt-more-rows-swap-columns.sl_64bits_signed.smt2",
+    "file": "sqrt-more-rows-swap-columns",
     "unexpected_error": true,
     "time": 11.076063394546509,
     "message": [

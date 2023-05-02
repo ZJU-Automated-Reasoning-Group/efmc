@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "dec_vars.sl_64bits_signed.smt2",
+    "file": "dec_vars",
     "safe": true,
     "time": 2.5411195755004883,
     "message": [

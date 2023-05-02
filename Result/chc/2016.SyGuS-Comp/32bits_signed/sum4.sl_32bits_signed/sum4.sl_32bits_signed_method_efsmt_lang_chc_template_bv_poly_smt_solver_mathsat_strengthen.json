@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "sum4.sl_32bits_signed.smt2",
+    "file": "sum4",
     "overflow": false,
     "underflow": false,
     "unknown": true,

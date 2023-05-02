@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "sqrt-more-rows-swap-columns.sl_64bits_signed.smt2",
+    "file": "sqrt-more-rows-swap-columns",
     "unexpected_error": true,
     "time": 15.174444913864136,
     "message": [

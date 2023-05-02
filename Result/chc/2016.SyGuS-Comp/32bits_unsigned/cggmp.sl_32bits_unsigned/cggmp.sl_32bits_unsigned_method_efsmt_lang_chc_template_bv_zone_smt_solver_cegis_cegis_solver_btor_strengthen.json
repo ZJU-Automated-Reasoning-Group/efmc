@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "cggmp.sl_32bits_unsigned.smt2",
+    "file": "cggmp",
     "unexpected_error": true,
     "time": 7.242549657821655,
     "message": [

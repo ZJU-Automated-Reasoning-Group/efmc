@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "s5auto.desugared.sl_32bits_unsigned.smt2",
+    "file": "s5auto.desugared",
     "unexpected_error": true,
     "time": 4.10164475440979,
     "message": [

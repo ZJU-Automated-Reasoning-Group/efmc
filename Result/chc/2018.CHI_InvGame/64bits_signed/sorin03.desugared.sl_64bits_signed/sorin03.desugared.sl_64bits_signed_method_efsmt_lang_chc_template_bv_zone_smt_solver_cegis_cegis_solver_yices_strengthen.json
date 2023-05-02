@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "sorin03.desugared.sl_64bits_signed.smt2",
+    "file": "sorin03.desugared",
     "unexpected_error": true,
     "time": 6.265763998031616,
     "message": [

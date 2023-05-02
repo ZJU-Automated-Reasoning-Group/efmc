@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "cvc5",
-    "file": "ex14_vars.sl_64bits_unsigned.smt2",
+    "file": "ex14_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

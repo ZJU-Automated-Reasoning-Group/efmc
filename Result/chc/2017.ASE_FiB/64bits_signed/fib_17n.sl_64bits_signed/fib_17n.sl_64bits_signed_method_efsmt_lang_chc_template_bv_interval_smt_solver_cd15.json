@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "cd15",
-    "file": "fib_17n.sl_64bits_signed.smt2",
+    "file": "fib_17n",
     "timeout": true,
     "unknown": true,
     "time": 60,

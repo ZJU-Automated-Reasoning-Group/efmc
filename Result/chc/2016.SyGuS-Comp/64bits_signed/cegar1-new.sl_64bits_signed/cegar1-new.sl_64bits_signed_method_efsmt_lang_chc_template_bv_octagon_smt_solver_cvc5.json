@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "cvc5",
-    "file": "cegar1-new.sl_64bits_signed.smt2",
+    "file": "cegar1-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

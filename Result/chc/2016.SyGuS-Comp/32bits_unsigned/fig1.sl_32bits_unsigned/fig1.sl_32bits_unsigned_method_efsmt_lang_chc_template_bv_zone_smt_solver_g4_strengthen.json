@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "g4",
     "strengthen": true,
-    "file": "fig1.sl_32bits_unsigned.smt2",
+    "file": "fig1",
     "unexpected_error": true,
     "time": 8.757126331329346,
     "message": [

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "cvc5",
-    "file": "cegar2_vars-new.sl_64bits_unsigned.smt2",
+    "file": "cegar2_vars-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

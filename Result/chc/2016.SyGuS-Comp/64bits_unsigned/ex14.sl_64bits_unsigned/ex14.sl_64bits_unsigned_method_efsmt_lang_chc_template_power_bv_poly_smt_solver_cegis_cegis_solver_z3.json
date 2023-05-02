@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "ex14.sl_64bits_unsigned.smt2",
+    "file": "ex14",
     "timeout": true,
     "unknown": true,
     "time": 60,

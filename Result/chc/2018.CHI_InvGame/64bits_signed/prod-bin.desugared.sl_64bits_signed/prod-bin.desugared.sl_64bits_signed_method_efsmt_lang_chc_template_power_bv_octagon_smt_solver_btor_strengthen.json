@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "btor",
     "strengthen": true,
-    "file": "prod-bin.desugared.sl_64bits_signed.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 2.362755060195923,
     "message": [

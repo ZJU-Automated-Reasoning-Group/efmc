@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "tacas.sl_64bits_unsigned.smt2",
+    "file": "tacas",
     "unexpected_error": true,
     "time": 4.990899562835693,
     "message": [

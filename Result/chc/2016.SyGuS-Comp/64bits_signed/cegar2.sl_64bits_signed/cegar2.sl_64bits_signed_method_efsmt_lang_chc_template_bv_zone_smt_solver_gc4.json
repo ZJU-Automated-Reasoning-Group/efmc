@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "gc4",
-    "file": "cegar2.sl_64bits_signed.smt2",
+    "file": "cegar2",
     "timeout": true,
     "unknown": true,
     "time": 60,

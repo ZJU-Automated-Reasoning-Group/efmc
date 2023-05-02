@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "treax1.sl_32bits_unsigned.smt2",
+    "file": "treax1",
     "unexpected_error": true,
     "time": 1.8958072662353516,
     "message": [

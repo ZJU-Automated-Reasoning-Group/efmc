@@ -1,10 +1,10 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "gauss_sum-more-rows.auto.sl_32bits_unsigned.smt2",
-    "unknown": true,
+    "file": "gauss_sum-more-rows.auto",
     "time": 9.054155826568604,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

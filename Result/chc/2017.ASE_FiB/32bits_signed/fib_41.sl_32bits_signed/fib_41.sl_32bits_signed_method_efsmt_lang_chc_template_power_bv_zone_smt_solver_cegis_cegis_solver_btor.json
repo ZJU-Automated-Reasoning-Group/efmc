@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "fib_41.sl_32bits_signed.smt2",
+    "file": "fib_41",
     "unexpected_error": true,
     "time": 7.380926132202148,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cvc5",
     "strengthen": true,
-    "file": "s_split_34.smt2unsafe_32bits_signed.smt2",
+    "file": "s_split_34",
     "overflow": false,
     "underflow": false,
     "unknown": true,

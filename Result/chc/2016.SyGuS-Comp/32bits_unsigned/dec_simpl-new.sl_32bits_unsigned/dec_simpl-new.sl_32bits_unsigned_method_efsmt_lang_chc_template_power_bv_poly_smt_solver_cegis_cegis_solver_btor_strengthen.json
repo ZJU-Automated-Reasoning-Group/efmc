@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "dec_simpl-new.sl_32bits_unsigned.smt2",
+    "file": "dec_simpl-new",
     "unexpected_error": true,
     "time": 9.927855491638184,
     "message": [

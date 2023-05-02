@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "vsend.sl_64bits_signed.smt2",
+    "file": "vsend",
     "unexpected_error": true,
     "time": 8.257108211517334,
     "message": [

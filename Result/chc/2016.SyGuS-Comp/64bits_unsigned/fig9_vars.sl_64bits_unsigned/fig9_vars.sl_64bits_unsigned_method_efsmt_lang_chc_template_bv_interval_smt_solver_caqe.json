@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "caqe",
-    "file": "fig9_vars.sl_64bits_unsigned.smt2",
+    "file": "fig9_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

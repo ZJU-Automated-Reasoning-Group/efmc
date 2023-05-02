@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "fig1-new.sl_64bits_signed.smt2",
+    "file": "fig1-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "g4",
     "strengthen": true,
-    "file": "array_simp.sl_64bits_signed.smt2",
+    "file": "array_simp",
     "timeout": true,
     "unknown": true,
     "time": 60,

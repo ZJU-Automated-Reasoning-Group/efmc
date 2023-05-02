@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "z3",
-    "file": "inc.sl_64bits_unsigned.smt2",
+    "file": "inc",
     "unexpected_error": true,
     "time": 5.58597207069397,
     "message": [

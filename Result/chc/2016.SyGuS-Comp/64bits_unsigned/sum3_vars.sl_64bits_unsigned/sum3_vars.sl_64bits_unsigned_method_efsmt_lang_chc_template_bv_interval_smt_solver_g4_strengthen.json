@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "g4",
     "strengthen": true,
-    "file": "sum3_vars.sl_64bits_unsigned.smt2",
+    "file": "sum3_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

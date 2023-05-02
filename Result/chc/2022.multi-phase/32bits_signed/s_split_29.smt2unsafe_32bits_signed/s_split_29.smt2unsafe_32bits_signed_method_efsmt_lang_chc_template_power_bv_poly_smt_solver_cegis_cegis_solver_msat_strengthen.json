@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "s_split_29.smt2unsafe_32bits_signed.smt2",
+    "file": "s_split_29",
     "unexpected_error": true,
     "time": 6.86561918258667,
     "message": [

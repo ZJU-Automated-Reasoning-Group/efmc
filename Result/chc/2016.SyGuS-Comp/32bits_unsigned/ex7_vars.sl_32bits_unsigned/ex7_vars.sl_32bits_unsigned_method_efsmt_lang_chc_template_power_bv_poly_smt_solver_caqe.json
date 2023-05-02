@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "caqe",
-    "file": "ex7_vars.sl_32bits_unsigned.smt2",
+    "file": "ex7_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

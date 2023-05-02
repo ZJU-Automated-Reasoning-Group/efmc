@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "gj2007b_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "gj2007b_true-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "mc",
-    "file": "s9.desugared.sl_32bits_unsigned.smt2",
+    "file": "s9.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

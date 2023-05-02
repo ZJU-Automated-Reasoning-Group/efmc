@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "cegar1_vars-new.sl_32bits_unsigned.smt2",
+    "file": "cegar1_vars-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

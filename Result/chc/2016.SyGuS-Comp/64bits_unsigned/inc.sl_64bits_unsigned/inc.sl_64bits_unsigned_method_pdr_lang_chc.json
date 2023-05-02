@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "inc.sl_64bits_unsigned.smt2",
+    "file": "inc",
     "safe": true,
     "time": 0.6016786098480225,
     "message": [

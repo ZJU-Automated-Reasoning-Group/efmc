@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "caqe",
-    "file": "non-lin-ineq-2.desugared.sl_64bits_signed.smt2",
+    "file": "non-lin-ineq-2.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

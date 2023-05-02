@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "cegar2_vars.sl_64bits_unsigned.smt2",
+    "file": "cegar2_vars",
     "unexpected_error": true,
     "time": 12.041275978088379,
     "message": [

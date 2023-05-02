@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "s_split_30.smt2unsafe_64bits_unsigned.smt2",
+    "file": "s_split_30",
     "unexpected_error": true,
     "time": 10.206897020339966,
     "message": [

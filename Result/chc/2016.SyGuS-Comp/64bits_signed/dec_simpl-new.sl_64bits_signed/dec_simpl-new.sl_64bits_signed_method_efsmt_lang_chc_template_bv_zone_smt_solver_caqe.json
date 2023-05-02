@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "caqe",
-    "file": "dec_simpl-new.sl_64bits_signed.smt2",
+    "file": "dec_simpl-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

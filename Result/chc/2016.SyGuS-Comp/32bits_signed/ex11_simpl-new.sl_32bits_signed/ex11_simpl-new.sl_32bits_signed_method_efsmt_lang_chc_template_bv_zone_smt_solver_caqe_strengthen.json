@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "ex11_simpl-new.sl_32bits_signed.smt2",
+    "file": "ex11_simpl-new",
     "unexpected_error": true,
     "time": 4.777827024459839,
     "message": [

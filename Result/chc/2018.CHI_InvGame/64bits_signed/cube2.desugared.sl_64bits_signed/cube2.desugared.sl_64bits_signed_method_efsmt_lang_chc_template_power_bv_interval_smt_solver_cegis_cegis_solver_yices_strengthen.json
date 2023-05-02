@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "cube2.desugared.sl_64bits_signed.smt2",
+    "file": "cube2.desugared",
     "unexpected_error": true,
     "time": 4.01372504234314,
     "message": [

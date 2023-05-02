@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "s5auto.desugared.sl_64bits_unsigned.smt2",
+    "file": "s5auto.desugared",
     "unexpected_error": true,
     "time": 12.127532720565796,
     "message": [

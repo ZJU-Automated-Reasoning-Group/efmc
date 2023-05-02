@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "matrix2_simp.sl_64bits_signed.smt2",
+    "file": "matrix2_simp",
     "unexpected_error": true,
     "time": 35.55568218231201,
     "message": [

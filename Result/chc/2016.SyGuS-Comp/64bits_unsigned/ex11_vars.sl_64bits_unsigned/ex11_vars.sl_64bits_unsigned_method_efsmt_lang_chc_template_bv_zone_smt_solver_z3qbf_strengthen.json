@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "ex11_vars.sl_64bits_unsigned.smt2",
+    "file": "ex11_vars",
     "unexpected_error": true,
     "time": 9.45029592514038,
     "message": [

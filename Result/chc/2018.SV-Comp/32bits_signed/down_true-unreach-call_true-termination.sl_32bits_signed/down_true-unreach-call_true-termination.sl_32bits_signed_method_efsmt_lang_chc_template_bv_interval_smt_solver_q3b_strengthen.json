@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "down_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "down_true-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

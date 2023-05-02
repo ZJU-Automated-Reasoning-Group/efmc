@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "ex7_vars.sl_32bits_signed.smt2",
+    "file": "ex7_vars",
     "unexpected_error": true,
     "time": 16.33866572380066,
     "message": [

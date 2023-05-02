@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "vardep.sl_64bits_signed.smt2",
+    "file": "vardep",
     "unexpected_error": true,
     "time": 10.029542684555054,
     "message": [

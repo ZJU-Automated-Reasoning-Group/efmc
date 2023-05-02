@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "dec_simpl-new.sl_64bits_unsigned.smt2",
+    "file": "dec_simpl-new",
     "unexpected_error": true,
     "time": 8.756643533706665,
     "message": [

@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "formula25.sl_32bits_unsigned.smt2",
+    "file": "formula25",
     "timeout": true,
     "unknown": true,
     "time": 60,

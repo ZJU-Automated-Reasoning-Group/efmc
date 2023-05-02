@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "ex14.sl_64bits_unsigned.smt2",
+    "file": "ex14",
     "unexpected_error": true,
     "time": 9.660104751586914,
     "message": [

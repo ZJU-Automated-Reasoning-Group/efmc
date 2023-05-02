@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cvc5",
     "strengthen": true,
-    "file": "sum01_bug02_sum01_bug02_base.sl_64bits_signed.smt2",
+    "file": "sum01_bug02_sum01_bug02_base",
     "overflow": false,
     "underflow": false,
     "unknown": true,

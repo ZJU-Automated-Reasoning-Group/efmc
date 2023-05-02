@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "s_split_07.smt2unsafe_32bits_unsigned.smt2",
+    "file": "s_split_07",
     "timeout": true,
     "unknown": true,
     "time": 60,

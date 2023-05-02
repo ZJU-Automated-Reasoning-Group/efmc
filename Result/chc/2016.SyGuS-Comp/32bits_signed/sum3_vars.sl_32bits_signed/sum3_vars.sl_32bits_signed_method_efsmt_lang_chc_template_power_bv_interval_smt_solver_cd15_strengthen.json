@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "sum3_vars.sl_32bits_signed.smt2",
+    "file": "sum3_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

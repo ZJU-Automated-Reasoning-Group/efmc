@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "vardep.sl_64bits_signed.smt2",
+    "file": "vardep",
     "unexpected_error": true,
     "time": 12.73649263381958,
     "message": [

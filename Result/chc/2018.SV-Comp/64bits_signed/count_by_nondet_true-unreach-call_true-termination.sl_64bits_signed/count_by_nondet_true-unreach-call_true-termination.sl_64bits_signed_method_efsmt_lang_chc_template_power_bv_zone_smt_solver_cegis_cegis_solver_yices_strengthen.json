@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "count_by_nondet_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "count_by_nondet_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 6.133105754852295,
     "message": [

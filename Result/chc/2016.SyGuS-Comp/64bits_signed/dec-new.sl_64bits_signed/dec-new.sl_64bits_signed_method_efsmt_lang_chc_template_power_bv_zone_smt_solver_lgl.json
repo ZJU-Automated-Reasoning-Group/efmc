@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "lgl",
-    "file": "dec-new.sl_64bits_signed.smt2",
+    "file": "dec-new",
     "unexpected_error": true,
     "time": 7.070539712905884,
     "message": [

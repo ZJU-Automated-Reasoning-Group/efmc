@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "matrix2.sl_64bits_signed.smt2",
+    "file": "matrix2",
     "unexpected_error": true,
     "time": 15.997624158859253,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "multivar_false-unreach-call1_true-termination.sl_64bits_signed.smt2",
+    "file": "multivar_false-unreach-call1_true-termination",
     "unexpected_error": true,
     "time": 9.737809419631958,
     "message": [

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "caqe",
-    "file": "fib_25n.sl_64bits_signed.smt2",
+    "file": "fib_25n",
     "timeout": true,
     "unknown": true,
     "time": 60,

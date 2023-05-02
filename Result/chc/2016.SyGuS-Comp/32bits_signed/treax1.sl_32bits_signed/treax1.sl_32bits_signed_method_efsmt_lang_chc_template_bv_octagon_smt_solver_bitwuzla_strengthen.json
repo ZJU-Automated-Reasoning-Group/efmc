@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "treax1.sl_32bits_signed.smt2",
+    "file": "treax1",
     "overflow": false,
     "underflow": false,
     "unknown": true,

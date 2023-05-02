@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "fib_11.sl_32bits_signed.smt2",
+    "file": "fib_11",
     "unexpected_error": true,
     "time": 6.5496299266815186,
     "message": [

@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "non-lin-ineq-1.desugared.sl_32bits_signed.smt2",
-    "unknown": true,
+    "file": "non-lin-ineq-1.desugared",
     "time": 14.50563645362854,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

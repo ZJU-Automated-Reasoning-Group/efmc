@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "fig1-new.sl_32bits_unsigned.smt2",
+    "file": "fig1-new",
     "unexpected_error": true,
     "time": 9.255470991134644,
     "message": [

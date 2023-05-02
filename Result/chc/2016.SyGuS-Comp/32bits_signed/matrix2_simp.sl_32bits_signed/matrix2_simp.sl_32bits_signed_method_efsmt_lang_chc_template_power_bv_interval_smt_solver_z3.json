@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "z3",
-    "file": "matrix2_simp.sl_32bits_signed.smt2",
+    "file": "matrix2_simp",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "g4",
-    "file": "s_split_45.smt2safe_64bits_signed.smt2",
+    "file": "s_split_45",
     "timeout": true,
     "unknown": true,
     "time": 60,

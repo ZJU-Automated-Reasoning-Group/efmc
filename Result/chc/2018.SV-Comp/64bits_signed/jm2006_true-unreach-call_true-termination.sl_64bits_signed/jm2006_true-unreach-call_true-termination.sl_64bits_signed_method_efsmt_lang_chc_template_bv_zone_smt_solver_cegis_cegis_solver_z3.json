@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "jm2006_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "jm2006_true-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "dec-new.sl_32bits_unsigned.smt2",
+    "file": "dec-new",
     "safe": true,
     "time": 0.3439476490020752,
     "message": [

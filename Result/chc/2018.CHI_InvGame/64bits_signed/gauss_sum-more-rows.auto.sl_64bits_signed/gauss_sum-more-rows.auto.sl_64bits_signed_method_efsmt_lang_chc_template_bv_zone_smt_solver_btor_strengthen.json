@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "btor",
     "strengthen": true,
-    "file": "gauss_sum-more-rows.auto.sl_64bits_signed.smt2",
+    "file": "gauss_sum-more-rows.auto",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sum01_bug02_sum01_bug02_base.sl_64bits_signed.smt2",
+    "file": "sum01_bug02_sum01_bug02_base",
     "unexpected_error": true,
     "time": 10.436191320419312,
     "message": [

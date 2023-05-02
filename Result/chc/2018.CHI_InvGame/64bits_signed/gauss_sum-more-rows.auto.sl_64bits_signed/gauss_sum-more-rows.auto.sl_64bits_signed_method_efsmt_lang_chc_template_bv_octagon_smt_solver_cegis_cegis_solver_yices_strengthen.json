@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "gauss_sum-more-rows.auto.sl_64bits_signed.smt2",
+    "file": "gauss_sum-more-rows.auto",
     "unexpected_error": true,
     "time": 6.095945596694946,
     "message": [

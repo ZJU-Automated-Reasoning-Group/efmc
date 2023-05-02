@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "cggmp-new.sl_64bits_signed.smt2",
+    "file": "cggmp-new",
     "unexpected_error": true,
     "time": 9.875309944152832,
     "message": [

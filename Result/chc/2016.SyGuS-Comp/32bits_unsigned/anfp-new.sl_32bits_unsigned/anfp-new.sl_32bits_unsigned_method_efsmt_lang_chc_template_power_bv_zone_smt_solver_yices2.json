@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "yices2",
-    "file": "anfp-new.sl_32bits_unsigned.smt2",
+    "file": "anfp-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

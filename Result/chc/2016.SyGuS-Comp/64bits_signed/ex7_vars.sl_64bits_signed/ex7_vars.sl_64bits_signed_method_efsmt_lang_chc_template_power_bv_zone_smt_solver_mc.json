@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "mc",
-    "file": "ex7_vars.sl_64bits_signed.smt2",
+    "file": "ex7_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

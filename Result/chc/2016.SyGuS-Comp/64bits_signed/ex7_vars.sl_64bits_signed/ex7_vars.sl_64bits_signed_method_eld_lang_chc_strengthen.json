@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "ex7_vars.sl_64bits_signed.smt2",
-    "unknown": true,
+    "file": "ex7_vars",
     "time": 11.504713296890259,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

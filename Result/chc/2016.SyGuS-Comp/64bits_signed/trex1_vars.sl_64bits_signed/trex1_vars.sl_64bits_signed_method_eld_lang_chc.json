@@ -1,10 +1,10 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "trex1_vars.sl_64bits_signed.smt2",
-    "unknown": true,
+    "file": "trex1_vars",
     "time": 9.588554620742798,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

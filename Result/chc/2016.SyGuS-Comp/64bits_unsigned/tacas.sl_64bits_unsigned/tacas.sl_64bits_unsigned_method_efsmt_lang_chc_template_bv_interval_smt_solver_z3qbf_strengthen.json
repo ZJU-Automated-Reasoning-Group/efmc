@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "tacas.sl_64bits_unsigned.smt2",
+    "file": "tacas",
     "unexpected_error": true,
     "time": 8.01734447479248,
     "message": [

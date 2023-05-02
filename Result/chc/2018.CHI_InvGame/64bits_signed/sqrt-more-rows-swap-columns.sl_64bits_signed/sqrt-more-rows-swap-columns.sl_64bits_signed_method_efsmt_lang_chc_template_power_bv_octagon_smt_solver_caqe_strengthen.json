@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sqrt-more-rows-swap-columns.sl_64bits_signed.smt2",
+    "file": "sqrt-more-rows-swap-columns",
     "unexpected_error": true,
     "time": 17.637398958206177,
     "message": [

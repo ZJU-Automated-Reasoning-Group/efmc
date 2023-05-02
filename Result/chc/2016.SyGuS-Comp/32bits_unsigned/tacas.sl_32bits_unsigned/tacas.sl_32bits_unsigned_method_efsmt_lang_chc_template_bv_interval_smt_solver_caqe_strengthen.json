@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "tacas.sl_32bits_unsigned.smt2",
+    "file": "tacas",
     "unexpected_error": true,
     "time": 7.644808053970337,
     "message": [

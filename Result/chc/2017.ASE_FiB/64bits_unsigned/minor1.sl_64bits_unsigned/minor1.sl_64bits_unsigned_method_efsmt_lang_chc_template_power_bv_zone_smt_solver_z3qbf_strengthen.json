@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "minor1.sl_64bits_unsigned.smt2",
+    "file": "minor1",
     "unexpected_error": true,
     "time": 7.708354473114014,
     "message": [

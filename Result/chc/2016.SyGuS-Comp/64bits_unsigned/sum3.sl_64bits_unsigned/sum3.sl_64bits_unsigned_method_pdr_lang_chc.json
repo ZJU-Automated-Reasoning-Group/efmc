@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "sum3.sl_64bits_unsigned.smt2",
+    "file": "sum3",
     "safe": true,
     "time": 0.6927042007446289,
     "message": [

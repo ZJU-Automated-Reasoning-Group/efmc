@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "cd15",
-    "file": "ex14.sl_64bits_signed.smt2",
+    "file": "ex14",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sum04_false-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "sum04_false-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 8.658745288848877,
     "message": [

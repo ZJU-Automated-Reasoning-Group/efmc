@@ -2,7 +2,7 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "prod-bin.desugared.sl_64bits_signed.smt2",
+    "file": "prod-bin.desugared",
     "unknown": true,
     "time": 7.524728775024414,
     "message": [

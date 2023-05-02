@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "matrix2.sl_64bits_signed.smt2",
+    "file": "matrix2",
     "unexpected_error": true,
     "time": 5.188891410827637,
     "message": [

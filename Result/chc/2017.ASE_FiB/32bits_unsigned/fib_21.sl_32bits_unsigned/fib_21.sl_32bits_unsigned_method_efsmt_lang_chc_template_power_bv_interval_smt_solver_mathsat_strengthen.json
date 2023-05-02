@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "fib_21.sl_32bits_unsigned.smt2",
+    "file": "fib_21",
     "overflow": false,
     "underflow": false,
     "unknown": true,

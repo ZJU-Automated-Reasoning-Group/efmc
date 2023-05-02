@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "array_simp.sl_64bits_signed.smt2",
+    "file": "array_simp",
     "unexpected_error": true,
     "time": 8.30321216583252,
     "message": [

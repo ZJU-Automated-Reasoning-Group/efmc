@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "dec.sl_32bits_signed.smt2",
+    "file": "dec",
     "overflow": false,
     "underflow": false,
     "safe": true,

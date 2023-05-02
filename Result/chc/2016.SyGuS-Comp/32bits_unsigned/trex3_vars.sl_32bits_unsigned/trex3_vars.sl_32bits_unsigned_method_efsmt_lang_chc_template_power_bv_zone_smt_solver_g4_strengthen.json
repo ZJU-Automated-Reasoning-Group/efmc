@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "g4",
     "strengthen": true,
-    "file": "trex3_vars.sl_32bits_unsigned.smt2",
+    "file": "trex3_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "fig1-new.sl_32bits_signed.smt2",
+    "file": "fig1-new",
     "unexpected_error": true,
     "time": 10.593324184417725,
     "message": [

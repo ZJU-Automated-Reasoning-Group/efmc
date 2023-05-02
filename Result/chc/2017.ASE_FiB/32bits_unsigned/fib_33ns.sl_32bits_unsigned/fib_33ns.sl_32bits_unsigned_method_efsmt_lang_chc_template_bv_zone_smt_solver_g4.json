@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "g4",
-    "file": "fib_33ns.sl_32bits_unsigned.smt2",
+    "file": "fib_33ns",
     "timeout": true,
     "unknown": true,
     "time": 60,

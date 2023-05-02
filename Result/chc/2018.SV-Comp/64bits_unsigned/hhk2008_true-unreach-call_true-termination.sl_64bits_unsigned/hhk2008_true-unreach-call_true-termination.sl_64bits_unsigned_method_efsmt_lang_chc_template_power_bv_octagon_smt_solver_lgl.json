@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "lgl",
-    "file": "hhk2008_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "hhk2008_true-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

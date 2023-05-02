@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "dec_vars.sl_32bits_signed.smt2",
+    "file": "dec_vars",
     "unexpected_error": true,
     "time": 12.252808570861816,
     "message": [

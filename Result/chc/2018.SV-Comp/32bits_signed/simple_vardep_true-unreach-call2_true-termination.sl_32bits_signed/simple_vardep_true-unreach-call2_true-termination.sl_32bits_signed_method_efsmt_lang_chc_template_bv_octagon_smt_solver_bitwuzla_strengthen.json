@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "simple_vardep_true-unreach-call2_true-termination.sl_32bits_signed.smt2",
+    "file": "simple_vardep_true-unreach-call2_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

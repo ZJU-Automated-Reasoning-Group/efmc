@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "array-new.sl_64bits_signed.smt2",
+    "file": "array-new",
     "safe": true,
     "time": 0.5298099517822266,
     "message": [

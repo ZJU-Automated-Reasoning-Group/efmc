@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cvc5",
     "strengthen": true,
-    "file": "array.sl_32bits_signed.smt2",
+    "file": "array",
     "overflow": false,
     "underflow": false,
     "safe": true,

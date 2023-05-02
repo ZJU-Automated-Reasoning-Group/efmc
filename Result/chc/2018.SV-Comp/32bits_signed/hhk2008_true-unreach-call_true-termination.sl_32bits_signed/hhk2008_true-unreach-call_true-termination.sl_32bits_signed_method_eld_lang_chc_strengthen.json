@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "hhk2008_true-unreach-call_true-termination.sl_32bits_signed.smt2",
-    "unknown": true,
+    "file": "hhk2008_true-unreach-call_true-termination",
     "time": 13.029388427734375,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

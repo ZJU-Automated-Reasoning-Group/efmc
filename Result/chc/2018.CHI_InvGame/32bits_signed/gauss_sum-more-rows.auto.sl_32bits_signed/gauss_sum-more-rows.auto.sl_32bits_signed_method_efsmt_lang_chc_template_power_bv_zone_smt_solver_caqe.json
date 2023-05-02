@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "caqe",
-    "file": "gauss_sum-more-rows.auto.sl_32bits_signed.smt2",
+    "file": "gauss_sum-more-rows.auto",
     "timeout": true,
     "unknown": true,
     "time": 60,

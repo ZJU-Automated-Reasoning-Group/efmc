@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "btor",
-    "file": "array-new.sl_64bits_signed.smt2",
+    "file": "array-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

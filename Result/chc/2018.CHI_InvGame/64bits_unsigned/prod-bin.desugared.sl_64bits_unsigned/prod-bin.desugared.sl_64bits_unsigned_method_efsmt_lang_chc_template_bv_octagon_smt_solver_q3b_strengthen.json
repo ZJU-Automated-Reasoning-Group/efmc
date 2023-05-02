@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "prod-bin.desugared.sl_64bits_unsigned.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 9.841364860534668,
     "message": [

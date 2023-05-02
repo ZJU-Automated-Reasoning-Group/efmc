@@ -2,7 +2,7 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "count_by_1_variant_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "count_by_1_variant_true-unreach-call_true-termination",
     "safe": true,
     "time": 8.836920022964478,
     "message": [

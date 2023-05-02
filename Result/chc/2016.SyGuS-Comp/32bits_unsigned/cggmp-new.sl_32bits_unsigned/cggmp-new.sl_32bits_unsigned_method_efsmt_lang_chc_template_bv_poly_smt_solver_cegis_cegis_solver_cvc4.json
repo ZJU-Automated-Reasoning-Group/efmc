@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "cggmp-new.sl_32bits_unsigned.smt2",
+    "file": "cggmp-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

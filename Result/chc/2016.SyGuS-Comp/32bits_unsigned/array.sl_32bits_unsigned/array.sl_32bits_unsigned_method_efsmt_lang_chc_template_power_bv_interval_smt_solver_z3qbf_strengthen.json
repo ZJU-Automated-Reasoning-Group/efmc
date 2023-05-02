@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "array.sl_32bits_unsigned.smt2",
+    "file": "array",
     "unexpected_error": true,
     "time": 7.2408225536346436,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "while_infinite_loop_4_false-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "while_infinite_loop_4_false-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 5.725688934326172,
     "message": [

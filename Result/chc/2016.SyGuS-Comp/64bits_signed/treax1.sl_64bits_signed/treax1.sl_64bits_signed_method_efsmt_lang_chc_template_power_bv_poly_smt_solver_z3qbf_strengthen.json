@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "treax1.sl_64bits_signed.smt2",
+    "file": "treax1",
     "unexpected_error": true,
     "time": 7.850172519683838,
     "message": [

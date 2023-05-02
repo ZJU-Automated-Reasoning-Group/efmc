@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "array.sl_32bits_signed.smt2",
+    "file": "array",
     "overflow": false,
     "underflow": false,
     "safe": true,

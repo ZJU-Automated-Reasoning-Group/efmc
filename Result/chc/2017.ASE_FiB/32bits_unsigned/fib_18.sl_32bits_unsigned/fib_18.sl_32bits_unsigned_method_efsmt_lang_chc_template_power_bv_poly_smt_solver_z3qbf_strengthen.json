@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "fib_18.sl_32bits_unsigned.smt2",
+    "file": "fib_18",
     "unexpected_error": true,
     "time": 3.326667308807373,
     "message": [

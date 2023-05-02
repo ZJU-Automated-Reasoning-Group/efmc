@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "fib_01.sl_32bits_signed.smt2",
+    "file": "fib_01",
     "unexpected_error": true,
     "time": 4.2081825733184814,
     "message": [

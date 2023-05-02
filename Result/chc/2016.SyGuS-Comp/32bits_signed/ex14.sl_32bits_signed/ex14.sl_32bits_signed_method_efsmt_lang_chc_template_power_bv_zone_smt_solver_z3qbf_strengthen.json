@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "ex14.sl_32bits_signed.smt2",
+    "file": "ex14",
     "unexpected_error": true,
     "time": 4.842002868652344,
     "message": [

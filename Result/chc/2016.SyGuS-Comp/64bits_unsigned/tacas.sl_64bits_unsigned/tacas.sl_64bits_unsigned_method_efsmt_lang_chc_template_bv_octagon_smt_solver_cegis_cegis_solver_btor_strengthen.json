@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "tacas.sl_64bits_unsigned.smt2",
+    "file": "tacas",
     "unexpected_error": true,
     "time": 11.751566410064697,
     "message": [

@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "const_false-unreach-call1.sl_64bits_unsigned.smt2",
+    "file": "const_false-unreach-call1",
     "unexpected_error": true,
     "time": 5.817587852478027,
     "message": [

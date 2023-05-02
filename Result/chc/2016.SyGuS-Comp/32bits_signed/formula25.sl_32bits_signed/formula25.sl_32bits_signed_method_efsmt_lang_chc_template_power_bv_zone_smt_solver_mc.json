@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "mc",
-    "file": "formula25.sl_32bits_signed.smt2",
+    "file": "formula25",
     "timeout": true,
     "unknown": true,
     "time": 60,

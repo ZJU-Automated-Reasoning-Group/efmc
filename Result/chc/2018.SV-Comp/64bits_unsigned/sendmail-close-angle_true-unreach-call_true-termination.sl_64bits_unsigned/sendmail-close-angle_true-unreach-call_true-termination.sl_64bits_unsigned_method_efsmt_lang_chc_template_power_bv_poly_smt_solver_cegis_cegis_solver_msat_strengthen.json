@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "sendmail-close-angle_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "sendmail-close-angle_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 4.1494646072387695,
     "message": [

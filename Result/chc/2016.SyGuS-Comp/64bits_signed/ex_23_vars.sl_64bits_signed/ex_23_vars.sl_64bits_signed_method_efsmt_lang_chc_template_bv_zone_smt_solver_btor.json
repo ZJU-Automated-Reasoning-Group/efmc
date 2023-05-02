@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "btor",
-    "file": "ex_23_vars.sl_64bits_signed.smt2",
+    "file": "ex_23_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

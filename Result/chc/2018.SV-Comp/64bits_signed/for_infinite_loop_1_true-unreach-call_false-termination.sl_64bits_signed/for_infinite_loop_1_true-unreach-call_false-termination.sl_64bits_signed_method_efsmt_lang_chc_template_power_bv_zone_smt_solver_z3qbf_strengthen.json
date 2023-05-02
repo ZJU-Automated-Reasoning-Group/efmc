@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "for_infinite_loop_1_true-unreach-call_false-termination.sl_64bits_signed.smt2",
+    "file": "for_infinite_loop_1_true-unreach-call_false-termination",
     "unexpected_error": true,
     "time": 18.418998956680298,
     "message": [

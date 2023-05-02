@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "anfp.sl_32bits_unsigned.smt2",
+    "file": "anfp",
     "unexpected_error": true,
     "time": 7.123817682266235,
     "message": [

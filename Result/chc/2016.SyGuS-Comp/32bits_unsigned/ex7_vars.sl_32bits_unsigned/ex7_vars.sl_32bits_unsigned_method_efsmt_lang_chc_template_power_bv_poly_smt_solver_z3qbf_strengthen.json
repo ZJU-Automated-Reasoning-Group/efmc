@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "ex7_vars.sl_32bits_unsigned.smt2",
+    "file": "ex7_vars",
     "unexpected_error": true,
     "time": 3.0403223037719727,
     "message": [

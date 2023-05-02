@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "s9.desugared.sl_64bits_signed.smt2",
+    "file": "s9.desugared",
     "unexpected_error": true,
     "time": 25.24386215209961,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "s_split_29.smt2safe_64bits_signed.smt2",
+    "file": "s_split_29",
     "unexpected_error": true,
     "time": 10.977534770965576,
     "message": [

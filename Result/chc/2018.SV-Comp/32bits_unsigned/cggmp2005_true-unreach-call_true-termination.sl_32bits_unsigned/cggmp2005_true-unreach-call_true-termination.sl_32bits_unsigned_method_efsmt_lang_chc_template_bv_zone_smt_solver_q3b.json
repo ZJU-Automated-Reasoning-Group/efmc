@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "q3b",
-    "file": "cggmp2005_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "cggmp2005_true-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

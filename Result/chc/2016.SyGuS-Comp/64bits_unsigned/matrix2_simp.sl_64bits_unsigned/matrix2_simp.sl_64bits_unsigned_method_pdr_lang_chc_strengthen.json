@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "matrix2_simp.sl_64bits_unsigned.smt2",
+    "file": "matrix2_simp",
     "safe": false,
     "time": 0.47135257720947266,
     "message": [

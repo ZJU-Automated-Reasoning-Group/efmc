@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "btor",
-    "file": "fib_30_x.sl_64bits_signed.smt2",
+    "file": "fib_30_x",
     "overflow": false,
     "underflow": false,
     "unknown": true,

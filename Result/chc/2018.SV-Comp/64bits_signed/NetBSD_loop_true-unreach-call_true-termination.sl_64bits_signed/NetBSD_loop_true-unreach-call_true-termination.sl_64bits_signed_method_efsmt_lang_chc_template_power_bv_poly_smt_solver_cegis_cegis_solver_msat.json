@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "NetBSD_loop_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "NetBSD_loop_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 9.30752182006836,
     "message": [

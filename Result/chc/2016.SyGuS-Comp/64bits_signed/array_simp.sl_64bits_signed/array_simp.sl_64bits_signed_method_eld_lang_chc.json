@@ -1,10 +1,10 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "array_simp.sl_64bits_signed.smt2",
-    "unknown": true,
+    "file": "array_simp",
     "time": 10.093810558319092,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

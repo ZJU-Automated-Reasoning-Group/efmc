@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "caqe",
-    "file": "while_infinite_loop_3_true-unreach-call_false-termination.sl_32bits_signed.smt2",
+    "file": "while_infinite_loop_3_true-unreach-call_false-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "fig1_vars.sl_64bits_signed.smt2",
+    "file": "fig1_vars",
     "safe": false,
     "time": 0.6591041088104248,
     "message": [

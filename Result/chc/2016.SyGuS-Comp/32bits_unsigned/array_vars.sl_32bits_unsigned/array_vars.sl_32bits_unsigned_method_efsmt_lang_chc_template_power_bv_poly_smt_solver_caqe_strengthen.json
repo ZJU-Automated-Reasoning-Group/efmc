@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "array_vars.sl_32bits_unsigned.smt2",
+    "file": "array_vars",
     "unexpected_error": true,
     "time": 10.981889009475708,
     "message": [

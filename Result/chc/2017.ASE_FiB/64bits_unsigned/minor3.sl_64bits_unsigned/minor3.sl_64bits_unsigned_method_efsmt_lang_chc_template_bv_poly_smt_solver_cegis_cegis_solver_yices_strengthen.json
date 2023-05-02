@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "minor3.sl_64bits_unsigned.smt2",
+    "file": "minor3",
     "unexpected_error": true,
     "time": 3.1184303760528564,
     "message": [

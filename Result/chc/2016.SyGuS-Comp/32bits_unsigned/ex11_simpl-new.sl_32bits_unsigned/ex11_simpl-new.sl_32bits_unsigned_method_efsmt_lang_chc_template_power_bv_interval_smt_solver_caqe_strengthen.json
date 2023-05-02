@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "ex11_simpl-new.sl_32bits_unsigned.smt2",
+    "file": "ex11_simpl-new",
     "unexpected_error": true,
     "time": 3.6243321895599365,
     "message": [

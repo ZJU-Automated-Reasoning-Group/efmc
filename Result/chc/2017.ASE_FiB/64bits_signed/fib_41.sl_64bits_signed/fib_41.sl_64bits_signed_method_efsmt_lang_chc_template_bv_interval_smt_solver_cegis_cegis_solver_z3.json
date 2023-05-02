@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "fib_41.sl_64bits_signed.smt2",
+    "file": "fib_41",
     "unexpected_error": true,
     "time": 1.3653779029846191,
     "message": [

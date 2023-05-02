@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "cvc5",
-    "file": "fig1_vars-new.sl_64bits_signed.smt2",
+    "file": "fig1_vars-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

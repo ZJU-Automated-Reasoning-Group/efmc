@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "btor",
-    "file": "cegar1_vars.sl_64bits_signed.smt2",
+    "file": "cegar1_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

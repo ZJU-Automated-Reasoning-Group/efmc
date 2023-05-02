@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "s5auto.desugared.sl_32bits_unsigned.smt2",
+    "file": "s5auto.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "css2003_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "css2003_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 9.094402313232422,
     "message": [

@@ -1,7 +1,7 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "formula22.sl_64bits_unsigned.smt2",
+    "file": "formula22",
     "safe": true,
     "time": 7.689809799194336,
     "message": [

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "gc4",
-    "file": "s_split_49.smt2safe_32bits_unsigned.smt2",
+    "file": "s_split_49",
     "timeout": true,
     "unknown": true,
     "time": 60,

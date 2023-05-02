@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "non-lin-ineq-2.desugared.sl_32bits_unsigned.smt2",
+    "file": "non-lin-ineq-2.desugared",
     "unexpected_error": true,
     "time": 10.066109895706177,
     "message": [

@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "yices2",
     "strengthen": true,
-    "file": "array.sl_64bits_unsigned.smt2",
+    "file": "array",
     "overflow": false,
     "underflow": false,
     "safe": true,

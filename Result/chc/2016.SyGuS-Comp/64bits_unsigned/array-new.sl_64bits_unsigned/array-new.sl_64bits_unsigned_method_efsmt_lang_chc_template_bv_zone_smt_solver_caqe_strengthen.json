@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "array-new.sl_64bits_unsigned.smt2",
+    "file": "array-new",
     "unexpected_error": true,
     "time": 4.768259763717651,
     "message": [

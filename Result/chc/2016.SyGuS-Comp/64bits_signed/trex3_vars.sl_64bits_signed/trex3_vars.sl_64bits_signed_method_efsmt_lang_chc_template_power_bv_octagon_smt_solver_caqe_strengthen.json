@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "trex3_vars.sl_64bits_signed.smt2",
+    "file": "trex3_vars",
     "unexpected_error": true,
     "time": 41.73846077919006,
     "message": [

@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "s_split_48.smt2safe_64bits_unsigned.smt2",
+    "file": "s_split_48",
     "unexpected_error": true,
     "time": 9.818106412887573,
     "message": [

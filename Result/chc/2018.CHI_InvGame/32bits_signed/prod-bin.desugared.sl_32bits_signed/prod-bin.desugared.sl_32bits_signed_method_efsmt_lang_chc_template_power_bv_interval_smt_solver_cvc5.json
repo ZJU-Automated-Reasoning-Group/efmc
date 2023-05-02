@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "cvc5",
-    "file": "prod-bin.desugared.sl_32bits_signed.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 5.659696340560913,
     "message": [

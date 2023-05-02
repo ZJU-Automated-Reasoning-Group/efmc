@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "cggmp-new.sl_64bits_signed.smt2",
+    "file": "cggmp-new",
     "unexpected_error": true,
     "time": 12.435851097106934,
     "message": [

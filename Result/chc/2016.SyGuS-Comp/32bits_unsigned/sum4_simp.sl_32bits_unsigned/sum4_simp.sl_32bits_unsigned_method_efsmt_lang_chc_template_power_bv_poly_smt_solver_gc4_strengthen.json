@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "sum4_simp.sl_32bits_unsigned.smt2",
+    "file": "sum4_simp",
     "timeout": true,
     "unknown": true,
     "time": 60,

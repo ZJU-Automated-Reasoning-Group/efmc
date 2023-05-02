@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "anfp-new.sl_64bits_signed.smt2",
+    "file": "anfp-new",
     "unexpected_error": true,
     "time": 10.221565008163452,
     "message": [

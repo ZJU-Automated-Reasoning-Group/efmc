@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "yices2",
     "strengthen": true,
-    "file": "trex1_vars.sl_32bits_signed.smt2",
+    "file": "trex1_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

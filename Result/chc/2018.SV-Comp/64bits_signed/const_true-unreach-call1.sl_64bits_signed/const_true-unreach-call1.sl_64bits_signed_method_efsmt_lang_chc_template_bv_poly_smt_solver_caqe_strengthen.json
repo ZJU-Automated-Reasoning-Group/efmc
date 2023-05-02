@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "const_true-unreach-call1.sl_64bits_signed.smt2",
+    "file": "const_true-unreach-call1",
     "unexpected_error": true,
     "time": 9.636826753616333,
     "message": [

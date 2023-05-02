@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "down_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "down_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 10.58777379989624,
     "message": [

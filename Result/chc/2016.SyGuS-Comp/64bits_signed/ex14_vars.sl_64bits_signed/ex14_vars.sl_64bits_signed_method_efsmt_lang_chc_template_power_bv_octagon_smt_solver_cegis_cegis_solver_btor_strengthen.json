@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "ex14_vars.sl_64bits_signed.smt2",
+    "file": "ex14_vars",
     "unexpected_error": true,
     "time": 47.6647572517395,
     "message": [

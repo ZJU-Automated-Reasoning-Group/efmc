@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "z3qbf",
-    "file": "fib_35.sl_64bits_unsigned.smt2",
+    "file": "fib_35",
     "timeout": true,
     "unknown": true,
     "time": 60,

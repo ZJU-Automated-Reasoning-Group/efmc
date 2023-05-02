@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "z3qbf",
-    "file": "count_by_k_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "count_by_k_true-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

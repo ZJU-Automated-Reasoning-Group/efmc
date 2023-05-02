@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "array.sl_32bits_unsigned.smt2",
+    "file": "array",
     "overflow": false,
     "underflow": false,
     "unknown": true,

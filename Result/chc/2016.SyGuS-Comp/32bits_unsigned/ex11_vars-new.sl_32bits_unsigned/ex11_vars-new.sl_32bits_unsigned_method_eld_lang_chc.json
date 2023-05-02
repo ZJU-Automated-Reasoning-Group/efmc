@@ -1,7 +1,7 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "ex11_vars-new.sl_32bits_unsigned.smt2",
+    "file": "ex11_vars-new",
     "safe": true,
     "time": 7.228654623031616,
     "message": [

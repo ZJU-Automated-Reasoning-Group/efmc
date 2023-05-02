@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "up_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "up_true-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

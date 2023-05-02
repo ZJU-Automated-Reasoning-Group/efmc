@@ -1,7 +1,7 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "dec_simpl.sl_32bits_unsigned.smt2",
+    "file": "dec_simpl",
     "safe": true,
     "time": 8.886817455291748,
     "message": [

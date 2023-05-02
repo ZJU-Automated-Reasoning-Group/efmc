@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "vsend.sl_64bits_signed.smt2",
+    "file": "vsend",
     "unexpected_error": true,
     "time": 7.2763495445251465,
     "message": [

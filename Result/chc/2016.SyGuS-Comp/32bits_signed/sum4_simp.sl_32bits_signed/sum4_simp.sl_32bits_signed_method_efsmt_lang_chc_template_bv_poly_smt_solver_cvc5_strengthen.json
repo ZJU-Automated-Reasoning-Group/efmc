@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "cvc5",
     "strengthen": true,
-    "file": "sum4_simp.sl_32bits_signed.smt2",
+    "file": "sum4_simp",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "fig3.sl_64bits_signed.smt2",
+    "file": "fig3",
     "safe": true,
     "time": 1.2752153873443604,
     "message": [

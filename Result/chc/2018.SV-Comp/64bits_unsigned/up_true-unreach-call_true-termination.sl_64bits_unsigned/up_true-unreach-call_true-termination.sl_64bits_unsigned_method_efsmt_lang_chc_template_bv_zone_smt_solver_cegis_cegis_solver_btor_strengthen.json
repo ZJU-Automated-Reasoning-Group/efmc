@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "up_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "up_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 9.494190692901611,
     "message": [

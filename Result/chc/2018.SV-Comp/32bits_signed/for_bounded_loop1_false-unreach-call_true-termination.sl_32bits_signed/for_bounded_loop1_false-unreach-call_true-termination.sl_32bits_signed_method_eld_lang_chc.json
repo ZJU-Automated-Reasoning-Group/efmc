@@ -1,10 +1,10 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "for_bounded_loop1_false-unreach-call_true-termination.sl_32bits_signed.smt2",
-    "unknown": true,
+    "file": "for_bounded_loop1_false-unreach-call_true-termination",
     "time": 10.35887360572815,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

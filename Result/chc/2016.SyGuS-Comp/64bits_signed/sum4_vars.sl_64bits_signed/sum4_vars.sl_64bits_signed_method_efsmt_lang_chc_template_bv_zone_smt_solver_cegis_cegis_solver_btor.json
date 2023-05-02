@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "sum4_vars.sl_64bits_signed.smt2",
+    "file": "sum4_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

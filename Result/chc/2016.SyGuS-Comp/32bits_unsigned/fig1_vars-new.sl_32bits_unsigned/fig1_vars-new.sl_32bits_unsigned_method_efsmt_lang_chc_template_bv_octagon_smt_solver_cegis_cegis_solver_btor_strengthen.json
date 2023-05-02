@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "fig1_vars-new.sl_32bits_unsigned.smt2",
+    "file": "fig1_vars-new",
     "unexpected_error": true,
     "time": 19.479457139968872,
     "message": [

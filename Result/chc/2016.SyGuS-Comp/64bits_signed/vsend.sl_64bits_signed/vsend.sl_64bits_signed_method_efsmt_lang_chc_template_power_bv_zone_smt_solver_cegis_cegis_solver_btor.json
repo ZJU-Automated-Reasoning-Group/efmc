@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "vsend.sl_64bits_signed.smt2",
+    "file": "vsend",
     "unexpected_error": true,
     "time": 2.1639182567596436,
     "message": [

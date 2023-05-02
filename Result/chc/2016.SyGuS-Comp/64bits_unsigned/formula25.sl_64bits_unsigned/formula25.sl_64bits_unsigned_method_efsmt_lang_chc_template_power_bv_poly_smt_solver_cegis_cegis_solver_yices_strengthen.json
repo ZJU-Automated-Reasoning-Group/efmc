@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "formula25.sl_64bits_unsigned.smt2",
+    "file": "formula25",
     "unexpected_error": true,
     "time": 3.7273263931274414,
     "message": [

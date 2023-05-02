@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "trex3.sl_32bits_signed.smt2",
+    "file": "trex3",
     "unexpected_error": true,
     "time": 51.118478298187256,
     "message": [

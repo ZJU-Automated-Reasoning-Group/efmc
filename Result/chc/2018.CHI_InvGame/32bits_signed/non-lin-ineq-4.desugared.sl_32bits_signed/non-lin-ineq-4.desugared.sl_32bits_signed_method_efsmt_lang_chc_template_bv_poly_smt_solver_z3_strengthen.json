@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "non-lin-ineq-4.desugared.sl_32bits_signed.smt2",
+    "file": "non-lin-ineq-4.desugared",
     "overflow": false,
     "underflow": false,
     "unknown": true,

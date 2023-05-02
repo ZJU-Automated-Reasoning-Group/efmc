@@ -1,7 +1,7 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "fib_41.sl_32bits_unsigned.smt2",
+    "file": "fib_41",
     "safe": false,
     "time": 8.67486047744751,
     "message": [

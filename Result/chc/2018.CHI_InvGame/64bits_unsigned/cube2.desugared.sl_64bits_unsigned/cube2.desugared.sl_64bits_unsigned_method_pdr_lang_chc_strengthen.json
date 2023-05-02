@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "cube2.desugared.sl_64bits_unsigned.smt2",
+    "file": "cube2.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

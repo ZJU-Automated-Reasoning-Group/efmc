@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "formula25.sl_64bits_signed.smt2",
+    "file": "formula25",
     "safe": true,
     "time": 14.670811414718628,
     "message": [

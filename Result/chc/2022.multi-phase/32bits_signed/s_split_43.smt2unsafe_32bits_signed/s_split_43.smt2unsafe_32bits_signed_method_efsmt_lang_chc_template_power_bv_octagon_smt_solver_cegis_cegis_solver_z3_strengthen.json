@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "s_split_43.smt2unsafe_32bits_signed.smt2",
+    "file": "s_split_43",
     "unexpected_error": true,
     "time": 8.92815637588501,
     "message": [

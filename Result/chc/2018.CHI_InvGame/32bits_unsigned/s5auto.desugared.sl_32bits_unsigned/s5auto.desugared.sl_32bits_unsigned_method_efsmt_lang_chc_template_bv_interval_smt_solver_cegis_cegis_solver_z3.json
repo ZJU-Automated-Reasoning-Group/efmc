@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "s5auto.desugared.sl_32bits_unsigned.smt2",
+    "file": "s5auto.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "trex1_vars.sl_64bits_unsigned.smt2",
+    "file": "trex1_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "s5auto.desugared.sl_32bits_unsigned.smt2",
+    "file": "s5auto.desugared",
     "unexpected_error": true,
     "time": 4.445830821990967,
     "message": [

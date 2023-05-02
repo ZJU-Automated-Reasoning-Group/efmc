@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "lgl",
-    "file": "fib_18.sl_64bits_unsigned.smt2",
+    "file": "fib_18",
     "timeout": true,
     "unknown": true,
     "time": 60,

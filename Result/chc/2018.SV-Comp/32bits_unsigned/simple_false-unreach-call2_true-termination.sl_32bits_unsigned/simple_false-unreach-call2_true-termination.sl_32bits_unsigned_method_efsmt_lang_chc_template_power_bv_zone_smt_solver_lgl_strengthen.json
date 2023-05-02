@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "simple_false-unreach-call2_true-termination.sl_32bits_unsigned.smt2",
+    "file": "simple_false-unreach-call2_true-termination",
     "unexpected_error": true,
     "time": 1.293156385421753,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "mc",
     "strengthen": true,
-    "file": "sum1.sl_32bits_signed.smt2",
+    "file": "sum1",
     "timeout": true,
     "unknown": true,
     "time": 60,

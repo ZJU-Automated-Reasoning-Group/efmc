@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "formula27.sl_64bits_unsigned.smt2",
+    "file": "formula27",
     "unexpected_error": true,
     "time": 13.86566686630249,
     "message": [

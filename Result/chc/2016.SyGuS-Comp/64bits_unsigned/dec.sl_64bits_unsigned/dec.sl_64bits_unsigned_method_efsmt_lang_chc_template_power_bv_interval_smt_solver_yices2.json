@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "yices2",
-    "file": "dec.sl_64bits_unsigned.smt2",
+    "file": "dec",
     "overflow": false,
     "underflow": false,
     "safe": true,

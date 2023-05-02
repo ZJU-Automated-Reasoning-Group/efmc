@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "s_split_30.smt2safe_64bits_signed.smt2",
+    "file": "s_split_30",
     "unexpected_error": true,
     "time": 22.20098304748535,
     "message": [

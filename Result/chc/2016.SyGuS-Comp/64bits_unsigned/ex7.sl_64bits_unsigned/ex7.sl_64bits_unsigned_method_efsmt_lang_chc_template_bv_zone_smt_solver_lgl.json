@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "lgl",
-    "file": "ex7.sl_64bits_unsigned.smt2",
+    "file": "ex7",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "lgl",
-    "file": "tacas.sl_64bits_signed.smt2",
+    "file": "tacas",
     "timeout": true,
     "unknown": true,
     "time": 60,

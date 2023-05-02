@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "g4",
     "strengthen": true,
-    "file": "formula27.sl_64bits_signed.smt2",
+    "file": "formula27",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "cegar1-new.sl_32bits_unsigned.smt2",
+    "file": "cegar1-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

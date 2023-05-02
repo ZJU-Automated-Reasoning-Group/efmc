@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "vardep.sl_32bits_signed.smt2",
+    "file": "vardep",
     "unexpected_error": true,
     "time": 6.566939353942871,
     "message": [

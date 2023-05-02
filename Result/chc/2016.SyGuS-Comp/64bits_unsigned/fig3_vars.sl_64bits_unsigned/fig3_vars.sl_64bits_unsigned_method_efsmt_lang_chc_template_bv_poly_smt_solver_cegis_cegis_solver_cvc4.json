@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "fig3_vars.sl_64bits_unsigned.smt2",
+    "file": "fig3_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

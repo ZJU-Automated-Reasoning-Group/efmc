@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "fig9.sl_64bits_signed.smt2",
+    "file": "fig9",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "simple_false-unreach-call2_true-termination.sl_32bits_signed.smt2",
+    "file": "simple_false-unreach-call2_true-termination",
     "unexpected_error": true,
     "time": 2.129067897796631,
     "message": [

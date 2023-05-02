@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "count_by_nondet_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "count_by_nondet_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 5.969137668609619,
     "message": [

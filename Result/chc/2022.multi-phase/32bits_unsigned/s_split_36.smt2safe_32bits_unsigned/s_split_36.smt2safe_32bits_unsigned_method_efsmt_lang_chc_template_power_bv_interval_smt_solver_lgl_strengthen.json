@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "s_split_36.smt2safe_32bits_unsigned.smt2",
+    "file": "s_split_36",
     "unexpected_error": true,
     "time": 7.588138818740845,
     "message": [

@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "vardep.sl_32bits_unsigned.smt2",
+    "file": "vardep",
     "unexpected_error": true,
     "time": 5.501033544540405,
     "message": [

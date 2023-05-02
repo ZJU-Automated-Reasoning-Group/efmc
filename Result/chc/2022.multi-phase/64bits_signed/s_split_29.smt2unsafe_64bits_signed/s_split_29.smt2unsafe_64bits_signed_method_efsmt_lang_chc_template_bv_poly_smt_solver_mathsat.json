@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "mathsat",
-    "file": "s_split_29.smt2unsafe_64bits_signed.smt2",
+    "file": "s_split_29",
     "overflow": false,
     "underflow": false,
     "unknown": true,

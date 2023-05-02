@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "fib_17n.sl_32bits_unsigned.smt2",
+    "file": "fib_17n",
     "timeout": true,
     "unknown": true,
     "time": 60,

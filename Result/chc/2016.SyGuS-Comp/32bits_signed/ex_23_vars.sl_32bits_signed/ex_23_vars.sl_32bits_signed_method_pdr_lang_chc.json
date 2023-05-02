@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "ex_23_vars.sl_32bits_signed.smt2",
+    "file": "ex_23_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

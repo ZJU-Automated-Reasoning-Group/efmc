@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "fig3_vars.sl_64bits_unsigned.smt2",
+    "file": "fig3_vars",
     "unexpected_error": true,
     "time": 27.67123579978943,
     "message": [

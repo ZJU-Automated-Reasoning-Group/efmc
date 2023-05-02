@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "g4",
-    "file": "dec-new.sl_32bits_signed.smt2",
+    "file": "dec-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

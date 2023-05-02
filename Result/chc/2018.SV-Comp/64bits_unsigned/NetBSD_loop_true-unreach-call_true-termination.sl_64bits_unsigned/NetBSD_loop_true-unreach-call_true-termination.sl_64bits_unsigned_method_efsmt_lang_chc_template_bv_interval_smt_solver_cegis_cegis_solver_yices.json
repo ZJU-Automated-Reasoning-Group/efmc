@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "NetBSD_loop_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "NetBSD_loop_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 14.427460432052612,
     "message": [

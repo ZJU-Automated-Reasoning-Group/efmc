@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "seq_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "seq_true-unreach-call_true-termination",
     "safe": true,
     "time": 1.4297850131988525,
     "message": [

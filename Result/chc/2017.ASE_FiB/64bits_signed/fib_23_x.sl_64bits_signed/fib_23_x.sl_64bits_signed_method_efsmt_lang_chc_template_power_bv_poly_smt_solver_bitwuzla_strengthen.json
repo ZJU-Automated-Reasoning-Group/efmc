@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "fib_23_x.sl_64bits_signed.smt2",
+    "file": "fib_23_x",
     "overflow": false,
     "underflow": false,
     "unknown": true,

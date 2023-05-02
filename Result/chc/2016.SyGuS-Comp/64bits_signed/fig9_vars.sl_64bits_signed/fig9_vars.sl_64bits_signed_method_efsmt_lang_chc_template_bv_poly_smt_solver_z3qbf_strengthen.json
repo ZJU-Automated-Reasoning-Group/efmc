@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "fig9_vars.sl_64bits_signed.smt2",
+    "file": "fig9_vars",
     "unexpected_error": true,
     "time": 7.185094594955444,
     "message": [

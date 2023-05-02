@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "sum4.sl_64bits_signed.smt2",
+    "file": "sum4",
     "unexpected_error": true,
     "time": 6.775257110595703,
     "message": [

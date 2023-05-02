@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "yices2",
-    "file": "array.sl_64bits_signed.smt2",
+    "file": "array",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "cggmp-new.sl_64bits_signed.smt2",
+    "file": "cggmp-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "sum04_false-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "sum04_false-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 9.898060321807861,
     "message": [

@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "ex14_simp.sl_64bits_signed.smt2",
+    "file": "ex14_simp",
     "unexpected_error": true,
     "time": 11.177941083908081,
     "message": [

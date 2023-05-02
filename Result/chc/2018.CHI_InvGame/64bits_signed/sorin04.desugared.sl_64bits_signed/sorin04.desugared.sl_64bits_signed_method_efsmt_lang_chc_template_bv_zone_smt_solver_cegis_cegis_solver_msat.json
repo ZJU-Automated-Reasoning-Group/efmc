@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "sorin04.desugared.sl_64bits_signed.smt2",
+    "file": "sorin04.desugared",
     "unexpected_error": true,
     "time": 7.071231126785278,
     "message": [

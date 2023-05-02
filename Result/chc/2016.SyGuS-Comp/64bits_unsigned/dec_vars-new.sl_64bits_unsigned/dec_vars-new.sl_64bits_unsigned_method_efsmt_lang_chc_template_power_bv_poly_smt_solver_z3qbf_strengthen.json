@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "dec_vars-new.sl_64bits_unsigned.smt2",
+    "file": "dec_vars-new",
     "unexpected_error": true,
     "time": 11.553990602493286,
     "message": [

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "bitwuzla",
-    "file": "gauss_sum-more-rows.auto.sl_64bits_unsigned.smt2",
+    "file": "gauss_sum-more-rows.auto",
     "overflow": false,
     "underflow": false,
     "unknown": true,

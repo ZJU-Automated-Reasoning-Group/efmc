@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "gsv2008_true-unreach-call_true-termination.sl_64bits_signed.smt2",
-    "unknown": true,
+    "file": "gsv2008_true-unreach-call_true-termination",
     "time": 10.29875135421753,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

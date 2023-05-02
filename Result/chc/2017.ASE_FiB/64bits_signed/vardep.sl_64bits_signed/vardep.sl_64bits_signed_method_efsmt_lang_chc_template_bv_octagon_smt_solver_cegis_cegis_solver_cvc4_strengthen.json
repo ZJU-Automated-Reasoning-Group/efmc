@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "vardep.sl_64bits_signed.smt2",
+    "file": "vardep",
     "unexpected_error": true,
     "time": 2.8355541229248047,
     "message": [

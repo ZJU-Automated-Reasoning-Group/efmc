@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "ex11_vars.sl_32bits_signed.smt2",
+    "file": "ex11_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

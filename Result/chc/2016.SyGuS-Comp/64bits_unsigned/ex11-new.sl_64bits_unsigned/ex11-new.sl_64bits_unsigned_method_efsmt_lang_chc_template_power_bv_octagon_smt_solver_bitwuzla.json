@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "bitwuzla",
-    "file": "ex11-new.sl_64bits_unsigned.smt2",
+    "file": "ex11-new",
     "unexpected_error": true,
     "time": 4.44726300239563,
     "message": [

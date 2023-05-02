@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "gc4",
-    "file": "fib_44.sl_32bits_unsigned.smt2",
+    "file": "fib_44",
     "timeout": true,
     "unknown": true,
     "time": 60,

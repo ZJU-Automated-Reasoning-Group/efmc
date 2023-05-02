@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "simple_vardep_true-unreach-call2_true-termination.sl_32bits_unsigned.smt2",
+    "file": "simple_vardep_true-unreach-call2_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

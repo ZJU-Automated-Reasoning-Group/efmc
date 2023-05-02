@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "vsend.sl_64bits_signed.smt2",
+    "file": "vsend",
     "overflow": false,
     "underflow": false,
     "unknown": true,

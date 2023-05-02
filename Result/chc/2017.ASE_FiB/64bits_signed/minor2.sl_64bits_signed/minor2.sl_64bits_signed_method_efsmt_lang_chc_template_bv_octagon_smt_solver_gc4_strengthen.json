@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "minor2.sl_64bits_signed.smt2",
+    "file": "minor2",
     "timeout": true,
     "unknown": true,
     "time": 60,

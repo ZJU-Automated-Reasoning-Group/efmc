@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "dec.sl_64bits_signed.smt2",
+    "file": "dec",
     "overflow": false,
     "underflow": false,
     "safe": true,

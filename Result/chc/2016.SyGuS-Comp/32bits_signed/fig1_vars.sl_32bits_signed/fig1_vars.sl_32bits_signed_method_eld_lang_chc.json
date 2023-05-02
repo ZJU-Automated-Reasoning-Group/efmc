@@ -1,7 +1,7 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "fig1_vars.sl_32bits_signed.smt2",
+    "file": "fig1_vars",
     "safe": false,
     "time": 8.941945791244507,
     "message": [

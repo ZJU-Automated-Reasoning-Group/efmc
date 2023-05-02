@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "sqrt-more-rows-swap-columns.sl_64bits_signed.smt2",
+    "file": "sqrt-more-rows-swap-columns",
     "timeout": true,
     "unknown": true,
     "time": 60,

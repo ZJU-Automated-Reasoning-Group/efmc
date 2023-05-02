@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "tacas.sl_32bits_signed.smt2",
+    "file": "tacas",
     "unexpected_error": true,
     "time": 11.119948625564575,
     "message": [

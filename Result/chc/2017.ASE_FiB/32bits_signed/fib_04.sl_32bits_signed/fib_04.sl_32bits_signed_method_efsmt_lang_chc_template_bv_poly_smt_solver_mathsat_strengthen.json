@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "fib_04.sl_32bits_signed.smt2",
+    "file": "fib_04",
     "overflow": false,
     "underflow": false,
     "unknown": true,

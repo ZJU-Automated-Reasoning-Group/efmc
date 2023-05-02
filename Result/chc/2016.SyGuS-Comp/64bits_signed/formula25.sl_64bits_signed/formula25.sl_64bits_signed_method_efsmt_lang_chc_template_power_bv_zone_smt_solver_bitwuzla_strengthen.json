@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "formula25.sl_64bits_signed.smt2",
+    "file": "formula25",
     "overflow": false,
     "underflow": false,
     "unknown": true,

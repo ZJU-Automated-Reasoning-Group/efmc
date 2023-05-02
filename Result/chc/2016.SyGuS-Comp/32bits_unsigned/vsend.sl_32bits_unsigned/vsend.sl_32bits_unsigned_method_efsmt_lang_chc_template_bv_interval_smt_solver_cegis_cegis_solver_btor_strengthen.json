@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "vsend.sl_32bits_unsigned.smt2",
+    "file": "vsend",
     "unexpected_error": true,
     "time": 3.831853151321411,
     "message": [

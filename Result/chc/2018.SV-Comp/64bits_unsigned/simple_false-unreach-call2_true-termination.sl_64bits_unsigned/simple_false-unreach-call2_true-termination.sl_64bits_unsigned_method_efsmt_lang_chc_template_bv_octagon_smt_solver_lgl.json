@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "lgl",
-    "file": "simple_false-unreach-call2_true-termination.sl_64bits_unsigned.smt2",
+    "file": "simple_false-unreach-call2_true-termination",
     "unexpected_error": true,
     "time": 6.535943508148193,
     "message": [

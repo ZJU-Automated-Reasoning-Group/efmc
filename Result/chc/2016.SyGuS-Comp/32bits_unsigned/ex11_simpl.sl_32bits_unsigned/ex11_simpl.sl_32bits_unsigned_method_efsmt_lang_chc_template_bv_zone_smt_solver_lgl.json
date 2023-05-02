@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "lgl",
-    "file": "ex11_simpl.sl_32bits_unsigned.smt2",
+    "file": "ex11_simpl",
     "overflow": false,
     "underflow": false,
     "unknown": true,

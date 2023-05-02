@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "inc.sl_64bits_unsigned.smt2",
+    "file": "inc",
     "unexpected_error": true,
     "time": 5.6781251430511475,
     "message": [

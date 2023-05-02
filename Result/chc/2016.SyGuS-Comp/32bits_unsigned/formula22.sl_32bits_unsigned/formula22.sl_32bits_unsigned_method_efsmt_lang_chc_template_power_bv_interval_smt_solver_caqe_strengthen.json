@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "formula22.sl_32bits_unsigned.smt2",
+    "file": "formula22",
     "unexpected_error": true,
     "time": 7.823919773101807,
     "message": [

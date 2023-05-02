@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "vardep.sl_32bits_signed.smt2",
+    "file": "vardep",
     "unexpected_error": true,
     "time": 7.021349191665649,
     "message": [

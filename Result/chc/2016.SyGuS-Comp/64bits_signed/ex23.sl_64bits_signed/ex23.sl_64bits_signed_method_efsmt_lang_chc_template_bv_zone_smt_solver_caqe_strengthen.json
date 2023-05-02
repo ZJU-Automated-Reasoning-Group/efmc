@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "ex23.sl_64bits_signed.smt2",
+    "file": "ex23",
     "unexpected_error": true,
     "time": 3.6805620193481445,
     "message": [

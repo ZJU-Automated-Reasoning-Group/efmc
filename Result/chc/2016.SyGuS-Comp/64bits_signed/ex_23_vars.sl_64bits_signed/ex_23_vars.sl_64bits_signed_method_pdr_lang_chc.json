@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "ex_23_vars.sl_64bits_signed.smt2",
+    "file": "ex_23_vars",
     "safe": true,
     "time": 55.685673236846924,
     "message": [

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "g4",
-    "file": "array.sl_32bits_unsigned.smt2",
+    "file": "array",
     "timeout": true,
     "unknown": true,
     "time": 60,

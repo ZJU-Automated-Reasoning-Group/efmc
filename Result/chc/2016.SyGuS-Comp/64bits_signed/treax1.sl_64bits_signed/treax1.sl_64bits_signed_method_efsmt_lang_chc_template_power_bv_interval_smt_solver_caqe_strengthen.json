@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "treax1.sl_64bits_signed.smt2",
+    "file": "treax1",
     "unexpected_error": true,
     "time": 6.873682975769043,
     "message": [

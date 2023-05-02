@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "s10.desugared.sl_32bits_unsigned.smt2",
+    "file": "s10.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

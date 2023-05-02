@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "cegar2_vars-new.sl_32bits_unsigned.smt2",
-    "unknown": true,
+    "file": "cegar2_vars-new",
     "time": 11.550228357315063,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

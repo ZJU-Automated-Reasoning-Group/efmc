@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "ex14_simp.sl_32bits_unsigned.smt2",
+    "file": "ex14_simp",
     "timeout": true,
     "unknown": true,
     "time": 60,

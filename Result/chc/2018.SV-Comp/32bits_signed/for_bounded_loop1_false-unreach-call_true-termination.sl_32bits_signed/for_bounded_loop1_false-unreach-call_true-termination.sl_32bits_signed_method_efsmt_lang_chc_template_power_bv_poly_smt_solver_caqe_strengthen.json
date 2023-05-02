@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "for_bounded_loop1_false-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "for_bounded_loop1_false-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 6.811096906661987,
     "message": [

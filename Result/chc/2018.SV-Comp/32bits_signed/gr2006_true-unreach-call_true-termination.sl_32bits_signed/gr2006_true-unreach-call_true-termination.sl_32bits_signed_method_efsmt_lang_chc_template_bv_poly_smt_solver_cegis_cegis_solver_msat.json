@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "gr2006_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "gr2006_true-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "fig3_vars.sl_64bits_unsigned.smt2",
+    "file": "fig3_vars",
     "unexpected_error": true,
     "time": 8.796441078186035,
     "message": [

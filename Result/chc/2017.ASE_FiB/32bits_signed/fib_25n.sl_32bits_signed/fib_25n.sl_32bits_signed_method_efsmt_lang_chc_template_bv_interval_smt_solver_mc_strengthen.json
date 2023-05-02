@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "mc",
     "strengthen": true,
-    "file": "fib_25n.sl_32bits_signed.smt2",
+    "file": "fib_25n",
     "timeout": true,
     "unknown": true,
     "time": 60,

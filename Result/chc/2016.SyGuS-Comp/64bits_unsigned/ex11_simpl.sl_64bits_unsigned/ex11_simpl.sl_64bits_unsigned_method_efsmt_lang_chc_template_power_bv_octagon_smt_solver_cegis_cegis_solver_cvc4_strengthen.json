@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "ex11_simpl.sl_64bits_unsigned.smt2",
+    "file": "ex11_simpl",
     "unexpected_error": true,
     "time": 5.948446750640869,
     "message": [

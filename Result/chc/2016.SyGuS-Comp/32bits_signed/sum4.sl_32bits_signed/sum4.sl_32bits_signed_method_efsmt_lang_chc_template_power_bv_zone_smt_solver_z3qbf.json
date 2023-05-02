@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "z3qbf",
-    "file": "sum4.sl_32bits_signed.smt2",
+    "file": "sum4",
     "timeout": true,
     "unknown": true,
     "time": 60,

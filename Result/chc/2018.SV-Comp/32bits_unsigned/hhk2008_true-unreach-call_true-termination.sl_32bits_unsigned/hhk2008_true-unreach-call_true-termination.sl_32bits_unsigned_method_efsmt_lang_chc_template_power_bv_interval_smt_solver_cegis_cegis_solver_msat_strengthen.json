@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "hhk2008_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "hhk2008_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 9.003460168838501,
     "message": [

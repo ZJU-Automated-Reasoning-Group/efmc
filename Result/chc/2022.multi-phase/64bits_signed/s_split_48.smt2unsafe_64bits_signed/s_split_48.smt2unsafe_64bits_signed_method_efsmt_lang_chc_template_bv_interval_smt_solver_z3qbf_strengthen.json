@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "s_split_48.smt2unsafe_64bits_signed.smt2",
+    "file": "s_split_48",
     "unexpected_error": true,
     "time": 7.457556962966919,
     "message": [

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "yices2",
-    "file": "hhk2008_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "file": "hhk2008_true-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

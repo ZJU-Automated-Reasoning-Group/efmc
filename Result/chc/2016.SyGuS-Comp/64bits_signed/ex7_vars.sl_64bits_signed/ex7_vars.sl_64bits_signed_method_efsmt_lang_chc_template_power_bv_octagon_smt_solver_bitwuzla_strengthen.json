@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "ex7_vars.sl_64bits_signed.smt2",
+    "file": "ex7_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

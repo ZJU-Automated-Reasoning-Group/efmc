@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "non-lin-ineq-2.desugared.sl_64bits_signed.smt2",
+    "file": "non-lin-ineq-2.desugared",
     "unexpected_error": true,
     "time": 3.630753993988037,
     "message": [

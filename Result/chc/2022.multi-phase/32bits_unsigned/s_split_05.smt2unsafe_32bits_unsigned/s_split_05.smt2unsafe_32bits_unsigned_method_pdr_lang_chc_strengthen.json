@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "s_split_05.smt2unsafe_32bits_unsigned.smt2",
+    "file": "s_split_05",
     "safe": true,
     "time": 0.31922221183776855,
     "message": [

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "caqe",
-    "file": "ex11_simpl-new.sl_32bits_signed.smt2",
+    "file": "ex11_simpl-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

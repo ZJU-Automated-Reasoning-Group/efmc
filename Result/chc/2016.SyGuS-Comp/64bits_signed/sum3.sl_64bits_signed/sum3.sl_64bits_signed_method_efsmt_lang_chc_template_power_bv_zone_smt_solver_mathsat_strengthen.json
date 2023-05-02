@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "sum3.sl_64bits_signed.smt2",
+    "file": "sum3",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "fib_30_x.sl_64bits_unsigned.smt2",
+    "file": "fib_30_x",
     "timeout": true,
     "unknown": true,
     "time": 60,

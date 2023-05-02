@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "seq_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "seq_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 20.542612552642822,
     "message": [

@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "fib_16.sl_64bits_signed.smt2",
+    "file": "fib_16",
     "unexpected_error": true,
     "time": 2.66151762008667,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "s_split_43.smt2unsafe_32bits_unsigned.smt2",
+    "file": "s_split_43",
     "timeout": true,
     "unknown": true,
     "time": 60,

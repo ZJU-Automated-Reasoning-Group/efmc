@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "gc4",
-    "file": "fig9_vars.sl_64bits_signed.smt2",
+    "file": "fig9_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

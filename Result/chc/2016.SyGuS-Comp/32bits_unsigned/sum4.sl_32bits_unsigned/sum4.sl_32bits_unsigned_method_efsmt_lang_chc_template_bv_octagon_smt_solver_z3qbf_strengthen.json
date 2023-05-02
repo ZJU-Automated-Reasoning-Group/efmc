@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "sum4.sl_32bits_unsigned.smt2",
+    "file": "sum4",
     "unexpected_error": true,
     "time": 9.126509189605713,
     "message": [

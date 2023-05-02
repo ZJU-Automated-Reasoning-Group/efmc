@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "g4",
-    "file": "s_split_54.smt2unsafe_32bits_unsigned.smt2",
+    "file": "s_split_54",
     "timeout": true,
     "unknown": true,
     "time": 60,

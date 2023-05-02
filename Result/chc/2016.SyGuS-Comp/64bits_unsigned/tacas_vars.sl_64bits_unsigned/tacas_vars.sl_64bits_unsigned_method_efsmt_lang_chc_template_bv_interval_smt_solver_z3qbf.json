@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "z3qbf",
-    "file": "tacas_vars.sl_64bits_unsigned.smt2",
+    "file": "tacas_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

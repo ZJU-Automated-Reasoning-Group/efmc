@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "cvc5",
-    "file": "formula22.sl_64bits_unsigned.smt2",
+    "file": "formula22",
     "overflow": false,
     "underflow": false,
     "unknown": true,

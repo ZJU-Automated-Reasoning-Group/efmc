@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "underapprox_true-unreach-call2_true-termination.sl_32bits_unsigned.smt2",
+    "file": "underapprox_true-unreach-call2_true-termination",
     "unexpected_error": true,
     "time": 4.7430033683776855,
     "message": [

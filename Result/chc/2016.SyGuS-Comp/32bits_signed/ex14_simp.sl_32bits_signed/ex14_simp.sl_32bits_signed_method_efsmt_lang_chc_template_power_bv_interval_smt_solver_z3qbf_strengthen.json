@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "ex14_simp.sl_32bits_signed.smt2",
+    "file": "ex14_simp",
     "unexpected_error": true,
     "time": 6.006191730499268,
     "message": [

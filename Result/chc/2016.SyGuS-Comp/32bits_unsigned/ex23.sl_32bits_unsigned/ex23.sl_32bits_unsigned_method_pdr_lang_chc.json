@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "ex23.sl_32bits_unsigned.smt2",
+    "file": "ex23",
     "timeout": true,
     "unknown": true,
     "time": 60,

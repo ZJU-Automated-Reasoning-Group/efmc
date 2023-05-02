@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "gc4",
-    "file": "const_true-unreach-call1.sl_64bits_unsigned.smt2",
+    "file": "const_true-unreach-call1",
     "timeout": true,
     "unknown": true,
     "time": 60,

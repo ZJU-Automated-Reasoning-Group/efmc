@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "vsend.sl_32bits_signed.smt2",
+    "file": "vsend",
     "unexpected_error": true,
     "time": 6.897876262664795,
     "message": [

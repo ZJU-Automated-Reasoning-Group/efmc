@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "sum3_vars.sl_64bits_signed.smt2",
+    "file": "sum3_vars",
     "overflow": false,
     "underflow": false,
     "safe": true,

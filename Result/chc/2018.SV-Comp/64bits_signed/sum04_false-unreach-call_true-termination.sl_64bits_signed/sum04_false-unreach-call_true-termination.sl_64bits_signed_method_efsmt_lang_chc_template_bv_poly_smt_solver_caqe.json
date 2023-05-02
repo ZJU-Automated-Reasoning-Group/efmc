@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "caqe",
-    "file": "sum04_false-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "sum04_false-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

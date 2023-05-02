@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "s_split_28.smt2unsafe_64bits_unsigned.smt2",
+    "file": "s_split_28",
     "safe": true,
     "time": 9.59703540802002,
     "message": [

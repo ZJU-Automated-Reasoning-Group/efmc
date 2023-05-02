@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "fib_23_x.sl_32bits_unsigned.smt2",
+    "file": "fib_23_x",
     "safe": true,
     "time": 6.429018497467041,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "vsend.sl_32bits_signed.smt2",
+    "file": "vsend",
     "unexpected_error": true,
     "time": 6.531769752502441,
     "message": [

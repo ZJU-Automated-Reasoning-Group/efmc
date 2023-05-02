@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "while_infinite_loop_4_false-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "while_infinite_loop_4_false-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

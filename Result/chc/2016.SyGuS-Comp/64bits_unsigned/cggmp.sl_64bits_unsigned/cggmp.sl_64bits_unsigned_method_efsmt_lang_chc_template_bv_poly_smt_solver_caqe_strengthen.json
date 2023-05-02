@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "cggmp.sl_64bits_unsigned.smt2",
+    "file": "cggmp",
     "unexpected_error": true,
     "time": 12.49283742904663,
     "message": [

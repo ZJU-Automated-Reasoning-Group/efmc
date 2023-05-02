@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "sorin04.desugared.sl_64bits_signed.smt2",
+    "file": "sorin04.desugared",
     "unexpected_error": true,
     "time": 5.051313638687134,
     "message": [

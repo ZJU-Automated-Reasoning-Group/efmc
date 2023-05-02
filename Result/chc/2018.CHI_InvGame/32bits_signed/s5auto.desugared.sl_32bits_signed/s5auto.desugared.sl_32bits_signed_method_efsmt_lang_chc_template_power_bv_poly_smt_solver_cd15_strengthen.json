@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "s5auto.desugared.sl_32bits_signed.smt2",
+    "file": "s5auto.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "matrix2_simp.sl_32bits_signed.smt2",
+    "file": "matrix2_simp",
     "unexpected_error": true,
     "time": 15.298993110656738,
     "message": [

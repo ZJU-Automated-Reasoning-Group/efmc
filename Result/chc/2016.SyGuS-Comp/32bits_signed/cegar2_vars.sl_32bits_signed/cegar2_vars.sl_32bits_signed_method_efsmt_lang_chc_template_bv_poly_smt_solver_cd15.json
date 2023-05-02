@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "cd15",
-    "file": "cegar2_vars.sl_32bits_signed.smt2",
+    "file": "cegar2_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "q3b",
-    "file": "gauss_sum-more-rows.auto.sl_64bits_signed.smt2",
+    "file": "gauss_sum-more-rows.auto",
     "overflow": false,
     "underflow": false,
     "unknown": true,

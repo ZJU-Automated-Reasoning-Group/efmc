@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "sendmail-close-angle_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "sendmail-close-angle_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 7.1894989013671875,
     "message": [

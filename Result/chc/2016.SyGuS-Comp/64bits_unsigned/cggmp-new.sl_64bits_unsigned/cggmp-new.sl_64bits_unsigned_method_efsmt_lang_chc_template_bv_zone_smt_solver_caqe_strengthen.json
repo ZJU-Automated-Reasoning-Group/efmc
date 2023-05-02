@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "cggmp-new.sl_64bits_unsigned.smt2",
+    "file": "cggmp-new",
     "unexpected_error": true,
     "time": 4.351840496063232,
     "message": [

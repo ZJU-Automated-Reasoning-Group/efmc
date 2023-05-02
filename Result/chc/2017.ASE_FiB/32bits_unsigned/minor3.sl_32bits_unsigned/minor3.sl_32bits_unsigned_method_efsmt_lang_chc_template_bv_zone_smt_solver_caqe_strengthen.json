@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "minor3.sl_32bits_unsigned.smt2",
+    "file": "minor3",
     "unexpected_error": true,
     "time": 3.182147741317749,
     "message": [

@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "ex23.sl_64bits_unsigned.smt2",
+    "file": "ex23",
     "safe": true,
     "time": 43.07593083381653,
     "message": [

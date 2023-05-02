@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sum4.sl_32bits_signed.smt2",
+    "file": "sum4",
     "unexpected_error": true,
     "time": 6.893620252609253,
     "message": [

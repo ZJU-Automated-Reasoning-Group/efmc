@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "while_infinite_loop_3_true-unreach-call_false-termination.sl_32bits_unsigned.smt2",
+    "file": "while_infinite_loop_3_true-unreach-call_false-termination",
     "unexpected_error": true,
     "time": 5.024507761001587,
     "message": [

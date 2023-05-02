@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "cvc5",
-    "file": "simple_vardep_true-unreach-call2_true-termination.sl_64bits_signed.smt2",
+    "file": "simple_vardep_true-unreach-call2_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

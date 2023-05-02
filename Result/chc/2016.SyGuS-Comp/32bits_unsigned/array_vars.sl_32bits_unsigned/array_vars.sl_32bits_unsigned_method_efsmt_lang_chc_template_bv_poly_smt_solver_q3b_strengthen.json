@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "q3b",
     "strengthen": true,
-    "file": "array_vars.sl_32bits_unsigned.smt2",
+    "file": "array_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

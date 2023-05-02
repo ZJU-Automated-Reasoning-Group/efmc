@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "s_split_42.smt2safe_64bits_unsigned.smt2",
+    "file": "s_split_42",
     "timeout": true,
     "unknown": true,
     "time": 60,

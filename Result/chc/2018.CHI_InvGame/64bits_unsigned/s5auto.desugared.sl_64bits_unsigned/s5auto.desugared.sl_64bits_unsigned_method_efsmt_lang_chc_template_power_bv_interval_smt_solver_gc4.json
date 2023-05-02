@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "gc4",
-    "file": "s5auto.desugared.sl_64bits_unsigned.smt2",
+    "file": "s5auto.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "tacas_vars.sl_32bits_unsigned.smt2",
+    "file": "tacas_vars",
     "unexpected_error": true,
     "time": 27.951463222503662,
     "message": [

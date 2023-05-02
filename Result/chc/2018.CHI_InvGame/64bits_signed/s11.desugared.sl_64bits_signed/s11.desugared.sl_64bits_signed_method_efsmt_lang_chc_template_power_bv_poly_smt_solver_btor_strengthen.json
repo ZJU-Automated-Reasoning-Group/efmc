@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "btor",
     "strengthen": true,
-    "file": "s11.desugared.sl_64bits_signed.smt2",
+    "file": "s11.desugared",
     "overflow": false,
     "underflow": false,
     "unknown": true,

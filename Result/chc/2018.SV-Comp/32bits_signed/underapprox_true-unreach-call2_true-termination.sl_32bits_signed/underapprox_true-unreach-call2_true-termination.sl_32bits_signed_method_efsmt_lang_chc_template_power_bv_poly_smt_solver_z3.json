@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "z3",
-    "file": "underapprox_true-unreach-call2_true-termination.sl_32bits_signed.smt2",
+    "file": "underapprox_true-unreach-call2_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

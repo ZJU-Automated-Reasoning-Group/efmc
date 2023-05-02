@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "minor1.sl_32bits_signed.smt2",
+    "file": "minor1",
     "unexpected_error": true,
     "time": 1.3568220138549805,
     "message": [

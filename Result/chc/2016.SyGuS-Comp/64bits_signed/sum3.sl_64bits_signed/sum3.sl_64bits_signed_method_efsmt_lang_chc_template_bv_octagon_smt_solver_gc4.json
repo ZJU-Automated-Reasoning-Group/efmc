@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "gc4",
-    "file": "sum3.sl_64bits_signed.smt2",
+    "file": "sum3",
     "timeout": true,
     "unknown": true,
     "time": 60,

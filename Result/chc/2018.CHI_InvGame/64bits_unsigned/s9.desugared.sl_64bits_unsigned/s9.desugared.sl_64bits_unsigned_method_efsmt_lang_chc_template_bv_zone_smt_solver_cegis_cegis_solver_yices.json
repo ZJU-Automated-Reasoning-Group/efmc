@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "s9.desugared.sl_64bits_unsigned.smt2",
+    "file": "s9.desugared",
     "unexpected_error": true,
     "time": 15.506726503372192,
     "message": [

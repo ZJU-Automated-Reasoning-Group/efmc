@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "trex3.sl_64bits_unsigned.smt2",
+    "file": "trex3",
     "unexpected_error": true,
     "time": 6.780918598175049,
     "message": [

@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "sum01_false-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "sum01_false-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 8.997965574264526,
     "message": [

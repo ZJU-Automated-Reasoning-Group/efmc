@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "cegar2-new.sl_64bits_signed.smt2",
+    "file": "cegar2-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

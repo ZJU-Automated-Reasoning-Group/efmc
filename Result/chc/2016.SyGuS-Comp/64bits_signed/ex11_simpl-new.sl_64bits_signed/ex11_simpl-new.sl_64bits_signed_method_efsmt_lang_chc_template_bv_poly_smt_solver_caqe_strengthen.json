@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "ex11_simpl-new.sl_64bits_signed.smt2",
+    "file": "ex11_simpl-new",
     "unexpected_error": true,
     "time": 11.16721510887146,
     "message": [

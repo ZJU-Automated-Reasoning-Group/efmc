@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "caqe",
-    "file": "const_false-unreach-call1.sl_64bits_signed.smt2",
+    "file": "const_false-unreach-call1",
     "timeout": true,
     "unknown": true,
     "time": 60,

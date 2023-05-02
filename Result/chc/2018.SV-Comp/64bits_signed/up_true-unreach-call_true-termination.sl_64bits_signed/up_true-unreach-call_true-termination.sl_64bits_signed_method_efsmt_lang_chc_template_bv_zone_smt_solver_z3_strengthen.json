@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "up_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "up_true-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "sum1.sl_32bits_unsigned.smt2",
+    "file": "sum1",
     "unexpected_error": true,
     "time": 9.947956085205078,
     "message": [

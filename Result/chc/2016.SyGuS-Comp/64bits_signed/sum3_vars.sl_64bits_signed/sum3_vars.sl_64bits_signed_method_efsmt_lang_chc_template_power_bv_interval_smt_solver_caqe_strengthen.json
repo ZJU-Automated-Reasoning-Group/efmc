@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sum3_vars.sl_64bits_signed.smt2",
+    "file": "sum3_vars",
     "unexpected_error": true,
     "time": 12.427062511444092,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "hhk2008_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "hhk2008_true-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

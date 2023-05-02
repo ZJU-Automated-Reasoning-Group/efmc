@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "cd15",
-    "file": "s_split_06.smt2unsafe_32bits_unsigned.smt2",
+    "file": "s_split_06",
     "timeout": true,
     "unknown": true,
     "time": 60,

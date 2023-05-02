@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "cggmp-new.sl_32bits_unsigned.smt2",
+    "file": "cggmp-new",
     "unexpected_error": true,
     "time": 3.9101457595825195,
     "message": [

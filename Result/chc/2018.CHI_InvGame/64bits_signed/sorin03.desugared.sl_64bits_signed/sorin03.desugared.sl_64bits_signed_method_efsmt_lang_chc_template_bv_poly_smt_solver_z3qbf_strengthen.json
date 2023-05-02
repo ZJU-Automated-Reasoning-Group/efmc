@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "sorin03.desugared.sl_64bits_signed.smt2",
+    "file": "sorin03.desugared",
     "unexpected_error": true,
     "time": 12.836599111557007,
     "message": [

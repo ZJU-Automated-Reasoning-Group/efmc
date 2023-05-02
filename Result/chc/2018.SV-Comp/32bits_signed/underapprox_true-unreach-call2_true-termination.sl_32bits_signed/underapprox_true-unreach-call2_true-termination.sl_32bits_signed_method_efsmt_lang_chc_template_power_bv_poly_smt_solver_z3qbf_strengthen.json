@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "underapprox_true-unreach-call2_true-termination.sl_32bits_signed.smt2",
+    "file": "underapprox_true-unreach-call2_true-termination",
     "unexpected_error": true,
     "time": 4.893911600112915,
     "message": [

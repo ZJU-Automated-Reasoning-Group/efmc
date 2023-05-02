@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "yices2",
     "strengthen": true,
-    "file": "s_split_48.smt2safe_32bits_unsigned.smt2",
+    "file": "s_split_48",
     "overflow": false,
     "underflow": false,
     "unknown": true,

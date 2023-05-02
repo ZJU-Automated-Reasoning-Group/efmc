@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "vardep.sl_32bits_signed.smt2",
+    "file": "vardep",
     "overflow": false,
     "underflow": false,
     "unknown": true,

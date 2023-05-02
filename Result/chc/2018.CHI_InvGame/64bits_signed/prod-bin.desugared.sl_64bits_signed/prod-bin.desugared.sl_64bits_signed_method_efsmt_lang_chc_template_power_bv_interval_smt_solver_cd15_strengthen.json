@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "prod-bin.desugared.sl_64bits_signed.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 5.418781757354736,
     "message": [

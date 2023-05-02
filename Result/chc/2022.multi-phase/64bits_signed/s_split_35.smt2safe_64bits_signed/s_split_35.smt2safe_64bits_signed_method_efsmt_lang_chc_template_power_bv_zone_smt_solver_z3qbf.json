@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "z3qbf",
-    "file": "s_split_35.smt2safe_64bits_signed.smt2",
+    "file": "s_split_35",
     "timeout": true,
     "unknown": true,
     "time": 60,

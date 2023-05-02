@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "mathsat",
-    "file": "underapprox_false-unreach-call1_true-termination.sl_32bits_unsigned.smt2",
+    "file": "underapprox_false-unreach-call1_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

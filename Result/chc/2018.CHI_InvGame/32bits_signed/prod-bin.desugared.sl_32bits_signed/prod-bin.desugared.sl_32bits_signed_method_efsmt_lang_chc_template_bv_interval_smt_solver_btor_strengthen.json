@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "btor",
     "strengthen": true,
-    "file": "prod-bin.desugared.sl_32bits_signed.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 6.180081605911255,
     "message": [

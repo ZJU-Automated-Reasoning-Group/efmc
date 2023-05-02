@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "q3b",
-    "file": "matrix2_simp.sl_64bits_unsigned.smt2",
+    "file": "matrix2_simp",
     "overflow": false,
     "underflow": false,
     "unknown": true,

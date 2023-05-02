@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "ex14-new.sl_64bits_signed.smt2",
+    "file": "ex14-new",
     "unexpected_error": true,
     "time": 8.482307434082031,
     "message": [

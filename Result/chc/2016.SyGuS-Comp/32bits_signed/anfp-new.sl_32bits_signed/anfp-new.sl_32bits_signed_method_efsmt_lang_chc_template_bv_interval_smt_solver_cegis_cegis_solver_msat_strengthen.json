@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "anfp-new.sl_32bits_signed.smt2",
+    "file": "anfp-new",
     "unexpected_error": true,
     "time": 7.0370728969573975,
     "message": [

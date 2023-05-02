@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "matrix2.sl_64bits_unsigned.smt2",
+    "file": "matrix2",
     "unexpected_error": true,
     "time": 10.604871034622192,
     "message": [

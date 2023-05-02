@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "gc4",
-    "file": "sum3.sl_64bits_unsigned.smt2",
+    "file": "sum3",
     "timeout": true,
     "unknown": true,
     "time": 60,

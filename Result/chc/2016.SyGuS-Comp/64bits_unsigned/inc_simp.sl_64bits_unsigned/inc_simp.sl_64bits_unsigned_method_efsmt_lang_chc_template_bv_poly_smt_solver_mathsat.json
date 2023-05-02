@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "mathsat",
-    "file": "inc_simp.sl_64bits_unsigned.smt2",
+    "file": "inc_simp",
     "overflow": false,
     "underflow": false,
     "unknown": true,

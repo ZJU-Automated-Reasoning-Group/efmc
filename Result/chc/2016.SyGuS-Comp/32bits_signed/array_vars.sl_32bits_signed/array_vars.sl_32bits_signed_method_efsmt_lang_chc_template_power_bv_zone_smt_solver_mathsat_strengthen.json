@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "array_vars.sl_32bits_signed.smt2",
+    "file": "array_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

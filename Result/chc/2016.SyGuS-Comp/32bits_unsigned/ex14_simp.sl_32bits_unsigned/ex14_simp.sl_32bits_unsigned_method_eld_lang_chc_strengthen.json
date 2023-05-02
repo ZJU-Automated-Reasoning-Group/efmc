@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "ex14_simp.sl_32bits_unsigned.smt2",
-    "unknown": true,
+    "file": "ex14_simp",
     "time": 9.506155014038086,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

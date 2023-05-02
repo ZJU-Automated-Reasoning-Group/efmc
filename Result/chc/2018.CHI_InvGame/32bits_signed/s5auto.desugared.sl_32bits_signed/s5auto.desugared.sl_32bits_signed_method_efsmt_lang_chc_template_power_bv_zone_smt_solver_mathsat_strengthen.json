@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "s5auto.desugared.sl_32bits_signed.smt2",
+    "file": "s5auto.desugared",
     "overflow": false,
     "underflow": false,
     "unknown": true,

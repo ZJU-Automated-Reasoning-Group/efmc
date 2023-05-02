@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "gj2007_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "gj2007_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 9.936963319778442,
     "message": [

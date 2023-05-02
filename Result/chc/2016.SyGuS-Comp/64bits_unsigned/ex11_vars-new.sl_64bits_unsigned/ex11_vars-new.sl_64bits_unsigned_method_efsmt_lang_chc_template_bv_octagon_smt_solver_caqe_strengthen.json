@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "ex11_vars-new.sl_64bits_unsigned.smt2",
+    "file": "ex11_vars-new",
     "unexpected_error": true,
     "time": 25.104326725006104,
     "message": [

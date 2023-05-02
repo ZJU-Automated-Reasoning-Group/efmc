@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "btor",
     "strengthen": true,
-    "file": "fig1_vars-new.sl_64bits_signed.smt2",
+    "file": "fig1_vars-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

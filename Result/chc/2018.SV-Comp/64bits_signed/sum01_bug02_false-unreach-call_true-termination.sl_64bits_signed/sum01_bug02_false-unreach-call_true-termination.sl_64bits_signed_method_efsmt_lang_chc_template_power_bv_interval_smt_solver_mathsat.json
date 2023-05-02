@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "mathsat",
-    "file": "sum01_bug02_false-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "sum01_bug02_false-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

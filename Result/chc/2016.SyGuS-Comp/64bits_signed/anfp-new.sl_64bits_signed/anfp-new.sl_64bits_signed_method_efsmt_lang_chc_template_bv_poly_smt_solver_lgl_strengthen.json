@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "anfp-new.sl_64bits_signed.smt2",
+    "file": "anfp-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "s_split_28.smt2unsafe_32bits_unsigned.smt2",
+    "file": "s_split_28",
     "overflow": false,
     "underflow": false,
     "unknown": true,

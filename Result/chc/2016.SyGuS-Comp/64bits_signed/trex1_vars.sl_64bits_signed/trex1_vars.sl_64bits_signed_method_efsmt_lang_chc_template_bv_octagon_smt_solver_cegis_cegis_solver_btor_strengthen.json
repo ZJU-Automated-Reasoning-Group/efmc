@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "trex1_vars.sl_64bits_signed.smt2",
+    "file": "trex1_vars",
     "unexpected_error": true,
     "time": 22.099727869033813,
     "message": [

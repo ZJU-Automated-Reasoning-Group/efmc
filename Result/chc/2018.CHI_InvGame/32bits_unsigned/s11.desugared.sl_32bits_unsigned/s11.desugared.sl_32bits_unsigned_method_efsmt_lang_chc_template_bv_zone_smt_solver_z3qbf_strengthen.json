@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "s11.desugared.sl_32bits_unsigned.smt2",
+    "file": "s11.desugared",
     "unexpected_error": true,
     "time": 8.69513988494873,
     "message": [

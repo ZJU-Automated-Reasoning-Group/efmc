@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "fig1.sl_32bits_unsigned.smt2",
+    "file": "fig1",
     "safe": false,
     "time": 0.4467625617980957,
     "message": [

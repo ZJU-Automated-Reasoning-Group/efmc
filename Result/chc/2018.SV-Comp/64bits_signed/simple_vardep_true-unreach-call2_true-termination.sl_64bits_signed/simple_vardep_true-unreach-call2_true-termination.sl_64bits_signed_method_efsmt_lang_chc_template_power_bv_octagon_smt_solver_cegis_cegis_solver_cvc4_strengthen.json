@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "simple_vardep_true-unreach-call2_true-termination.sl_64bits_signed.smt2",
+    "file": "simple_vardep_true-unreach-call2_true-termination",
     "unexpected_error": true,
     "time": 4.229393243789673,
     "message": [

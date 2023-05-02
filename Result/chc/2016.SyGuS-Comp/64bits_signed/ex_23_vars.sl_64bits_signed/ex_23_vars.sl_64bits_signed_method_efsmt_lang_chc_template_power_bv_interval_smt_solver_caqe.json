@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "caqe",
-    "file": "ex_23_vars.sl_64bits_signed.smt2",
+    "file": "ex_23_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

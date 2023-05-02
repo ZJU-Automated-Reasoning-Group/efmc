@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "array_simp.sl_64bits_signed.smt2",
+    "file": "array_simp",
     "unexpected_error": true,
     "time": 15.517398357391357,
     "message": [

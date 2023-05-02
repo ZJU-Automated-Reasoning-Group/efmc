@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "caqe",
-    "file": "sum01_bug02_sum01_bug02_base.sl_64bits_signed.smt2",
+    "file": "sum01_bug02_sum01_bug02_base",
     "timeout": true,
     "unknown": true,
     "time": 60,

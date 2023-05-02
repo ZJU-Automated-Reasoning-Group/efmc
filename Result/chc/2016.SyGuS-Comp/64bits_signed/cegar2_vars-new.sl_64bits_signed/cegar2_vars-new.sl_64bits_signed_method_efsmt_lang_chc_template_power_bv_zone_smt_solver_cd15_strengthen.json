@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "cegar2_vars-new.sl_64bits_signed.smt2",
+    "file": "cegar2_vars-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

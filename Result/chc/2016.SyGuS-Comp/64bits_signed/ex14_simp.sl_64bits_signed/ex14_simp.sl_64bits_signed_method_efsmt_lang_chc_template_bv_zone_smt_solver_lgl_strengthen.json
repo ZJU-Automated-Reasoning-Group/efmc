@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "ex14_simp.sl_64bits_signed.smt2",
+    "file": "ex14_simp",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "css2003_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "css2003_true-unreach-call_true-termination",
     "safe": true,
     "time": 3.097637414932251,
     "message": [

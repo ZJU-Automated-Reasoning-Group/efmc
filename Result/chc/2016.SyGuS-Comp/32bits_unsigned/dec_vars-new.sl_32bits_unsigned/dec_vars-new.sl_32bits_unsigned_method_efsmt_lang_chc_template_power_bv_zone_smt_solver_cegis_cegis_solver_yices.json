@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "dec_vars-new.sl_32bits_unsigned.smt2",
+    "file": "dec_vars-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

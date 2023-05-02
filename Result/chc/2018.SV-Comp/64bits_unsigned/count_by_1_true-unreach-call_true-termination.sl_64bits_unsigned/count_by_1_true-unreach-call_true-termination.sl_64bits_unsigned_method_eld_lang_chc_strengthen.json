@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "count_by_1_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
-    "unknown": true,
+    "file": "count_by_1_true-unreach-call_true-termination",
     "time": 9.689062595367432,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

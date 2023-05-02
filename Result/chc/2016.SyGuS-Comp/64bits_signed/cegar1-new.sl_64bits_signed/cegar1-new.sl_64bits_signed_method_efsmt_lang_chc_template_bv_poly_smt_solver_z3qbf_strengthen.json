@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "cegar1-new.sl_64bits_signed.smt2",
+    "file": "cegar1-new",
     "unexpected_error": true,
     "time": 6.445003509521484,
     "message": [

@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "minor3.sl_32bits_unsigned.smt2",
+    "file": "minor3",
     "unexpected_error": true,
     "time": 4.586168527603149,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cvc5",
     "strengthen": true,
-    "file": "dec_simpl-new.sl_64bits_signed.smt2",
+    "file": "dec_simpl-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

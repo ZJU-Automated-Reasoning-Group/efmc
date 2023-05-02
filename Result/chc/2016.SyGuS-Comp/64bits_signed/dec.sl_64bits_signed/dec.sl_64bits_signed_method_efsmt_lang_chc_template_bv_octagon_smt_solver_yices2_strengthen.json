@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "yices2",
     "strengthen": true,
-    "file": "dec.sl_64bits_signed.smt2",
+    "file": "dec",
     "overflow": false,
     "underflow": false,
     "safe": true,

@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "array.sl_32bits_signed.smt2",
+    "file": "array",
     "timeout": true,
     "unknown": true,
     "time": 60,

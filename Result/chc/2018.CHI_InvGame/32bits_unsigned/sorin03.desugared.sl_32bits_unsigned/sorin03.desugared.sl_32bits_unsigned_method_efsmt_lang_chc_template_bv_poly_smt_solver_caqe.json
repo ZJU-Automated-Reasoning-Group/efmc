@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "caqe",
-    "file": "sorin03.desugared.sl_32bits_unsigned.smt2",
+    "file": "sorin03.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

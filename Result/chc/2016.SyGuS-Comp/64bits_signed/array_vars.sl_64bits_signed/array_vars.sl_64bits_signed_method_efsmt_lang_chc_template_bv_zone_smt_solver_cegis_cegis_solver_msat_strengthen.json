@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "array_vars.sl_64bits_signed.smt2",
+    "file": "array_vars",
     "unexpected_error": true,
     "time": 33.779436349868774,
     "message": [

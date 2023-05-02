@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "btor",
-    "file": "inc.sl_32bits_unsigned.smt2",
+    "file": "inc",
     "overflow": false,
     "underflow": false,
     "safe": true,

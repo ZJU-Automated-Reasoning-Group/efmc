@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "anfp.sl_32bits_unsigned.smt2",
+    "file": "anfp",
     "unexpected_error": true,
     "time": 3.7977681159973145,
     "message": [

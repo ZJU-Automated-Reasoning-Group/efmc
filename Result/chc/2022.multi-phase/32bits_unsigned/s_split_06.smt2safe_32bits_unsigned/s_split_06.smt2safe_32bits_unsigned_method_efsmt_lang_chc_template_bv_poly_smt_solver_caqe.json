@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "caqe",
-    "file": "s_split_06.smt2safe_32bits_unsigned.smt2",
+    "file": "s_split_06",
     "timeout": true,
     "unknown": true,
     "time": 60,

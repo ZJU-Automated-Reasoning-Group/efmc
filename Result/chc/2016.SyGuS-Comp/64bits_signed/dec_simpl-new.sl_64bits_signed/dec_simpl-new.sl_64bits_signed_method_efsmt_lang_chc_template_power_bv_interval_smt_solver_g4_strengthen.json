@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "g4",
     "strengthen": true,
-    "file": "dec_simpl-new.sl_64bits_signed.smt2",
+    "file": "dec_simpl-new",
     "unexpected_error": true,
     "time": 4.93279767036438,
     "message": [

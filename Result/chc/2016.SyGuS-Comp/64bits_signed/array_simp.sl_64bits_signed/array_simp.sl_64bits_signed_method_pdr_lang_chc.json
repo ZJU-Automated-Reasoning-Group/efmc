@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "array_simp.sl_64bits_signed.smt2",
+    "file": "array_simp",
     "safe": true,
     "time": 0.7550899982452393,
     "message": [

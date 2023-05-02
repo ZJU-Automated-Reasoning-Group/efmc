@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "bitwuzla",
     "strengthen": true,
-    "file": "sum4_vars.sl_64bits_unsigned.smt2",
+    "file": "sum4_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

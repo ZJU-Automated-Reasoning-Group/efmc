@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "mc",
-    "file": "while_infinite_loop_3_true-unreach-call_false-termination.sl_64bits_unsigned.smt2",
+    "file": "while_infinite_loop_3_true-unreach-call_false-termination",
     "unexpected_error": true,
     "time": 3.872007131576538,
     "message": [

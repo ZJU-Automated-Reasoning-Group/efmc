@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "sum04_false-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "sum04_false-unreach-call_true-termination",
     "safe": false,
     "time": 6.247304201126099,
     "message": [

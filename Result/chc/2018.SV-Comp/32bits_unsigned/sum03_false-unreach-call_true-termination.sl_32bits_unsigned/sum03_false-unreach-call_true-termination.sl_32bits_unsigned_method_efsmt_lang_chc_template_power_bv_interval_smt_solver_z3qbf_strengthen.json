@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "sum03_false-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "sum03_false-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 8.626779317855835,
     "message": [

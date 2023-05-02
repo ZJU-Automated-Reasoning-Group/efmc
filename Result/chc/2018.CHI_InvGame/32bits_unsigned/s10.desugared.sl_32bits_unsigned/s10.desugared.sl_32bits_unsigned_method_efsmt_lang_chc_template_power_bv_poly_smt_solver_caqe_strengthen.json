@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "s10.desugared.sl_32bits_unsigned.smt2",
+    "file": "s10.desugared",
     "unexpected_error": true,
     "time": 10.68437123298645,
     "message": [

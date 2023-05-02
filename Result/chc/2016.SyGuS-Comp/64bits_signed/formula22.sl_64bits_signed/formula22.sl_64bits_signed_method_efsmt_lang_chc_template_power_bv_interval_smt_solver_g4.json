@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "g4",
-    "file": "formula22.sl_64bits_signed.smt2",
+    "file": "formula22",
     "timeout": true,
     "unknown": true,
     "time": 60,

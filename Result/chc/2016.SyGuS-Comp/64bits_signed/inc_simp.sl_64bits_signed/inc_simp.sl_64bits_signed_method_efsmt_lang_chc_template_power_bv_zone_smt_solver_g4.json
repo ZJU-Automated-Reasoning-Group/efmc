@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "g4",
-    "file": "inc_simp.sl_64bits_signed.smt2",
+    "file": "inc_simp",
     "timeout": true,
     "unknown": true,
     "time": 60,

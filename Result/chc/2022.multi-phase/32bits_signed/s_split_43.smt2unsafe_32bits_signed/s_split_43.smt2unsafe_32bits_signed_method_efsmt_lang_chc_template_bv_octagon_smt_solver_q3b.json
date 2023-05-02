@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "q3b",
-    "file": "s_split_43.smt2unsafe_32bits_signed.smt2",
+    "file": "s_split_43",
     "overflow": false,
     "underflow": false,
     "unknown": true,

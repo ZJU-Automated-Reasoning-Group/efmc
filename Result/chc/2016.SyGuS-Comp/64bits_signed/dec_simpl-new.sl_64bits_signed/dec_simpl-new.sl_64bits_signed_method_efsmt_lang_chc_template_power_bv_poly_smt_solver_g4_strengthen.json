@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "g4",
     "strengthen": true,
-    "file": "dec_simpl-new.sl_64bits_signed.smt2",
+    "file": "dec_simpl-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

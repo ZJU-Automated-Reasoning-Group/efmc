@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "s10.desugared.sl_64bits_signed.smt2",
+    "file": "s10.desugared",
     "unexpected_error": true,
     "time": 15.284148216247559,
     "message": [

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "lgl",
-    "file": "ex11-new.sl_64bits_signed.smt2",
+    "file": "ex11-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

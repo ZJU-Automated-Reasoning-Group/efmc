@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "const_false-unreach-call1.sl_32bits_unsigned.smt2",
+    "file": "const_false-unreach-call1",
     "timeout": true,
     "unknown": true,
     "time": 60,

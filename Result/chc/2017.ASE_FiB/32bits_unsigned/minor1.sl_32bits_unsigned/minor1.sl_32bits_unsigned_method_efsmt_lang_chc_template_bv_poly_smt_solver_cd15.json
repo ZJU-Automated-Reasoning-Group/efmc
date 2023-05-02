@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "cd15",
-    "file": "minor1.sl_32bits_unsigned.smt2",
+    "file": "minor1",
     "timeout": true,
     "unknown": true,
     "time": 60,

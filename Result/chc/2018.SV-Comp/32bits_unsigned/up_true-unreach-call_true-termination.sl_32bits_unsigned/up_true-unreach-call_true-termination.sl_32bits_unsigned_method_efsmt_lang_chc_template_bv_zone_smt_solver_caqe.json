@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "caqe",
-    "file": "up_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "up_true-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

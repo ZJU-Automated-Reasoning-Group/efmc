@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "cegar2.sl_64bits_signed.smt2",
+    "file": "cegar2",
     "safe": true,
     "time": 31.703163385391235,
     "message": [

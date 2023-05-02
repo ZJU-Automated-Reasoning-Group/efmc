@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "btor",
-    "file": "while_infinite_loop_4_false-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "while_infinite_loop_4_false-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

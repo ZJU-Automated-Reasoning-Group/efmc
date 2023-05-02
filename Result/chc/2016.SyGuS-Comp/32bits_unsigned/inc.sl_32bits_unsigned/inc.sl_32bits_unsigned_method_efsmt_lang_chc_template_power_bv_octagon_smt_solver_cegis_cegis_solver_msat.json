@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "inc.sl_32bits_unsigned.smt2",
+    "file": "inc",
     "unexpected_error": true,
     "time": 6.112987041473389,
     "message": [

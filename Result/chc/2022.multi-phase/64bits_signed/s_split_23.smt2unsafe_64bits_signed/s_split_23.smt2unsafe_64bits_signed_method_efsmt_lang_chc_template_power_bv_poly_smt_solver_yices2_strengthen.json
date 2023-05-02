@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "yices2",
     "strengthen": true,
-    "file": "s_split_23.smt2unsafe_64bits_signed.smt2",
+    "file": "s_split_23",
     "overflow": false,
     "underflow": false,
     "unknown": true,

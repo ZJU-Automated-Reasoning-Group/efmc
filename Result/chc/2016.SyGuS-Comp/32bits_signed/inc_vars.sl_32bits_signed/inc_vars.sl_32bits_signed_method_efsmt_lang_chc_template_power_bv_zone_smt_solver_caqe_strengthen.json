@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "inc_vars.sl_32bits_signed.smt2",
+    "file": "inc_vars",
     "unexpected_error": true,
     "time": 8.50101089477539,
     "message": [

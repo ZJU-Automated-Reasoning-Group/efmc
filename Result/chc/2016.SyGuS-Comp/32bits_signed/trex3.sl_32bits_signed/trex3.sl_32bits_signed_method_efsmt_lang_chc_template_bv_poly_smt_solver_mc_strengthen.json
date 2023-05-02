@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "mc",
     "strengthen": true,
-    "file": "trex3.sl_32bits_signed.smt2",
+    "file": "trex3",
     "unexpected_error": true,
     "time": 25.25821280479431,
     "message": [

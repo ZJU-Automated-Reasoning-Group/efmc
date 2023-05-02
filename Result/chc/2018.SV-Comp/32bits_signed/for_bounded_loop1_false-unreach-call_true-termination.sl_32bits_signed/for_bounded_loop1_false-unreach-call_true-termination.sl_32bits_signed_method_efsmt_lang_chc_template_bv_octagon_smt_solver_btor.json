@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "btor",
-    "file": "for_bounded_loop1_false-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "file": "for_bounded_loop1_false-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

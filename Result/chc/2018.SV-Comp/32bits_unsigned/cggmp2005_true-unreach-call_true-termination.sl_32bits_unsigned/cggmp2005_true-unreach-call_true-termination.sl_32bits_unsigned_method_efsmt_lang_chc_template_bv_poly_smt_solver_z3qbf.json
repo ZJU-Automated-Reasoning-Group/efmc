@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "z3qbf",
-    "file": "cggmp2005_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "cggmp2005_true-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

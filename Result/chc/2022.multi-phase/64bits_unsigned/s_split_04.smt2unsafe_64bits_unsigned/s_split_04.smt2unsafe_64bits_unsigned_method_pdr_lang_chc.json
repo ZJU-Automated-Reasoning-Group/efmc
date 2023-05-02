@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "s_split_04.smt2unsafe_64bits_unsigned.smt2",
+    "file": "s_split_04",
     "timeout": true,
     "unknown": true,
     "time": 60,

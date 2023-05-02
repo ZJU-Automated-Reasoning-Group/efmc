@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "non-lin-ineq-4.desugared.sl_64bits_signed.smt2",
+    "file": "non-lin-ineq-4.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

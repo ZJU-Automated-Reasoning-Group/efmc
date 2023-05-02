@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "s_split_05.smt2safe_64bits_unsigned.smt2",
+    "file": "s_split_05",
     "unexpected_error": true,
     "time": 1.5986661911010742,
     "message": [

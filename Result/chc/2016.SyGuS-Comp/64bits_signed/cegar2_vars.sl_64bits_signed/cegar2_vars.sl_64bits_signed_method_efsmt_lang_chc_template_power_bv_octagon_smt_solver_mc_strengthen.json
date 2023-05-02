@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "mc",
     "strengthen": true,
-    "file": "cegar2_vars.sl_64bits_signed.smt2",
+    "file": "cegar2_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

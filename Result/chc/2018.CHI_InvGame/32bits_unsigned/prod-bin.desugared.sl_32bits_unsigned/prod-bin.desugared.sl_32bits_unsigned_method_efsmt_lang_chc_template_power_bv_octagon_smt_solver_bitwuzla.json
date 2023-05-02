@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "bitwuzla",
-    "file": "prod-bin.desugared.sl_32bits_unsigned.smt2",
+    "file": "prod-bin.desugared",
     "unexpected_error": true,
     "time": 5.192095756530762,
     "message": [

@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "array_simp.sl_32bits_signed.smt2",
+    "file": "array_simp",
     "unexpected_error": true,
     "time": 7.522801160812378,
     "message": [

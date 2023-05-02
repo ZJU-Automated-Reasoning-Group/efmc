@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "cegar2.sl_32bits_signed.smt2",
+    "file": "cegar2",
     "unexpected_error": true,
     "time": 6.36909556388855,
     "message": [

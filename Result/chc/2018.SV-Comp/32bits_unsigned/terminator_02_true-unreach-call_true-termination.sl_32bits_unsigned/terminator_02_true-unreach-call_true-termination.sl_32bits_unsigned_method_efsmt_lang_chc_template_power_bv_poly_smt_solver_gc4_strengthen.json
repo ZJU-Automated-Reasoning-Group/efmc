@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "terminator_02_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "terminator_02_true-unreach-call_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

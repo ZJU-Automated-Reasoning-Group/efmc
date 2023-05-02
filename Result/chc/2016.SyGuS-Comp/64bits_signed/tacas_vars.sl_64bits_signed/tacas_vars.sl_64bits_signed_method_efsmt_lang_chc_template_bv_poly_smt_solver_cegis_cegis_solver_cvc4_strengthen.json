@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "tacas_vars.sl_64bits_signed.smt2",
+    "file": "tacas_vars",
     "unexpected_error": true,
     "time": 6.346199035644531,
     "message": [

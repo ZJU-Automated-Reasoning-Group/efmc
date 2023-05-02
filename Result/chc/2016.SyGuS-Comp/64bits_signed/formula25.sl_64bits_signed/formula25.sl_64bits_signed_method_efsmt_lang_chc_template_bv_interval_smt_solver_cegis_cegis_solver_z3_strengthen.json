@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "z3",
     "strengthen": true,
-    "file": "formula25.sl_64bits_signed.smt2",
+    "file": "formula25",
     "unexpected_error": true,
     "time": 7.912652015686035,
     "message": [

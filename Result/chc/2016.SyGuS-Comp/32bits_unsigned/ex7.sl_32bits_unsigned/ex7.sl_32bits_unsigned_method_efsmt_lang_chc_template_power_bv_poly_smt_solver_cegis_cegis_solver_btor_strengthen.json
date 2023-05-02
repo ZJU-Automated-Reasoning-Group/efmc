@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "btor",
     "strengthen": true,
-    "file": "ex7.sl_32bits_unsigned.smt2",
+    "file": "ex7",
     "unexpected_error": true,
     "time": 10.31876826286316,
     "message": [

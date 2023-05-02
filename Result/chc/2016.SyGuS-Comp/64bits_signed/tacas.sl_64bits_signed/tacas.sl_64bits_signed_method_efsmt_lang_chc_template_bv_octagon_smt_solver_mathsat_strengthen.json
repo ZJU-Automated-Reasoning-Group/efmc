@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "tacas.sl_64bits_signed.smt2",
+    "file": "tacas",
     "overflow": false,
     "underflow": false,
     "unknown": true,

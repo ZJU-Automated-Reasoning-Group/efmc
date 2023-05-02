@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "gauss_sum-more-rows.auto.sl_64bits_signed.smt2",
+    "file": "gauss_sum-more-rows.auto",
     "timeout": true,
     "unknown": true,
     "time": 60,

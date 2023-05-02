@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "fib_17n.sl_64bits_signed.smt2",
+    "file": "fib_17n",
     "unexpected_error": true,
     "time": 17.97677779197693,
     "message": [

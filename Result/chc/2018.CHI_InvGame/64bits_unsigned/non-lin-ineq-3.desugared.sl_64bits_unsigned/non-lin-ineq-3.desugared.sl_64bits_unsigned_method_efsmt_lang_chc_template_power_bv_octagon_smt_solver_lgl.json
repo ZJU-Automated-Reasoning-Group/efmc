@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "lgl",
-    "file": "non-lin-ineq-3.desugared.sl_64bits_unsigned.smt2",
+    "file": "non-lin-ineq-3.desugared",
     "timeout": true,
     "unknown": true,
     "time": 60,

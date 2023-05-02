@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "s_split_30.smt2safe_64bits_signed.smt2",
+    "file": "s_split_30",
     "unexpected_error": true,
     "time": 8.608913898468018,
     "message": [

@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "sum1.sl_64bits_signed.smt2",
+    "file": "sum1",
     "unexpected_error": true,
     "time": 5.180480241775513,
     "message": [

@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "sum1.sl_64bits_signed.smt2",
+    "file": "sum1",
     "unexpected_error": true,
     "time": 6.738285303115845,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "vsend.sl_32bits_unsigned.smt2",
+    "file": "vsend",
     "unexpected_error": true,
     "time": 6.2887351512908936,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "const_false-unreach-call1.sl_32bits_signed.smt2",
+    "file": "const_false-unreach-call1",
     "unexpected_error": true,
     "time": 5.6452319622039795,
     "message": [

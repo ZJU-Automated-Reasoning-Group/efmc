@@ -2,7 +2,7 @@
     "method": "pdr",
     "lang": "chc",
     "strengthen": true,
-    "file": "while_infinite_loop_4_false-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "file": "while_infinite_loop_4_false-unreach-call_true-termination",
     "safe": false,
     "time": 0.46429014205932617,
     "message": [

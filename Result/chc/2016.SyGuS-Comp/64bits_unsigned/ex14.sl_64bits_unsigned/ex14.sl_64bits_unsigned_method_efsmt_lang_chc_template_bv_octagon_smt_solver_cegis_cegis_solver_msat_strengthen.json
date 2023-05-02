@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "ex14.sl_64bits_unsigned.smt2",
+    "file": "ex14",
     "unexpected_error": true,
     "time": 3.6698646545410156,
     "message": [

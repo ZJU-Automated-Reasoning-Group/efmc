@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "lgl",
-    "file": "simple_false-unreach-call2_true-termination.sl_64bits_signed.smt2",
+    "file": "simple_false-unreach-call2_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

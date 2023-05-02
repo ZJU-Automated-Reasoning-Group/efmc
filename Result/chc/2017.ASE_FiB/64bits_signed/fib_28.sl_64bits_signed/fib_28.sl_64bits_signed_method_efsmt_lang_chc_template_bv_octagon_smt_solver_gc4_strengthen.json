@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "fib_28.sl_64bits_signed.smt2",
+    "file": "fib_28",
     "timeout": true,
     "unknown": true,
     "time": 60,

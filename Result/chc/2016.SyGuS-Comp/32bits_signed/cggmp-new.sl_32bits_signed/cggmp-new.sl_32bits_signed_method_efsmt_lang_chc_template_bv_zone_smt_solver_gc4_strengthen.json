@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "cggmp-new.sl_32bits_signed.smt2",
+    "file": "cggmp-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "g4",
-    "file": "sum01_bug02_sum01_bug02_base.sl_32bits_unsigned.smt2",
+    "file": "sum01_bug02_sum01_bug02_base",
     "timeout": true,
     "unknown": true,
     "time": 60,

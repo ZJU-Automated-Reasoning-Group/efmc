@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "yices2",
     "strengthen": true,
-    "file": "fib_35.sl_64bits_signed.smt2",
+    "file": "fib_35",
     "overflow": false,
     "underflow": false,
     "safe": true,

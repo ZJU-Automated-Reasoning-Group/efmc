@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "cd15",
-    "file": "anfp-new.sl_64bits_signed.smt2",
+    "file": "anfp-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

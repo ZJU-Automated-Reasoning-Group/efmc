@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "gauss_sum-more-rows.auto.sl_64bits_unsigned.smt2",
+    "file": "gauss_sum-more-rows.auto",
     "timeout": true,
     "unknown": true,
     "time": 60,

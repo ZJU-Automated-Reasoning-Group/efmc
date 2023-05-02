@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "minor3.sl_64bits_unsigned.smt2",
+    "file": "minor3",
     "unexpected_error": true,
     "time": 13.268869161605835,
     "message": [

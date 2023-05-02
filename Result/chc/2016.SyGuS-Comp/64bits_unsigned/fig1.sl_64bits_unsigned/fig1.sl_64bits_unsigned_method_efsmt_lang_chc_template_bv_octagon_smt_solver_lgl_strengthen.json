@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "lgl",
     "strengthen": true,
-    "file": "fig1.sl_64bits_unsigned.smt2",
+    "file": "fig1",
     "unexpected_error": true,
     "time": 3.6597702503204346,
     "message": [

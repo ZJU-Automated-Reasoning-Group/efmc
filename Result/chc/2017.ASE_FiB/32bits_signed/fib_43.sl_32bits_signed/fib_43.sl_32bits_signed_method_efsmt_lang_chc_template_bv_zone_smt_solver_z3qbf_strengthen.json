@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "fib_43.sl_32bits_signed.smt2",
+    "file": "fib_43",
     "unexpected_error": true,
     "time": 11.736347198486328,
     "message": [

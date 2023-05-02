@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_interval",
     "smt_solver": "q3b",
-    "file": "fib_30_x.sl_32bits_unsigned.smt2",
+    "file": "fib_30_x",
     "overflow": false,
     "underflow": false,
     "unknown": true,

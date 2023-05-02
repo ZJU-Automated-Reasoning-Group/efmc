@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "s_split_04.smt2safe_32bits_signed.smt2",
+    "file": "s_split_04",
     "unexpected_error": true,
     "time": 6.200281143188477,
     "message": [

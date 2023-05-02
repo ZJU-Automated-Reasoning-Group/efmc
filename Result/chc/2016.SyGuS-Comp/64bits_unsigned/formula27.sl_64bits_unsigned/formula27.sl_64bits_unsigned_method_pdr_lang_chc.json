@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "formula27.sl_64bits_unsigned.smt2",
+    "file": "formula27",
     "safe": true,
     "time": 1.0470516681671143,
     "message": [

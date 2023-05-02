@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "s_split_46.smt2safe_64bits_signed.smt2",
-    "unknown": true,
+    "file": "s_split_46",
     "time": 10.725938558578491,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

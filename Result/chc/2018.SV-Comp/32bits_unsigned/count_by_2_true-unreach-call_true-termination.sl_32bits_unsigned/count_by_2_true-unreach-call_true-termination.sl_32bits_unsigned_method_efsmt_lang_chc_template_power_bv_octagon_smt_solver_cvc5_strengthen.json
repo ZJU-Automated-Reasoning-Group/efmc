@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "cvc5",
     "strengthen": true,
-    "file": "count_by_2_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "count_by_2_true-unreach-call_true-termination",
     "unexpected_error": true,
     "time": 5.074120283126831,
     "message": [

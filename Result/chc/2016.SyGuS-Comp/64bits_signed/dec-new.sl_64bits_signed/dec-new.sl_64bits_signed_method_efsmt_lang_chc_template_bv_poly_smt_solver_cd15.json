@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "cd15",
-    "file": "dec-new.sl_64bits_signed.smt2",
+    "file": "dec-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "inc_simp.sl_64bits_signed.smt2",
+    "file": "inc_simp",
     "overflow": false,
     "underflow": false,
     "unknown": true,

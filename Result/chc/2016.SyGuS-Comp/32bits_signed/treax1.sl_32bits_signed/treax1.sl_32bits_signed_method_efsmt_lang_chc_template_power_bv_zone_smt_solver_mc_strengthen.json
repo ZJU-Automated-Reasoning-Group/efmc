@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "mc",
     "strengthen": true,
-    "file": "treax1.sl_32bits_signed.smt2",
+    "file": "treax1",
     "overflow": false,
     "underflow": false,
     "unknown": true,

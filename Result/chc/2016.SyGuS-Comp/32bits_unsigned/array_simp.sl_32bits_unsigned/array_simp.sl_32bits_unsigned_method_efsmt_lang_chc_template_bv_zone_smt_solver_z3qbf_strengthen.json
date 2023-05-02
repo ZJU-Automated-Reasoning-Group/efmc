@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "array_simp.sl_32bits_unsigned.smt2",
+    "file": "array_simp",
     "unexpected_error": true,
     "time": 6.536242246627808,
     "message": [

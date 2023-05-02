@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "yices2",
-    "file": "sqrt-more-rows-swap-columns.sl_32bits_signed.smt2",
+    "file": "sqrt-more-rows-swap-columns",
     "overflow": false,
     "underflow": false,
     "unknown": true,

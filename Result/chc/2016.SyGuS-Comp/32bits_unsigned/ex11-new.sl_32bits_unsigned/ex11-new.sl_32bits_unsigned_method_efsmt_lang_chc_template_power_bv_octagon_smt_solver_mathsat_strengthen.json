@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "ex11-new.sl_32bits_unsigned.smt2",
+    "file": "ex11-new",
     "unexpected_error": true,
     "time": 3.199887990951538,
     "message": [

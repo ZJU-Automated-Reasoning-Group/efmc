@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "array.sl_32bits_unsigned.smt2",
+    "file": "array",
     "overflow": false,
     "underflow": false,
     "unknown": true,

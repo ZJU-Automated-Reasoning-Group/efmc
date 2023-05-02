@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "cube2.desugared.sl_64bits_signed.smt2",
+    "file": "cube2.desugared",
     "unexpected_error": true,
     "time": 7.197030544281006,
     "message": [

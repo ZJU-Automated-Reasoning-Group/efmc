@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
     "strengthen": true,
-    "file": "sorin04.desugared.sl_64bits_signed.smt2",
+    "file": "sorin04.desugared",
     "unexpected_error": true,
     "time": 7.772397994995117,
     "message": [

@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "minor1.sl_32bits_unsigned.smt2",
+    "file": "minor1",
     "unexpected_error": true,
     "time": 6.272741317749023,
     "message": [

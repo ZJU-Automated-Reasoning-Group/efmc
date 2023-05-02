@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "fib_01.sl_64bits_unsigned.smt2",
+    "file": "fib_01",
     "unexpected_error": true,
     "time": 7.847702264785767,
     "message": [

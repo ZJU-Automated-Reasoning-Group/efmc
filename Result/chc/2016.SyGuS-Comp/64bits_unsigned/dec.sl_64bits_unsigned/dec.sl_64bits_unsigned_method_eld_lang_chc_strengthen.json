@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "dec.sl_64bits_unsigned.smt2",
-    "unknown": true,
+    "file": "dec",
     "time": 12.380512952804565,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

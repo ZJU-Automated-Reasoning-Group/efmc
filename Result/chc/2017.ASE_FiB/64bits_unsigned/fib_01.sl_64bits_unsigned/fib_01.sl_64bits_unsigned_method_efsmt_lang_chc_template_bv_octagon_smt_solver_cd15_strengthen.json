@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "cd15",
     "strengthen": true,
-    "file": "fib_01.sl_64bits_unsigned.smt2",
+    "file": "fib_01",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -2,10 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "strengthen": true,
-    "file": "inc_vars.sl_32bits_unsigned.smt2",
-    "unknown": true,
+    "file": "inc_vars",
     "time": 9.542397499084473,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "g4",
     "strengthen": true,
-    "file": "s_split_46.smt2safe_64bits_signed.smt2",
+    "file": "s_split_46",
     "timeout": true,
     "unknown": true,
     "time": 60,

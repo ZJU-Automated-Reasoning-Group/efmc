@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "cegis",
     "cegis_solver": "z3",
-    "file": "underapprox_false-unreach-call1_true-termination.sl_64bits_signed.smt2",
+    "file": "underapprox_false-unreach-call1_true-termination",
     "timeout": true,
     "unknown": true,
     "time": 60,

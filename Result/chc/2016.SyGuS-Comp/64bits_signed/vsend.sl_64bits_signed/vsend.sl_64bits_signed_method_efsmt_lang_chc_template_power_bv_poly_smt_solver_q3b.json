@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_poly",
     "smt_solver": "q3b",
-    "file": "vsend.sl_64bits_signed.smt2",
+    "file": "vsend",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "q3b",
-    "file": "for_infinite_loop_1_true-unreach-call_false-termination.sl_64bits_unsigned.smt2",
+    "file": "for_infinite_loop_1_true-unreach-call_false-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

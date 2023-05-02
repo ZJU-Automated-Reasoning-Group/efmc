@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "vardep.sl_64bits_signed.smt2",
+    "file": "vardep",
     "timeout": true,
     "unknown": true,
     "time": 60,

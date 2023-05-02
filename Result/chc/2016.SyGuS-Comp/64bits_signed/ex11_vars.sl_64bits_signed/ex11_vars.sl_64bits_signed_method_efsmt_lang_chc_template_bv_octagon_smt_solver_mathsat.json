@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_octagon",
     "smt_solver": "mathsat",
-    "file": "ex11_vars.sl_64bits_signed.smt2",
+    "file": "ex11_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

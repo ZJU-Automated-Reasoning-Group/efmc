@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "bitwuzla",
-    "file": "vsend.sl_64bits_unsigned.smt2",
+    "file": "vsend",
     "overflow": false,
     "underflow": false,
     "safe": true,

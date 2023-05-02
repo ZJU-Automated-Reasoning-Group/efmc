@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "formula22.sl_64bits_unsigned.smt2",
+    "file": "formula22",
     "overflow": false,
     "underflow": false,
     "safe": true,

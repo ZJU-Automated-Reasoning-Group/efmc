@@ -4,7 +4,7 @@
     "template": "bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "cube2.desugared.sl_64bits_signed.smt2",
+    "file": "cube2.desugared",
     "unexpected_error": true,
     "time": 15.111650228500366,
     "message": [

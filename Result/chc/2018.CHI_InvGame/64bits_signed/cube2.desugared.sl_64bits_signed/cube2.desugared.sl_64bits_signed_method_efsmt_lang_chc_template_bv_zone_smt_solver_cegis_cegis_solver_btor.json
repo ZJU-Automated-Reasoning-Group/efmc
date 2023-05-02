@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "btor",
-    "file": "cube2.desugared.sl_64bits_signed.smt2",
+    "file": "cube2.desugared",
     "unexpected_error": true,
     "time": 2.936457633972168,
     "message": [

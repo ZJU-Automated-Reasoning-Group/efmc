@@ -4,7 +4,7 @@
     "template": "bv_zone",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "cegar1-new.sl_64bits_unsigned.smt2",
+    "file": "cegar1-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

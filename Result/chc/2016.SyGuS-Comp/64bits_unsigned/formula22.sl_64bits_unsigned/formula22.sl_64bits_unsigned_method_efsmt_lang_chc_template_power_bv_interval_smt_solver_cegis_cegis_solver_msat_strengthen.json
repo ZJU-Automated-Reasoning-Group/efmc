@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "msat",
     "strengthen": true,
-    "file": "formula22.sl_64bits_unsigned.smt2",
+    "file": "formula22",
     "unexpected_error": true,
     "time": 9.659133911132812,
     "message": [

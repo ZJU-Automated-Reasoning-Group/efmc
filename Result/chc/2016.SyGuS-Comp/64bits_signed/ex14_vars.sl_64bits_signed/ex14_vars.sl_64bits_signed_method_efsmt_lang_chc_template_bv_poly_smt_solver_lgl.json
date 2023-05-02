@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_poly",
     "smt_solver": "lgl",
-    "file": "ex14_vars.sl_64bits_signed.smt2",
+    "file": "ex14_vars",
     "timeout": true,
     "unknown": true,
     "time": 60,

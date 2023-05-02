@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_zone",
     "smt_solver": "lgl",
-    "file": "cegar2.sl_32bits_unsigned.smt2",
+    "file": "cegar2",
     "timeout": true,
     "unknown": true,
     "time": 60,

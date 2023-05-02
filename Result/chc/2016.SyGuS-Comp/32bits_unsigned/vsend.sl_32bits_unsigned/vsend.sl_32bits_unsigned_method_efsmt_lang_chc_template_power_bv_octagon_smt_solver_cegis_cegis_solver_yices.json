@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "yices",
-    "file": "vsend.sl_32bits_unsigned.smt2",
+    "file": "vsend",
     "unexpected_error": true,
     "time": 9.597100496292114,
     "message": [

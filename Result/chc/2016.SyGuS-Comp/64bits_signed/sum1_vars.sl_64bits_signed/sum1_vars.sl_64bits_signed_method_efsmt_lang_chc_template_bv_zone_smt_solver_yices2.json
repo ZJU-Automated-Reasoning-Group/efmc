@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "bv_zone",
     "smt_solver": "yices2",
-    "file": "sum1_vars.sl_64bits_signed.smt2",
+    "file": "sum1_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

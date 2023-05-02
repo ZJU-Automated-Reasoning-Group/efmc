@@ -4,7 +4,7 @@
     "template": "power_bv_interval",
     "smt_solver": "z3",
     "strengthen": true,
-    "file": "s_split_28.smt2safe_32bits_unsigned.smt2",
+    "file": "s_split_28",
     "overflow": false,
     "underflow": false,
     "unknown": true,

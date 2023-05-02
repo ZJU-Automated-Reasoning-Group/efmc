@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "q3b",
-    "file": "anfp-new.sl_32bits_signed.smt2",
+    "file": "anfp-new",
     "overflow": false,
     "underflow": false,
     "unknown": true,

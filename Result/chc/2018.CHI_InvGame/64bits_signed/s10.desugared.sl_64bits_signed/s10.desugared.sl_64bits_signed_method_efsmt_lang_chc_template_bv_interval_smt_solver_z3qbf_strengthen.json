@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "s10.desugared.sl_64bits_signed.smt2",
+    "file": "s10.desugared",
     "unexpected_error": true,
     "time": 11.33336615562439,
     "message": [

@@ -4,7 +4,7 @@
     "template": "bv_octagon",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "fib_17n.sl_64bits_unsigned.smt2",
+    "file": "fib_17n",
     "unexpected_error": true,
     "time": 29.01175808906555,
     "message": [

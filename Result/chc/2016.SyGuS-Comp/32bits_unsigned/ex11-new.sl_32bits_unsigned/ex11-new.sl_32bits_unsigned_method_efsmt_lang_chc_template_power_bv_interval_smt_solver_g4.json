@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "g4",
-    "file": "ex11-new.sl_32bits_unsigned.smt2",
+    "file": "ex11-new",
     "timeout": true,
     "unknown": true,
     "time": 60,

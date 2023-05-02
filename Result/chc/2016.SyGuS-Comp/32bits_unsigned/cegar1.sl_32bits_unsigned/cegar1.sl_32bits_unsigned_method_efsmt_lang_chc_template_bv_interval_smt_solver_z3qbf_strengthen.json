@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "z3qbf",
     "strengthen": true,
-    "file": "cegar1.sl_32bits_unsigned.smt2",
+    "file": "cegar1",
     "unexpected_error": true,
     "time": 5.9233903884887695,
     "message": [

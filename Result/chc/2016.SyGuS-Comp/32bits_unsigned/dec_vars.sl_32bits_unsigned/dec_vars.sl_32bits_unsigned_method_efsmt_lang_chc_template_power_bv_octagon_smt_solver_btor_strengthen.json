@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "btor",
     "strengthen": true,
-    "file": "dec_vars.sl_32bits_unsigned.smt2",
+    "file": "dec_vars",
     "overflow": false,
     "underflow": false,
     "unknown": true,

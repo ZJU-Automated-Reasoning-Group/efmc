@@ -1,7 +1,7 @@
 {
     "method": "pdr",
     "lang": "chc",
-    "file": "trex3.sl_64bits_signed.smt2",
+    "file": "trex3",
     "safe": false,
     "time": 0.7537188529968262,
     "message": [

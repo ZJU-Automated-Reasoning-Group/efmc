@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_octagon",
     "smt_solver": "mc",
-    "file": "anfp.sl_64bits_unsigned.smt2",
+    "file": "anfp",
     "timeout": true,
     "unknown": true,
     "time": 60,

@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "cegis",
     "cegis_solver": "cvc4",
-    "file": "ex14-new.sl_32bits_unsigned.smt2",
+    "file": "ex14-new",
     "overflow": false,
     "underflow": false,
     "safe": true,

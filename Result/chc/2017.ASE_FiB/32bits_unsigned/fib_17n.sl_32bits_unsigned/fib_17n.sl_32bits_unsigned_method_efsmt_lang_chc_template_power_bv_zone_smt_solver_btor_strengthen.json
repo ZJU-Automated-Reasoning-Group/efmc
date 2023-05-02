@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "btor",
     "strengthen": true,
-    "file": "fib_17n.sl_32bits_unsigned.smt2",
+    "file": "fib_17n",
     "overflow": false,
     "underflow": false,
     "unknown": true,

@@ -4,7 +4,7 @@
     "template": "power_bv_zone",
     "smt_solver": "cegis",
     "cegis_solver": "msat",
-    "file": "ex11_simpl.sl_32bits_signed.smt2",
+    "file": "ex11_simpl",
     "overflow": false,
     "underflow": false,
     "unknown": true,

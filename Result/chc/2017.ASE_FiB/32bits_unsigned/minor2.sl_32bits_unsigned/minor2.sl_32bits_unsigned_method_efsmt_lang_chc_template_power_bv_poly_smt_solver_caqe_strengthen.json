@@ -4,7 +4,7 @@
     "template": "power_bv_poly",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "minor2.sl_32bits_unsigned.smt2",
+    "file": "minor2",
     "unexpected_error": true,
     "time": 8.910021543502808,
     "message": [

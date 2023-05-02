@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "cegar1_vars.sl_32bits_signed.smt2",
+    "file": "cegar1_vars",
     "unexpected_error": true,
     "time": 26.334641456604004,
     "message": [

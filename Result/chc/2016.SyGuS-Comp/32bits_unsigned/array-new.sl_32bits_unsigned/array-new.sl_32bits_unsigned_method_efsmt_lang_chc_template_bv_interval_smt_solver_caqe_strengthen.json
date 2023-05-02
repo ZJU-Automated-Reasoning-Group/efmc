@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "caqe",
     "strengthen": true,
-    "file": "array-new.sl_32bits_unsigned.smt2",
+    "file": "array-new",
     "unexpected_error": true,
     "time": 8.530808925628662,
     "message": [

@@ -4,7 +4,7 @@
     "template": "power_bv_octagon",
     "smt_solver": "gc4",
     "strengthen": true,
-    "file": "dec.sl_64bits_signed.smt2",
+    "file": "dec",
     "unexpected_error": true,
     "time": 6.288354158401489,
     "message": [

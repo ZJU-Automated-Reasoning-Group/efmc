@@ -4,7 +4,7 @@
     "template": "bv_interval",
     "smt_solver": "mathsat",
     "strengthen": true,
-    "file": "sum04_false-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "file": "sum04_false-unreach-call_true-termination",
     "overflow": false,
     "underflow": false,
     "unknown": true,

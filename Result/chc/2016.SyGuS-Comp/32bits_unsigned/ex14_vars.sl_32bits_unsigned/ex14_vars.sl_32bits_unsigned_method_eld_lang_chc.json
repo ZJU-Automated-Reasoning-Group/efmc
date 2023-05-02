@@ -1,10 +1,10 @@
 {
     "method": "eld",
     "lang": "chc",
-    "file": "ex14_vars.sl_32bits_unsigned.smt2",
-    "unknown": true,
+    "file": "ex14_vars",
     "time": 9.276504278182983,
     "message": [
         ""
-    ]
+    ],
+    "unexpected_error": true
 }

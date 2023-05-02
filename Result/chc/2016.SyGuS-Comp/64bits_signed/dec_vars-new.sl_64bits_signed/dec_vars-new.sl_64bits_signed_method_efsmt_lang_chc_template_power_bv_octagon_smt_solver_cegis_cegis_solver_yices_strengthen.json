@@ -5,7 +5,7 @@
     "smt_solver": "cegis",
     "cegis_solver": "yices",
     "strengthen": true,
-    "file": "dec_vars-new.sl_64bits_signed.smt2",
+    "file": "dec_vars-new",
     "unexpected_error": true,
     "time": 22.778257846832275,
     "message": [

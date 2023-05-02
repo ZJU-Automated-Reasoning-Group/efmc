@@ -3,7 +3,7 @@
     "lang": "chc",
     "template": "power_bv_interval",
     "smt_solver": "q3b",
-    "file": "inc_simp.sl_32bits_unsigned.smt2",
+    "file": "inc_simp",
     "overflow": false,
     "underflow": false,
     "unknown": true,
