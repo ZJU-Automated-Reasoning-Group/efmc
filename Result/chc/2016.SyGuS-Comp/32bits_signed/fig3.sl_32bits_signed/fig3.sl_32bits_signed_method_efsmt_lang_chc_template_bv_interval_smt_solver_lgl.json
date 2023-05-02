@@ -1,0 +1,27 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "bv_interval",
+    "smt_solver": "lgl",
+    "file": "fig3.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 49.50638794898987,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: lgl",
+        " Quantifier elimination + SAT solving",
+        " Translating to DIMACS",
+        " Translating to Boolean formula in Z3",
+        " Finishing generating SAT CNT...",
+        " Calling SAT solver lgl",
+        " unknown",
+        ""
+    ]
+}

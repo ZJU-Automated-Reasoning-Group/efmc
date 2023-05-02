@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "fib_11.sl_64bits_signed.smt2_64bits_signed.sl",
+    "unexpected_error": true,
+    "time": 6.4574360847473145,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((j (_ BitVec 64)) (i (_ BitVec 64)) (x (_ BitVec 64))) Bool (or (bvslt i x) (= (concat ((_ extract 62 0) x) #b0) j)))",
+        " )",
+        ""
+    ]
+}

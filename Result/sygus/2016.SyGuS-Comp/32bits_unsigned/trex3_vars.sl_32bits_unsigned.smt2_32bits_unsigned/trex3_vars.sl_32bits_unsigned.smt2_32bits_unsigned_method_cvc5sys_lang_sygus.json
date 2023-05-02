@@ -1,0 +1,11 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "trex3_vars.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 2.4089341163635254,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

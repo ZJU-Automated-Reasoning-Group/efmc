@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "formula22.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 16.603893518447876,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  11.903793573379517",
+        " safe",
+        " Invariant:  And(Or(0 <= x2, 18446744073709551615*x3 + x2 <= 2),",
+        "     x1 <= x2)",
+        " ",
+        ""
+    ]
+}

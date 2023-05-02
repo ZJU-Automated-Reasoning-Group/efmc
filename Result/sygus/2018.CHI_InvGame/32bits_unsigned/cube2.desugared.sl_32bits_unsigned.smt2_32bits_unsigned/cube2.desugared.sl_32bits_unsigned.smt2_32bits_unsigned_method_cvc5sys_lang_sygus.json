@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "cube2.desugared.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 7.617011785507202,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((z (_ BitVec 32)) (y (_ BitVec 32)) (x (_ BitVec 32)) (n (_ BitVec 32))) Bool (or (bvult n #b00000000000000000000000001100100) (= (bvmul n (bvmul n n)) x)))",
+        " )",
+        ""
+    ]
+}

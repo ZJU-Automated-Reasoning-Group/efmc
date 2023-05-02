@@ -1,0 +1,16 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "dec_simpl-new.sl_64bits_signed.smt2",
+    "safe": false,
+    "time": 6.983749151229858,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.061373233795166016",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

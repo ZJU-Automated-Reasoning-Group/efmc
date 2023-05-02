@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "css2003_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 17.82132363319397,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  12.722482204437256",
+        " safe",
+        " Invariant:  And(k + i <= 2, 1 <= i, 1 <= k + i)",
+        " ",
+        ""
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "s_split_45.smt2unsafe_32bits_signed.smt2_32bits_signed.sl",
+    "unexpected_error": true,
+    "time": 15.139137506484985,
+    "message": [
+        ""
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "const_true-unreach-call1.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 7.055620193481445,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.34593963623046875",
+        " safe",
+        " Invariant:  Or(Not(1024 <= y), x == 0)",
+        " ",
+        ""
+    ]
+}

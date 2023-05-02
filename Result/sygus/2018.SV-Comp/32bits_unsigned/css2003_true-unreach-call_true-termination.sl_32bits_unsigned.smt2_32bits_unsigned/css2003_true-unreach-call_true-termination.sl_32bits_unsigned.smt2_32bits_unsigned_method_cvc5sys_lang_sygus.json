@@ -1,0 +1,15 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "css2003_true-unreach-call_true-termination.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 11.134846210479736,
+    "message": [
+        "(error \"Parse Error: /efmc/Benchmark/sygus/2018.SV-Comp/32bits_unsigned/css2003_true-unreach-call_true-termination.sl_32bits_unsigned.smt2_32bits_unsigned.sl:10.81: Sequence terminated early by token: '('.",
+        " ",
+        "   ...x00000001 ( bvadd i k ) ) ( = ( ( _ extract (_ bv31 32) (_ bv2 32) ) (...",
+        "                                                   ^",
+        " \")",
+        ""
+    ]
+}

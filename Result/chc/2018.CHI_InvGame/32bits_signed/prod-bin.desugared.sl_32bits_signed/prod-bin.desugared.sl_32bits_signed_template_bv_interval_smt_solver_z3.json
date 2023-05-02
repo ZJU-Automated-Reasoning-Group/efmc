@@ -1,0 +1,7 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "z3",
+    "file": "prod-bin.desugared.sl_32bits_signed.smt2",
+    "unexpected_error": true,
+    "time": 0.9310948848724365
+}

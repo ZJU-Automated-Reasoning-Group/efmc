@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "sum4_simp.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 6.0268495082855225,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((size (_ BitVec 64)) (sn (_ BitVec 64)) (i (_ BitVec 64))) Bool (or (= sn size) (not (bvult size i)) (= #b0000000000000000000000000000000000000000000000000000000000000000 sn)))",
+        " )",
+        ""
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "power_bv_octagon",
+    "smt_solver": "cegis",
+    "cegis_solver": "cvc4",
+    "file": "terminator_02_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cegis",
+        " solving via cegis_solver",
+        " Simple, sequential, CEGIS-style EFSMT!",
+        " safe",
+        " Timeout: Method 'efsmt' timed out after 60 seconds.",
+        ""
+    ]
+}

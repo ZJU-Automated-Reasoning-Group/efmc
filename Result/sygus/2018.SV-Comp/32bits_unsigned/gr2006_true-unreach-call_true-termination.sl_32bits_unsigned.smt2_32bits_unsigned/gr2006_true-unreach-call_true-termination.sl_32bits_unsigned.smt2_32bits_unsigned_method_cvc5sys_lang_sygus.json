@@ -1,0 +1,15 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "gr2006_true-unreach-call_true-termination.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 12.216323375701904,
+    "message": [
+        "(error \"Parse Error: /efmc/Benchmark/sygus/2018.SV-Comp/32bits_unsigned/gr2006_true-unreach-call_true-termination.sl_32bits_unsigned.smt2_32bits_unsigned.sl:10.12: Symbol r is not declared.",
+        " ",
+        "          ( t r u e ))",
+        "              ^",
+        " \")",
+        ""
+    ]
+}

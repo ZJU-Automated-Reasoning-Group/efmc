@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "matrix2.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 10.832155704498291,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((k (_ BitVec 64)) (j (_ BitVec 64)) (a (_ BitVec 64)) (m (_ BitVec 64))) Bool (or (bvult k #b0000000000000000000000000000000000000000000000000000000000000001) (bvult a m) (= #b1111111111111111111111111111111111111111111111111111111111111111 j)))",
+        " )",
+        ""
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "cegar2-new.sl_32bits_signed.smt2_32bits_signed.sl",
+    "unexpected_error": true,
+    "time": 10.668439149856567,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((m (_ BitVec 32)) (n (_ BitVec 32)) (x (_ BitVec 32))) Bool (or (bvslt x n) (not (bvslt #b00000000000000000000000000000001 n)) (and (bvslt m n) (not (bvslt m #b00000000000000000000000000000001)))))",
+        " )",
+        ""
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "fig3.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 8.202322244644165,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.7163043022155762",
+        " safe",
+        " Invariant:  Or(lock == 1, x == 18446744073709551615 + y)",
+        " ",
+        ""
+    ]
+}

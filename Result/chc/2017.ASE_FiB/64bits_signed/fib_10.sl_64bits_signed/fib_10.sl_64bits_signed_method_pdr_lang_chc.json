@@ -1,0 +1,19 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "fib_10.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 9.019753217697144,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  4.9238600730896",
+        " safe",
+        " Invariant:  And(Or(w == 1, Extract(0, 0, z) == 1),",
+        "     x == y,",
+        "     Or(Not(Extract(0, 0, w) == 1), z == 0))",
+        " ",
+        ""
+    ]
+}

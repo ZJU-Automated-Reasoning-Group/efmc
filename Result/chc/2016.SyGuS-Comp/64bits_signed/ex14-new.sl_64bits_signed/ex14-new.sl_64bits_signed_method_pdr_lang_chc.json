@@ -1,0 +1,21 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "ex14-new.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 31.954840660095215,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  26.69147825241089",
+        " safe",
+        " Invariant:  And(Or(Not(100 <= y),",
+        "        Not(18446744073709551615*x ==",
+        "            18446744073709551516 + y)),",
+        "     Or(Not(Extract(63, 63, y) == 1),",
+        "        Not(y == 100 + 18446744073709551615*x)))",
+        " ",
+        ""
+    ]
+}
