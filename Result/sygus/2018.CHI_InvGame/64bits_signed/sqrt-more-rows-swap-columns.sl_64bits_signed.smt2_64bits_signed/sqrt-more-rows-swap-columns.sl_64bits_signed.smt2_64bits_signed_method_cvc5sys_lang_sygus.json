@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "sqrt-more-rows-swap-columns.sl_64bits_signed.smt2_64bits_signed.sl",
+    "safe": true,
+    "time": 0.8967359066009521,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((t (_ BitVec 64)) (su (_ BitVec 64)) (a (_ BitVec 64)) (n (_ BitVec 64))) Bool (let ((_let_1 (bvadd a #b0000000000000000000000000000000000000000000000000000000000000001))) (or (not (bvslt n su)) (= (bvmul _let_1 _let_1) su))))",
+        " )",
+        ""
+    ]
+}

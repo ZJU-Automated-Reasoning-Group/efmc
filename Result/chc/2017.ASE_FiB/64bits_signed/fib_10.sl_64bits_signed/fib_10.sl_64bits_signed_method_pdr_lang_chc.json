@@ -1,0 +1,19 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "fib_10",
+    "safe": true,
+    "time": 1.1137142181396484,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.5850019454956055",
+        " safe",
+        " Invariant:  And(Or(w == 1, Extract(0, 0, z) == 1),",
+        "     x == y,",
+        "     Or(Not(Extract(0, 0, w) == 1), z == 0))",
+        " ",
+        ""
+    ]
+}

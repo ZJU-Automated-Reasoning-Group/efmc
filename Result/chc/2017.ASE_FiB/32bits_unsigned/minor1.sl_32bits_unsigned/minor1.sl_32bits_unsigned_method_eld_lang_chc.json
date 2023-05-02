@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "file": "minor1",
+    "safe": false,
+    "time": 8.876124858856201,
+    "message": [
+        "unsat",
+        ""
+    ]
+}

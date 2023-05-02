@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "gauss_sum-more-rows.auto.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "safe": true,
+    "time": 0.8811523914337158,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((i (_ BitVec 64)) (sum (_ BitVec 64)) (n (_ BitVec 64))) Bool (or (not (bvult n i)) (= (concat ((_ extract 62 0) sum) #b0) (bvadd n (bvmul n n)))))",
+        " )",
+        ""
+    ]
+}

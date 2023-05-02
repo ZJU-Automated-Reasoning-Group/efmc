@@ -1,0 +1,28 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "power_bv_poly",
+    "smt_solver": "lgl",
+    "strengthen": true,
+    "file": "ex11",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 19.43266773223877,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_POLYHEDRON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: lgl",
+        " Quantifier elimination + SAT solving",
+        " Translating to DIMACS",
+        " Translating to Boolean formula in Z3",
+        " Finishing generating SAT CNT...",
+        " Calling SAT solver lgl",
+        " safe",
+        ""
+    ]
+}

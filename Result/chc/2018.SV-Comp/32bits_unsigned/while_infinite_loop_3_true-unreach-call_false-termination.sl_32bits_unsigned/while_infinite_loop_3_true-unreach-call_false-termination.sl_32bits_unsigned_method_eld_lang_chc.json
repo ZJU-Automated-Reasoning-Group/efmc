@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "file": "while_infinite_loop_3_true-unreach-call_false-termination",
+    "safe": true,
+    "time": 7.227550745010376,
+    "message": [
+        "sat",
+        ""
+    ]
+}

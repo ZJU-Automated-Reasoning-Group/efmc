@@ -1,0 +1,23 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "bv_octagon",
+    "smt_solver": "cvc5",
+    "strengthen": true,
+    "file": "w1",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 8.858313083648682,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cvc5",
+        " safe",
+        ""
+    ]
+}

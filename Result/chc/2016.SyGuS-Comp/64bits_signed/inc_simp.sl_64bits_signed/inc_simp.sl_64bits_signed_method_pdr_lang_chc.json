@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "inc_simp",
+    "safe": true,
+    "time": 4.902993440628052,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.5832083225250244",
+        " safe",
+        " Invariant:  Or(Not(n <= x), n == x, Extract(63, 63, n) == 1)",
+        " ",
+        ""
+    ]
+}

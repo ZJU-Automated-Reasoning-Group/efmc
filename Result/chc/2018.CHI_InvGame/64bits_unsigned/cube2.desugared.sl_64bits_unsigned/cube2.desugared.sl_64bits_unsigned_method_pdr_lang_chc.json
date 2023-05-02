@@ -1,0 +1,12 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "cube2.desugared",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'pdr' timed out after 60 seconds.",
+        ""
+    ]
+}

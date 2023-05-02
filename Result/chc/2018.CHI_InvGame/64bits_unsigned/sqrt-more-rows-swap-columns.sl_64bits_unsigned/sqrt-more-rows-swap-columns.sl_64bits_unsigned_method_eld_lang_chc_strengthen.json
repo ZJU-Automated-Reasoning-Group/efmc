@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "sqrt-more-rows-swap-columns",
+    "time": 10.337282657623291,
+    "message": [
+        ""
+    ],
+    "unexpected_error": true
+}

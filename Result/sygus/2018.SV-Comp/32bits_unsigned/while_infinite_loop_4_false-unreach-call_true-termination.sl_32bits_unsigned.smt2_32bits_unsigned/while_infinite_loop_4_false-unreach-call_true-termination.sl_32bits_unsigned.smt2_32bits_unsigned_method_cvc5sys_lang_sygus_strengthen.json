@@ -1,0 +1,12 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "while_infinite_loop_4_false-unreach-call_true-termination.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "safe": false,
+    "time": 4.871740341186523,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

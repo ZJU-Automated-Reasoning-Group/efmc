@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "cegar2_vars-new",
+    "safe": true,
+    "time": 4.842607021331787,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  2.2706780433654785",
+        " safe",
+        " Invariant:  And(1 <= x, 1 <= m, Or(Not(n <= m), n <= 1))",
+        " ",
+        ""
+    ]
+}

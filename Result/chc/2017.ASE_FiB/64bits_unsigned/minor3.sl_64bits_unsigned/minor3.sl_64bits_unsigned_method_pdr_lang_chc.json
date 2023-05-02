@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "minor3",
+    "safe": true,
+    "time": 0.651005744934082,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.03412818908691406",
+        " safe",
+        " Invariant:  And(Extract(63, 3, y) == 0, ULE(Extract(2, 0, y), 5))",
+        " ",
+        ""
+    ]
+}

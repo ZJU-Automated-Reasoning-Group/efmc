@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "dec_simpl-new",
+    "safe": false,
+    "time": 0.40507078170776367,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.009043693542480469",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

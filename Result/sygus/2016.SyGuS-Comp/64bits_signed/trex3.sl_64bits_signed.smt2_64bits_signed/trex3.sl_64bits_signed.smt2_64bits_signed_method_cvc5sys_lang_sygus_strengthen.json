@@ -1,0 +1,12 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "trex3.sl_64bits_signed.smt2_64bits_signed.sl",
+    "safe": false,
+    "time": 5.2378456592559814,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

@@ -29,8 +29,7 @@ RUN apt-get update && apt-get install -y \
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 SHELL ["/bin/bash", "-c"] 
 RUN source $HOME/.cargo/env
-RUN echo 'source $HOME/.cargo/env' >> $HOME/.bashrc
-SHELL ["/bin/sh", "-c"] 
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 RUN mkdir efmc
 COPY . /efmc

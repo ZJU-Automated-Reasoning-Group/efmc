@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "array_simp",
+    "safe": true,
+    "time": 0.8058857917785645,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.22724413871765137",
+        " safe",
+        " Invariant:  Or(Not(size <= x), size <= 0, y <= z)",
+        " ",
+        ""
+    ]
+}

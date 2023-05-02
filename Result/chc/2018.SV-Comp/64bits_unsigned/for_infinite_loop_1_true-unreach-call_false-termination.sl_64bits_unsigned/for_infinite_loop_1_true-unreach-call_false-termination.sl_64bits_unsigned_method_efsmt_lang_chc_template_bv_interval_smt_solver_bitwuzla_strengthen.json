@@ -1,0 +1,23 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "bv_interval",
+    "smt_solver": "bitwuzla",
+    "strengthen": true,
+    "file": "for_infinite_loop_1_true-unreach-call_false-termination",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 26.393771648406982,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: bitwuzla",
+        " safe",
+        ""
+    ]
+}

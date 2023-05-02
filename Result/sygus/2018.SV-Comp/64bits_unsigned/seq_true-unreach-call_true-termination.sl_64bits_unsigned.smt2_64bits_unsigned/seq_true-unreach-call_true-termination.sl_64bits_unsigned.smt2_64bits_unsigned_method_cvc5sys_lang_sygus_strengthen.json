@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "seq_true-unreach-call_true-termination.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "safe": true,
+    "time": 5.636573553085327,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((j1 (_ BitVec 64)) (i1 (_ BitVec 64)) (k (_ BitVec 64)) (i0 (_ BitVec 64)) (n1 (_ BitVec 64)) (n0 (_ BitVec 64))) Bool false)",
+        " )",
+        ""
+    ]
+}

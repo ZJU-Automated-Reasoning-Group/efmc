@@ -1,0 +1,10 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "fib_33ns.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unknown": true,
+    "time": 9.470839738845825,
+    "message": [
+        ""
+    ]
+}

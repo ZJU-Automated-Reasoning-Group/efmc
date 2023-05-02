@@ -1,0 +1,16 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "ex14.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unknown": true,
+    "time": 3.9949564933776855,
+    "message": [
+        "(error \"Parse Error: /efmc/Benchmark/sygus/2016.SyGuS-Comp/32bits_unsigned/ex14.sl_32bits_unsigned.smt2_32bits_unsigned.sl:10.46: Sequence terminated early by token: '('.",
+        " ",
+        "          ( let ( ( a!1 ( and ( = ( ( _ extract (_ bv31 32) (_ bv4 32) ) ...",
+        "                                                 ^",
+        " \")",
+        ""
+    ]
+}

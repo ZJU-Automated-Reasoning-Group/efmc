@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "fib_10",
+    "time": 10.658429861068726,
+    "message": [
+        ""
+    ],
+    "unexpected_error": true
+}

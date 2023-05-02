@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "matrix2_simp",
+    "safe": false,
+    "time": 3.398216724395752,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.07245397567749023",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "sum01_bug02_sum01_bug02_base",
+    "safe": false,
+    "time": 36.57098889350891,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  36.37357974052429",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

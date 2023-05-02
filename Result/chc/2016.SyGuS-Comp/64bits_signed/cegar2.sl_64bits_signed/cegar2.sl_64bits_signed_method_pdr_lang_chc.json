@@ -1,0 +1,21 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "cegar2",
+    "safe": true,
+    "time": 29.027469635009766,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  28.0081148147583",
+        " safe",
+        " Invariant:  And(Or(Extract(63, 63, n) == 1,",
+        "        Not(Extract(63, 63, m) == 1)),",
+        "     Or(Not(n <= m), n <= 0),",
+        "     Or(Not(Extract(63, 63, x) == 1),",
+        "        Extract(63, 63, n) == 1))",
+        " ",
+        ""
+    ]
+}

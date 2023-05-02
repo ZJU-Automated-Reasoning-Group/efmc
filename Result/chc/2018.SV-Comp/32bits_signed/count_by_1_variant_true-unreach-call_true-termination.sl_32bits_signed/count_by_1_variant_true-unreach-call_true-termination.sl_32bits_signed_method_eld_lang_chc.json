@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "file": "count_by_1_variant_true-unreach-call_true-termination",
+    "safe": true,
+    "time": 9.287667274475098,
+    "message": [
+        "sat",
+        ""
+    ]
+}

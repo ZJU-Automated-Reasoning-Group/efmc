@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "file": "dec_vars-new",
+    "safe": false,
+    "time": 9.169353485107422,
+    "message": [
+        "unsat",
+        ""
+    ]
+}

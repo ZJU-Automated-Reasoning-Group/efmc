@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "vardep",
+    "safe": true,
+    "time": 0.5046415328979492,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.0008840560913085938",
+        " safe",
+        " Invariant:  True",
+        " ",
+        ""
+    ]
+}

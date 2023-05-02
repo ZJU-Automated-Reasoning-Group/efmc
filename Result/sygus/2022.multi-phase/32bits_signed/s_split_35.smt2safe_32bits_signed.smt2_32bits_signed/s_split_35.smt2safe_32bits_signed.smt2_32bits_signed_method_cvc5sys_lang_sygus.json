@@ -1,0 +1,10 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "s_split_35.smt2safe_32bits_signed.smt2_32bits_signed.sl",
+    "unknown": true,
+    "time": 9.888762474060059,
+    "message": [
+        ""
+    ]
+}

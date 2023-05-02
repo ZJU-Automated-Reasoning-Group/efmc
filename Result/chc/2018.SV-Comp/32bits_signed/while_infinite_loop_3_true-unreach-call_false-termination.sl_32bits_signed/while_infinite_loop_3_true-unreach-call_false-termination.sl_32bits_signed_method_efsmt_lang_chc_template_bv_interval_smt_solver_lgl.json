@@ -1,0 +1,27 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "bv_interval",
+    "smt_solver": "lgl",
+    "file": "while_infinite_loop_3_true-unreach-call_false-termination",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 56.441859006881714,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: lgl",
+        " Quantifier elimination + SAT solving",
+        " Translating to DIMACS",
+        " Translating to Boolean formula in Z3",
+        " Finishing generating SAT CNT...",
+        " Calling SAT solver lgl",
+        " safe",
+        ""
+    ]
+}

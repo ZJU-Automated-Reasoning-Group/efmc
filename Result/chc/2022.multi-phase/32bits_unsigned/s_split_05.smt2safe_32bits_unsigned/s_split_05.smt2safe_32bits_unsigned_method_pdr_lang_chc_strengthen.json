@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "s_split_05",
+    "safe": true,
+    "time": 0.307065486907959,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.0006213188171386719",
+        " safe",
+        " Invariant:  False",
+        " ",
+        ""
+    ]
+}

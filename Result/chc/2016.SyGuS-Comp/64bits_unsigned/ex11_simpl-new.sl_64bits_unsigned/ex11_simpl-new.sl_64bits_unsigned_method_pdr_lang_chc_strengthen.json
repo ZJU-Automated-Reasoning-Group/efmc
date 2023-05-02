@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "ex11_simpl-new",
+    "safe": true,
+    "time": 5.789423942565918,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.2162315845489502",
+        " safe",
+        " Invariant:  And(ULE(c, n), Not(n == 0) == (c == 0))",
+        " ",
+        ""
+    ]
+}

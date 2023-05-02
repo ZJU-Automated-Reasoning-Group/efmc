@@ -1,0 +1,19 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "fib_37",
+    "safe": true,
+    "time": 3.8385603427886963,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  3.3600120544433594",
+        " safe",
+        " Invariant:  And(Not(n <= m),",
+        "     Not(Extract(63, 63, m) == 1),",
+        "     Not(Extract(63, 63, x) == 1))",
+        " ",
+        ""
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "s_split_36",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'pdr' timed out after 60 seconds.",
+        ""
+    ]
+}

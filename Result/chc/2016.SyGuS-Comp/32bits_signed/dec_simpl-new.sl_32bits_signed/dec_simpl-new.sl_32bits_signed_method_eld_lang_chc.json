@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "file": "dec_simpl-new",
+    "safe": false,
+    "time": 9.38067102432251,
+    "message": [
+        "unsat",
+        ""
+    ]
+}

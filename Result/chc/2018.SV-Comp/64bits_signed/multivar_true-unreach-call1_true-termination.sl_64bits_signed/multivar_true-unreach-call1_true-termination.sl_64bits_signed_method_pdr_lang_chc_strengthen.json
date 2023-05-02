@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "multivar_true-unreach-call1_true-termination",
+    "safe": true,
+    "time": 5.829833269119263,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.6487274169921875",
+        " safe",
+        " Invariant:  x == y",
+        " ",
+        ""
+    ]
+}

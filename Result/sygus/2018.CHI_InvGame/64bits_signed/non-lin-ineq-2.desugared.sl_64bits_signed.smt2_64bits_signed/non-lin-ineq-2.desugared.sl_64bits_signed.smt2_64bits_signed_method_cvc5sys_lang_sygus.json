@@ -1,0 +1,11 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "non-lin-ineq-2.desugared.sl_64bits_signed.smt2_64bits_signed.sl",
+    "safe": false,
+    "time": 1.1095740795135498,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

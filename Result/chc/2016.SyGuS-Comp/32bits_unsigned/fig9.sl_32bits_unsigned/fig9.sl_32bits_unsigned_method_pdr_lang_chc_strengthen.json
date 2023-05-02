@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "fig9",
+    "safe": true,
+    "time": 0.36153721809387207,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.0005865097045898438",
+        " safe",
+        " Invariant:  True",
+        " ",
+        ""
+    ]
+}

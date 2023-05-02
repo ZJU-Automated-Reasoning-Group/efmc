@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "formula22",
+    "safe": true,
+    "time": 2.400470733642578,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.8952593803405762",
+        " safe",
+        " Invariant:  And(Or(0 <= x2, 18446744073709551615*x3 + x2 <= 2),",
+        "     x1 <= x2)",
+        " ",
+        ""
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "vardep.sl_32bits_signed.smt2_32bits_signed.sl",
+    "safe": false,
+    "time": 1.362016201019287,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

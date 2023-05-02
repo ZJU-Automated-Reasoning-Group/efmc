@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "count_by_1_true-unreach-call_true-termination",
+    "safe": true,
+    "time": 2.3066070079803467,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.11281561851501465",
+        " safe",
+        " Invariant:  Or(Not(ULE(1000000, i)), i == 1000000)",
+        " ",
+        ""
+    ]
+}

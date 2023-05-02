@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "dec_vars",
+    "safe": true,
+    "time": 6.457283020019531,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.0006711483001708984",
+        " safe",
+        " Invariant:  True",
+        " ",
+        ""
+    ]
+}

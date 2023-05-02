@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "count_by_k_true-unreach-call_true-termination",
+    "time": 9.749234437942505,
+    "message": [
+        ""
+    ],
+    "unexpected_error": true
+}

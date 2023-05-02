@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "multivar_true-unreach-call1_true-termination",
+    "time": 9.273078203201294,
+    "message": [
+        ""
+    ],
+    "unexpected_error": true
+}

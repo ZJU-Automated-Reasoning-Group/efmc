@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "terminator_03_true-unreach-call_true-termination",
+    "safe": true,
+    "time": 1.341026782989502,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.030202150344848633",
+        " safe",
+        " Invariant:  True",
+        " ",
+        ""
+    ]
+}

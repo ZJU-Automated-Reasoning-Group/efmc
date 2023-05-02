@@ -1,0 +1,20 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "cegar2_vars-new",
+    "safe": true,
+    "time": 2.5795469284057617,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.9982342720031738",
+        " safe",
+        " Invariant:  And(Not(m == 0),",
+        "     Or(Not(ULE(n, m)), Extract(63, 1, n) == 0),",
+        "     Not(x == 0))",
+        " ",
+        ""
+    ]
+}

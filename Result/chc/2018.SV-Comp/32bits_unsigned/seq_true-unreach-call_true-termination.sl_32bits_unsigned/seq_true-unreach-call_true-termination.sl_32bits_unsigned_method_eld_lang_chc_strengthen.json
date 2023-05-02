@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "seq_true-unreach-call_true-termination",
+    "time": 9.7445707321167,
+    "message": [
+        ""
+    ],
+    "unexpected_error": true
+}

@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "file": "fib_04",
+    "safe": false,
+    "time": 9.531509637832642,
+    "message": [
+        "unsat",
+        ""
+    ]
+}

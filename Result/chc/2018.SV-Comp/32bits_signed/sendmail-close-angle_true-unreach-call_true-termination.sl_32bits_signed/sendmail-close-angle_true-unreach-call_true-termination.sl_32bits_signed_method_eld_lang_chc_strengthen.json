@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "sendmail-close-angle_true-unreach-call_true-termination",
+    "time": 10.396628618240356,
+    "message": [
+        ""
+    ],
+    "unexpected_error": true
+}

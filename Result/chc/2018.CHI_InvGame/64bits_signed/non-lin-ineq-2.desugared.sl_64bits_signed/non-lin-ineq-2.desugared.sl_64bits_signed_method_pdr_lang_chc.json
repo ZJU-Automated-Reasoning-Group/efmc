@@ -1,0 +1,16 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "non-lin-ineq-2.desugared",
+    "safe": false,
+    "time": 0.9129588603973389,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.35564708709716797",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

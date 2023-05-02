@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "ex11_vars",
+    "safe": false,
+    "time": 0.6356682777404785,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.09271597862243652",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

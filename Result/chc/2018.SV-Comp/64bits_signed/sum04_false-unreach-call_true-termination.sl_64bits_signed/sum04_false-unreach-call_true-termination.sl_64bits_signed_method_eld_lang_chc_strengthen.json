@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "sum04_false-unreach-call_true-termination",
+    "time": 8.943326234817505,
+    "message": [
+        ""
+    ],
+    "unexpected_error": true
+}

@@ -1,0 +1,16 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "fig1-new",
+    "safe": false,
+    "time": 2.626131057739258,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.005266904830932617",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

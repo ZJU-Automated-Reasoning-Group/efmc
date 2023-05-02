@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "ex11_vars-new",
+    "safe": true,
+    "time": 0.6204326152801514,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.09002280235290527",
+        " safe",
+        " Invariant:  And(c <= n, Not(c == n), Not(Extract(63, 63, c) == 1))",
+        " ",
+        ""
+    ]
+}

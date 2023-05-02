@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "fig3",
+    "safe": true,
+    "time": 4.872603178024292,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.7590992450714111",
+        " safe",
+        " Invariant:  Or(lock == 1, x == 18446744073709551615 + y)",
+        " ",
+        ""
+    ]
+}

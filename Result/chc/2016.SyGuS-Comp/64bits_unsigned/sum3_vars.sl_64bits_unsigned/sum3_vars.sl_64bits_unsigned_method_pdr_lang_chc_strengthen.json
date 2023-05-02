@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "sum3_vars",
+    "safe": true,
+    "time": 0.6576025485992432,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.16259002685546875",
+        " safe",
+        " Invariant:  sn == x",
+        " ",
+        ""
+    ]
+}

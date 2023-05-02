@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "inc_vars.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "safe": true,
+    "time": 1.4739940166473389,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((v3 (_ BitVec 32)) (v2 (_ BitVec 32)) (v1 (_ BitVec 32)) (n (_ BitVec 32)) (x (_ BitVec 32))) Bool (or (= x n) (bvult x n)))",
+        " )",
+        ""
+    ]
+}

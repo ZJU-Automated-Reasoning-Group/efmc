@@ -1,0 +1,14 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "s_split_49",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "WARNING: creating large table of size 4294967296 for relation inv",
+        " Timeout: Method 'pdr' timed out after 60 seconds.",
+        ""
+    ]
+}

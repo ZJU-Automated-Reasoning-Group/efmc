@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "count_up_down_false-unreach-call_true-termination.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "safe": true,
+    "time": 4.9048912525177,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((y (_ BitVec 32)) (x (_ BitVec 32)) (n (_ BitVec 32))) Bool (or (= n y) (not (= #b00000000000000000000000000000000 x))))",
+        " )",
+        ""
+    ]
+}

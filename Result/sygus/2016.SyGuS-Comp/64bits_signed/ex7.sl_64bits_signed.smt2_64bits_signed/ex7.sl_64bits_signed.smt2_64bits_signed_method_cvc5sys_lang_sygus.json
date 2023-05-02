@@ -1,0 +1,11 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "ex7.sl_64bits_signed.smt2_64bits_signed.sl",
+    "safe": false,
+    "time": 2.746952533721924,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

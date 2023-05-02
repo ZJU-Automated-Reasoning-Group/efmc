@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "const_false-unreach-call1",
+    "time": 9.340760946273804,
+    "message": [
+        ""
+    ],
+    "unexpected_error": true
+}

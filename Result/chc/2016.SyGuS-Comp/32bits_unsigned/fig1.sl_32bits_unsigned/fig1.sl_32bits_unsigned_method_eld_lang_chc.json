@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "file": "fig1",
+    "safe": false,
+    "time": 7.554175853729248,
+    "message": [
+        "unsat",
+        ""
+    ]
+}

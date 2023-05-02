@@ -1,0 +1,23 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "power_bv_octagon",
+    "smt_solver": "yices2",
+    "strengthen": true,
+    "file": "inc_simp",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 10.306086778640747,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_OCTAGON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: yices2",
+        " safe",
+        ""
+    ]
+}

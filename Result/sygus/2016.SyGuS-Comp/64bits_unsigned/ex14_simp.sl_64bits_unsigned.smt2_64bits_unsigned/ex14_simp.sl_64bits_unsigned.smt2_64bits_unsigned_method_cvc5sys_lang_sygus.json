@@ -1,0 +1,11 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "ex14_simp.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "safe": false,
+    "time": 1.7016510963439941,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

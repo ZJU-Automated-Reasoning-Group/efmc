@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "const_true-unreach-call1",
+    "safe": true,
+    "time": 1.8493735790252686,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.21163058280944824",
+        " safe",
+        " Invariant:  Or(Not(1024 <= y), x == 0)",
+        " ",
+        ""
+    ]
+}

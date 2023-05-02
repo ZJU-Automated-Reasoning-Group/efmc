@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "matrix2",
+    "safe": false,
+    "time": 1.1186027526855469,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.11696195602416992",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

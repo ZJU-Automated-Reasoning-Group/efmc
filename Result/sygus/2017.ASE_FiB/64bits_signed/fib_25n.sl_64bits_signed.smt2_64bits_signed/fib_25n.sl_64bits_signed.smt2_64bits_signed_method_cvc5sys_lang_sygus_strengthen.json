@@ -1,0 +1,11 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "fib_25n.sl_64bits_signed.smt2_64bits_signed.sl",
+    "unknown": true,
+    "time": 10.573053359985352,
+    "message": [
+        ""
+    ]
+}

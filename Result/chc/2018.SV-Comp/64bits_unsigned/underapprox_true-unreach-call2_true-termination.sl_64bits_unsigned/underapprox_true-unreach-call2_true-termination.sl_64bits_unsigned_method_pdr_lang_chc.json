@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "underapprox_true-unreach-call2_true-termination",
+    "safe": true,
+    "time": 1.9983248710632324,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.11225628852844238",
+        " safe",
+        " Invariant:  Or(Not(ULE(6, x)), x == 6)",
+        " ",
+        ""
+    ]
+}

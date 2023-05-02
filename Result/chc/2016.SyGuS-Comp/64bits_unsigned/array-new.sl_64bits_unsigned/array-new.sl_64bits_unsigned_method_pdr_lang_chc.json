@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "array-new",
+    "safe": true,
+    "time": 1.1992194652557373,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.15971636772155762",
+        " safe",
+        " Invariant:  Or(Not(ULE(500, x)), ULE(y, z))",
+        " ",
+        ""
+    ]
+}

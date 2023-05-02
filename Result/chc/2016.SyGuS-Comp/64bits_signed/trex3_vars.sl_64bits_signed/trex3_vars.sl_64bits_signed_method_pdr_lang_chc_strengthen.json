@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "trex3_vars",
+    "safe": false,
+    "time": 0.3099687099456787,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.008313179016113281",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

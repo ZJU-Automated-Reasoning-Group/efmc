@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "while_infinite_loop_3_true-unreach-call_false-termination",
+    "safe": true,
+    "time": 1.423616647720337,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.03130745887756348",
+        " safe",
+        " Invariant:  x == 0",
+        " ",
+        ""
+    ]
+}

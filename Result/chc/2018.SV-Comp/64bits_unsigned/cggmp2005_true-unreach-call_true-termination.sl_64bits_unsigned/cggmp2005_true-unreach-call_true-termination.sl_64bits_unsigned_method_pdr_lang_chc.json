@@ -1,0 +1,12 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "cggmp2005_true-unreach-call_true-termination",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'pdr' timed out after 60 seconds.",
+        ""
+    ]
+}

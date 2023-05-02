@@ -1,0 +1,15 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "fib_08.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "unknown": true,
+    "time": 0.7864282131195068,
+    "message": [
+        "(error \"Parse Error: /efmc/Benchmark/sygus/2017.ASE_FiB/64bits_unsigned/fib_08.sl_64bits_unsigned.smt2_64bits_unsigned.sl:10.52: Sequence terminated early by token: '('.",
+        " ",
+        "   ...( let ( ( a!1 ( not ( and ( = ( ( _ extract (_ bv63 64) (_ bv2 64) ) y...",
+        "                                                   ^",
+        " \")",
+        ""
+    ]
+}

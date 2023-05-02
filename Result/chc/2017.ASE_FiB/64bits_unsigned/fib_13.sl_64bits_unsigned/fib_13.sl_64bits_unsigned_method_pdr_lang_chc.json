@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "fib_13",
+    "safe": true,
+    "time": 1.3841667175292969,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.8733658790588379",
+        " safe",
+        " Invariant:  And(Or(t == 0, j == 2 + 2*k), Or(Not(t == 0), k == 0))",
+        " ",
+        ""
+    ]
+}

@@ -3,3 +3,5 @@ z3-solver==4.8.10
 psutil~=5.9.0
 Cython~=0.29.34
 python-sat==0.1.8.dev1
+tqdm~=4.65.0
+seaborn~=0.12.2

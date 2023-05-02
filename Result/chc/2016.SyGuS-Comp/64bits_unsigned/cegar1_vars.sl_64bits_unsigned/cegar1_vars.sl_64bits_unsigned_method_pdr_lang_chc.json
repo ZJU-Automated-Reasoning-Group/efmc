@@ -1,0 +1,32 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "cegar1_vars",
+    "safe": true,
+    "time": 4.081351280212402,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.212777853012085",
+        " safe",
+        " Invariant:  And(Or(Extract(2, 2, y) == 1,",
+        "        Not(Extract(1, 1, x) == 1),",
+        "        Not(Extract(2, 2, x) == 1),",
+        "        Not(Extract(1, 1, y) == 1)),",
+        "     Or(Not(Extract(1, 1, x) == 1),",
+        "        Extract(2, 2, x) == 1,",
+        "        Not(Extract(1, 1, y) == 1),",
+        "        Not(Extract(2, 2, y) == 1)),",
+        "     Or(Extract(2, 2, y) == 1,",
+        "        Extract(1, 1, x) == 1,",
+        "        Not(Extract(2, 2, x) == 1),",
+        "        Extract(1, 1, y) == 1),",
+        "     Or(Extract(1, 1, x) == 1,",
+        "        Extract(2, 2, x) == 1,",
+        "        Extract(1, 1, y) == 1,",
+        "        Not(Extract(2, 2, y) == 1)))",
+        " ",
+        ""
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "count_by_k_true-unreach-call_true-termination.sl_64bits_signed.smt2_64bits_unsigned.sl",
+    "safe": true,
+    "time": 5.12270975112915,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((k (_ BitVec 64)) (i (_ BitVec 64))) Bool (let ((_let_1 (bvmul k #b0000000000000000000000000000000000000000000011110100001001000000))) (or (bvslt i _let_1) (= _let_1 i))))",
+        " )",
+        ""
+    ]
+}

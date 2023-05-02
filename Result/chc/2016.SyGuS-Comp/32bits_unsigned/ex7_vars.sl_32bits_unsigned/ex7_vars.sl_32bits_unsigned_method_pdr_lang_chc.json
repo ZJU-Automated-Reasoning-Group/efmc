@@ -1,0 +1,13 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "ex7_vars",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "WARNING: creating large table of size 4294967296 for relation inv!compr_arg_0!1!compr_arg_0!2!compr_arg_0!3",
+        " Timeout: Method 'pdr' timed out after 60 seconds.",
+        ""
+    ]
+}

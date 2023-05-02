@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "fib_35",
+    "safe": true,
+    "time": 5.9155638217926025,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  3.2562270164489746",
+        " safe",
+        " Invariant:  Or(Not(ULE(n, x)), n == x)",
+        " ",
+        ""
+    ]
+}

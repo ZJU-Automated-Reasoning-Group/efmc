@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "gj2007_true-unreach-call_true-termination",
+    "safe": true,
+    "time": 2.3154146671295166,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.09595751762390137",
+        " safe",
+        " Invariant:  Not(ULE(100, x))",
+        " ",
+        ""
+    ]
+}

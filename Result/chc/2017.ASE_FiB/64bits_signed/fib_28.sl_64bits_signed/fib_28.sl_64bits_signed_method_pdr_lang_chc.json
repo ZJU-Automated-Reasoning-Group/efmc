@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "fib_28",
+    "safe": true,
+    "time": 4.1604437828063965,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.2175331115722656",
+        " safe",
+        " Invariant:  x == y",
+        " ",
+        ""
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "dec_vars-new",
+    "safe": false,
+    "time": 2.881669521331787,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.02635049819946289",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "terminator_02_true-unreach-call_true-termination.sl_64bits_signed.smt2_64bits_unsigned.sl",
+    "safe": true,
+    "time": 4.49701714515686,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((z (_ BitVec 64)) (x (_ BitVec 64))) Bool true)",
+        " )",
+        ""
+    ]
+}

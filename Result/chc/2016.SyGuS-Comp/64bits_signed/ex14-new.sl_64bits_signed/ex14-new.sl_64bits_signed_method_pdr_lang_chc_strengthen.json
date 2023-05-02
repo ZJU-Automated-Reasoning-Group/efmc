@@ -1,0 +1,22 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "ex14-new",
+    "safe": true,
+    "time": 20.410646200180054,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  15.233869552612305",
+        " safe",
+        " Invariant:  And(Or(Not(100 <= y),",
+        "        Not(18446744073709551615*x ==",
+        "            18446744073709551516 + y)),",
+        "     Or(Not(Extract(63, 63, y) == 1),",
+        "        Not(y == 100 + 18446744073709551615*x)))",
+        " ",
+        ""
+    ]
+}

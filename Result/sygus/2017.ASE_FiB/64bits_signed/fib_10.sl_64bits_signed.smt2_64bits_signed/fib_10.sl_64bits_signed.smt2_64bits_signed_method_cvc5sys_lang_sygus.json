@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "fib_10.sl_64bits_signed.smt2_64bits_signed.sl",
+    "safe": true,
+    "time": 1.4137253761291504,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((z (_ BitVec 64)) (w (_ BitVec 64)) (y (_ BitVec 64)) (x (_ BitVec 64))) Bool (and (= x y) (= #b0000000000000000000000000000000000000000000000000000000000000001 w)))",
+        " )",
+        ""
+    ]
+}
