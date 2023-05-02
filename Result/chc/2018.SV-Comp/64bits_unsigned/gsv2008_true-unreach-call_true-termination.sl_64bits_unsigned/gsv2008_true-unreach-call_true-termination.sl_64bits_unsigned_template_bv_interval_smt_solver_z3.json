@@ -1,9 +1,0 @@
-{
-    "template": "bv_interval",
-    "smt_solver": "z3",
-    "file": "gsv2008_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
-    "overflow": false,
-    "underflow": false,
-    "safe": true,
-    "time": 0.9858677387237549
-}

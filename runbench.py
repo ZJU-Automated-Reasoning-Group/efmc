@@ -129,7 +129,7 @@ def parsing_out(file_path, lines, result_dict):
         result_dict['unknown'] = True
         return result_dict
 
-    if error or not Method_start or not CHC_read:
+    if error or (METHOD=='efsmt' and (not Method_start or not CHC_read)):
         result_dict['unexpected_error'] = True
         return result_dict
 

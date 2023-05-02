@@ -1,9 +1,0 @@
-{
-    "template": "bv_interval",
-    "smt_solver": "z3",
-    "file": "const_false-unreach-call1.sl_64bits_signed.smt2",
-    "overflow": false,
-    "underflow": false,
-    "unknown": true,
-    "time": 1.034447193145752
-}

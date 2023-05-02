@@ -1,9 +1,0 @@
-{
-    "template": "bv_interval",
-    "smt_solver": "z3",
-    "file": "cube2.desugared.sl_32bits_unsigned.smt2",
-    "overflow": false,
-    "underflow": false,
-    "unknown": true,
-    "time": 1.185004472732544
-}
