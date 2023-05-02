@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "array_vars.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 4.985040187835693,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.1824216842651367",
+        " safe",
+        " Invariant:  Or(Not(size <= x), size <= 0, y <= z)",
+        " ",
+        ""
+    ]
+}

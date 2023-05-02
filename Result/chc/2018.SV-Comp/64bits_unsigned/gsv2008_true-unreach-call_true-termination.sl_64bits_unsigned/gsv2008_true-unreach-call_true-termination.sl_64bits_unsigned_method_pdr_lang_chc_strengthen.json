@@ -1,0 +1,19 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "gsv2008_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 0.4520888328552246,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.0021605491638183594",
+        " safe",
+        " Invariant:  And(Not(ULE(y, 18446744073709550616)),",
+        "     x == 18446744073709551566)",
+        " ",
+        ""
+    ]
+}

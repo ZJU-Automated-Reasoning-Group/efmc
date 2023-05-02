@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "fib_30_x.sl_32bits_unsigned.smt2",
+    "unknown": true,
+    "time": 9.453235387802124,
+    "message": [
+        ""
+    ]
+}

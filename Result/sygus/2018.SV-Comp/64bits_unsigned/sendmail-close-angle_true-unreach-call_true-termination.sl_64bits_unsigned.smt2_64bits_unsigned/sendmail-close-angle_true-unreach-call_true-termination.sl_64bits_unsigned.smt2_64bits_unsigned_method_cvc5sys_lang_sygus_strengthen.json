@@ -1,0 +1,12 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "sendmail-close-angle_true-unreach-call_true-termination.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "safe": false,
+    "time": 1.2457516193389893,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

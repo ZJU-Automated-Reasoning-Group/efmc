@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "sum03_true-unreach-call_false-termination.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 6.2989349365234375,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.5401780605316162",
+        " safe",
+        " Invariant:  sn == 2*x",
+        " ",
+        ""
+    ]
+}

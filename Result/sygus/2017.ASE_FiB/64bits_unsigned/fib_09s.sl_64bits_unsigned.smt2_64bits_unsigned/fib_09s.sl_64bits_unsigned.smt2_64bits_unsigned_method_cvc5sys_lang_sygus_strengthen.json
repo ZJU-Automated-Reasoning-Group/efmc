@@ -1,0 +1,16 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "fib_09s.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "unknown": true,
+    "time": 2.772880792617798,
+    "message": [
+        "(error \"Parse Error: /efmc/Benchmark/sygus/2017.ASE_FiB/64bits_unsigned/fib_09s.sl_64bits_unsigned.smt2_64bits_unsigned.sl:10.12: Symbol r is not declared.",
+        " ",
+        "          ( t r u e ))",
+        "              ^",
+        " \")",
+        ""
+    ]
+}

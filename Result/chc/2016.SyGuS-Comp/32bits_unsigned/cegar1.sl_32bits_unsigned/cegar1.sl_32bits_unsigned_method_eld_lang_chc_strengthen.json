@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "cegar1.sl_32bits_unsigned.smt2",
+    "unknown": true,
+    "time": 13.095057010650635,
+    "message": [
+        ""
+    ]
+}

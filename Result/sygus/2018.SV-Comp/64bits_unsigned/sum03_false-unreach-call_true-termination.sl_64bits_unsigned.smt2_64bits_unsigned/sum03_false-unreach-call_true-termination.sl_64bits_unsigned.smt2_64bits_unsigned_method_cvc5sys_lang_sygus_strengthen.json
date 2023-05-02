@@ -1,0 +1,11 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "sum03_false-unreach-call_true-termination.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "unknown": true,
+    "time": 10.726879835128784,
+    "message": [
+        ""
+    ]
+}

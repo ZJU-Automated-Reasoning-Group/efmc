@@ -1,0 +1,12 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "css2003_true-unreach-call_true-termination.sl_32bits_signed.smt2_32bits_unsigned.sl",
+    "safe": false,
+    "time": 5.695892572402954,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

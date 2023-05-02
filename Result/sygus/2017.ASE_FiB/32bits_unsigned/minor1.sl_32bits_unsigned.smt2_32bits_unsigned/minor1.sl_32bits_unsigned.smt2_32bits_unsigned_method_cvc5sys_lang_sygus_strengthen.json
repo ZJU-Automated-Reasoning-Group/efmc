@@ -1,0 +1,12 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "minor1.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "safe": false,
+    "time": 9.629290103912354,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

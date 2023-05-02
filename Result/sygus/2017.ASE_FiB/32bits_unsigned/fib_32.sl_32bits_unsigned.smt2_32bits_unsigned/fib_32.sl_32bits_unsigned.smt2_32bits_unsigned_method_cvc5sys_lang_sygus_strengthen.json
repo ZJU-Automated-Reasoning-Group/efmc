@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "fib_32.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "safe": true,
+    "time": 4.58394455909729,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((n (_ BitVec 32)) (j (_ BitVec 32)) (i (_ BitVec 32)) (b (_ BitVec 32)) (k (_ BitVec 32))) Bool (or (bvult n (concat ((_ extract 30 0) k) #b0)) (= i j)))",
+        " )",
+        ""
+    ]
+}

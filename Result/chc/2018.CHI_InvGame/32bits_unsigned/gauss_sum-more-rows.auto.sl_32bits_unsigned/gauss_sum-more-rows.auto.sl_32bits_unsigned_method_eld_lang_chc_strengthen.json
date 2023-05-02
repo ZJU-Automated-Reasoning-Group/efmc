@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "gauss_sum-more-rows.auto.sl_32bits_unsigned.smt2",
+    "unknown": true,
+    "time": 12.264849424362183,
+    "message": [
+        ""
+    ]
+}

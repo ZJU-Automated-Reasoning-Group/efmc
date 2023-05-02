@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "fib_35.sl_32bits_signed.smt2_32bits_signed.sl",
+    "safe": true,
+    "time": 6.598201513290405,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((n (_ BitVec 32)) (x (_ BitVec 32))) Bool (or (bvslt x n) (= x n)))",
+        " )",
+        ""
+    ]
+}

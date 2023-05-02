@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "tacas.sl_64bits_unsigned.smt2",
+    "unknown": true,
+    "time": 10.011765480041504,
+    "message": [
+        ""
+    ]
+}

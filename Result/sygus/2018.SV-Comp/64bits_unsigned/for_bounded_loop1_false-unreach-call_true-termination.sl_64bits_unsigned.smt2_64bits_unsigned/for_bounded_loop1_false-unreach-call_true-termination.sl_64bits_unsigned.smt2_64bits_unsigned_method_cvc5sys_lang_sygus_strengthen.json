@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "for_bounded_loop1_false-unreach-call_true-termination.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "safe": true,
+    "time": 4.277084827423096,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((n (_ BitVec 64)) (y (_ BitVec 64)) (x (_ BitVec 64)) (i (_ BitVec 64))) Bool (or (bvult i n) (= #b0000000000000000000000000000000000000000000000000000000000000000 x)))",
+        " )",
+        ""
+    ]
+}

@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "count_up_down_false-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "unknown": true,
+    "time": 9.66653060913086,
+    "message": [
+        ""
+    ]
+}

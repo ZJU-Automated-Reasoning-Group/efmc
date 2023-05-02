@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "hhk2008_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "unknown": true,
+    "time": 12.149839639663696,
+    "message": [
+        ""
+    ]
+}

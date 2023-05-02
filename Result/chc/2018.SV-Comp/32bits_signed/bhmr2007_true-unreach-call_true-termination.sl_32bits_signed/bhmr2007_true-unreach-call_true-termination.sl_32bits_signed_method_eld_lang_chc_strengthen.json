@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "bhmr2007_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "unknown": true,
+    "time": 9.122309923171997,
+    "message": [
+        ""
+    ]
+}

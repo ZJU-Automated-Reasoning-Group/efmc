@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "ex11_simpl-new.sl_64bits_signed.smt2_64bits_signed.sl",
+    "safe": true,
+    "time": 4.017367839813232,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((n (_ BitVec 64)) (c (_ BitVec 64))) Bool (let ((_let_1 (= c n))) (and (or _let_1 (and (not (bvslt c #b0000000000000000000000000000000000000000000000000000000000000000)) (not (bvslt n c)))) (or (not _let_1) (bvslt #b1111111111111111111111111111111111111111111111111111111111111111 n)))))",
+        " )",
+        ""
+    ]
+}

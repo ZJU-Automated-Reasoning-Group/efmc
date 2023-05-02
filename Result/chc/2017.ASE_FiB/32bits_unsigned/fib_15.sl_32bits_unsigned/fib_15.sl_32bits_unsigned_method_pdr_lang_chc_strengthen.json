@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "fib_15.sl_32bits_unsigned.smt2",
+    "safe": true,
+    "time": 6.1866700649261475,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.0008232593536376953",
+        " safe",
+        " Invariant:  True",
+        " ",
+        ""
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "array_simp.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 3.323373556137085,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.47447967529296875",
+        " safe",
+        " Invariant:  Or(Not(ULE(size, x)), size == 0, ULE(y, z))",
+        " ",
+        ""
+    ]
+}

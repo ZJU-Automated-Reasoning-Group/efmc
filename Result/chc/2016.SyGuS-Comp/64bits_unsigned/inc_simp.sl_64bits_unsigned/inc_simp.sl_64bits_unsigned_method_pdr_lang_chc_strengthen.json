@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "inc_simp.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 2.585509777069092,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  1.2322039604187012",
+        " safe",
+        " Invariant:  Or(Not(ULE(n, x)), n == x)",
+        " ",
+        ""
+    ]
+}

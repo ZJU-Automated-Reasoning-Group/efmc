@@ -1,0 +1,22 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "formula27.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 22.80313992500305,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  17.43815779685974",
+        " safe",
+        " Invariant:  And(Or(Extract(63, 63, x2) == 1, x4 <= 2 + x2),",
+        "     x5 == 0,",
+        "     x2 == x3,",
+        "     x1 <= 1 + x4,",
+        "     Not(Extract(63, 63, x1) == 1))",
+        " ",
+        ""
+    ]
+}

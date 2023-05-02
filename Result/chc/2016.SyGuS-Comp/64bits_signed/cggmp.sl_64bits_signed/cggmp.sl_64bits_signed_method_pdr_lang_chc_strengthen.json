@@ -1,0 +1,29 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "cggmp.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 56.59519147872925,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  55.82078170776367",
+        " safe",
+        " Invariant:  And(Or(j == 8,",
+        "        4 + i <= 18446744073709551614 + j,",
+        "        Not(2 + i <= 18446744073709551615 + j)),",
+        "     Not(8 + i <= 18446744073709551612 + j),",
+        "     Or(j == 6, i <= j),",
+        "     Or(6 + i <= 18446744073709551613 + j,",
+        "        j == 9,",
+        "        Not(4 + i <= 18446744073709551614 + j)),",
+        "     Or(Not(6 + i <= 18446744073709551613 + j), j == 10),",
+        "     Or(Not(i <= j),",
+        "        j == 7,",
+        "        2 + i <= 18446744073709551615 + j))",
+        " ",
+        ""
+    ]
+}

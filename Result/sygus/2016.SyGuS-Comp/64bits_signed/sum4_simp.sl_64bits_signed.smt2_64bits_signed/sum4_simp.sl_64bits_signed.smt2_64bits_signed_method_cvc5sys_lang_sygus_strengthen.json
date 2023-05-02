@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "sum4_simp.sl_64bits_signed.smt2_64bits_signed.sl",
+    "safe": true,
+    "time": 5.069230794906616,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((size (_ BitVec 64)) (sn (_ BitVec 64)) (i (_ BitVec 64))) Bool (or (not (bvslt size i)) (= sn size) (= #b0000000000000000000000000000000000000000000000000000000000000000 sn)))",
+        " )",
+        ""
+    ]
+}

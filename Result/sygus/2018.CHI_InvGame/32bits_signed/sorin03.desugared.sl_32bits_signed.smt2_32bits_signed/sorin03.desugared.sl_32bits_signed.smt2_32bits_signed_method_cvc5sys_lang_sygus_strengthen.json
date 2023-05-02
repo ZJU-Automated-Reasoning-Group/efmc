@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "sorin03.desugared.sl_32bits_signed.smt2_32bits_signed.sl",
+    "safe": true,
+    "time": 3.294482707977295,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((j (_ BitVec 32)) (i (_ BitVec 32)) (s (_ BitVec 32)) (n (_ BitVec 32))) Bool (or (not (bvslt n i)) (= (concat ((_ extract 30 0) s) #b0) (bvadd n (bvmul n n)))))",
+        " )",
+        ""
+    ]
+}

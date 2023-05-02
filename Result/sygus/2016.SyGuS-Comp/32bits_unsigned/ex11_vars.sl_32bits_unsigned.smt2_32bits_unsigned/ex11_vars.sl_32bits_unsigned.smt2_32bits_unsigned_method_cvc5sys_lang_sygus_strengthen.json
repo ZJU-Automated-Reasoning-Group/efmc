@@ -1,0 +1,11 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "ex11_vars.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "unknown": true,
+    "time": 11.607289552688599,
+    "message": [
+        ""
+    ]
+}
