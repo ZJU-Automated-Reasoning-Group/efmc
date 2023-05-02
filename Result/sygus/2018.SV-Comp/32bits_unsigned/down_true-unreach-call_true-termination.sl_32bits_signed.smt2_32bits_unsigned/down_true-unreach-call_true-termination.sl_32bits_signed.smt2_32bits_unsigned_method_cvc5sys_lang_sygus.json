@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "down_true-unreach-call_true-termination.sl_32bits_signed.smt2_32bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 15.382932186126709,
+    "unknown": true,
+    "time": 10.163471460342407,
     "message": [
         ""
     ]

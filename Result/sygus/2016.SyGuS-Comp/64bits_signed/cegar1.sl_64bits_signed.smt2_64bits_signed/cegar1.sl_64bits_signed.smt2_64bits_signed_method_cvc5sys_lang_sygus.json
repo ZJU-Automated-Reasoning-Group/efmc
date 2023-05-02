@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "cegar1.sl_64bits_signed.smt2_64bits_signed.sl",
-    "unexpected_error": true,
-    "time": 15.155872583389282,
+    "unknown": true,
+    "time": 9.209705114364624,
     "message": [
         ""
     ]

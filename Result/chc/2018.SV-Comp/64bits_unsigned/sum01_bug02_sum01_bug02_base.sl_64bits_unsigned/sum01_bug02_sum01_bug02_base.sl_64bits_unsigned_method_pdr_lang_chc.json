@@ -2,11 +2,15 @@
     "method": "pdr",
     "lang": "chc",
     "file": "sum01_bug02_sum01_bug02_base.sl_64bits_unsigned.smt2",
-    "timeout": true,
-    "unknown": true,
-    "time": 60,
+    "safe": false,
+    "time": 35.45902347564697,
     "message": [
-        "Timeout: Method 'pdr' timed out after 60 seconds.",
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  34.721762895584106",
+        " unsafe",
+        " ",
         ""
     ]
 }

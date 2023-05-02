@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "fig1_vars-new.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 14.448137044906616,
+    "unknown": true,
+    "time": 9.328825235366821,
     "message": [
         ""
     ]

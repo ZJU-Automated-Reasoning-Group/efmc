@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "formula25.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 4.640724182128906,
+    "safe": false,
+    "time": 1.1576228141784668,
     "message": [
         "infeasible",
         ""

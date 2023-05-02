@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "sum3_vars.sl_64bits_signed.smt2",
-    "unexpected_error": true,
-    "time": 14.674118757247925,
+    "unknown": true,
+    "time": 9.76839804649353,
     "message": [
         ""
     ]

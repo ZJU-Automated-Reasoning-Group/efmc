@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "ex_23_vars.sl_32bits_signed.smt2_32bits_signed.sl",
-    "unexpected_error": true,
-    "time": 14.646113157272339,
+    "safe": false,
+    "time": 1.4555730819702148,
     "message": [
         "infeasible",
         ""

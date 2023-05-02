@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "sum04_false-unreach-call_true-termination.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 8.012939453125,
+    "unknown": true,
+    "time": 1.0605909824371338,
     "message": [
         "(error \"Parse Error: /efmc/Benchmark/sygus/2018.SV-Comp/32bits_unsigned/sum04_false-unreach-call_true-termination.sl_32bits_unsigned.smt2_32bits_unsigned.sl:10.57: Sequence terminated early by token: '('.",
         " ",

@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "css2003_true-unreach-call_true-termination.sl_64bits_signed.smt2",
-    "unexpected_error": true,
-    "time": 12.829114198684692,
+    "unknown": true,
+    "time": 9.239576816558838,
     "message": [
         ""
     ]

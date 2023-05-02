@@ -2,9 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "file": "cegar2-new.sl_64bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 13.721925735473633,
+    "safe": true,
+    "time": 8.747631549835205,
     "message": [
+        "sat",
         ""
     ]
 }

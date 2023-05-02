@@ -2,11 +2,16 @@
     "method": "pdr",
     "lang": "chc",
     "file": "fib_20.sl_64bits_unsigned.smt2",
-    "timeout": true,
-    "unknown": true,
-    "time": 60,
+    "safe": true,
+    "time": 8.954002618789673,
     "message": [
-        "Timeout: Method 'pdr' timed out after 60 seconds.",
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  8.470494031906128",
+        " safe",
+        " Invariant:  And(ULE(m, n), y + x == k)",
+        " ",
         ""
     ]
 }

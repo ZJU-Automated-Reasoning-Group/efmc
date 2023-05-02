@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "fib_44.sl_64bits_signed.smt2_64bits_signed.sl",
-    "unexpected_error": true,
-    "time": 5.349703073501587,
+    "safe": true,
+    "time": 1.1613831520080566,
     "message": [
         "(",
         " (define-fun inv_fun ((k (_ BitVec 64)) (n (_ BitVec 64)) (j (_ BitVec 64)) (i (_ BitVec 64))) Bool (or (= i j) (not (bvslt k i)) (not (= #b0000000000000000000000000000000000000000000000000000000000000001 n))))",

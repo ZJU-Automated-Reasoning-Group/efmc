@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "s_split_35.smt2safe_64bits_signed.smt2_64bits_signed.sl",
-    "unexpected_error": true,
-    "time": 15.597154378890991,
+    "unknown": true,
+    "time": 9.179771423339844,
     "message": [
         ""
     ]

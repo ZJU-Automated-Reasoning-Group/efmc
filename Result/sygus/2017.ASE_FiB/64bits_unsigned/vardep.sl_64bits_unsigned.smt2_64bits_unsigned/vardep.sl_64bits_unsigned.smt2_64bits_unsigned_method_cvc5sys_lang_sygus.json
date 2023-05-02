@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "vardep.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 8.614013910293579,
+    "unknown": true,
+    "time": 1.6148412227630615,
     "message": [
         "(error \"Parse Error: /efmc/Benchmark/sygus/2017.ASE_FiB/64bits_unsigned/vardep.sl_64bits_unsigned.smt2_64bits_unsigned.sl:10.12: Symbol r is not declared.",
         " ",

@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "terminator_02_true-unreach-call_true-termination.sl_64bits_signed.smt2_64bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 6.9421775341033936,
+    "safe": true,
+    "time": 1.4329097270965576,
     "message": [
         "(",
         " (define-fun inv_fun ((z (_ BitVec 64)) (x (_ BitVec 64))) Bool true)",

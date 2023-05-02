@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "fig9.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 7.541125774383545,
+    "unknown": true,
+    "time": 0.994575023651123,
     "message": [
         "(error \"Parse Error: /efmc/Benchmark/sygus/2016.SyGuS-Comp/64bits_unsigned/fig9.sl_64bits_unsigned.smt2_64bits_unsigned.sl:10.12: Symbol r is not declared.",
         " ",

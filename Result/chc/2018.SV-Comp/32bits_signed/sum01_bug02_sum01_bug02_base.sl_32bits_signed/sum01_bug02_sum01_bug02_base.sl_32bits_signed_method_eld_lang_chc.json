@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "sum01_bug02_sum01_bug02_base.sl_32bits_signed.smt2",
-    "unexpected_error": true,
-    "time": 16.399132251739502,
+    "unknown": true,
+    "time": 11.122585535049438,
     "message": [
         ""
     ]

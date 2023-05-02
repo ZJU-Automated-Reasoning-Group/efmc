@@ -3,12 +3,12 @@
     "lang": "chc",
     "file": "matrix2_simp.sl_64bits_unsigned.smt2",
     "safe": false,
-    "time": 1.9332170486450195,
+    "time": 0.5458409786224365,
     "message": [
         "Finish parsing CHC file",
         " PDR starts working!",
         " PDR starting!!!",
-        " PDR time:  0.033702850341796875",
+        " PDR time:  0.048753976821899414",
         " unsafe",
         " ",
         ""

@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "sqrt-more-rows-swap-columns.sl_64bits_signed.smt2",
-    "unexpected_error": true,
-    "time": 14.006678581237793,
+    "unknown": true,
+    "time": 10.716796398162842,
     "message": [
         ""
     ]

@@ -2,9 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "file": "ex14-new.sl_64bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 15.715165615081787,
+    "safe": true,
+    "time": 10.393550634384155,
     "message": [
+        "sat",
         ""
     ]
 }

@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "non-lin-ineq-3.desugared.sl_64bits_signed.smt2",
-    "unexpected_error": true,
-    "time": 16.878154516220093,
+    "unknown": true,
+    "time": 10.454955339431763,
     "message": [
         ""
     ]

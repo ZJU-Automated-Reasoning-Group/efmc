@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "gj2007_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 19.336647510528564,
+    "unknown": true,
+    "time": 11.195539951324463,
     "message": [
         ""
     ]

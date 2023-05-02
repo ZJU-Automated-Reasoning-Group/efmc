@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "vardep.sl_64bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 15.431363105773926,
+    "unknown": true,
+    "time": 10.025029182434082,
     "message": [
         ""
     ]

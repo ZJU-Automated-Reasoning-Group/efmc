@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "s_split_44.smt2safe_64bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 14.053728580474854,
+    "unknown": true,
+    "time": 9.025032043457031,
     "message": [
         ""
     ]

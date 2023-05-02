@@ -3,12 +3,12 @@
     "lang": "chc",
     "file": "gsv2008_true-unreach-call_true-termination.sl_64bits_signed.smt2",
     "safe": false,
-    "time": 2.6428160667419434,
+    "time": 0.5020394325256348,
     "message": [
         "Finish parsing CHC file",
         " PDR starts working!",
         " PDR starting!!!",
-        " PDR time:  0.12556219100952148",
+        " PDR time:  0.03351998329162598",
         " unsafe",
         " ",
         ""

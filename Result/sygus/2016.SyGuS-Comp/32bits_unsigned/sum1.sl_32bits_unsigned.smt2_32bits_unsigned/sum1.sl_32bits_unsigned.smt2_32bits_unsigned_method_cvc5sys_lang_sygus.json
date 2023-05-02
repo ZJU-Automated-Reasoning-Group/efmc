@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "sum1.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 9.940524816513062,
+    "safe": true,
+    "time": 1.1425321102142334,
     "message": [
         "(",
         " (define-fun inv_fun ((sn (_ BitVec 32)) (n (_ BitVec 32)) (i (_ BitVec 32))) Bool (or (not (bvult n i)) (= n sn) (= #b00000000000000000000000000000000 sn)))",

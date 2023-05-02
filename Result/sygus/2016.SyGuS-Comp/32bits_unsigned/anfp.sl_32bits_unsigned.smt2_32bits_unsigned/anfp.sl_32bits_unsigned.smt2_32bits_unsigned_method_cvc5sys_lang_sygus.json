@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "anfp.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 4.539986610412598,
+    "safe": true,
+    "time": 1.4137227535247803,
     "message": [
         "(",
         " (define-fun inv_fun ((y (_ BitVec 32)) (x (_ BitVec 32))) Bool (or (bvult y #b00000000000000000000001111101000) (not (bvult x y))))",

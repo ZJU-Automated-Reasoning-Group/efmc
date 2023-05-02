@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "cggmp-new.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 16.176960945129395,
+    "unknown": true,
+    "time": 10.895096063613892,
     "message": [
         ""
     ]

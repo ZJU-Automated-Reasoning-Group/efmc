@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "trex3.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 12.541963577270508,
+    "unknown": true,
+    "time": 10.055589199066162,
     "message": [
         ""
     ]

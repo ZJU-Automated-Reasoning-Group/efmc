@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "s_split_29.smt2safe_64bits_unsigned.smt2_64bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 8.450546503067017,
+    "safe": true,
+    "time": 1.2728939056396484,
     "message": [
         "(error \"Parse Error: /efmc/Benchmark/sygus/2022.multi-phase/64bits_unsigned/s_split_29.smt2safe_64bits_unsigned.smt2_64bits_unsigned.sl:10.52: Sequence terminated early by token: '('.",
         " ",

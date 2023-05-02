@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "matrix2_simp.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 12.627615451812744,
+    "unknown": true,
+    "time": 9.315470457077026,
     "message": [
         ""
     ]

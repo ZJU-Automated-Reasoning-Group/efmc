@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "simple_vardep_true-unreach-call2_true-termination.sl_64bits_signed.smt2_64bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 6.699217081069946,
+    "safe": true,
+    "time": 1.3604974746704102,
     "message": [
         "(",
         " (define-fun inv_fun ((k (_ BitVec 64)) (j (_ BitVec 64)) (i (_ BitVec 64))) Bool (or (bvslt k #b0000000000000000000000000000000000001111111111111111111111111111) (and (= (bvmul i #b0000000000000000000000000000000000000000000000000000000000000011) k) (= (concat ((_ extract 62 0) i) #b0) j))))",

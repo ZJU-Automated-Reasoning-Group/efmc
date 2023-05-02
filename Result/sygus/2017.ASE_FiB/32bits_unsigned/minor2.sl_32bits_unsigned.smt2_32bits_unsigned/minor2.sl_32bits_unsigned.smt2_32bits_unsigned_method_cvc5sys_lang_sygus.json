@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "minor2.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 4.069448232650757,
+    "unknown": true,
+    "time": 1.2925865650177002,
     "message": [
         "(error \"Parse Error: /efmc/Benchmark/sygus/2017.ASE_FiB/32bits_unsigned/minor2.sl_32bits_unsigned.smt2_32bits_unsigned.sl:10.32: Sequence terminated early by token: '('.",
         " ",

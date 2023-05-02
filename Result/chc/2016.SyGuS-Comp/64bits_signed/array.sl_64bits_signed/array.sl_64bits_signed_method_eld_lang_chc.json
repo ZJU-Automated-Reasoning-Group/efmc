@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "array.sl_64bits_signed.smt2",
-    "unexpected_error": true,
-    "time": 13.8961181640625,
+    "unknown": true,
+    "time": 8.818461179733276,
     "message": [
         ""
     ]

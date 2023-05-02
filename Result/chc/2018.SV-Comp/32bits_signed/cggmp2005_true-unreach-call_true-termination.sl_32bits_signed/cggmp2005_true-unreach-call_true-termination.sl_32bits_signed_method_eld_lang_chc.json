@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "cggmp2005_true-unreach-call_true-termination.sl_32bits_signed.smt2",
-    "unexpected_error": true,
-    "time": 12.242734909057617,
+    "unknown": true,
+    "time": 11.141770839691162,
     "message": [
         ""
     ]

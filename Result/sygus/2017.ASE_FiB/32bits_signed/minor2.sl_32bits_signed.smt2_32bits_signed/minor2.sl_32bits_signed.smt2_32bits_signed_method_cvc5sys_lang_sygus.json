@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "minor2.sl_32bits_signed.smt2_32bits_signed.sl",
-    "unexpected_error": true,
-    "time": 13.984081268310547,
+    "unknown": true,
+    "time": 8.965629577636719,
     "message": [
         ""
     ]

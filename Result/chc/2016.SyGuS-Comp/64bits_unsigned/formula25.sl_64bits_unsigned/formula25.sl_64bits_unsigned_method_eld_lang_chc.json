@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "formula25.sl_64bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 14.387738704681396,
+    "unknown": true,
+    "time": 11.607455492019653,
     "message": [
         ""
     ]

@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "sum01_false-unreach-call_true-termination.sl_32bits_signed.smt2_32bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 7.972961902618408,
+    "safe": true,
+    "time": 1.8933501243591309,
     "message": [
         "(",
         " (define-fun inv_fun ((sn (_ BitVec 32)) (n (_ BitVec 32)) (i (_ BitVec 32))) Bool (or (not (bvslt n i)) (= (concat ((_ extract 30 0) n) #b0) sn) (= #b00000000000000000000000000000000 sn)))",

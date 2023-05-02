@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "sum4.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 5.928261756896973,
+    "unknown": true,
+    "time": 1.6247742176055908,
     "message": [
         "(error \"Parse Error: /efmc/Benchmark/sygus/2016.SyGuS-Comp/64bits_unsigned/sum4.sl_64bits_unsigned.smt2_64bits_unsigned.sl:10.65: Sequence terminated early by token: '('.",
         " ",

@@ -2,9 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "file": "while_infinite_loop_3_true-unreach-call_false-termination.sl_64bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 12.115922212600708,
+    "safe": true,
+    "time": 9.210446119308472,
     "message": [
+        "sat",
         ""
     ]
 }

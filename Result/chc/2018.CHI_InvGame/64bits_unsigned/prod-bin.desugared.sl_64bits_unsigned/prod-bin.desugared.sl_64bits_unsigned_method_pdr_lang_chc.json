@@ -3,7 +3,7 @@
     "lang": "chc",
     "file": "prod-bin.desugared.sl_64bits_unsigned.smt2",
     "unexpected_error": true,
-    "time": 3.4254074096679688,
+    "time": 0.5573625564575195,
     "message": [
         "Traceback (most recent call last):",
         "   File \"/efmc/prover.py\", line 302, in <module>",

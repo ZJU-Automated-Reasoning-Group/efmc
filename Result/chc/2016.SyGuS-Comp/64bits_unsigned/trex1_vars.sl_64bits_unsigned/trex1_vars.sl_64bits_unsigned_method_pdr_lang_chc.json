@@ -2,11 +2,15 @@
     "method": "pdr",
     "lang": "chc",
     "file": "trex1_vars.sl_64bits_unsigned.smt2",
-    "timeout": true,
-    "unknown": true,
-    "time": 60,
+    "safe": false,
+    "time": 14.658846616744995,
     "message": [
-        "Timeout: Method 'pdr' timed out after 60 seconds.",
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  13.924225568771362",
+        " unsafe",
+        " ",
         ""
     ]
 }

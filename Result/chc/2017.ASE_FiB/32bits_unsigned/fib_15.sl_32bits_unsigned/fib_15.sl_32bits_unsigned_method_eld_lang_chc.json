@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "fib_15.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 15.332590103149414,
+    "unknown": true,
+    "time": 11.575715065002441,
     "message": [
         ""
     ]

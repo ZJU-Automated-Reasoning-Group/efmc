@@ -3,12 +3,12 @@
     "lang": "chc",
     "file": "trex3.sl_64bits_unsigned.smt2",
     "safe": false,
-    "time": 6.124529123306274,
+    "time": 2.018347978591919,
     "message": [
         "Finish parsing CHC file",
         " PDR starts working!",
         " PDR starting!!!",
-        " PDR time:  0.19176220893859863",
+        " PDR time:  0.03936004638671875",
         " unsafe",
         " ",
         ""

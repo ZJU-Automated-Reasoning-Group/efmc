@@ -3,12 +3,12 @@
     "lang": "chc",
     "file": "fig1_vars.sl_64bits_signed.smt2",
     "safe": false,
-    "time": 2.407973051071167,
+    "time": 0.6591041088104248,
     "message": [
         "Finish parsing CHC file",
         " PDR starts working!",
         " PDR starting!!!",
-        " PDR time:  0.043163299560546875",
+        " PDR time:  0.03393721580505371",
         " unsafe",
         " ",
         ""

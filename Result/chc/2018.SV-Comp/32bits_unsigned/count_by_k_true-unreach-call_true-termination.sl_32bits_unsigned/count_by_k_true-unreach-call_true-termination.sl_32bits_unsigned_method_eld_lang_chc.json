@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "count_by_k_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 12.23064398765564,
+    "unknown": true,
+    "time": 9.610582828521729,
     "message": [
         ""
     ]

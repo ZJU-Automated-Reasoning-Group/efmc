@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "sorin03.desugared.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 11.041468143463135,
+    "unknown": true,
+    "time": 11.634912252426147,
     "message": [
         ""
     ]

@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "sendmail-close-angle_true-unreach-call_true-termination.sl_32bits_signed.smt2_32bits_signed.sl",
-    "unexpected_error": true,
-    "time": 10.288683652877808,
+    "safe": false,
+    "time": 1.2892425060272217,
     "message": [
         "infeasible",
         ""

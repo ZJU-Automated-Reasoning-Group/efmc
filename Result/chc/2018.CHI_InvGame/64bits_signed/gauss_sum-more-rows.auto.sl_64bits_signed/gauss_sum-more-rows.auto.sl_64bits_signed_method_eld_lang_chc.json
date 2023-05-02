@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "gauss_sum-more-rows.auto.sl_64bits_signed.smt2",
-    "unexpected_error": true,
-    "time": 16.188483476638794,
+    "unknown": true,
+    "time": 11.050618171691895,
     "message": [
         ""
     ]

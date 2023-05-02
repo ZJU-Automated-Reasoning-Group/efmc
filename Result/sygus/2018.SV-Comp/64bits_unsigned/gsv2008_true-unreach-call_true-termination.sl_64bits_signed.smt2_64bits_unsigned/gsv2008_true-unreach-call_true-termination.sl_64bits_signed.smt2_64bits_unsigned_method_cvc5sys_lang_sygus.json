@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "gsv2008_true-unreach-call_true-termination.sl_64bits_signed.smt2_64bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 6.262163877487183,
+    "safe": true,
+    "time": 3.439446210861206,
     "message": [
         "(",
         " (define-fun inv_fun ((y (_ BitVec 64)) (x (_ BitVec 64))) Bool (or (bvslt x #b0000000000000000000000000000000000000000000000000000000000000000) (bvslt #b0000000000000000000000000000000000000000000000000000000000000000 y)))",

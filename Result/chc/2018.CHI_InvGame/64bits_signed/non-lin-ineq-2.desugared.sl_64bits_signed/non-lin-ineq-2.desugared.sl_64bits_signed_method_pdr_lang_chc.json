@@ -3,12 +3,12 @@
     "lang": "chc",
     "file": "non-lin-ineq-2.desugared.sl_64bits_signed.smt2",
     "safe": false,
-    "time": 14.346816301345825,
+    "time": 0.9129588603973389,
     "message": [
         "Finish parsing CHC file",
         " PDR starts working!",
         " PDR starting!!!",
-        " PDR time:  6.166597604751587",
+        " PDR time:  0.35564708709716797",
         " unsafe",
         " ",
         ""

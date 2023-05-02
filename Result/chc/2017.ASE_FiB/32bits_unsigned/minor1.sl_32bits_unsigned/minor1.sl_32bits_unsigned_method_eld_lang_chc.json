@@ -2,9 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "file": "minor1.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 16.691622734069824,
+    "safe": false,
+    "time": 8.876124858856201,
     "message": [
+        "unsat",
         ""
     ]
 }

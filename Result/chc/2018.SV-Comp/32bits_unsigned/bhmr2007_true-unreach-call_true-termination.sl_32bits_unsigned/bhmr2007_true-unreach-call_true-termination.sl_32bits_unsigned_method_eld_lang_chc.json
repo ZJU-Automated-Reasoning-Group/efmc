@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "bhmr2007_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 15.326565027236938,
+    "unknown": true,
+    "time": 9.569539785385132,
     "message": [
         ""
     ]

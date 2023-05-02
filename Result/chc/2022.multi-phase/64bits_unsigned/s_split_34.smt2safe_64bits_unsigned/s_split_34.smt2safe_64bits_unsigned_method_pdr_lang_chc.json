@@ -3,12 +3,12 @@
     "lang": "chc",
     "file": "s_split_34.smt2safe_64bits_unsigned.smt2",
     "safe": false,
-    "time": 5.305144786834717,
+    "time": 0.7116682529449463,
     "message": [
         "Finish parsing CHC file",
         " PDR starts working!",
         " PDR starting!!!",
-        " PDR time:  0.06654548645019531",
+        " PDR time:  0.015148639678955078",
         " unsafe",
         " ",
         ""

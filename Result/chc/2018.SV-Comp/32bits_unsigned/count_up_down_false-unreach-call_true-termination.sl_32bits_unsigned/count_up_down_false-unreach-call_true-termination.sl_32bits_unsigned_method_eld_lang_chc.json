@@ -2,9 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "file": "count_up_down_false-unreach-call_true-termination.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 15.93232798576355,
+    "safe": true,
+    "time": 8.7039794921875,
     "message": [
+        "sat",
         ""
     ]
 }

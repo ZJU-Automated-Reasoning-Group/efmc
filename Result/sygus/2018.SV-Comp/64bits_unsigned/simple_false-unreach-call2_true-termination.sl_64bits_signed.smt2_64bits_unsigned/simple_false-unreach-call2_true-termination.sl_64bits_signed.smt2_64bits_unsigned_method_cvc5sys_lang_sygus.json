@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "simple_false-unreach-call2_true-termination.sl_64bits_signed.smt2_64bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 8.235644817352295,
+    "safe": false,
+    "time": 2.2017016410827637,
     "message": [
         "infeasible",
         ""

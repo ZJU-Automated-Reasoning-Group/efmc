@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "simple_vardep_true-unreach-call2_true-termination.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 14.547075271606445,
+    "unknown": true,
+    "time": 9.269164800643921,
     "message": [
         ""
     ]

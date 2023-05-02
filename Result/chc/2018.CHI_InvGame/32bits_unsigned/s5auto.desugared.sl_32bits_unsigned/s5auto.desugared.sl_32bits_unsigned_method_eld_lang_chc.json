@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "s5auto.desugared.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 15.408520221710205,
+    "unknown": true,
+    "time": 9.192428588867188,
     "message": [
         ""
     ]

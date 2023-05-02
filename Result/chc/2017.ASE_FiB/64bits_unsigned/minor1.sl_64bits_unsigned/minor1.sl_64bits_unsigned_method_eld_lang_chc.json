@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "minor1.sl_64bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 12.93228816986084,
+    "unknown": true,
+    "time": 10.14852786064148,
     "message": [
         ""
     ]

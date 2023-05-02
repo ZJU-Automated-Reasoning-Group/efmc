@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "s_split_36.smt2unsafe_64bits_unsigned.smt2_64bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 16.232752561569214,
+    "safe": true,
+    "time": 2.8153133392333984,
     "message": [
         "(",
         " (define-fun inv_fun ((y (_ BitVec 64)) (x (_ BitVec 64))) Bool (and (= #b1111111111111111111111111111111111111111111111111101100011110000 x) (bvult #b1111111111111111111111111111111111111111111111111101100011110000 (bvadd y #b1111111111111111111111111111111111111111111111111111111111111111))))",

@@ -2,9 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "file": "sum3.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 15.952005386352539,
+    "safe": true,
+    "time": 8.162725925445557,
     "message": [
+        "sat",
         ""
     ]
 }

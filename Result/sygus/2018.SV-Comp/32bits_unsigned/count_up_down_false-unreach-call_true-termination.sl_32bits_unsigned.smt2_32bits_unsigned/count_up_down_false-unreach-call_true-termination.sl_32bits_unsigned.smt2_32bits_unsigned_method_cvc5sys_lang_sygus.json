@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "count_up_down_false-unreach-call_true-termination.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
-    "unexpected_error": true,
-    "time": 8.395013332366943,
+    "safe": true,
+    "time": 2.0206050872802734,
     "message": [
         "(",
         " (define-fun inv_fun ((y (_ BitVec 32)) (x (_ BitVec 32)) (n (_ BitVec 32))) Bool (or (= n y) (not (= #b00000000000000000000000000000000 x))))",

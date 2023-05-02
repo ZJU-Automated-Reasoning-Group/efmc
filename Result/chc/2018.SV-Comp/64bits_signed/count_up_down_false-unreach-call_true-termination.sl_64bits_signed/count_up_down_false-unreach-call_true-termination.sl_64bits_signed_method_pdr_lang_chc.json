@@ -3,12 +3,12 @@
     "lang": "chc",
     "file": "count_up_down_false-unreach-call_true-termination.sl_64bits_signed.smt2",
     "safe": false,
-    "time": 10.26503849029541,
+    "time": 2.717501163482666,
     "message": [
         "Finish parsing CHC file",
         " PDR starts working!",
         " PDR starting!!!",
-        " PDR time:  0.11049389839172363",
+        " PDR time:  0.06765246391296387",
         " unsafe",
         " ",
         ""

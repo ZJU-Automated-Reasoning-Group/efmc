@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "NetBSD_loop_true-unreach-call_true-termination.sl_64bits_signed.smt2",
-    "unexpected_error": true,
-    "time": 15.094188451766968,
+    "unknown": true,
+    "time": 11.12054967880249,
     "message": [
         ""
     ]

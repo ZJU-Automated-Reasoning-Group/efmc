@@ -2,9 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "file": "terminator_03_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 15.823336362838745,
+    "safe": true,
+    "time": 7.649712800979614,
     "message": [
+        "sat",
         ""
     ]
 }

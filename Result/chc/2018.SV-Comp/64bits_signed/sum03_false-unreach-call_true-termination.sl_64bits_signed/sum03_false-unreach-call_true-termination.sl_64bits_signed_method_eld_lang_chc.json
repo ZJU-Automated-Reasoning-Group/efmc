@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "sum03_false-unreach-call_true-termination.sl_64bits_signed.smt2",
-    "unexpected_error": true,
-    "time": 12.619474172592163,
+    "unknown": true,
+    "time": 8.935710668563843,
     "message": [
         ""
     ]

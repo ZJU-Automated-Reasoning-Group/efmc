@@ -2,8 +2,8 @@
     "method": "cvc5sys",
     "lang": "sygus",
     "file": "fib_05_x.sl_64bits_signed.smt2_64bits_signed.sl",
-    "unexpected_error": true,
-    "time": 12.409943103790283,
+    "unknown": true,
+    "time": 10.674672603607178,
     "message": [
         ""
     ]

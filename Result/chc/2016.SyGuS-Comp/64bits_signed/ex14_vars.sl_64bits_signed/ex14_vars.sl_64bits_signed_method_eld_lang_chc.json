@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "ex14_vars.sl_64bits_signed.smt2",
-    "unexpected_error": true,
-    "time": 16.46477174758911,
+    "unknown": true,
+    "time": 11.34743857383728,
     "message": [
         ""
     ]

@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "inc_simp.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 16.909639358520508,
+    "unknown": true,
+    "time": 11.061569929122925,
     "message": [
         ""
     ]

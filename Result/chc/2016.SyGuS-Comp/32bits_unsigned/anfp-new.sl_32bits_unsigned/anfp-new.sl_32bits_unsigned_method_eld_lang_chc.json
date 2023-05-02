@@ -2,8 +2,8 @@
     "method": "eld",
     "lang": "chc",
     "file": "anfp-new.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 13.618130683898926,
+    "unknown": true,
+    "time": 9.714743852615356,
     "message": [
         ""
     ]

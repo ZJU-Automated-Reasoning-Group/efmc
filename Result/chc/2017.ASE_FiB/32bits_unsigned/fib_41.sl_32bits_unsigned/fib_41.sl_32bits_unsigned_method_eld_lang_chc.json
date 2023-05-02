@@ -2,9 +2,10 @@
     "method": "eld",
     "lang": "chc",
     "file": "fib_41.sl_32bits_unsigned.smt2",
-    "unexpected_error": true,
-    "time": 12.20828127861023,
+    "safe": false,
+    "time": 8.67486047744751,
     "message": [
+        "unsat",
         ""
     ]
 }
