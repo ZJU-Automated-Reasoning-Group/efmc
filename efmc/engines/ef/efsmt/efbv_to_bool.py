@@ -142,9 +142,9 @@ class EFBV2BoolAux:
         simplified_fml = fml  # do not use the above "fancy simplification"
         # TODO: remove universal vars that do not appear in simplified_fml?
         if len(aux_bool_vars) >= 1:
-            cnt = z3.ForAll(universal_vars, z3.Exists(aux_bool_vars, simplified_fml))
-            # cnt = z3.Exists(existential_vars,
-            #                z3.ForAll(universal_vars, z3.Exists(aux_bool_vars, simplified_fml)))
+            # cnt = z3.ForAll(universal_vars, z3.Exists(aux_bool_vars, simplified_fml))
+            cnt = z3.Exists(existential_vars,
+                            z3.ForAll(universal_vars, z3.Exists(aux_bool_vars, simplified_fml)))
         else:
             cnt = z3.ForAll(universal_vars, simplified_fml)
         print("Finishing generating QBF CNT...")

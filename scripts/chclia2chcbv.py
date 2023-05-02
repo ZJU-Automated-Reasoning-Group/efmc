@@ -76,6 +76,7 @@ def to_bv_sexpr_misc(line: [str]):
             for exp in to_bv_sexpr_misc(new_element):
                 res.append(exp)
         else:
+            # replace int with bv
             if isinstance(element, int):
                 res.append("(_ bv{} {})".format(element, g_bitvector_width))
             else:
@@ -158,8 +159,6 @@ def chclia2chcbv(tt):
     # In the multi-phase benchmark, x1, y1, .. are used to denote
     # prime variables. However, our transition system will only regard
     # variables named x!, y!, .. as prime variables
-
-    # 1. First, replace the var names
     fmls = z3.parse_smt2_string(bv_fml_str)
     assert len(fmls) == 3
     trans_fml = fmls[1]
@@ -173,7 +172,6 @@ def chclia2chcbv(tt):
             new_var_name = str(var)[:-1]
         new_var = z3.BitVec(new_var_name, var.sort())
         mappings.append((var, new_var))
-
     # replace the variables in init, trans, post with new var names
     new_init_qf = z3.substitute(ground_quantifier(fmls[0])[0], mappings)
     new_trans_qf = z3.substitute(trans_body, mappings)
@@ -235,7 +233,6 @@ def process_file(filename: str, target_dir: str):
             f.close()
     except Exception as ex:
         print(ex)
-        # if "mod" in str(ex):
         os.remove(filename)
 
 

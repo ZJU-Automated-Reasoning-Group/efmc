@@ -57,6 +57,10 @@ cargo build --release # may fail , haven't fixed yet
 eval "cd $current_dir"
 
 
+# download eld
+wget https://github.com/uuverifiers/eldarica/releases/download/v2.0.9/eldarica-bin-2.0.9.zip
+
+
 # extract all zip/gz files
 eval "find . -maxdepth 1 -type f -name '*.gz' | xargs -I{} tar xvf {}"
 eval "find . -maxdepth 1 -type f -name '*.zip' | xargs -I{} unzip {}"
@@ -96,3 +100,4 @@ eval "find . -maxdepth 1 -type f -name '*.gz' | xargs -I{} rm -f {}"
 eval "find . -maxdepth 1 -type f -name '*.zip' | xargs -I{} rm -f {}"
 eval "chmod +x ./bin/cvc5-Linux"
 
+eval "ln -s /efmc/bin_solvers/eldarica/eld /efmc/bin_solvers/bin/eld"
