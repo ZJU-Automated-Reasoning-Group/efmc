@@ -1,0 +1,10 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "file": "terminator_02_true-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "unexpected_error": true,
+    "time": 14.75542664527893,
+    "message": [
+        ""
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "sum01_bug02_false-unreach-call_true-termination.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 8.365821838378906,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((sn (_ BitVec 64)) (n (_ BitVec 64)) (j (_ BitVec 64)) (i (_ BitVec 64))) Bool (or (not (bvult n i)) (= (concat ((_ extract 62 0) n) #b0) sn) (= #b0000000000000000000000000000000000000000000000000000000000000000 sn)))",
+        " )",
+        ""
+    ]
+}

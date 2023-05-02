@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "ex11_simpl-new.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 10.875808715820312,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  2.606688976287842",
+        " safe",
+        " Invariant:  And(1 <= n, c <= n, Not(Extract(63, 63, c) == 1))",
+        " ",
+        ""
+    ]
+}

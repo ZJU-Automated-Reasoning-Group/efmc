@@ -1,0 +1,19 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "fib_37.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 17.366206645965576,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  15.982582330703735",
+        " safe",
+        " Invariant:  And(Not(n <= m),",
+        "     Not(Extract(63, 63, m) == 1),",
+        "     Not(Extract(63, 63, x) == 1))",
+        " ",
+        ""
+    ]
+}

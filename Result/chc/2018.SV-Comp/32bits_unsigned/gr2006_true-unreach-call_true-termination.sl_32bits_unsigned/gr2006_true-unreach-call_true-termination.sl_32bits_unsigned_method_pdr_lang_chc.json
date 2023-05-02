@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "gr2006_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "safe": true,
+    "time": 6.536086559295654,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.0007560253143310547",
+        " safe",
+        " Invariant:  True",
+        " ",
+        ""
+    ]
+}

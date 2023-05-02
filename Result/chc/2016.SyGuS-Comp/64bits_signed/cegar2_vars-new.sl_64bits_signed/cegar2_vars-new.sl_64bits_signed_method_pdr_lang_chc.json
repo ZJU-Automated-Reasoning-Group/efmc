@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "cegar2_vars-new.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 21.220511198043823,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  12.221626996994019",
+        " safe",
+        " Invariant:  And(1 <= x, 1 <= m, Or(Not(n <= m), n <= 1))",
+        " ",
+        ""
+    ]
+}

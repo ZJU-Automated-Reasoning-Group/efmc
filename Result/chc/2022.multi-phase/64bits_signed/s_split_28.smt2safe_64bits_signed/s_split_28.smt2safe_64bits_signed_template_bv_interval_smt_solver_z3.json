@@ -1,0 +1,9 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "z3",
+    "file": "s_split_28.smt2safe_64bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 1.6583855152130127
+}

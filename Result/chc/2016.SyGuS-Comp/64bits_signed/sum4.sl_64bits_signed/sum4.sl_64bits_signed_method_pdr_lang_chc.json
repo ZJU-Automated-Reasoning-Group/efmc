@@ -1,0 +1,26 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "sum4.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 47.84500050544739,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  39.924336433410645",
+        " safe",
+        " Invariant:  And(Or(Not(i <= 8), sn == 7, 1 + i <= 8),",
+        "     Or(sn == 8, i <= 8),",
+        "     Not(8 + i <= 8),",
+        "     Or(Not(7 + i <= 8), sn == 0),",
+        "     Or(7 + i <= 8, sn == 1, Not(6 + i <= 8)),",
+        "     Or(5 + i <= 8, Not(4 + i <= 8), sn == 3),",
+        "     Or(Not(5 + i <= 8), sn == 2, 6 + i <= 8),",
+        "     Or(sn == 6, Not(1 + i <= 8), 2 + i <= 8),",
+        "     Or(4 + i <= 8, sn == 4, Not(3 + i <= 8)),",
+        "     Or(sn == 5, Not(2 + i <= 8), 3 + i <= 8))",
+        " ",
+        ""
+    ]
+}

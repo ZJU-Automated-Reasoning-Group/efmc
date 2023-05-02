@@ -1,0 +1,9 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "z3",
+    "file": "ex11-new.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 1.257563829421997
+}

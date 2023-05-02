@@ -1,0 +1,10 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "up_true-unreach-call_true-termination.sl_32bits_signed.smt2_32bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 15.900716543197632,
+    "message": [
+        ""
+    ]
+}

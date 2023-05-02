@@ -1,0 +1,15 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "power_bv_poly",
+    "smt_solver": "cegis",
+    "cegis_solver": "cvc4",
+    "file": "underapprox_true-unreach-call2_true-termination.sl_64bits_unsigned.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'efsmt' timed out after 60 seconds.",
+        ""
+    ]
+}

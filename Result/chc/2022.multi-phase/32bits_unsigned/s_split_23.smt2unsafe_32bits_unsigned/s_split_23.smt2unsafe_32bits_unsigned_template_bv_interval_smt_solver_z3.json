@@ -1,0 +1,9 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "z3",
+    "file": "s_split_23.smt2unsafe_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 0.42365217208862305
+}

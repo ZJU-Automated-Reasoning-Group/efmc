@@ -1,0 +1,10 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "file": "non-lin-ineq-3.desugared.sl_32bits_unsigned.smt2",
+    "unexpected_error": true,
+    "time": 16.036664247512817,
+    "message": [
+        ""
+    ]
+}

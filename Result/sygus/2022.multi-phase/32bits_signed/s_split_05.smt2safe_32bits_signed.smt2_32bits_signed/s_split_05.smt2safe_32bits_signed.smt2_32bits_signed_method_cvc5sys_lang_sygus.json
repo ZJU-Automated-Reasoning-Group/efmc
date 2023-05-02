@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "s_split_05.smt2safe_32bits_signed.smt2_32bits_signed.sl",
+    "unexpected_error": true,
+    "time": 11.51078987121582,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((z (_ BitVec 32)) (y (_ BitVec 32)) (x (_ BitVec 32))) Bool (and (bvslt y x) (= #b00000000000000000000000000000001 z)))",
+        " )",
+        ""
+    ]
+}

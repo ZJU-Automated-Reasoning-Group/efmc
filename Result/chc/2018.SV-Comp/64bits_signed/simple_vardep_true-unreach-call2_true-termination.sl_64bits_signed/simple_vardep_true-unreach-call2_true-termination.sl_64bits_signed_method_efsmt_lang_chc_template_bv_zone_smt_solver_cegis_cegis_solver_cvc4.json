@@ -1,0 +1,15 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "bv_zone",
+    "smt_solver": "cegis",
+    "cegis_solver": "cvc4",
+    "file": "simple_vardep_true-unreach-call2_true-termination.sl_64bits_signed.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'efsmt' timed out after 60 seconds.",
+        ""
+    ]
+}

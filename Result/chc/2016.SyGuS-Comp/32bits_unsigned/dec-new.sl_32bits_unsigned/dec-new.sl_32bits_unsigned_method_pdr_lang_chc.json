@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "dec-new.sl_32bits_unsigned.smt2",
+    "safe": true,
+    "time": 0.7384400367736816,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.0008006095886230469",
+        " safe",
+        " Invariant:  True",
+        " ",
+        ""
+    ]
+}

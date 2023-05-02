@@ -1,0 +1,16 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "minor2.sl_64bits_unsigned.smt2",
+    "safe": false,
+    "time": 1.7888076305389404,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.3867228031158447",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

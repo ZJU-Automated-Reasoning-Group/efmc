@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "vardep.sl_32bits_unsigned.smt2",
+    "safe": true,
+    "time": 2.0937037467956543,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.0008504390716552734",
+        " safe",
+        " Invariant:  True",
+        " ",
+        ""
+    ]
+}

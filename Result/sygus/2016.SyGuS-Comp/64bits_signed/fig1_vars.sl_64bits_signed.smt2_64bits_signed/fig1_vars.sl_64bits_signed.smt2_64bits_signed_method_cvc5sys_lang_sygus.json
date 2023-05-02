@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "fig1_vars.sl_64bits_signed.smt2_64bits_signed.sl",
+    "unexpected_error": true,
+    "time": 8.737783193588257,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((z3 (_ BitVec 64)) (z2 (_ BitVec 64)) (z1 (_ BitVec 64)) (y (_ BitVec 64)) (x (_ BitVec 64))) Bool (or (bvslt x #b0000000000000000000000000000000000000000000000000000000000000000) (bvslt #b0000000000000000000000000000000000000000000000000000000000000000 y)))",
+        " )",
+        ""
+    ]
+}

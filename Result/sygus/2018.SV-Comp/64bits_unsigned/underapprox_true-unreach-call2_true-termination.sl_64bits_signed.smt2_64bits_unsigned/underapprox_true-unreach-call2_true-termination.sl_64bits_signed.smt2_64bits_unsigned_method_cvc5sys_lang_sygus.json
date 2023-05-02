@@ -1,0 +1,13 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "file": "underapprox_true-unreach-call2_true-termination.sl_64bits_signed.smt2_64bits_unsigned.sl",
+    "unexpected_error": true,
+    "time": 4.994278907775879,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((y (_ BitVec 64)) (x (_ BitVec 64))) Bool (or (bvslt x #b0000000000000000000000000000000000000000000000000000000000000110) (= #b0000000000000000000000000000000000000000000000000000000000000110 x)))",
+        " )",
+        ""
+    ]
+}

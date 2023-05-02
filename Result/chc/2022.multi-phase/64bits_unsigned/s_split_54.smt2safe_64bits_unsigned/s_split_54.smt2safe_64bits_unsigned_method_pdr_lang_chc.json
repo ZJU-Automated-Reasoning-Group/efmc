@@ -1,0 +1,12 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "file": "s_split_54.smt2safe_64bits_unsigned.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'pdr' timed out after 60 seconds.",
+        ""
+    ]
+}

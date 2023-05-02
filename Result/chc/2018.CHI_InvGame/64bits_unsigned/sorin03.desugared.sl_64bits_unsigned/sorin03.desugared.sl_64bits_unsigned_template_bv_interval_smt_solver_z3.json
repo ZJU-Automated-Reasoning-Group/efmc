@@ -1,0 +1,8 @@
+{
+    "template": "bv_interval",
+    "smt_solver": "z3",
+    "file": "sorin03.desugared.sl_64bits_unsigned.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 5
+}
