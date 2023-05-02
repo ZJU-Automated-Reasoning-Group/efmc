@@ -244,7 +244,7 @@ def solve_file(file_path, ef_template, smt_solver, cegis_solver, file_name):
         result['strengthen'] = STRENGTHEN
         cmd.append("--prop-strengthen")
     if NUM_DISJUNCTIONS:
-        file_name += "_disjunctions_"+NUM_DISJUNCTIONS
+        file_name += "_disjunctions_"+str(NUM_DISJUNCTIONS)
         result['num_disjunctions'] = NUM_DISJUNCTIONS
         cmd.append("--num-disjunctions")
         cmd.append(str(NUM_DISJUNCTIONS))
