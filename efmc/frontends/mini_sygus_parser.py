@@ -219,7 +219,7 @@ class SyGusInVParser:
         """
         Return the format of our trivial transition system
         """
-        from z3.z3util import get_vars
+        # from z3.z3util import get_vars
         init_constraints = []
         trans_constraints = []
         post_constraints = []
@@ -286,7 +286,7 @@ class SyGusInVParser:
                     all_vars.append(z3.Int(var_sig[0]))
             elif 'Real' in var_sig:
                 all_vars.append(z3.Real(var_sig[0]))
-            else:  # should we just assume the type is bv?
+            else:  # TODO: should we just assume the type is bv?
                 # ['x', ['_', 'BitVec', 32]]
                 all_vars.append(z3.BitVec(var_sig[0], var_sig[1][2]))
 
