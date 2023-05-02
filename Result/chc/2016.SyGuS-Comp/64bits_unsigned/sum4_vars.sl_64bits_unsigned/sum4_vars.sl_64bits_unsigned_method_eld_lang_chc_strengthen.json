@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "sum4_vars.sl_64bits_unsigned.smt2",
+    "unknown": true,
+    "time": 9.823960542678833,
+    "message": [
+        ""
+    ]
+}

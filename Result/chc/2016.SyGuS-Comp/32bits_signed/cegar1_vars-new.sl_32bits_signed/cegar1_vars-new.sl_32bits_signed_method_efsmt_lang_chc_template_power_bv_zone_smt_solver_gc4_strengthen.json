@@ -1,0 +1,15 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "power_bv_zone",
+    "smt_solver": "gc4",
+    "strengthen": true,
+    "file": "cegar1_vars-new.sl_32bits_signed.smt2",
+    "timeout": true,
+    "unknown": true,
+    "time": 60,
+    "message": [
+        "Timeout: Method 'efsmt' timed out after 60 seconds.",
+        ""
+    ]
+}

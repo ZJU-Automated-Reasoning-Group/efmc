@@ -1,0 +1,23 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "power_bv_poly",
+    "smt_solver": "yices2",
+    "strengthen": true,
+    "file": "const_true-unreach-call1.sl_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 5.868502616882324,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_POLYHEDRON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: yices2",
+        " safe",
+        ""
+    ]
+}

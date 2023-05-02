@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "cggmp2005_true-unreach-call_true-termination.sl_32bits_unsigned.smt2",
+    "unknown": true,
+    "time": 9.86661696434021,
+    "message": [
+        ""
+    ]
+}

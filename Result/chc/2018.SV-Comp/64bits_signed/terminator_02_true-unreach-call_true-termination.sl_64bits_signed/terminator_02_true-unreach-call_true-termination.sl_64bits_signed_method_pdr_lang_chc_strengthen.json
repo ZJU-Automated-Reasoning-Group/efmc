@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "terminator_02_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "safe": true,
+    "time": 2.228564500808716,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.040297746658325195",
+        " safe",
+        " Invariant:  True",
+        " ",
+        ""
+    ]
+}

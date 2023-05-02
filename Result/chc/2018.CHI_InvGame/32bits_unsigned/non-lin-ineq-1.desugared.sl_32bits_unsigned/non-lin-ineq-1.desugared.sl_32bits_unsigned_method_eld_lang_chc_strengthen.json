@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "non-lin-ineq-1.desugared.sl_32bits_unsigned.smt2",
+    "unknown": true,
+    "time": 9.323030233383179,
+    "message": [
+        ""
+    ]
+}

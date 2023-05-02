@@ -1,0 +1,23 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "bv_poly",
+    "smt_solver": "bitwuzla",
+    "strengthen": true,
+    "file": "inc.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "safe": true,
+    "time": 12.412795066833496,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_POLYHEDRON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: bitwuzla",
+        " safe",
+        ""
+    ]
+}

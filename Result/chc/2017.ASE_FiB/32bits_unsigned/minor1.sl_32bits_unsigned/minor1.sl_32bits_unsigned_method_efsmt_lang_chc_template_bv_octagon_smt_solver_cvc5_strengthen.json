@@ -1,0 +1,23 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "bv_octagon",
+    "smt_solver": "cvc5",
+    "strengthen": true,
+    "file": "minor1.sl_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 6.305487632751465,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cvc5",
+        " unknown",
+        ""
+    ]
+}

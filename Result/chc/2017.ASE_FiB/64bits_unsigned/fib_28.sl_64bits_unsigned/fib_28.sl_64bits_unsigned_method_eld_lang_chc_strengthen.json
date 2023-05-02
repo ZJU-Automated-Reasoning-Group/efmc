@@ -1,0 +1,12 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "fib_28.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 10.018884897232056,
+    "message": [
+        "sat",
+        ""
+    ]
+}

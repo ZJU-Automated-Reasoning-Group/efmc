@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "const_true-unreach-call1.sl_64bits_unsigned.smt2",
+    "unknown": true,
+    "time": 10.37199330329895,
+    "message": [
+        ""
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "bv_poly",
+    "smt_solver": "cvc5",
+    "strengthen": true,
+    "file": "s_split_48.smt2unsafe_32bits_unsigned.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 36.238667011260986,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_POLYHEDRON",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cvc5",
+        " unknown",
+        ""
+    ]
+}

@@ -1,0 +1,12 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "formula22.sl_32bits_unsigned.smt2_32bits_unsigned.sl",
+    "safe": false,
+    "time": 4.045018911361694,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "power_bv_zone",
+    "smt_solver": "cvc5",
+    "strengthen": true,
+    "file": "simple_false-unreach-call2_true-termination.sl_64bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 6.598113059997559,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_DISJUNCTIVE_ZONE",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cvc5",
+        " unknown",
+        ""
+    ]
+}

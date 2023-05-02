@@ -1,0 +1,18 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "formula25.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 5.535369634628296,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.6841597557067871",
+        " safe",
+        " Invariant:  And(ULE(1 + x4, x1), x1 == 0, x2 == x3)",
+        " ",
+        ""
+    ]
+}

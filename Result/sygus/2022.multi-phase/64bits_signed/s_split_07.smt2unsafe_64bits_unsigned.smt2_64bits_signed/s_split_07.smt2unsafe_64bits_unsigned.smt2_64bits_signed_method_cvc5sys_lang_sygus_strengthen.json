@@ -1,0 +1,16 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "s_split_07.smt2unsafe_64bits_unsigned.smt2_64bits_signed.sl",
+    "safe": false,
+    "time": 3.338212490081787,
+    "message": [
+        "(error \"Parse Error: /efmc/Benchmark/sygus/2022.multi-phase/64bits_signed/s_split_07.smt2unsafe_64bits_unsigned.smt2_64bits_signed.sl:10.40: Sequence terminated early by token: '('.",
+        " ",
+        "          ( let ( ( a!1 ( = ( ( _ extract (_ bv63 64) (_ bv17 64) ) ( bva...",
+        "                                           ^",
+        " \")",
+        ""
+    ]
+}

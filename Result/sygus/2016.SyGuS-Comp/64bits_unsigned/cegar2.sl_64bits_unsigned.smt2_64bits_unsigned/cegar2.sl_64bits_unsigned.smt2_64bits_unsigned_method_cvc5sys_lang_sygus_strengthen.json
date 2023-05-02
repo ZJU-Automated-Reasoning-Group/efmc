@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "cegar2.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "safe": true,
+    "time": 4.141116142272949,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((m (_ BitVec 64)) (n (_ BitVec 64)) (x (_ BitVec 64))) Bool (or (bvult x n) (bvult m n) (= #b0000000000000000000000000000000000000000000000000000000000000000 n)))",
+        " )",
+        ""
+    ]
+}

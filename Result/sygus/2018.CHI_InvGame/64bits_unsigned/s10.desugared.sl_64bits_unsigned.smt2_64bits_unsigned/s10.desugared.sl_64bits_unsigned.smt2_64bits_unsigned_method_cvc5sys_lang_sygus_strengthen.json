@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "s10.desugared.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "safe": true,
+    "time": 4.5227813720703125,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((k (_ BitVec 64)) (j (_ BitVec 64)) (i (_ BitVec 64))) Bool (or (bvult j #b0000000000000000000000000000000000000000000000000000001111101000) (= (bvadd #b0000000000000000000000000000000000000000000000000000000000001010 (bvmul k j)) i)))",
+        " )",
+        ""
+    ]
+}

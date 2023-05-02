@@ -1,0 +1,16 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "sum04_false-unreach-call_true-termination.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "unknown": true,
+    "time": 3.686891794204712,
+    "message": [
+        "(error \"Parse Error: /efmc/Benchmark/sygus/2018.SV-Comp/64bits_unsigned/sum04_false-unreach-call_true-termination.sl_64bits_unsigned.smt2_64bits_unsigned.sl:10.37: Sequence terminated early by token: '('.",
+        " ",
+        "          ( or ( and ( = ( ( _ extract (_ bv63 64) (_ bv4 64) ) i ) #x000...",
+        "                                        ^",
+        " \")",
+        ""
+    ]
+}

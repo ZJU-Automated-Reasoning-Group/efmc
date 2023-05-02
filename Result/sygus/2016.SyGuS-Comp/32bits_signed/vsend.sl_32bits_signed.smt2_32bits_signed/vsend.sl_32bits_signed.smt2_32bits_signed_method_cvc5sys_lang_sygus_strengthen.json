@@ -1,0 +1,12 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "vsend.sl_32bits_signed.smt2_32bits_signed.sl",
+    "safe": false,
+    "time": 8.461873054504395,
+    "message": [
+        "infeasible",
+        ""
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "matrix2.sl_64bits_signed.smt2_64bits_signed.sl",
+    "safe": true,
+    "time": 3.2997212409973145,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((k (_ BitVec 64)) (j (_ BitVec 64)) (a (_ BitVec 64)) (m (_ BitVec 64))) Bool (or (bvslt k #b0000000000000000000000000000000000000000000000000000000000000001) (bvslt a m) (= #b1111111111111111111111111111111111111111111111111111111111111111 j)))",
+        " )",
+        ""
+    ]
+}

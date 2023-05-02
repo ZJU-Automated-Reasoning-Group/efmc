@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "while_infinite_loop_4_false-unreach-call_true-termination.sl_32bits_signed.smt2",
+    "safe": false,
+    "time": 5.764193296432495,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.037065982818603516",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

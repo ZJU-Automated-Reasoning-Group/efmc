@@ -1,0 +1,33 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "cegar1_vars.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 7.284926176071167,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  2.081141710281372",
+        " safe",
+        " Invariant:  And(Or(Extract(2, 2, y) == 1,",
+        "        Not(Extract(1, 1, x) == 1),",
+        "        Not(Extract(2, 2, x) == 1),",
+        "        Not(Extract(1, 1, y) == 1)),",
+        "     Or(Not(Extract(1, 1, x) == 1),",
+        "        Extract(2, 2, x) == 1,",
+        "        Not(Extract(1, 1, y) == 1),",
+        "        Not(Extract(2, 2, y) == 1)),",
+        "     Or(Extract(2, 2, y) == 1,",
+        "        Extract(1, 1, x) == 1,",
+        "        Not(Extract(2, 2, x) == 1),",
+        "        Extract(1, 1, y) == 1),",
+        "     Or(Extract(1, 1, x) == 1,",
+        "        Extract(2, 2, x) == 1,",
+        "        Extract(1, 1, y) == 1,",
+        "        Not(Extract(2, 2, y) == 1)))",
+        " ",
+        ""
+    ]
+}

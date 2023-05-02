@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "NetBSD_loop_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "unknown": true,
+    "time": 9.050675630569458,
+    "message": [
+        ""
+    ]
+}

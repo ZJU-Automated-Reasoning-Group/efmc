@@ -1,0 +1,17 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "fig1_vars.sl_64bits_unsigned.smt2",
+    "safe": false,
+    "time": 4.357019662857056,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.030063629150390625",
+        " unsafe",
+        " ",
+        ""
+    ]
+}

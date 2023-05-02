@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "anfp.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "safe": true,
+    "time": 3.203681468963623,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((y (_ BitVec 64)) (x (_ BitVec 64))) Bool (or (bvult y #b0000000000000000000000000000000000000000000000000000001111101000) (not (bvult x y))))",
+        " )",
+        ""
+    ]
+}

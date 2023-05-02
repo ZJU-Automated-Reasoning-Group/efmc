@@ -1,0 +1,19 @@
+{
+    "method": "pdr",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "count_by_2_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "safe": true,
+    "time": 0.7937288284301758,
+    "message": [
+        "Finish parsing CHC file",
+        " PDR starts working!",
+        " PDR starting!!!",
+        " PDR time:  0.03565716743469238",
+        " safe",
+        " Invariant:  And(Or(Not(ULE(1000000, i)), i == 1000000),",
+        "     Not(Extract(0, 0, i) == 1))",
+        " ",
+        ""
+    ]
+}

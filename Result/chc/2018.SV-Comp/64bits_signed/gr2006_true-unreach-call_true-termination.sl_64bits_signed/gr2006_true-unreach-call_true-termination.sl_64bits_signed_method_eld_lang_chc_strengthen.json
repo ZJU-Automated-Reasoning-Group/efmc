@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "gr2006_true-unreach-call_true-termination.sl_64bits_signed.smt2",
+    "unknown": true,
+    "time": 9.750718593597412,
+    "message": [
+        ""
+    ]
+}

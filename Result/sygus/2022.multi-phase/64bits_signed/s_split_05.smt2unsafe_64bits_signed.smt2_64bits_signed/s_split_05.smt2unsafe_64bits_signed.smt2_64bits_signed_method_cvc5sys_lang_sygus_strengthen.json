@@ -1,0 +1,14 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "s_split_05.smt2unsafe_64bits_signed.smt2_64bits_signed.sl",
+    "safe": true,
+    "time": 8.550306797027588,
+    "message": [
+        "(",
+        " (define-fun inv_fun ((z (_ BitVec 64)) (y (_ BitVec 64)) (x (_ BitVec 64))) Bool (= #b0000000000000000000000000000000000000000000000000000000000000001 z))",
+        " )",
+        ""
+    ]
+}

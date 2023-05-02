@@ -1,0 +1,31 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "power_bv_interval",
+    "smt_solver": "yices2",
+    "strengthen": true,
+    "file": "prod-bin.desugared.sl_64bits_unsigned.smt2",
+    "unexpected_error": true,
+    "time": 4.522000789642334,
+    "message": [
+        "Traceback (most recent call last):",
+        "   File \"/efmc/prover.py\", line 302, in <module>",
+        "     solve_chc_file(g_verifier_args.file, g_verifier_args.engine)",
+        "   File \"/efmc/prover.py\", line 155, in solve_chc_file",
+        "     all_vars, init, trans, post = parse_chc(file_name, to_real_type=False)",
+        "   File \"/efmc/efmc/frontends/__init__.py\", line 17, in parse_chc",
+        "     ss = CHCParser(res, to_real_type)",
+        "   File \"/efmc/efmc/frontends/chc_parser.py\", line 161, in __init__",
+        "     self.parse_chc_string(inputs)",
+        "   File \"/efmc/efmc/frontends/chc_parser.py\", line 164, in parse_chc_string",
+        "     self.fmls = z3.parse_smt2_string(chc)",
+        "   File \"/usr/local/lib/python3.10/dist-packages/z3/z3.py\", line 8643, in parse_smt2_string",
+        "     return AstVector(Z3_parse_smtlib2_string(ctx.ref(), s, ssz, snames, ssorts, dsz, dnames, ddecls), ctx)",
+        "   File \"/usr/local/lib/python3.10/dist-packages/z3/z3core.py\", line 3281, in Z3_parse_smtlib2_string",
+        "     _elems.Check(a0)",
+        "   File \"/usr/local/lib/python3.10/dist-packages/z3/z3core.py\", line 1414, in Check",
+        "     raise self.Exception(self.get_error_message(ctx, err))",
+        " z3.z3types.Z3Exception: b'(error \"line 6 column 92: Sort mismatch at argument #1 for function (declare-fun mod (Int Int) Int) supplied sort is (_ BitVec 64)\")\\n'",
+        ""
+    ]
+}

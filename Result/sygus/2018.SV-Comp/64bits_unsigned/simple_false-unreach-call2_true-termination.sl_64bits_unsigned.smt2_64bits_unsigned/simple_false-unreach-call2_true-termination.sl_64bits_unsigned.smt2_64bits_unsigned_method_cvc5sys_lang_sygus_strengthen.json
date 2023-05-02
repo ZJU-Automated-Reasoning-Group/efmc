@@ -1,0 +1,16 @@
+{
+    "method": "cvc5sys",
+    "lang": "sygus",
+    "strengthen": true,
+    "file": "simple_false-unreach-call2_true-termination.sl_64bits_unsigned.smt2_64bits_unsigned.sl",
+    "unknown": true,
+    "time": 1.7417681217193604,
+    "message": [
+        "(error \"Parse Error: /efmc/Benchmark/sygus/2018.SV-Comp/64bits_unsigned/simple_false-unreach-call2_true-termination.sl_64bits_unsigned.smt2_64bits_unsigned.sl:10.76: Sequence terminated early by token: '('.",
+        " ",
+        "   ...000000fffffff x ) ) ( not ( = ( ( _ extract (_ bv63 64) (_ bv28 64) ) ...",
+        "                                                   ^",
+        " \")",
+        ""
+    ]
+}

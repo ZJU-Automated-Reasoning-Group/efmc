@@ -1,0 +1,11 @@
+{
+    "method": "eld",
+    "lang": "chc",
+    "strengthen": true,
+    "file": "sendmail-close-angle_true-unreach-call_true-termination.sl_64bits_unsigned.smt2",
+    "unknown": true,
+    "time": 11.245362997055054,
+    "message": [
+        ""
+    ]
+}

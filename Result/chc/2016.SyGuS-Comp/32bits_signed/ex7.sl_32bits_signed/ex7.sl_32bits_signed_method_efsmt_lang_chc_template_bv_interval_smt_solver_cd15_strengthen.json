@@ -1,0 +1,28 @@
+{
+    "method": "efsmt",
+    "lang": "chc",
+    "template": "bv_interval",
+    "smt_solver": "cd15",
+    "strengthen": true,
+    "file": "ex7.sl_32bits_signed.smt2",
+    "overflow": false,
+    "underflow": false,
+    "unknown": true,
+    "time": 22.18932819366455,
+    "message": [
+        "Finish parsing CHC file",
+        " prevent over/under flow?  False False",
+        " Start solving: ",
+        " Used template: TemplateType.BV_INTERVAL",
+        " Used logic: BV",
+        " EFSMT starting!!!",
+        " EFSMT solver: cd15",
+        " Quantifier elimination + SAT solving",
+        " Translating to DIMACS",
+        " Translating to Boolean formula in Z3",
+        " Finishing generating SAT CNT...",
+        " Calling SAT solver cd15",
+        " unknown",
+        ""
+    ]
+}
