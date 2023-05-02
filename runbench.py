@@ -240,7 +240,7 @@ def solve_file(file_path, ef_template, smt_solver, cegis_solver, file_name):
         cmd.append("--pysmt-solver")
         cmd.append(cegis_solver)
     if STRENGTHEN:
-        file_name += "_strengthen_"+STRENGTHEN
+        file_name += "_strengthen"
         result['strengthen'] = STRENGTHEN
         cmd.append("--prop-strengthen")
     if NUM_DISJUNCTIONS:
