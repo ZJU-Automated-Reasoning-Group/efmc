@@ -1,0 +1,7 @@
+(set-logic BV)
+(synth-inv inv ((x (_ BitVec 32))))
+(define-fun pre ((x (_ BitVec 32))) Bool (= x #b00001111111111111111111111110000))
+(define-fun trans ((x (_ BitVec 32)) (x! (_ BitVec 32))) Bool (and (bvugt x #b00000000000000000000000000000000) (= x! (bvsub x #b00000000000000000000000000000010))))
+(define-fun post ((x (_ BitVec 32))) Bool (or (= #b00000000000000000000000000000000 (bvurem x #b00000000000000000000000000000010)) (bvugt x #b00000000000000000000000000000000)))
+(inv-constraint inv pre trans post )
+(check-synth)
