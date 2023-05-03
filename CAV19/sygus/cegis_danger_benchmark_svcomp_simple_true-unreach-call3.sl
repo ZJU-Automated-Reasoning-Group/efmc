@@ -1,7 +1,0 @@
-(set-logic BV)
-(synth-inv inv ((x (_ BitVec 32)) (N (_ BitVec 32))))
-(define-fun pre ((x (_ BitVec 32)) (N (_ BitVec 32))) Bool (and (= x #b00000000000000000000000000000000) (= N (bvurem N #b00000000000000001111111111111111))))
-(define-fun trans ((x (_ BitVec 32)) (N (_ BitVec 32)) (x! (_ BitVec 32)) (N! (_ BitVec 32))) Bool (and (bvult x N) (and (= x! (bvadd x #b00000000000000000000000000000010)) (= N! N))))
-(define-fun post ((x (_ BitVec 32)) (N (_ BitVec 32))) Bool (or (= #b00000000000000000000000000000000 (bvurem x #b00000000000000000000000000000010)) (bvult x N)))
-(inv-constraint inv pre trans post )
-(check-synth)

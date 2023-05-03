@@ -11,10 +11,11 @@ Converting SyGuS(Inv) benchmarks to CHC instances
 
 import os
 import z3
+import sys
+sys.path.append("/home/jasonj/Desktop/efmc")
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse_sexpression
 
-g_bitvector_width = 64
-g_bitvector_signedness = "signed"
+
 
 
 def sygus2chc(tt: str) -> str:
@@ -286,6 +287,8 @@ def process_folder(path: str, target_dir: str):
     for filename in flist:
         process_file(filename, target_dir)
 
+g_bitvector_width = 64
+g_bitvector_signedness = "unsigned"
 
 if __name__ == '__main__':
     # tt = "(and (<= x! (+ x y)) (< y! (+ x y)))"
@@ -295,6 +298,6 @@ if __name__ == '__main__':
     project_root_dir = str(Path(__file__).parent.parent)
     print(project_root_dir)
 
-    target_dir = project_root_dir + "/tmp_files/"
+    target_dir = project_root_dir + "/CAV19/chc/CAV/64bits_unsigned/"
     # print(project_root_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
-    process_folder(project_root_dir + "/benchmarks/sygus-inv/NIA/2018.CHI_InvGame", target_dir)
+    process_folder(project_root_dir + "/CAV19/sygus/CAV/32bits_unsigned", target_dir)

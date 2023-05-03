@@ -4,19 +4,20 @@ CHC(LIA) to SYGUS(BV)
 import os
 import z3
 import sys
-sys.path.append("/efmc")
+sys.path.append("/home/jasonj/Desktop/efmc")
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse_sexpression
 from efmc.frontends.chc_parser import CHCParser, ground_quantifier
 
-g_bitvector_width = 32
-g_bitvector_signedness = "signed"
+g_bitvector_width = 64
+g_bitvector_signedness = "unsigned"
 
 
 def rep_operand(op: str) -> str:
+    # print(op)
     if g_bitvector_signedness == "signed":
         rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
                      "div": "bvudiv",
-                     ">=": "bvsge", "<=": "bvsle", ">": "bvsgt", "<": "bvslt"}
+                     "bvuge": "bvsge", "bvule": "bvsle", "bvugt": "bvsgt", "bvult": "bvslt"}
     else:
         rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
                      "div": "bvsdiv",
@@ -223,5 +224,5 @@ if __name__ == '__main__':
     project_root_dir = str(Path(__file__).parent.parent)
     print(project_root_dir)
 
-    target_dir = project_root_dir + "/tmp_sygusbv2sygusbv/"
-    process_folder(project_root_dir + "/CAV19/sygus", target_dir)
+    target_dir = project_root_dir + "/CAV19/sygus/CAV/64bits_unsigned/"
+    process_folder(project_root_dir + "/CAV19/sygus/CAV/32bits_unsigned", target_dir)

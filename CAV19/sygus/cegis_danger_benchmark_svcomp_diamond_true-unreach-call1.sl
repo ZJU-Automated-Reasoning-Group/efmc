@@ -1,7 +1,0 @@
-(set-logic BV)
-(synth-inv inv ((x (_ BitVec 32)) (y (_ BitVec 32))))
-(define-fun pre ((x (_ BitVec 32)) (y (_ BitVec 32))) Bool (= x #b00000000000000000000000000000000))
-(define-fun trans ((x (_ BitVec 32)) (y (_ BitVec 32)) (x! (_ BitVec 32)) (y! (_ BitVec 32))) Bool (let ((_let_0 (= y! y))) (let ((_let_1 (bvult x #b00000000000000000000000001100011))) (let ((_let_2 (and _let_0 _let_1))) (or (and (= (bvurem y #b00000000000000000000000000000010) #b00000000000000000000000000000000) (and (= x! (bvadd x #b00000000000000000000000000000010)) _let_2)) (and (= x! (bvadd #b00000000000000000000000000000001 x)) _let_2))))))
-(define-fun post ((x (_ BitVec 32)) (y (_ BitVec 32))) Bool (or (= (bvurem x #b00000000000000000000000000000010) (bvurem y #b00000000000000000000000000000010)) (bvult x #b00000000000000000000000001100011)))
-(inv-constraint inv pre trans post )
-(check-synth)
