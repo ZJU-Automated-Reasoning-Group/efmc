@@ -39,11 +39,13 @@ traverse_cegis_solver = ['none']
 all_method = ['kind', 'pdr', 'efsmt']
 all_solver = ['z3', 'cvc5', 'btor', 'yices2', 'mathsat', 'bitwuzla']
 all_bit_blasting_solver = ['z3qbf', 'caqe', 'q3b']
-all_cegis_solver = ['z3', 'msat', 'yices', 'btor', 'cvc4']  # TODO:加注释
+all_cegis_solver = ['z3', 'msat', 'yices', 'btor', 'cvc4'] 
 all_template = ["bv_interval", "power_bv_interval",
                 "bv_zone", "power_bv_zone",
                 "bv_octagon", "power_bv_octagon",
                 "bv_poly", "power_bv_poly"]
+dis_template = ["power_bv_interval", "power_bv_zone",
+                "power_bv_octagon", "power_bv_poly"]
 
 all_sat_solver = ['cd15', 'lgl',
                   'mc', ]
@@ -129,7 +131,7 @@ def parsing_out(file_path, lines, result_dict):
         result_dict['unknown'] = True
         return result_dict
 
-    if error or (METHOD=='efsmt' and (not Method_start or not CHC_read)):
+    if error or (METHOD == 'efsmt' and (not Method_start or not CHC_read)):
         result_dict['unexpected_error'] = True
         return result_dict
 
@@ -375,6 +377,48 @@ if __name__ == "__main__":
 
     BENCHMARK_DIR = args.goal_path
     count = 0
+    if "3" in args.mode:
+        print("---------------------------------------")
+        print("---------------------------------------")
+        print("-------All Template in efsmt---------")
+        traverse_method = ['efsmt']
+        traverse_solver = all_solver+all_bit_blasting_solver+all_sat_solver
+        traverse_cegis_solver = ['none']
+        traverse_template = dis_template
+        for Method, Solver, Ceg_Solver, Template in itertools.product(
+                traverse_method, traverse_solver, traverse_cegis_solver, traverse_template):
+            METHOD = Method
+            SMT = Solver
+            LANG = depend_on_Method()
+            END_WITH = depend_on_Lang()
+            CEGIS_SMT = Ceg_Solver
+            TEMPLATE = Template
+            running_subprocesses.clear()
+            find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
+        print("---------------Finish------------------")
+        print("---------------------------------------")
+        print("---------------------------------------")
+
+        print("---------------------------------------")
+        print("---------------------------------------")
+        print("-------Cegis Solver in efsmt---------")
+        traverse_method = ['efsmt']
+        traverse_solver = ['cegis']
+        traverse_cegis_solver = all_cegis_solver
+        traverse_template = dis_template
+        for Method, Solver, Ceg_Solver, Template in itertools.product(
+                traverse_method, traverse_solver, traverse_cegis_solver, traverse_template):
+            METHOD = Method
+            SMT = Solver
+            LANG = depend_on_Method()
+            END_WITH = depend_on_Lang()
+            CEGIS_SMT = Ceg_Solver
+            TEMPLATE = Template
+            running_subprocesses.clear()
+            find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
+        print("---------------Finish------------------")
+        print("---------------------------------------")
+        print("---------------------------------------")
     if "1" in args.mode:
         print("---------------------------------------")
         print("---------------------------------------")
@@ -396,7 +440,7 @@ if __name__ == "__main__":
         print("---------------Finish------------------")
         print("---------------------------------------")
         print("---------------------------------------")
-    
+
         print("---------------------------------------")
         print("---------------------------------------")
         print("-------Cegis Solver in efsmt---------")
