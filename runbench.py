@@ -24,7 +24,7 @@ SMT = "z3"
 CEGIS_SMT = "z3"
 END_WITH = "smt2"
 TEMPLATE = "none"
-MAXTIME = 5
+MAXTIME = 300
 STRENGTHEN = False
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 # BENCHMARK_DIR = "/small_benchmarks"
@@ -44,8 +44,8 @@ all_template = ["bv_interval", "power_bv_interval",
                 "bv_zone", "power_bv_zone",
                 "bv_octagon", "power_bv_octagon",
                 "bv_poly", "power_bv_poly"]
-# 'cd','gc3','g3','mcb','m22', 'mgh','mpl', 'mg3',
-all_sat_solver = ['cd15',  'gc4', 'g4', 'lgl',
+
+all_sat_solver = ['cd15', 'lgl',
                   'mc', ]
 all_endwith = ['smt2', 'sl']
 running_subprocesses = []
@@ -355,6 +355,12 @@ if __name__ == "__main__":
         type=int,
         default=0
     )
+    parser.add_argument(
+        '--mode',
+        type=str,
+        nargs='+',
+        default='none'
+    )
     args = parser.parse_args()
     save_dir = CUR_DIR + '/Result'
     if not os.path.exists(save_dir):
@@ -369,66 +375,66 @@ if __name__ == "__main__":
 
     BENCHMARK_DIR = args.goal_path
     count = 0
-    print("---------------------------------------")
-    print("---------------------------------------")
-    print("-------All Template in efsmt---------")
-    traverse_method = ['efsmt']
-    traverse_solver = all_solver+all_bit_blasting_solver+all_sat_solver
-    traverse_cegis_solver = ['none']
-    traverse_template = all_template
-    for Method, Solver, Ceg_Solver, Template in itertools.product(
-            traverse_method, traverse_solver, traverse_cegis_solver, traverse_template):
-        METHOD = Method
-        SMT = Solver
-        LANG = depend_on_Method()
-        END_WITH = depend_on_Lang()
-        CEGIS_SMT = Ceg_Solver
-        TEMPLATE = Template
-        running_subprocesses.clear()
-        find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
-        print("focus!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print("---------------Finish------------------")
-    print("---------------------------------------")
-    print("---------------------------------------")
-
-    print("---------------------------------------")
-    print("---------------------------------------")
-    print("-------Cegis Solver in efsmt---------")
-    traverse_method = ['efsmt']
-    traverse_solver = ['cegis']
-    traverse_cegis_solver = all_cegis_solver
-    traverse_template = all_template
-    for Method, Solver, Ceg_Solver, Template in itertools.product(
-            traverse_method, traverse_solver, traverse_cegis_solver, traverse_template):
-        METHOD = Method
-        SMT = Solver
-        LANG = depend_on_Method()
-        END_WITH = depend_on_Lang()
-        CEGIS_SMT = Ceg_Solver
-        TEMPLATE = Template
-        running_subprocesses.clear()
-        find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
-    print("---------------Finish------------------")
-    print("---------------------------------------")
-    print("---------------------------------------")
-
-    print("---------------------------------------")
-    print("---------------------------------------")
-    print("-------Other Engine in efsmt---------")
-    traverse_method = ['cvc5sys', 'pdr', 'eld']
-    traverse_solver = ['none']
-    traverse_cegis_solver = ['none']
-    traverse_template = ['none']
-    for Method, Solver, Ceg_Solver, Template in itertools.product(
-            traverse_method, traverse_solver, traverse_cegis_solver, traverse_template):
-        METHOD = Method
-        SMT = Solver
-        LANG = depend_on_Method()
-        END_WITH = depend_on_Lang()
-        CEGIS_SMT = Ceg_Solver
-        TEMPLATE = Template
-        running_subprocesses.clear()
-        find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
-    print("---------------Finish------------------")
-    print("---------------------------------------")
-    print("---------------------------------------")
+    if "1" in args.mode:
+        print("---------------------------------------")
+        print("---------------------------------------")
+        print("-------All Template in efsmt---------")
+        traverse_method = ['efsmt']
+        traverse_solver = all_solver+all_bit_blasting_solver+all_sat_solver
+        traverse_cegis_solver = ['none']
+        traverse_template = all_template
+        for Method, Solver, Ceg_Solver, Template in itertools.product(
+                traverse_method, traverse_solver, traverse_cegis_solver, traverse_template):
+            METHOD = Method
+            SMT = Solver
+            LANG = depend_on_Method()
+            END_WITH = depend_on_Lang()
+            CEGIS_SMT = Ceg_Solver
+            TEMPLATE = Template
+            running_subprocesses.clear()
+            find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
+        print("---------------Finish------------------")
+        print("---------------------------------------")
+        print("---------------------------------------")
+    
+        print("---------------------------------------")
+        print("---------------------------------------")
+        print("-------Cegis Solver in efsmt---------")
+        traverse_method = ['efsmt']
+        traverse_solver = ['cegis']
+        traverse_cegis_solver = all_cegis_solver
+        traverse_template = all_template
+        for Method, Solver, Ceg_Solver, Template in itertools.product(
+                traverse_method, traverse_solver, traverse_cegis_solver, traverse_template):
+            METHOD = Method
+            SMT = Solver
+            LANG = depend_on_Method()
+            END_WITH = depend_on_Lang()
+            CEGIS_SMT = Ceg_Solver
+            TEMPLATE = Template
+            running_subprocesses.clear()
+            find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
+        print("---------------Finish------------------")
+        print("---------------------------------------")
+        print("---------------------------------------")
+    if "2" in args.mode:
+        print("---------------------------------------")
+        print("---------------------------------------")
+        print("-------Other Engine in efsmt---------")
+        traverse_method = ['cvc5sys', 'pdr', 'eld']
+        traverse_solver = ['none']
+        traverse_cegis_solver = ['none']
+        traverse_template = ['none']
+        for Method, Solver, Ceg_Solver, Template in itertools.product(
+                traverse_method, traverse_solver, traverse_cegis_solver, traverse_template):
+            METHOD = Method
+            SMT = Solver
+            LANG = depend_on_Method()
+            END_WITH = depend_on_Lang()
+            CEGIS_SMT = Ceg_Solver
+            TEMPLATE = Template
+            running_subprocesses.clear()
+            find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
+        print("---------------Finish------------------")
+        print("---------------------------------------")
+        print("---------------------------------------")
