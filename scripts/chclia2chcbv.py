@@ -6,18 +6,18 @@ import z3
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse_sexpression
 from efmc.frontends.chc_parser import CHCParser, ground_quantifier
 
-g_bitvector_width = 32
+g_bitvector_width = 64
 g_bitvector_signedness = "signed"
 
 
 def rep_operand(op: str) -> str:
     if g_bitvector_signedness == "signed":
         rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
-                     "div": "bvudiv",
+                     "div": "bvsdiv",
                      ">=": "bvsge", "<=": "bvsle", ">": "bvsgt", "<": "bvslt"}
     else:
         rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
-                     "div": "bvsdiv",
+                     "div": "bvudiv",
                      ">=": "bvuge", "<=": "bvule", ">": "bvugt", "<": "bvult"}
 
     if op in rep_rules:
@@ -159,7 +159,6 @@ def chclia2chcbv(tt):
     # In the multi-phase benchmark, x1, y1, .. are used to denote
     # prime variables. However, our transition system will only regard
     # variables named x!, y!, .. as prime variables
-    #1. First, replace the var names
     fmls = z3.parse_smt2_string(bv_fml_str)
     assert len(fmls) == 3
     trans_fml = fmls[1]
@@ -208,16 +207,14 @@ def test_main():
   (=> (and (inv x0 y0) (= x0 10000) (not (= y0 x0))) false)))
 (check-sat)"""
 
-    # print(sygus2chc(tt))
-    # new_ctx = z3.Context()
-    fml_str = chclia2chcbv(tt)
-
-    print(fml_str)
-    # print(fml_str)
-
+    file = "/Users/rainoftime/Work/efmc/benchmarks/chc/lia/multi-phase/multi-phase_safe/s_split_27.smt2"
+    with open(file, "r") as f:
+        content = f.read()
+        fml_str = chclia2chcbv(content)
+        print(fml_str)
+        # print(fml_str)
 
 def process_file(filename: str, target_dir: str):
-
     print("Processing ", filename)
     try:
         with open(filename, "r") as f:
@@ -225,7 +222,7 @@ def process_file(filename: str, target_dir: str):
             fml_str = chclia2chcbv(content)
             filename_base = os.path.basename(filename)
             # new_file_name = target_dir + filename_base + ".smt2"
-            new_file_name = target_dir + filename_base + \
+            new_file_name = target_dir + filename_base + "unsafe" + \
                             "_{0}bits_{1}".format(str(g_bitvector_width), g_bitvector_signedness) + ".smt2"
 
             with open(new_file_name, "w") as new_f:
@@ -236,8 +233,7 @@ def process_file(filename: str, target_dir: str):
             f.close()
     except Exception as ex:
         print(ex)
-        if "mod" in str(ex):
-            os.remove(filename)
+        os.remove(filename)
 
 
 def process_folder(path: str, target_dir: str):

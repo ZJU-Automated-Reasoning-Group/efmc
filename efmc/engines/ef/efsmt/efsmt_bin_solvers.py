@@ -40,7 +40,7 @@ def terminate(process, is_timeout: List):
 def solve_with_bin_qbf(fml_str: str, solver_name: str):
     """Call bin QBF solvers
     """
-    logger.debug("Solving QBF via {}".format(solver_name))
+    print("Solving QBF via {}".format(solver_name))
     tmp_filename = "/tmp/{}_temp.qdimacs".format(str(uuid.uuid1()))
     tmp = open(tmp_filename, "w")
     try:

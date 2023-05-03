@@ -157,7 +157,10 @@ class CHCParser:
     fmls = []
 
     def __init__(self, inputs: str, to_real: bool):
-        self.to_real = False
+        if to_real:
+            self.to_real = True
+        else:
+            self.to_real = False
         self.parse_chc_string(inputs)
 
     def parse_chc_string(self, chc: str):
@@ -190,6 +193,7 @@ class CHCParser:
             pure_post = z3.simplify(post.children()[1])
         # print(pure_init, "\n", pure_trans, "\n", pure_post)
         # all_vars = get_vars(trans)
+        # TODO: in some cases, vars_trans may not use all the variables?
         return vars_trans, pure_init, pure_trans, pure_post
 
 
@@ -211,7 +215,7 @@ def test_parse2():
  )
 (check-sat)
     """
-    chc = CHCParser()
+    chc = CHCParser(inputs=fml, to_real=False)
     chc.parse_chc_string(fml)
     chc.get_transition_system()
 

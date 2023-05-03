@@ -13,7 +13,7 @@ import os
 import z3
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse_sexpression
 
-g_bitvector_width = 32
+g_bitvector_width = 64
 g_bitvector_signedness = "signed"
 
 
@@ -85,11 +85,11 @@ def sygus2chc(tt: str) -> str:
 def rep_operand(op: str) -> str:
     if g_bitvector_signedness == "signed":
         rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
-                     "div": "bvudiv",
+                     "div": "bvsdiv",
                      ">=": "bvsge", "<=": "bvsle", ">": "bvsgt", "<": "bvslt"}
     else:
         rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
-                     "div": "bvsdiv",
+                     "div": "bvudiv",
                      ">=": "bvuge", "<=": "bvule", ">": "bvugt", "<": "bvult"}
 
     if op in rep_rules:
@@ -296,5 +296,5 @@ if __name__ == '__main__':
     print(project_root_dir)
 
     target_dir = project_root_dir + "/tmp_files/"
-    print(project_root_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
-    process_folder(project_root_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB", target_dir)
+    # print(project_root_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
+    process_folder(project_root_dir + "/benchmarks/sygus-inv/NIA/2018.CHI_InvGame", target_dir)
