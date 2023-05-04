@@ -111,7 +111,44 @@ class Experiment_Helper:
                 for key in stats_header[5:]:
                     stats_row.append(counter[key])
                 csvwriter.writerow(stats_row)
+    def plot_basic_template(self):
+        result = {}
+        for entry in self.data:
+            if 'num_disjunctions' in entry or 'power' in entry['template'] or 'strength' in entry:
+                continue
+            if entry['template'] in ['bv_interval', 'bv_octagon', 'bv_poly', 'bv_zone']:
+                solver = 'CS'+entry['cegis_solver'] if entry['smt_solver'] == 'cegis' else entry['smt_solver']
+                template = entry['template']
+                bits = '32bits' if '32bits' in entry['bits'] else '64bits'
+                safe = entry.get('safe', False)
 
+                key = (solver, template, bits)
+                if key not in result:
+                    result[key] = {'correct': 0, 'total': 0}
+                result[key]['total'] += 1
+                if safe:
+                    result[key]['correct'] += 1
+
+        for key in result:
+            result[key]['accuracy'] = result[key]['correct'] / result[key]['total']
+        print(result[key]['correct'] , result[key]['total'])
+        accuracy_data=result
+        plt.figure(figsize=(12, 6))
+
+        for key, value in accuracy_data.items():
+            solver, template, bits = key
+            accuracy = value['accuracy']
+            label = f"{template} ({bits})"
+            plt.plot(solver, accuracy, marker='o', label=label)
+
+        plt.ylabel('Accuracy')
+        plt.xticks(rotation=45)
+        plt.legend(title='Template & Bits', bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+        plt.tight_layout()
+
+        plt.savefig('accuracy_plot.svg', format='svg')
+        plt.show()
+        
     def plot_top_10_cumulative_time_and_accuracy(self, output_file, specific_key=None, specific_value=None):
         cumulative_data = {}
         success_count = {}
@@ -389,7 +426,8 @@ def init(mode):
                     json.dump(data, json_file, indent=4)
             if 11 in mode:
                 # if 'num_disjunctions' in data and data['num_disjunctions'] == 2:
-                if 'smt_solver' not in data or data['smt_solver']=='g4' or data['smt_solver']=='gc4':
+                # if 'smt_solver' not in data or data['smt_solver']=='g4' or data['smt_solver']=='gc4':
+                if 'num_disjunctions' not in data and 'power' in data.get('template',''):
                     os.remove(file_path)
                     print(f"{file_path} has been deleted.")
             data_list.append(data)
@@ -412,7 +450,7 @@ def init(mode):
     return data_list, safe_file
 
 
-def collect_data(chc_dir,strengthen=False,disjunction=False):
+def collect_data(chc_dir,strengthen=False,disjunction=0):
     data = {}
     count = 0
     data_list=[]
@@ -421,7 +459,7 @@ def collect_data(chc_dir,strengthen=False,disjunction=False):
             if file.endswith('.json'):
                 with open(os.path.join(root, file), 'r') as f:
                     content = json.load(f)
-                    if 'unsigned' in content['bits'] and content['method'] == 'efsmt' and content.get('strengthen', False)==strengthen   and 'power' not in content['template']:
+                    if 'unsigned' in content['bits'] and content['method'] == 'efsmt' and content.get('strengthen', False)==strengthen and content.get('num_disjunctions',0)==disjunction:
                         data_list.append(content)
                         template = content['template']
                         bits = content['bits']
@@ -451,6 +489,11 @@ def collect_data(chc_dir,strengthen=False,disjunction=False):
                         #     print(file, count)
                         #     count += 1
                         #     print(data[bits][source][template][solver])
+    safe_file=[]
+    for data in data_list:
+        if data.get("safe", False) == True:
+            safe_file.append(data["file"])
+    data_list=[data for data in data_list if data['file'] in safe_file]
     return data,data_list
 
 
@@ -464,6 +507,7 @@ def generate_csv(data, output_file='rq1_basic_four_template_compare.csv'):
         solver_counts = Counter()
         for bit in data:
             for source in data[bit]:
+                print(data[bit],source)
                 for template in data[bit][source]:
                     solvers = data[bit][source][template].keys()
                     for solver in solvers:
@@ -490,6 +534,7 @@ if __name__ == "__main__":
         description="Process command line arguments")
     parser.add_argument('--mode', nargs='+', type=int,
                         help='one or more mode numbers')
+    parser.add_argument('--disjunction', type=int)
     # 1 -> with initial
     # 11 -> temporary process files
     # 2 -> start experiment and paint the basic data without property strengthen and disjunctions.
@@ -503,17 +548,20 @@ if __name__ == "__main__":
     # new_data_list = [data for data in data_list if data.get('template',False) and (
     #         data.get("smt_solver") in ['z3', 'z3qbf', 'caqe', 'q3b'] or data.get('cegis_solver') in ['z3'])]
         if 2 in args.mode:
-            data_list = [data for data in data_list if not data['strength']]
+            data_list = [data for data in data_list if not data.get('strength')]
             RQ1 = Experiment_Helper(data_list)
             if not os.path.exists(SAVEDIR):
                 os.makedirs(SAVEDIR)
-            RQ1.generate_csv(os.path.join(SAVEDIR, 'all.csv'))
-            RQ1.plot_top_10_cumulative_time_and_accuracy(SAVEDIR)
-            RQ1.variouts_images(SAVEDIR)
+            if 21 in args.mode:
+                RQ1.generate_csv(os.path.join(SAVEDIR, 'all.csv'))
+                RQ1.plot_top_10_cumulative_time_and_accuracy(SAVEDIR)
+                RQ1.variouts_images(SAVEDIR)
+            if 22 in args.mode:
+                RQ1.plot_basic_template()
     if 3 in args.mode:
         # no strengthen and no disjunction template, generate basic csv table and its heat map
         data,data_list = collect_data('./Result/chc')
-        generate_csv(data)
+        generate_csv(data,output_file='basic_data.csv')
         RQ1_basic=Experiment_Helper(data_list)
         RQ1_basic.heat_map_between_teamplte_and_solver()
     if 4 in args.mode:
@@ -522,7 +570,12 @@ if __name__ == "__main__":
         generate_csv(data,output_file='with_strength.csv')
         RQ1_basic=Experiment_Helper(data_list)
         RQ1_basic.heat_map_between_teamplte_and_solver()
-        
+    if 5 in args.mode:
+        # with strengthen and no disjunction template, generate basic csv table and its heat map
+        data,data_list = collect_data('./Result/chc',disjunction=args.disjunction)
+        generate_csv(data,output_file=f'with_disjunction_{args.disjunction}.csv')
+        RQ1_basic=Experiment_Helper(data_list)
+        RQ1_basic.heat_map_between_teamplte_and_solver()
         
         
         
