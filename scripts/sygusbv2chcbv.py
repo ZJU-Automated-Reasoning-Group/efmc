@@ -85,9 +85,12 @@ def sygus2chc(tt: str) -> str:
 
 def rep_operand(op: str) -> str:
     if g_bitvector_signedness == "signed":
+        # rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
+        #              "div": "bvsdiv",
+        #              ">=": "bvsge", "<=": "bvsle", ">": "bvsgt", "<": "bvslt"}
         rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
-                     "div": "bvsdiv",
-                     ">=": "bvsge", "<=": "bvsle", ">": "bvsgt", "<": "bvslt"}
+                     "div": "bvudiv",
+                     "bvuge": "bvsge", "bvule": "bvsle", "bvugt": "bvsgt", "bvult": "bvslt"}
     else:
         rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
                      "div": "bvudiv",
@@ -288,7 +291,7 @@ def process_folder(path: str, target_dir: str):
         process_file(filename, target_dir)
 
 g_bitvector_width = 64
-g_bitvector_signedness = "unsigned"
+g_bitvector_signedness = "signed"
 
 if __name__ == '__main__':
     # tt = "(and (<= x! (+ x y)) (< y! (+ x y)))"
@@ -298,6 +301,6 @@ if __name__ == '__main__':
     project_root_dir = str(Path(__file__).parent.parent)
     print(project_root_dir)
 
-    target_dir = project_root_dir + "/CAV19/chc/CAV/64bits_unsigned/"
+    target_dir = project_root_dir + "/CAV19/chc/CAV/64bits_signed/"
     # print(project_root_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
     process_folder(project_root_dir + "/CAV19/sygus/CAV/32bits_unsigned", target_dir)
