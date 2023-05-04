@@ -290,8 +290,8 @@ def process_folder(path: str, target_dir: str):
     for filename in flist:
         process_file(filename, target_dir)
 
-g_bitvector_width = 64
-g_bitvector_signedness = "signed"
+g_bitvector_width = 32
+g_bitvector_signedness = "unsigned"
 
 if __name__ == '__main__':
     # tt = "(and (<= x! (+ x y)) (< y! (+ x y)))"
@@ -301,6 +301,5 @@ if __name__ == '__main__':
     project_root_dir = str(Path(__file__).parent.parent)
     print(project_root_dir)
 
-    target_dir = project_root_dir + "/CAV19/chc/CAV/64bits_signed/"
-    # print(project_root_dir + "/benchmarks/sygus-inv/LIA/2017.ASE_FiB")
+    target_dir = project_root_dir + "/CAV19/chc/CAV/32bits_unsigned/"
     process_folder(project_root_dir + "/CAV19/sygus/CAV/32bits_unsigned", target_dir)

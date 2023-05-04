@@ -8,8 +8,7 @@ sys.path.append("/home/jasonj/Desktop/efmc")
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse_sexpression
 from efmc.frontends.chc_parser import CHCParser, ground_quantifier
 
-g_bitvector_width = 64
-g_bitvector_signedness = "unsigned"
+
 
 
 def rep_operand(op: str) -> str:
@@ -215,6 +214,8 @@ def process_folder(path: str, target_dir: str):
     for filename in flist:
         process_file(filename, target_dir)
 
+g_bitvector_width = 32
+g_bitvector_signedness = "signed"
 
 if __name__ == '__main__':
     # test_main()
@@ -224,5 +225,5 @@ if __name__ == '__main__':
     project_root_dir = str(Path(__file__).parent.parent)
     print(project_root_dir)
 
-    target_dir = project_root_dir + "/CAV19/sygus/CAV/64bits_unsigned/"
+    target_dir = project_root_dir + "/CAV19/sygus/CAV/32bits_signed/"
     process_folder(project_root_dir + "/CAV19/sygus/CAV/32bits_unsigned", target_dir)
