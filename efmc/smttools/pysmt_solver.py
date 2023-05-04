@@ -143,8 +143,6 @@ class PySMTSolver(z3.Solver):
         y = set(y)
         x = phi.get_free_variables() - y
 
-        # verbose = True
-
         with Solver(logic=logic, name=esolver_name) as esolver:
             esolver.add_assertion(Bool(True))
             loops = 0
@@ -172,7 +170,6 @@ class PySMTSolver(z3.Solver):
                         if verbose: print("%d: Sigma = %s" % (loops, sigma))
                         esolver.add_assertion(sub_phi)
             return result
-
 
 def test():
     x, y, z = z3.Ints("x y z")
