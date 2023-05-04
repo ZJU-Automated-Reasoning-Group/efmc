@@ -281,7 +281,7 @@ if __name__ == "__main__":
     parser.add_argument('--lang', dest='lang', default='sygus', type=str, help="The input format: sygus or chc")
 
     # the timeout
-    parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
+    parser.add_argument('--timeout', dest='timeout', default=3000, type=int, help="timeout")
     # parser.add_argument('--threads', dest='threads', default=4, type=int, help="threads")
 
     parser.add_argument( '--verbose', dest='verbosity', default=1, type=int, help='verbosity level')
