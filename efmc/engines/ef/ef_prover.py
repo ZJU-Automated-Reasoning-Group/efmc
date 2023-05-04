@@ -57,7 +57,7 @@ class EFProver:
         self.no_overflow = kwargs.get("no_overflow", False)
         self.no_underflow = kwargs.get("no_underflow", False)
 
-        self.pysmt_solver = kwargs.get("pysmt_solver" , "z3")
+        self.pysmt_solver = kwargs.get("pysmt_solver", "z3")
 
         print("prevent over/under flow? ", self.no_overflow, self.no_underflow)
 
@@ -310,15 +310,13 @@ class EFProver:
                 var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
             post_in_prime = z3.substitute(self.sts.post, var_map)  # post cond that uses x', y', ..
 
-            s.add(z3.ForAll(self.sts.variables, z3.Implies(self.sts.init,
-                                                           z3.And(self.sts.post, self.ct.template_cnt_init_and_post))))
-            s.add(z3.ForAll(self.sts.all_variables,
-                            z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post, self.sts.trans),
-                                       z3.And(post_in_prime, self.ct.template_cnt_trans))))
+            s.add(z3.Implies(self.sts.init,
+                             z3.And(self.sts.post, self.ct.template_cnt_init_and_post)))
+            s.add(z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post, self.sts.trans),
+                             z3.And(post_in_prime, self.ct.template_cnt_trans)))
             if not self.ignore_post_cond:
-                s.add(z3.ForAll(self.sts.variables,
-                                z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post),
-                                           self.sts.post)))
+                s.add(z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post),
+                                 self.sts.post))
         else:
             s.add(z3.Implies(self.sts.init, self.ct.template_cnt_init_and_post))
 
