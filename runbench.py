@@ -482,3 +482,24 @@ if __name__ == "__main__":
         print("---------------Finish------------------")
         print("---------------------------------------")
         print("---------------------------------------")
+    if "4" in args.mode:
+        print("---------------------------------------")
+        print("---------------------------------------")
+        print("-------Other Engine in efsmt---------")
+        traverse_method = ['eld']
+        traverse_solver = ['none']
+        traverse_cegis_solver = ['none']
+        traverse_template = ['none']
+        for Method, Solver, Ceg_Solver, Template in itertools.product(
+                traverse_method, traverse_solver, traverse_cegis_solver, traverse_template):
+            METHOD = Method
+            SMT = Solver
+            LANG = depend_on_Method()
+            END_WITH = depend_on_Lang()
+            CEGIS_SMT = Ceg_Solver
+            TEMPLATE = Template
+            running_subprocesses.clear()
+            find_safe(CUR_DIR + BENCHMARK_DIR, int(args.thread))
+        print("---------------Finish------------------")
+        print("---------------------------------------")
+        print("---------------------------------------")
