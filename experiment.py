@@ -18,7 +18,8 @@ def is_isolated_word(word, text):
 all_solver = ['z3', 'cvc5', 'btor', 'yices2', 'mathsat', 'bitwuzla']
 all_bit_blasting_solver = ['z3qbf', 'caqe', 'q3b', 'cd15', 'lgl',
                            'mc']
-all_cegis_solver = ['cegis_z3', 'cegis_msat', 'cegis_yices', 'cegis_btor', 'cegis_cvc4']
+all_cegis_solver = ['cegis_z3', 'cegis_msat',
+                    'cegis_yices', 'cegis_btor', 'cegis_cvc4']
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 SAVEDIR = CUR_DIR + "/Result"
 
@@ -116,10 +117,11 @@ class Experiment_Helper:
     def plot_basic_template(self):
         result = {}
         for entry in self.data:
-            if 'num_disjunctions' in entry or 'power' in entry['template'] or 'strength' in entry:
+            if 'num_disjunctions' in entry or 'power' in entry.get('template','') or 'strength' in entry or 'template' not in entry:
                 continue
             if entry['template'] in ['bv_interval', 'bv_octagon', 'bv_poly', 'bv_zone']:
-                solver = 'CS' + entry['cegis_solver'] if entry['smt_solver'] == 'cegis' else entry['smt_solver']
+                solver = 'CS' + \
+                    entry['cegis_solver'] if entry['smt_solver'] == 'cegis' else entry['smt_solver']
                 template = entry['template']
                 bits = '32bits' if '32bits' in entry['bits'] else '64bits'
                 safe = entry.get('safe', False)
@@ -132,8 +134,9 @@ class Experiment_Helper:
                     result[key]['correct'] += 1
 
         for key in result:
-            result[key]['accuracy'] = result[key]['correct'] / result[key]['total']
-        print(result[key]['correct'], result[key]['total'])
+            result[key]['accuracy'] = result[key]['correct'] / \
+                result[key]['total']
+            print(result[key]['correct'],result[key]['total'])
         accuracy_data = result
         plt.figure(figsize=(12, 6))
 
@@ -145,7 +148,8 @@ class Experiment_Helper:
 
         plt.ylabel('Accuracy')
         plt.xticks(rotation=45)
-        plt.legend(title='Template & Bits', bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+        plt.legend(title='Template & Bits', bbox_to_anchor=(
+            1.05, 1), loc='upper left', borderaxespad=0.)
         plt.tight_layout()
 
         plt.savefig('accuracy_plot.svg', format='svg')
@@ -243,10 +247,10 @@ class Experiment_Helper:
             method_str = " / ".join([str(x) for x in key if x != "None"])
             print(f"{method_str}: {rate:.2%}")
 
-    def heat_map_between_teamplte_and_solver(self, output_file='.', specify_smt_solver=[]):
+    def heat_map_between_teamplte_and_solver(self, output_file='.', specify_smt_solver=[],bits='32bits'):
         method_data = []
         for entry in self.data:
-            if entry['method'] == 'efsmt':
+            if entry['method'] == 'efsmt' and bits in entry['bits']:
                 result = {
                     'solver': entry['smt_solver'] if entry['smt_solver'] != 'cegis' else 'cegis_' + entry[
                         'cegis_solver'],
@@ -293,7 +297,7 @@ class Experiment_Helper:
         plt.title("Success Rate Heatmap (Method: efsmt)")
         plt.xlabel("Template")
         plt.ylabel("Solver")
-        plt.savefig(os.path.join(output_file, "heatmap.png"), dpi=300)
+        plt.savefig(os.path.join(output_file, f"heatmap_{bits}.png"), dpi=300)
 
         plt.figure(figsize=(8, 6))
         sns.set(font_scale=0.8)  # Adjust font scale
@@ -303,7 +307,7 @@ class Experiment_Helper:
         plt.title("Success Rate Heatmap (Method: efsmt)")
         plt.xlabel("Template")
         plt.ylabel("Solver")
-        plt.savefig(os.path.join(output_file, "heatmap1.png"), dpi=300)
+        plt.savefig(os.path.join(output_file, f"heatmap1_{bits}.png"), dpi=300)
 
     def box_map(self, output_file):
         boxplot_data = []
@@ -356,9 +360,9 @@ class Experiment_Helper:
         success_rate_df[['solver', 'template', 'strengthen']] = pd.DataFrame(
             success_rate_df['index'].tolist(), index=success_rate_df.index)
         success_rate_df['success_rate'] = success_rate_df['success_count'] / \
-                                          success_rate_df['total_count']
+            success_rate_df['total_count']
         success_rate_df['solver_template'] = success_rate_df['solver'] + \
-                                             ' - ' + success_rate_df['template']
+            ' - ' + success_rate_df['template']
 
         # 创建分组条形图
         plt.figure(figsize=(8, 6))
@@ -392,14 +396,6 @@ def init(mode):
                 if not messages:
                     os.remove(file_path)
                     continue
-                if data['lang'] == 'sygus':
-                    continue
-                bits_pattern = re.compile(r'(\d+bits_[un]*signed)')
-                bits_str = bits_pattern.search(file_path).group()
-                # print(bits_str)
-                data['bits'] = bits_str
-                if bits_str not in data['file']:
-                    data['file'] = data['file'] + "_" + bits_str
                 all_empty_or_traceback = all(not m.strip() for m in messages) or any(
                     'Traceback' in m for m in messages)
                 data['file'] = os.path.splitext(data['file'])[0]
@@ -429,11 +425,19 @@ def init(mode):
                     json.dump(data, json_file, indent=4)
             if 11 in mode:
                 # if 'num_disjunctions' in data and data['num_disjunctions'] == 2:
-                # if 'smt_solver' not in data or data['smt_solver']=='g4' or data['smt_solver']=='gc4':
-                if 'num_disjunctions' not in data and 'power' in data.get('template', ''):
+                if 'smt_solver' not in data or data['smt_solver'] == 'g4' or data['smt_solver'] == 'gc4':
+                    # if 'num_disjunctions' not in data and 'power' in data.get('template', ''):
                     os.remove(file_path)
                     print(f"{file_path} has been deleted.")
-            data_list.append(data)
+            if 'bits' not in data:
+                bits_pattern = re.compile(r'(\d+bits_[un]*signed)')
+                bits_str = bits_pattern.search(file_path).group()
+                # print(bits_str)
+                data['bits'] = bits_str
+                if bits_str not in data['file']:
+                    data['file'] = data['file'] + "_" + bits_str
+            if 'unsigned' in  data['bits']:
+                data_list.append(data)
     safe_file = []
     if 12 in mode:
         num_disjunctions_counts = {2: 0, 5: 0, 10: 0}
@@ -455,8 +459,6 @@ def init(mode):
 
 def collect_data(chc_dir, strengthen=False, disjunction=0):
     data = {}
-    count = 0
-    data_list = []
     for root, _, files in os.walk(chc_dir):
         for file in files:
             if file.endswith('.json'):
@@ -465,12 +467,12 @@ def collect_data(chc_dir, strengthen=False, disjunction=0):
                     if 'unsigned' in content['bits'] and content['method'] == 'efsmt' and content.get('strengthen',
                                                                                                       False) == strengthen and content.get(
                             'num_disjunctions', 0) == disjunction:
-                        data_list.append(content)
                         template = content['template']
                         bits = content['bits']
                         source = root.split('/')[-3]
+                        # print(source)
                         solver = content['smt_solver']
-
+                        print(bits)
                         if solver == 'cegis':
                             solver = 'cegis' + content['cegis_solver']
                         if bits not in data:
@@ -494,12 +496,7 @@ def collect_data(chc_dir, strengthen=False, disjunction=0):
                         #     print(file, count)
                         #     count += 1
                         #     print(data[bits][source][template][solver])
-    safe_file = []
-    for data in data_list:
-        if data.get("safe", False) == True:
-            safe_file.append(data["file"])
-    data_list = [data for data in data_list if data['file'] in safe_file]
-    return data, data_list
+    return data
 
 
 def generate_csv(data, output_file='rq1_basic_four_template_compare.csv'):
@@ -512,7 +509,6 @@ def generate_csv(data, output_file='rq1_basic_four_template_compare.csv'):
         solver_counts = Counter()
         for bit in data:
             for source in data[bit]:
-                print(data[bit], source)
                 for template in data[bit][source]:
                     solvers = data[bit][source][template].keys()
                     for solver in solvers:
@@ -545,15 +541,15 @@ if __name__ == "__main__":
     # 2 -> start experiment and paint the basic data without property strengthen and disjunctions.
     # 3 -> final experiment for solution table:
     args = parser.parse_args()
+    data_list, safe_file = init(args.mode)
+    data_list = [data for data in data_list if data['file'] in safe_file]
     if 1 in args.mode or 2 in args.mode:
-        data_list, safe_file = init(args.mode)
-        print(len(data_list))
-        data_list = [data for data in data_list if data['file'] in safe_file]
         # print(safe_file)
         # new_data_list = [data for data in data_list if data.get('template',False) and (
         #         data.get("smt_solver") in ['z3', 'z3qbf', 'caqe', 'q3b'] or data.get('cegis_solver') in ['z3'])]
         if 2 in args.mode:
-            data_list = [data for data in data_list if not data.get('strength')]
+            data_list = [
+                data for data in data_list if not data.get('strength')]
             RQ1 = Experiment_Helper(data_list)
             if not os.path.exists(SAVEDIR):
                 os.makedirs(SAVEDIR)
@@ -565,23 +561,32 @@ if __name__ == "__main__":
                 RQ1.plot_basic_template()
     if 3 in args.mode:
         # no strengthen and no disjunction template, generate basic csv table and its heat map
-        data, data_list = collect_data('./Result/chc')
+        data = collect_data('./Result/chc')
         generate_csv(data, output_file='basic_data.csv')
         RQ1_basic = Experiment_Helper(data_list)
-        RQ1_basic.heat_map_between_teamplte_and_solver()
+        RQ1_basic.heat_map_between_teamplte_and_solver(bits='32bits')
+        RQ1_basic.heat_map_between_teamplte_and_solver(bits='64bits')
     if 4 in args.mode:
         # with strengthen and no disjunction template, generate basic csv table and its heat map
-        data, data_list = collect_data('./Result/chc', strengthen=True)
+        data = collect_data('./Result/chc', strengthen=True)
         generate_csv(data, output_file='with_strength.csv')
         RQ1_basic = Experiment_Helper(data_list)
-        RQ1_basic.heat_map_between_teamplte_and_solver()
+        RQ1_basic.heat_map_between_teamplte_and_solver(bits='32bits')
+        RQ1_basic.heat_map_between_teamplte_and_solver(bits='64bits')
     if 5 in args.mode:
         # with strengthen and no disjunction template, generate basic csv table and its heat map
-        data, data_list = collect_data('./Result/chc', disjunction=args.disjunction)
-        generate_csv(data, output_file=f'with_disjunction_{args.disjunction}.csv')
+        data = collect_data(
+            './Result/chc', disjunction=args.disjunction)
+        generate_csv(
+            data, output_file=f'with_disjunction_{args.disjunction}.csv')
         RQ1_basic = Experiment_Helper(data_list)
-        RQ1_basic.heat_map_between_teamplte_and_solver()
-
+        RQ1_basic.heat_map_between_teamplte_and_solver(bits='32bits')
+        RQ1_basic.heat_map_between_teamplte_and_solver(bits='64bits')
+    if 6 in args.mode:
+        choosen_method=['eld','pdr','cvc5sys']
+        choosen_template=['none']
+        data_list=[data for data in data_list if data['method'] in choosen_method or (data['method']=='efsmt' and data['template']==choosen_method)]
+        RQ2=Experiment_Helper()
     # DONE:efsmt方法中，不同模板，求解器组合对应的'safe'验证成功率 【对应热力学图】
     # DONE:所有可选参数组合的验证情况【csv表格】
     # DONE:验证成功率最高的十种方法组合对应的时间累积图，正确率累积图【折线图】
