@@ -263,7 +263,7 @@ def find_safe(root, num_of_thread):
     # get all .smt2 [chc format]
     for dirpath, _, filenames in os.walk(root):
         for filename in filenames:
-            if filename.endswith("." + END_WITH):
+            if filename.endswith("." + END_WITH) and 'unsigned' in filename:
                 file_path = os.path.join(dirpath, filename)
                 file_list.append(file_path)
 
@@ -524,7 +524,7 @@ if __name__ == "__main__":
         print("---------------Finish------------------")
         print("---------------------------------------")
         print("---------------------------------------")
-    if "5" in args.mode:
+    if "6" in args.mode:
         print("---------------------------------------")
         print("---------------------------------------")
         print("-------Other Engine in efsmt---------")
