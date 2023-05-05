@@ -37,7 +37,7 @@ traverse_solver = ['none']
 traverse_cegis_solver = ['none']
 
 all_method = ['kind', 'pdr', 'efsmt']
-all_solver = ['z3', 'cvc5', 'btor', 'yices2', 'mathsat', 'bitwuzla']
+all_solver = ['z3', 'cvc5', 'btor', 'yices2', 'bitwuzla']
 all_bit_blasting_solver = ['z3qbf', 'caqe', 'q3b']
 all_cegis_solver = ['z3', 'msat', 'yices', 'btor', 'cvc4']
 all_template = ["bv_interval", "power_bv_interval",
