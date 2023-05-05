@@ -117,11 +117,10 @@ class Experiment_Helper:
     def plot_basic_template(self):
         result = {}
         for entry in self.data:
-            if 'num_disjunctions' in entry or 'power' in entry.get('template','') or 'strength' in entry or 'template' not in entry:
+            if 'num_disjunctions' in entry or 'power' in entry.get('template', '') or 'strength' in entry or 'template' not in entry:
                 continue
             if entry['template'] in ['bv_interval', 'bv_octagon', 'bv_poly', 'bv_zone']:
-                solver = 'CS' + \
-                    entry['cegis_solver'] if entry['smt_solver'] == 'cegis' else entry['smt_solver']
+                solver = 'CS' + entry['cegis_solver'] if entry['smt_solver'] == 'cegis' else entry['smt_solver']
                 template = entry['template']
                 bits = '32bits' if '32bits' in entry['bits'] else '64bits'
                 safe = entry.get('safe', False)
@@ -133,23 +132,21 @@ class Experiment_Helper:
                 if safe:
                     result[key]['correct'] += 1
 
+        data_list = []
         for key in result:
-            result[key]['accuracy'] = result[key]['correct'] / \
-                result[key]['total']
-            print(result[key]['correct'],result[key]['total'])
-        accuracy_data = result
-        plt.figure(figsize=(12, 6))
-
-        for key, value in accuracy_data.items():
+            result[key]['accuracy'] = result[key]['correct'] / result[key]['total']
             solver, template, bits = key
-            accuracy = value['accuracy']
-            label = f"{template} ({bits})"
-            plt.plot(solver, accuracy, marker='o', label=label)
+            accuracy = result[key]['accuracy']
+            data_list.append({'solver': solver, 'template': template, 'bits': bits, 'accuracy': accuracy})
+
+        df = pd.DataFrame(data_list)
+
+        plt.figure(figsize=(12, 6))
+        sns.lineplot(data=df, x='solver', y='accuracy',dashes=False, hue='template', style='bits', markers=True)
 
         plt.ylabel('Accuracy')
         plt.xticks(rotation=45)
-        plt.legend(title='Template & Bits', bbox_to_anchor=(
-            1.05, 1), loc='upper left', borderaxespad=0.)
+        plt.legend(title='Template & Bits', bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
         plt.tight_layout()
 
         plt.savefig('accuracy_plot.svg', format='svg')
@@ -215,7 +212,7 @@ class Experiment_Helper:
         plt.legend(fontsize='small')
         file_suffix = f"_{specific_key}_{specific_value}" if specific_key is not None and specific_value is not None else ""
         plt.savefig(
-            os.path.join(output_file, f'cumulative_success_rate{file_suffix}.png'), dpi=600)
+            os.path.join(output_file, f'cumulative_success_rate{file_suffix}.svg'),format='svg', dpi=600)
 
         plt.figure()
         for i, key in enumerate(top_success_rate_keys):
@@ -292,22 +289,20 @@ class Experiment_Helper:
         plt.figure(figsize=(8, 6))
         sns.set(font_scale=0.8)  # Adjust font scale
         # cmap = sns.light_palette(as_cmap=True, start=.5, rot=-.75)  # Use a softer color palette
-        sns.heatmap(heatmap_df, annot=True, cmap='YlOrRd', fmt='.1%',
-                    linewidths=0.5, linecolor='gray')  # Add linewidths and linecolor
-        plt.title("Success Rate Heatmap (Method: efsmt)")
-        plt.xlabel("Template")
-        plt.ylabel("Solver")
-        plt.savefig(os.path.join(output_file, f"heatmap_{bits}.png"), dpi=300)
-
-        plt.figure(figsize=(8, 6))
-        sns.set(font_scale=0.8)  # Adjust font scale
-        # cmap = sns.light_palette(as_cmap=True, start=.5, rot=-.75)  # Use a softer color palette
         sns.heatmap(heatmap_df, annot=True, cmap='Blues', fmt='.1%',
                     linewidths=0.5, linecolor='gray')  # Add linewidths and linecolor
         plt.title("Success Rate Heatmap (Method: efsmt)")
         plt.xlabel("Template")
         plt.ylabel("Solver")
-        plt.savefig(os.path.join(output_file, f"heatmap1_{bits}.png"), dpi=300)
+        
+        index = 1
+        file_name = os.path.join(output_file, f"heatmap_{bits}.svg")
+        
+        while os.path.exists(file_name):
+            file_name = os.path.join(output_file, f"heatmap_{bits}_{index}.svg")
+            index += 1
+        plt.savefig(file_name, dpi=300,format='svg')
+        print("my name is"+file_name)
 
     def box_map(self, output_file):
         boxplot_data = []
@@ -425,10 +420,23 @@ def init(mode):
                     json.dump(data, json_file, indent=4)
             if 11 in mode:
                 # if 'num_disjunctions' in data and data['num_disjunctions'] == 2:
-                if 'smt_solver' not in data or data['smt_solver'] == 'g4' or data['smt_solver'] == 'gc4':
-                    # if 'num_disjunctions' not in data and 'power' in data.get('template', ''):
+                # if 'smt_solver' not in data or data['smt_solver'] == 'g4' or data['smt_solver'] == 'gc4':
+                if data['lang']=='sygus' and 'strengthen' in data:
+                # if 'num_disjunctions' not in data and 'power' in data.get('template', ''):
                     os.remove(file_path)
                     print(f"{file_path} has been deleted.")
+            if 13 in mode:
+                if data['lang']=='sygus':
+                    filename=data['file']
+                    index = filename.find('.smt2')
+                    if index != -1:
+                        new_filename = filename[:index + len('.smt2')]
+                    else:
+                        print(data['file'])
+                    data['file']=new_filename
+                    with open(file_path, "w") as json_file:
+                        json.dump(data, json_file, indent=4)
+                    
             if 'bits' not in data:
                 bits_pattern = re.compile(r'(\d+bits_[un]*signed)')
                 bits_str = bits_pattern.search(file_path).group()
@@ -549,7 +557,7 @@ if __name__ == "__main__":
         #         data.get("smt_solver") in ['z3', 'z3qbf', 'caqe', 'q3b'] or data.get('cegis_solver') in ['z3'])]
         if 2 in args.mode:
             data_list = [
-                data for data in data_list if not data.get('strength')]
+                data for data in data_list if not data.get('strengthen')]
             RQ1 = Experiment_Helper(data_list)
             if not os.path.exists(SAVEDIR):
                 os.makedirs(SAVEDIR)
@@ -563,6 +571,7 @@ if __name__ == "__main__":
         # no strengthen and no disjunction template, generate basic csv table and its heat map
         data = collect_data('./Result/chc')
         generate_csv(data, output_file='basic_data.csv')
+        data_list=[data for data in data_list if 'strengthen' not in data]
         RQ1_basic = Experiment_Helper(data_list)
         RQ1_basic.heat_map_between_teamplte_and_solver(bits='32bits')
         RQ1_basic.heat_map_between_teamplte_and_solver(bits='64bits')
@@ -570,6 +579,7 @@ if __name__ == "__main__":
         # with strengthen and no disjunction template, generate basic csv table and its heat map
         data = collect_data('./Result/chc', strengthen=True)
         generate_csv(data, output_file='with_strength.csv')
+        data_list=[data for data in data_list if 'strengthen' in data]
         RQ1_basic = Experiment_Helper(data_list)
         RQ1_basic.heat_map_between_teamplte_and_solver(bits='32bits')
         RQ1_basic.heat_map_between_teamplte_and_solver(bits='64bits')
@@ -579,6 +589,8 @@ if __name__ == "__main__":
             './Result/chc', disjunction=args.disjunction)
         generate_csv(
             data, output_file=f'with_disjunction_{args.disjunction}.csv')
+        data_list=[data for data in data_list if 'strengthen' not in data and data.get('num_disjunctions')==args.disjunction]
+        print(data_list)
         RQ1_basic = Experiment_Helper(data_list)
         RQ1_basic.heat_map_between_teamplte_and_solver(bits='32bits')
         RQ1_basic.heat_map_between_teamplte_and_solver(bits='64bits')
