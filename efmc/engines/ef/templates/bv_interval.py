@@ -84,6 +84,12 @@ class BitVecIntervalTemplate(Template):
                 constraints.append(z3.And(var >= model[tvar_l], var <= model[tvar_u]))
         return z3.And(constraints)
 
+    def add_template_cnts_for_ranking_function(self):
+        raise NotImplementedError
+
+    def build_ranking_function_expr(self):
+        raise NotImplementedError
+
 
 class DisjunctiveBitVecIntervalTemplate(Template):
     """
@@ -185,3 +191,9 @@ class DisjunctiveBitVecIntervalTemplate(Template):
             cnts_dis.append(big_and(cnts))
 
         return z3.Or(cnts_dis)
+
+    def add_template_cnts_for_ranking_function(self):
+        raise NotImplementedError
+
+    def build_ranking_function_expr(self):
+        raise NotImplementedError

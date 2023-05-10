@@ -18,7 +18,7 @@ Related work:
 - Linear Invariant Generation using Non-linear Constarint Solving, CAV 03
 - Constraint-Based Linear-Relations Analysis, SAS'04 
 - Non-Linear Loop Invariant Generation using Gröbner Bases, POPL'04 
-- Progarm analsyis via constraint solving, PLDI'08 
+- Program analysis via constraint solving, PLDI'08 
 - Invgen: An efficient invariant generator, CAV'09 
 - SMT-Based Array Invariant Generation, VMCAI'13
 
@@ -58,7 +58,18 @@ Example:
 python3 prover.py --engine kind --lang chc --file file.smt2
 ~~~~
 
-## 2. Other Engines
+## 2. Limitations
+
+The parsers (and the transition system) are limited and not robust
+- We assume there is only one loop, and there is one invariant (at loop header) to be generated.
+   - No direct support for nested loops
+   - No direct support for synthesizing multiple invariants at different locations of a lop
+- We assume there are two matched groups of variables `x, y, z, ... x!, y!, z!,..` in the transition formula, where
+   there primed variables end with `!`.
+   - In practice, the `x!1` could be a constant
+   - In some benchmarks, the primed variables could be ended with `'`
+
+## 3. Other Engines
 
 Most of them are not finished yet...
 
@@ -73,20 +84,7 @@ TOOD: not implemented yet
 Currently, we have a very basic version (not used now).
 Perhaps it could be useful for Boolean programs.
 
-### Symbolic Abstraction
-Currently, we have a very basic version (only interval domain, no join and widening)
-
-
 ### Quantifier Elimination 
 This one strictly follows the definition of strongest post-condition,
 which means we use quantifier elimination to compute the "image operation".
 But for loop, we use fixed-point iteration.
-
-
-### Algorithms that (usually) Require Interpolants
-
-- IMPACT (lazy abstraction using interpolation)
-- IC3/PDR (some implementations do not need interpolant)
-- Trace abstraction
-
-### Conventional Abstract Interpretation

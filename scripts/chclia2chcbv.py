@@ -207,7 +207,7 @@ def test_main():
   (=> (and (inv x0 y0) (= x0 10000) (not (= y0 x0))) false)))
 (check-sat)"""
 
-    file = "/Users/rainoftime/Work/efmc/benchmarks/chc/lia/multi-phase/multi-phase_safe/s_split_27.smt2"
+    file = "/regressions/chc/lia/multi-phase/multi-phase_safe/s_split_27.smt2"
     with open(file, "r") as f:
         content = f.read()
         fml_str = chclia2chcbv(content)
