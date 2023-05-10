@@ -37,6 +37,12 @@ class ArrayTemplate(Template):
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
         raise NotImplementedError
 
+    def add_template_cnts_for_ranking_function(self):
+        raise NotImplementedError
+
+    def build_ranking_function_expr(self):
+        raise NotImplementedError
+
 
 class UFTemplate(Template):
     """
@@ -61,4 +67,10 @@ class UFTemplate(Template):
         raise NotImplementedError
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
+        raise NotImplementedError
+
+    def add_template_cnts_for_ranking_function(self):
+        raise NotImplementedError
+
+    def build_ranking_function_expr(self):
         raise NotImplementedError

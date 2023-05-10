@@ -113,6 +113,12 @@ class PolyTemplate(Template):
 
         return big_and(cnts)
 
+    def add_template_cnts_for_ranking_function(self):
+        raise NotImplementedError
+
+    def build_ranking_function_expr(self):
+        raise NotImplementedError
+
 
 class DisjunctivePolyTemplate(Template):
     """
@@ -225,4 +231,11 @@ class DisjunctivePolyTemplate(Template):
             cnts.append(term >= 0)
 
         return big_or(cnts)
+
+    def add_template_cnts_for_ranking_function(self):
+        raise NotImplementedError
+
+    def build_ranking_function_expr(self):
+        raise NotImplementedError
+
 

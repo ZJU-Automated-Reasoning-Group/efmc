@@ -1,8 +1,7 @@
-# coding: utf-8
-
 """
-NOTE: I only it for SyGuS inv. It could be used for PBE
+Parser for SyGuS files based on a simple S-expression parser
 
+NOTE: I only this file for inputs in the style of the SyGuS invariant track. It could be used for SyGuS(PBE)
 To keep this file independent, I do not important other files in this project.
 """
 import z3
