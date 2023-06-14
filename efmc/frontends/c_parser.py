@@ -1,3 +1,0 @@
-"""
-Parser for C files
-"""
