@@ -1,5 +1,5 @@
 """
-Generating aux invariants for k-induction
+Generating aux invariants for k-induction (not used for now)
 """
 import z3
 

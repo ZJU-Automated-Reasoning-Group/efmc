@@ -45,18 +45,22 @@ class EFProver:
         self.print_vc = False
 
         self.seed = kwargs.get("seed", 1)  # random seed
-        # use "template = P and template" as the invariant actual template
+        # Use "template = P and template" as the actual invariant template (a simple strengthening strategy)
         self.prop_strengthening = kwargs.get("prop_strengthen", False)
-        # the SMT solver for dealing with the EFSMT queries
+
+        # The SMT solver for dealing with the EFSMT queries
         self.solver = kwargs.get("solver", "z3api")
 
+        # Use SMT solvers to validate the correctness of the invariant
         self.validate_invariant = kwargs.get("validate_invariant",
-                                             False)  # use SMT solvers to validate the correctness of the invariant
+                                             False)
 
-        # prevent over/underflow in the template exprs, e.g., x - y, x + y
+        # Prevent over/underflow in the template exprs, e.g., x - y, x + y
         self.no_overflow = kwargs.get("no_overflow", False)
         self.no_underflow = kwargs.get("no_underflow", False)
 
+        # We have a backend solving engine based on the pySMT library (a CEGIS-style algorithm that uses SMT oracle in pySMT)
+        # Since pySMT allows for choosing different SMT backends, we add the following option.
         self.pysmt_solver = kwargs.get("pysmt_solver", "z3")
 
         print("prevent over/under flow? ", self.no_overflow, self.no_underflow)
@@ -110,6 +114,7 @@ class EFProver:
             else:
                 raise NotImplementedError
         else:
+            # The following templates are for integer or real programs
             if template_name == "interval":
                 self.ct = IntervalTemplate(self.sts)
                 # the following one uses a < x < b, c < y < d
@@ -144,8 +149,9 @@ class EFProver:
 
     def setup_logic(self):
         """Setup self.logic according to the types of the template and the transition system.
-        Another strategy is to use the get_logic API to analyze the constructed
-        verification condition (it relies on several Probes of z3).
+        Other strategies
+        - Use the get_logic API to analyze the constructed verification condition (See it relies on several Probes of z3).
+        - Use some APIs in pySMT?
         """
         if self.sts.has_bv:
             self.logic = "BV"  # of UFBV?
@@ -194,6 +200,7 @@ class EFProver:
             print("Invariant check success!")
 
     def dump_constraint(self, g_verifier_args) -> bool:
+        """Dumping the verification condition"""
         # global g_verifier_args
         assert g_verifier_args.dump_ef_smt2 or g_verifier_args.dump_qbf
         assert g_verifier_args.dump_ef_smt2 != g_verifier_args.dump_qbf

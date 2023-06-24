@@ -110,17 +110,22 @@ class PredicateAbstractionProver(object):
         while not fixpoint(old_inv, inv):
             print("\nInv at ", i, ": ", inv)
             i = i + 1
-            # onestep = stronget_consequence_simple(And(inv, trans), preds_prime) # another imple
+            # onestep = strongest_consequence_simple(And(inv, trans), preds_prime) # another imple
+            # Transfer function: Given abstract state Abs(X) and transition formula P(X, X'),
+            # compute the new state Abs(X') that is expressive in the predicate abstraction domain.
+            # To preserve precision, we use the following function to compute the most precise transfer function
             onestep = strongest_consequence(z3.And(inv, self.sts.trans), preds_prime)
             onestep = z3.substitute(onestep, self.var_map_rev)
             old_inv = inv  # Is this correct?
             inv = z3.simplify(z3.Or(inv, onestep))
         # print("\n")
 
+        # check whether the invariant is precise enough
         if is_valid(z3.Implies(inv, self.sts.post)):
             print(ctx_simplify(inv))
             print(">>> SAFE\n\n")
         else:
+            # need refinement
             print(">>> MAYBE?!?!\n\n")
 
         return

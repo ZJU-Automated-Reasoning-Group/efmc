@@ -1,15 +1,13 @@
-# coding: utf-8
-from typing import FrozenSet
-
-import z3
-from z3.z3util import get_vars
-
 """
 Minimal Satisfying Assignment. adapted from algo.by Alessandro Previti, Alexey S. Ignatiev
 """
 
 
-# ==============================================================================
+from typing import FrozenSet
+
+import z3
+from z3.z3util import get_vars
+
 class MSASolver:
     """
     Mistral solver class.

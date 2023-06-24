@@ -1,12 +1,10 @@
-
-
 import fractions
 import sys
 import time
 import z3
 
-from .program import *
-from . import stats
+from efmc.engines.termination.program import *
+from efmc.engines.termination import stats
 
 debug = False
 
@@ -240,35 +238,35 @@ def seaTerm(smt_file, rank_function):
         stats.brunch_print()
 
 
-def main(argv):
+def verify_termination(file_name: str, strategy: str):
     fp = z3.Fixedpoint()
     fp.set(engine='spacer')
     fp.set('xform.inline_eager', False)
     fp.set('xform.slice', False)
     fp.set('xform.inline_linear', False)
-    fp.set('pdr.utvpi', False)
-    fp.set('xform.karr', True)
-    query = fp.parse_file(argv[1])
+    # fp.set('pdr.utvpi', False)
+    # fp.set('xform.karr', True)
+    query = fp.parse_file(file_name)
 
     # proving termination...
-    if len(argv) < 3:
+    if strategy == "":
         print('please choose a ranking function template:')
         print('    max\t\t(piecewise)')
         print('    lex\t\t(lexicographic)')
     else:
-        if argv[2] == 'max':
+        if strategy == 'max':
             # start = time.time()
             piecewise(fp)
             # end = time.time()
             # print 'Time: %.2fs' % (end - start)
-        elif argv[2] == 'lex':
+        elif strategy == 'lex':
             # start = time.time()
             lexicographic(fp)
             # end = time.time()
             # print 'Time: %.2fs' % (end - start)
-        elif argv[2] == 'mul':
+        # elif argv[2] == 'mul':
             # start = time.time()
-            multiphase(fp)
+        #    multiphase(fp)
             # end = time.time()
             # print 'Time: %.2fs' % (end - start)
         else:
@@ -276,4 +274,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    verify_termination(sys.argv[1], sys.argv[2])

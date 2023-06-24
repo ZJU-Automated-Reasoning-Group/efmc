@@ -10,6 +10,8 @@ class Program:
         """ builds the program control flow graph (CFG) """
         # program rules and variables
         self.rules = list()
+        # print("\nXXXXXXXXX")
+        # print(fp)
         seen, self.variables = set(), list()
         for rule in fp.get_rules():
             r = Rule(rule)

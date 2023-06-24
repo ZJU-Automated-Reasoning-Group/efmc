@@ -1,15 +1,4 @@
-#!/usr/bin/env python
-# -*- coding:utf-8 -*-
-#
-# mistral.py based on pysmt
-#
-#  Created on: Dec 18, 2015
-#     Author: Alessandro Previti, Alexey S. Ignatiev
-#     E-mail: alessandro.previti@ucdconnect.ie, aignatiev@ciencias.ulisboa.pt
-#
 
-#
-# ==============================================================================
 from pysmt.smtlib.parser import SmtLibParser
 from pysmt.exceptions import SolverReturnedUnknownResultError
 from pysmt.shortcuts import Bool, get_model, Not, Solver, qelim, ForAll
