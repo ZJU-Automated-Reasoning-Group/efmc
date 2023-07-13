@@ -1,9 +1,7 @@
 # coding: utf-8
 import logging
-import z3
 
 from efmc.tests import TestCase, main
-from efmc.engines.termination.termination import verify_termination
 
 
 class TestPTermination(TestCase):

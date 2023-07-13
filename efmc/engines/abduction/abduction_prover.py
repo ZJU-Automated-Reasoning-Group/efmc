@@ -1,18 +1,17 @@
-# coding: utf-8
+"""
+Implementation of the following paper:
+
+    Inductive Invariant Generation via Abductive Inference. OOPSLA'13
+
+(TODO: not finished yet)
+"""
+
 import logging
 
 import z3
 
 from efmc.sts import TransitionSystem
 from efmc.engines.abduction.abduction import dillig_abduce
-
-"""
-Implementation of the following paper:
-
-    Inductive Invariant Generation via Abductive Inference. OOPSLA'13
-    
-(TODO: not finished yet)
-"""
 
 logger = logging.getLogger(__name__)
 

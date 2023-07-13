@@ -5,8 +5,10 @@ This toolkit provides a set of engines for verifying properties of programs. The
 Each engine has its own strengths and weaknesses, and can be used for different types of programs and properties. In this README, we provide a brief overview of each engine and how to use it.
 
 
+
 ## 1. The Main Engines
 
+Currently, the users can choose three verification engiens
 - Template-based (Constraint-based) Approach
 - Property-Directed Reachability (PDR)
 - K-Induction
@@ -58,7 +60,9 @@ Example:
 python3 prover.py --engine kind --lang chc --file file.smt2
 ~~~~
 
-## 2. Limitations
+## 2. Limitations and Future Work
+
+### 2.1 Implementation of the Parsers
 
 The parsers (and the transition system) are limited and not robust
 - We assume there is only one loop, and there is one invariant (at loop header) to be generated.
@@ -69,22 +73,20 @@ The parsers (and the transition system) are limited and not robust
    - In practice, the `x!1` could be a constant
    - In some benchmarks, the primed variables could be ended with `'`
 
-## 3. Other Engines
+### 2.2 Other Verification Engines
 
-Most of them are not finished yet...
-
-### Abductive Inference
+#### Abductive Inference
 
 Related work:
 - Inductive Invariant Generation via Abductive Inference, OOPSLA 13
 
 TOOD: not implemented yet
 
-### Predicate Abstraction 
+#### Predicate Abstraction 
 Currently, we have a very basic version (not used now).
 Perhaps it could be useful for Boolean programs.
 
-### Quantifier Elimination 
+#### Quantifier Elimination 
 This one strictly follows the definition of strongest post-condition,
 which means we use quantifier elimination to compute the "image operation".
 But for loop, we use fixed-point iteration.

@@ -1,6 +1,4 @@
-import z3
-
-from efmc.engines.termination.rule import *
+from efmc.special.termination.rule import *
 
 
 class Program:

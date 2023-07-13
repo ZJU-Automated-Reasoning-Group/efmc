@@ -1,10 +1,8 @@
 import fractions
 import sys
-import time
-import z3
 
-from efmc.engines.termination.program import *
-from efmc.engines.termination import stats
+from efmc.special.termination.program import *
+from efmc.special.termination import stats
 
 debug = False
 

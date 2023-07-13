@@ -1,9 +1,13 @@
 """
-Verifying Boolean Programs using "Boolean abstraction"
+Verifying Boolean Programs using "Predicate abstraction"
 
- Given a set of Boolean variables P and a transition system S,
- it finds the strongest inductive invariant expressible as the Boolean combination of P.
+ Given a set of Boolean variables/Predicates P = {p1, ..., pn} and a transition system S,
+ it finds the strongest inductive invariant expressible as a Boolean combination of P.
+ E.g.,
+   - p1 and p2 and p3
+   - (not p1) and (p2 or p3)
 """
+
 from typing import List
 
 import z3
@@ -14,8 +18,11 @@ from efmc.utils import negate, is_valid, ctx_simplify, eval_predicates
 
 def strongest_consequence(fml: z3.ExprRef, predicates: List[z3.ExprRef], k=None):
     """
-    Compute the strongest necessary condition of fml that is the Boolean combination of preds
+    Compute the strongest necessary condition (i.e., strongest consequence)
+    of `fml` that is expressive as a Boolean combination of  `predicates`
+
     Following CAV'06 paper "SMT Techniques for Fast Predicate Abstraction"
+    NOTE: in some contexts, "predicate abstraction" also means this function,
     """
     s = z3.Solver()
     s.add(fml)
@@ -34,6 +41,7 @@ def strongest_consequence(fml: z3.ExprRef, predicates: List[z3.ExprRef], k=None)
 
 
 def weakest_sufficient_condition(fml: z3.ExprRef, predicates: List[z3.ExprRef]):
+    """Following the duality of WSC and SNC"""
     notfml = z3.Not(fml)
     sc = strongest_consequence(notfml, predicates)
     return z3.simplify(z3.Not(sc))

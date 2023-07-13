@@ -1,9 +1,3 @@
-# coding: utf-8
-import z3
-
-from efmc.engines.abduction.mistral_z3 import MSASolver
-from efmc.utils import is_sat, is_entail, get_variables
-
 """
 NOTE: we aim to implement Dillig's abduction-based invariant inference
 
@@ -16,6 +10,11 @@ Idea:
 - First, Γ ∧ ψ |= φ can be rewritten as ψ |= Γ -> φ.
 - Second, we may use universal qe to compute the sufficient condition of Γ -> φ.
 """
+
+import z3
+
+from efmc.engines.abduction.mistral_z3 import MSASolver
+from efmc.utils import is_sat, is_entail, get_variables
 
 
 def check_abduct(pre_cond, post_cond, abdcut):
