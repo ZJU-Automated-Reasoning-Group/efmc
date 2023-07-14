@@ -74,7 +74,7 @@ String, Algebraic Datatypes, Container..)
 Related work:
 
 - The CoSA model checker supports many kinds of inputs (it relies on pySMT, 
-and is not maintained any more?) `https://github.com/cristian-mattarei/CoSA`
+and is not maintained anymore?) `https://github.com/cristian-mattarei/CoSA`
 
 Perhaps we can integrate CoSA...
 

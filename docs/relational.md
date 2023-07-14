@@ -1,6 +1,8 @@
 # Relational Verification
 
-- PLDI'16: Cartesian Hoare Logic for Verifying k-Safety Properties
+## Hyperproperty, k-safety
+
+- PLDI'16: Cartesian Hoare logic for verifying k-safety properties
 - PLDI'17: Decomposition instead of self-composition for proving the absence of timing channels
 - FSE'17: Discovering relational specifications
 - CAV'19: Property directed self composition
@@ -9,3 +11,8 @@
 - CAV'20: Verification of quantitative hyperproperties using trace enumeration relations
 - CAV'21: Constraint-based relational verification
 - ASE'22: Learning to synthesize relational invariants
+
+## Equivalence Verification
+
+
+

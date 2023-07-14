@@ -45,6 +45,11 @@ def is_sat(phi: z3.ExprRef) -> bool:
     s.add(phi)
     return s.check() == z3.sat
 
+def is_unsat(phi: z3.ExprRef) -> bool:
+    """Decide unsatisfiability of phi"""
+    s = z3.Solver()
+    s.add(phi)
+    return s.check() == z3.unsat
 
 def is_equiv(a: z3.ExprRef, b: z3.ExprRef) -> bool:
     """Decide equivalence between a and b"""

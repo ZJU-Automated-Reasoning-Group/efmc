@@ -54,6 +54,7 @@ def houdini(lemmas: [z3.ExprRef], transition: z3.ExprRef):
 
 
 def test_houdini():
+    # Test
     x = z3.Int("X")
     x_primed = z3.Int("X_p")
     # for the transition X'=X+1 the lemma X>1 and X>2 are valid, but X<1 is invalid.
