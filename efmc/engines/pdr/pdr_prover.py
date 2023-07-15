@@ -1,16 +1,15 @@
-# coding: utf-8
+"""
+Property-Directed Reachability (or IC3)
+
+Currently, we use the implementation inside Z3's CHC engine.
+"""
+
 import logging
 import time
 
 import z3
 
 from efmc.sts import TransitionSystem
-
-"""
-Property-Directed Reachability (or IC3)
-
-Currently, we use the implementation inside Z3's CHC engine.
-"""
 
 logger = logging.getLogger(__name__)
 

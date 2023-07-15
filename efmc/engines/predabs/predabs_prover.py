@@ -1,5 +1,13 @@
-# coding: utf-8
-# import time
+"""
+This is an "old-school" version of the predicate abstraction domain.
+
+- A set of predicates is given prior. The element in the domain is the Boolean combination of those predicates
+- Compute the strongest post operation(similar to symbolic abstraction)
+- Compute inductive invariant expressed in the element of the domain
+Currently we do not explore
+- Lazy abstraction, lazy abstraction with interpolation, etc...
+"""
+
 import logging
 from itertools import chain
 from itertools import combinations
@@ -8,17 +16,7 @@ from typing import List
 import z3
 
 from efmc.sts import TransitionSystem
-from efmc.utils import negate, is_sat, is_valid, ctx_simplify
-
-"""
-This is an "old-school" version of the predicate abstraction domain.
-
-- A set of predicates is given prior. The element in the domain is the Boolean combination of those predicates
-- Compute the strongest post operation(similar to symbolic abstraction)
-- Compute inductive invariant expressed in the element of the domain 
-Currently we do not explore
-- Lazy abstraction, lazy abstraction with interpolation, etc...
-"""
+from efmc.utils import negate, is_sat, is_valid
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +57,7 @@ def strongest_consequence(fml: z3.ExprRef, predicates: List, k=None) -> z3.ExprR
 
 
 def weakest_sufficient_condition(fml: z3.ExprRef, predicates: List[z3.ExprRef]) -> z3.ExprRef:
+    """Compute WSC using the duality between SNC(Strongest Necessary Condition)"""
     sc = strongest_consequence(negate(fml), predicates)
     return z3.simplify(z3.Not(sc))
 
@@ -76,6 +75,8 @@ def stronget_consequence_simple(phi: z3.ExprRef, predicates: List[z3.ExprRef]) -
 
 
 def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef) -> bool:
+    """Decide whether reaching a fixpoint or not..
+    TODO: is this true? (e.g. should we check for equivalence?)"""
     return is_valid(z3.Implies(inv, old_inv))
 
 
@@ -122,7 +123,7 @@ class PredicateAbstractionProver(object):
 
         # check whether the invariant is precise enough
         if is_valid(z3.Implies(inv, self.sts.post)):
-            print(ctx_simplify(inv))
+            print(z3.simplify(inv))
             print(">>> SAFE\n\n")
         else:
             # need refinement

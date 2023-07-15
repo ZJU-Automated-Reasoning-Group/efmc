@@ -11,11 +11,12 @@ import subprocess
 
 import efmc.engines.sygus_pdr.sygus as sygus_if2
 from efmc.engines.sygus_pdr.getfunc import FuncParser
+from efmc.engines.ef.efsmt.efsmt_config import cvc5_exec
 
 Config_use_init_data = True
-Config_cvc4_path = '/home/work/bin/cvc4'
+Config_cvc5_path = cvc5_exec
 Config_debug_dump = True
-Config_cvc4_time_out = 30
+Config_cvc5_time_out = 30
 
 
 class Sim:
@@ -142,10 +143,10 @@ class CexGuidedPBE:
 
         try:
             with open(result_fn, "w") as outf:  # TIMEOUT
-                subprocess.call([Config_cvc4_path, '--lang=sygus2', query_fn], stdout=outf,
-                                timeout=Config_cvc4_time_out)
+                subprocess.call([Config_cvc5_path, '--lang=sygus2', query_fn], stdout=outf,
+                                timeout=Config_cvc5_time_out)
         except subprocess.TimeoutExpired:
-            print('[CVC4] reports time out.')
+            print('[CVC5] reports time out.')
             return None
 
         with open(result_fn) as fin:
