@@ -18,11 +18,6 @@ def strongest_consequence(fml: z3.ExprRef, domain: str, k=None) -> z3.ExprRef:
     raise NotImplementedError
 
 
-def weakest_sufficient_condition(fml: z3.ExprRef, domain) -> z3.ExprRef:
-    """Compute WSC using the duality between SNC(Strongest Necessary Condition)"""
-    sc = strongest_consequence(negate(fml), domain)
-    return z3.simplify(z3.Not(sc))
-
 def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef) -> bool:
     """Decide whether reaching a fixpoint or not..
     TODO: is this true? (e.g. should we check for equivalence?)"""

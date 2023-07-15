@@ -3,10 +3,11 @@ This module provides a symbolic abstraction for bit-vector formulas.
 It supports interval, zone, and octagon abstractions.
 """
 
-import z3
 import itertools
 from timeit import default_timer as symabs_timer
 from typing import List
+
+import z3
 
 from efmc.utils.z3_expr_utils import get_variables
 from efmc.utils.z3_solver_utils import is_entail
@@ -17,6 +18,7 @@ from efmc.smttools.z3opt_utils import box_optimize
 
 
 def get_bv_size(x: z3.ExprRef):
+    """get bv size"""
     if z3.is_bv(x):
         return x.sort().size()
     else:
@@ -50,7 +52,8 @@ class BVSymbolicAbstraction:
         If the formula is initialized, apply a sequence of tactics to simplify it.
         """
         if self.initialized:
-            # TODO: it seems that propagate-bv-bounds has bugs, which can be even non-terminating on some formulas
+            # TODO: it seems that propagate-bv-bounds has bugs, which can be even
+            #  non-terminating on some formulas
             # TODO: use try_for?
             simp_start = symabs_timer()
             tac = z3.Then(z3.Tactic("simplify"), z3.Tactic("propagate-values"), z3.Tactic("propagate-bv-bounds"))
