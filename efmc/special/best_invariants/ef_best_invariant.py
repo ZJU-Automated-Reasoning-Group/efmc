@@ -1,4 +1,4 @@
-""" Generating Best Inductive Invariant
+""" Generating Best Inductive Invariant via Exists-Forall Solving?
 
  TODO: this is an idea that combines the sprites of symbolic abstraction and constraint-based invariant generation.
   Perhaps a simple strategy is to use some kind of linear search:
@@ -85,6 +85,7 @@ class BestInvariantGenerator(object):
         return z3.ForAll(self.sts.all_variables, qf_cond)
 
     def get_initial_invariant(self):
+        """generate constraints about invariants"""
         assert self.ct.template_type == TemplateType.BV_INTERVAL
         s = z3.SolverFor("UFBV")
         inv_cond = self.generate_invariant_condition()

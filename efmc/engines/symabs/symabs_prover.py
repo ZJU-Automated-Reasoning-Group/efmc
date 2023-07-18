@@ -6,7 +6,7 @@ import logging
 import z3
 
 from efmc.sts import TransitionSystem
-from efmc.utils import negate, is_valid
+from efmc.utils import is_valid
 
 logger = logging.getLogger(__name__)
 
