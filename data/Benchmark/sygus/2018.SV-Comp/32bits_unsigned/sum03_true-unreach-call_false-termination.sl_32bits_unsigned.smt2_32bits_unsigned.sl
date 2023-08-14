@@ -7,7 +7,7 @@
 (define-fun trans_fun ((x! (_ BitVec 32)) (n1! (_ BitVec 32)) (loop1! (_ BitVec 32)) (sn! (_ BitVec 32)) (x (_ BitVec 32)) (n1 (_ BitVec 32)) (loop1 (_ BitVec 32)) (sn (_ BitVec 32))) Bool
        ( and ( = sn! ( bvadd sn #x00000002 ) ) ( = x! ( bvadd x #x00000001 ) ) ( = loop1! loop1 ) ( = n1! n1 ) ))
 (define-fun post_fun ((x (_ BitVec 32)) (n1 (_ BitVec 32)) (loop1 (_ BitVec 32)) (sn (_ BitVec 32))) Bool
-       ( or ( = sn #x00000000 ) ( = sn ( bvmul #x00000002 x ) ) ))
+       ( or ( = sn ( bvmul #x00000002 x ) ) ( = sn #x00000000 ) ))
 
 (inv-constraint inv_fun pre_fun trans_fun post_fun)
 

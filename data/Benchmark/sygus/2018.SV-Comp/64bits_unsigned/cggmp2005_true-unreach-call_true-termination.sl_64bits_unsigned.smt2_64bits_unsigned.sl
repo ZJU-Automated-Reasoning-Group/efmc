@@ -7,7 +7,7 @@
 (define-fun trans_fun ((j! (_ BitVec 64)) (i! (_ BitVec 64)) (j (_ BitVec 64)) (i (_ BitVec 64))) Bool
        ( and ( bvuge j i ) ( = i! ( bvadd i #x0000000000000002 ) ) ( = j! ( bvadd j ( bvsub #x0000000000000000 #x0000000000000001 ) ) ) ))
 (define-fun post_fun ((j (_ BitVec 64)) (i (_ BitVec 64))) Bool
-       ( or ( = j #x0000000000000006 ) ( bvule i j ) ))
+       ( or ( bvule i j ) ( = j #x0000000000000006 ) ))
 
 (inv-constraint inv_fun pre_fun trans_fun post_fun)
 
