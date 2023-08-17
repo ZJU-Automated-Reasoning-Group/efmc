@@ -1,24 +1,18 @@
-# coding: utf-8
-from typing import FrozenSet
-
-import z3
-from z3.z3util import get_vars
-
 """
 Minimal Satisfying Assignment. adapted from algo.by Alessandro Previti, Alexey S. Ignatiev
 """
 
 
-# ==============================================================================
-class MSASolver:
-    """
-    Mistral solver class.
+from typing import FrozenSet
+
+import z3
+from z3.z3util import get_vars
+
     """
 
     def __init__(self, verbose=1):
         """
         Constructor.
-        """
         self.formula = None
         # self.formula = simplify(self.formula)
         self.fvars = None

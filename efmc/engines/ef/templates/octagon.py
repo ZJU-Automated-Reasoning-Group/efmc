@@ -28,6 +28,12 @@ class OctagonTemplate(Template):
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
         raise NotImplementedError
 
+    def add_template_cnts_for_ranking_function(self):
+        raise NotImplementedError
+
+    def build_ranking_function_expr(self):
+        raise NotImplementedError
+
 
 class DisjunctiveOctagonTemplate(Template):
     def __init__(self, sts: TransitionSystem, **kwargs):
@@ -46,4 +52,10 @@ class DisjunctiveOctagonTemplate(Template):
         raise NotImplementedError
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
+        raise NotImplementedError
+
+    def add_template_cnts_for_ranking_function(self):
+        raise NotImplementedError
+
+    def build_ranking_function_expr(self):
         raise NotImplementedError

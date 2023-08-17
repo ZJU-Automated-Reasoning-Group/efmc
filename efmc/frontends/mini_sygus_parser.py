@@ -1,8 +1,7 @@
-# coding: utf-8
-
 """
-NOTE: I only it for SyGuS inv. It could be used for PBE
+Parser for SyGuS files based on a simple S-expression parser
 
+NOTE: I only this file for inputs in the style of the SyGuS invariant track. It could be used for SyGuS(PBE)
 To keep this file independent, I do not important other files in this project.
 """
 import z3
@@ -287,7 +286,8 @@ class SyGusInVParser:
             elif 'Real' in var_sig:
                 all_vars.append(z3.Real(var_sig[0]))
             else:  # TODO: should we just assume the type is bv?
-                # ['x', ['_', 'BitVec', 32]]
+                # e.g., var_sig is ['x', ['_', 'BitVec', 32]]
+                #  then, the z3 var is BitVec(x, 32)
                 all_vars.append(z3.BitVec(var_sig[0], var_sig[1][2]))
 
         return all_vars, init, trans, post

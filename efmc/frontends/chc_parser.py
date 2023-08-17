@@ -1,6 +1,8 @@
 """
-Actually, we also support replacing "inv" by a function body
-TODO: so, do we need to transform the CHC to our transition system first?
+Parser for Constraint Horn Clause (CHC) files based on Z3's Python API
+
+NOTE: this file provides a few other functionalities. For example,
+    we also support replacing "inv" by a function body
 """
 from __future__ import print_function
 
@@ -231,5 +233,5 @@ def test_parse3(filename):
 
 if __name__ == "__main__":
     # test_parse()
-    test_parse3("../../benchmarks/chc/bv/array_max-1.smt2")
+    test_parse3("../../data/regressions/chc/bv/array_max-1.smt2")
     # test_replace()

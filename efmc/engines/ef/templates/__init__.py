@@ -1,6 +1,7 @@
 # coding: utf-8
 from .abstract_template import TemplateType, Template
-from .interval import IntervalTemplate, DisjunctiveIntervalTemplate, IntervalTemplateV2
+from .interval import IntervalTemplate, DisjunctiveIntervalTemplate
+from .intervalv2 import IntervalTemplateV2
 from .zone import ZoneTemplate
 from .octagon import OctagonTemplate
 from .affine import AffineTemplate, DisjunctiveAffineTemplate

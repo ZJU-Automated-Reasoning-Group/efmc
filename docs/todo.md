@@ -29,10 +29,8 @@ This is the original goal of the project.
 
 #### For Integer and Real Semantics
 
-- Add the support of zone and octagon domains
 - Add Farkas' Lemma based reduction 
 - Parallel benchmarking and stats.
-- Configurable third-party SMT engines (either via PySMT or via PIPE)
 
 NOTE: to perform the empirical study, we have two choices
 -  NRA or LRA: templates + exists-forall solving
@@ -44,8 +42,6 @@ NOTE: to perform the empirical study, we have two choices
 This is important for evaluating EFSMT(BV) and other algorithms.
 It is also important to "beat" many existing tools (as they do not support bit-level precision 
 memory model.)
-
-04.17: a small example and basic implementation of interval
 
 For more benchmarks, we may use:
 https://github.com/chc-comp/vmt-chc-benchmarks/tree/master/bv
@@ -78,7 +74,7 @@ String, Algebraic Datatypes, Container..)
 Related work:
 
 - The CoSA model checker supports many kinds of inputs (it relies on pySMT, 
-and is not maintained any more?) `https://github.com/cristian-mattarei/CoSA`
+and is not maintained anymore?) `https://github.com/cristian-mattarei/CoSA`
 
 Perhaps we can integrate CoSA...
 

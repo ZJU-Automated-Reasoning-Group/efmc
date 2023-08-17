@@ -1,5 +1,5 @@
 """
-Generating aux invariants for k-induction
+Generating aux invariants for k-induction (not used for now)
 """
 import z3
 
@@ -10,12 +10,14 @@ from efmc.engines.ef.ef_prover import EFProver
 class InvariantGenerator(object):
 
     def __init__(self, sts: TransitionSystem):
+        """Init"""
         self.sts = sts
 
     def generate_via_ef(self):
+        """Using exists-forall solving to generate aux invariants"""
         ef_prover = EFProver(self.sts, validate_invariant=True)
         ef_prover.ignore_post_cond = True  # an important flag
-        ef_prover.validate_invariant = False  # do not check the invarinat after generating..
+        ef_prover.validate_invariant = False  # do not check the invariant after generating.
         if self.sts.has_bv:
             ef_prover.set_template("bv_interval")
         else:

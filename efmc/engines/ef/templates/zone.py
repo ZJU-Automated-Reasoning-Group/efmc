@@ -42,7 +42,7 @@ class ZoneTemplate(Template):
 
         self.add_template_vars()
 
-        # pre compute to reduce redundant calling
+        # pre-compute to reduce redundant calling
         self.template_cnt_init_and_post = None
         self.template_cnt_trans = None
         self.add_template_cnts()
@@ -118,6 +118,13 @@ class ZoneTemplate(Template):
 
         return z3.And(cnts)
 
+    def add_template_cnts_for_ranking_function(self):
+        raise NotImplementedError
+
+    def build_ranking_function_expr(self):
+        raise NotImplementedError
+
+
 
 class DisjunctiveZoneTemplate(Template):
 
@@ -181,3 +188,10 @@ class DisjunctiveZoneTemplate(Template):
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
         raise NotImplementedError
+
+    def add_template_cnts_for_ranking_function(self):
+        raise NotImplementedError
+
+    def build_ranking_function_expr(self):
+        raise NotImplementedError
+

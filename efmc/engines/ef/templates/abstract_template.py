@@ -51,3 +51,12 @@ class Template(object):
         :param use_prime_variables deciding using x, y or x!, y!
         """
         raise NotImplementedError
+
+    def add_template_cnts_for_ranking_function(self):
+        """Add constraints for the template variables (according to specification of ranking function)
+        """
+        raise NotImplementedError
+
+    def build_ranking_function_expr(self):
+        """Building the expression for the ranking function"""
+        raise NotImplementedError
