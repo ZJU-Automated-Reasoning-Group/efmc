@@ -7,6 +7,7 @@ import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from matplotlib.font_manager import FontProperties
 from collections import defaultdict, Counter
 import re
 
@@ -15,13 +16,15 @@ def is_isolated_word(word, text):
     return re.search(rf'\b{word}\b', text) is not None
 
 
-all_solver = ['z3', 'cvc5', 'btor', 'yices2', 'mathsat', 'bitwuzla']
-all_bit_blasting_solver = ['z3qbf', 'caqe', 'q3b', 'cd15', 'lgl',
+all_solver = ['z3', 'cvc5', 'yices2', 'bitwuzla']
+all_bit_blasting_solver = ['caqe', 'q3b', 'cd15', 'lgl',
                            'mc']
 all_cegis_solver = ['cegis_z3', 'cegis_msat',
                     'cegis_yices', 'cegis_btor', 'cegis_cvc4']
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 SAVEDIR = CUR_DIR + "/Result"
+# plt.rcParams["font.family"] = "Times New Roman"
+# plt.rcParams["axes.labelsize"] = 12
 
 
 class Experiment_Helper:
@@ -34,7 +37,7 @@ class Experiment_Helper:
         if 'smt_solver' in entry and entry['smt_solver'] != 'cegis':
             row_elements.append(entry['smt_solver'])
         elif 'cegis_solver' in entry:
-            row_elements.append(entry['cegis_solver'])
+            row_elements.append("cegis_"+entry['cegis_solver'])
         else:
             row_elements.append("")
 
@@ -49,7 +52,7 @@ class Experiment_Helper:
             row_elements.append("")
 
         if 'strengthen' in entry:
-            row_elements.append(entry['strengthen'])
+            row_elements.append("True")
         else:
             row_elements.append("False")
 
@@ -60,9 +63,91 @@ class Experiment_Helper:
 
         return row_elements
 
+    def generate_table(self, output_file):
+        config_data = defaultdict(lambda: defaultdict(Counter))
+
+        # Predefined configurations
+        disjunction_config = {
+            None: 'Base',
+            2: 'DIS_2',
+            5: 'DIS_5',
+            10: 'DIS_10'
+        }
+
+        # Traverse through the data and count the results for each configuration
+        for entry in self.data:
+            method = entry.get('method')
+            smt_solver = entry.get('smt_solver')
+            cegis_solver = entry.get('cegis_solver')
+
+            if method == 'efsmt' and smt_solver == 'z3':
+                label = 'QI-Z3'
+            elif method == 'efsmt' and smt_solver == 'q3b':
+                label = 'BB-Q3B'
+            elif smt_solver == 'cegis' and cegis_solver == 'yices':
+                label = 'IS-Yices'
+            else:
+                continue
+
+            num_disj = entry.get('num_disjunctions')
+            strengthen = entry.get('strengthen', False)
+
+            # Determine the configuration
+            base_config = disjunction_config.get(num_disj, 'N/A')
+            if strengthen and base_config == 'Base':
+                config_name = 'PS'
+            elif strengthen:
+                config_name = base_config + '+PS'
+            else:
+                config_name = base_config
+            result = ""
+            if entry.get('safe') == True:
+                result = 'T'
+            elif entry.get('timeout') == True:
+                result = 'X'
+            elif entry.get('unknown') == True:
+                result = 'U'
+            elif entry.get('unexpected_error') == True:
+                result = 'Err'
+            else:   
+                result = 'N/A'
+
+            template = entry.get('template', "")
+            if "power_" in template:
+                template = str(template).replace("power_", "")
+            if template in ['bv_interval', 'bv_octagon', 'bv_poly', 'bv_zone']:
+                config_data[(label, config_name)][template][result] += 1
+            else:
+                print(template)
+                exit(0)
+
+        # Write the table to a CSV file
+        with open(output_file, 'w', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile)
+
+            # Write header
+            header = ['Solver', 'Configuration', 'bv_interval',
+                      'bv_octagon', 'bv_poly', 'bv_zone']
+            csvwriter.writerow(header)
+
+            # Write rows
+            for (solver, config), templates_data in config_data.items():
+                row = [solver, config]
+                for template in ['bv_interval', 'bv_octagon', 'bv_poly', 'bv_zone']:
+                    data = templates_data[template]
+                    row_data = "T: {T}, U: {U}, Others: {Others}".format(
+                        T=data['T'],
+                        U=data['U'],
+                        Others=data['F'] + data['Err'] + data['X'] + data.get('N/A', 0)
+                    )
+                    row.append(row_data)
+                csvwriter.writerow(row)
+
     def generate_csv(self, output_filename):
         file_data = defaultdict(dict)
         stats = defaultdict(Counter)
+        times = defaultdict(float) 
+        benchmark_counts = defaultdict(int) 
         for entry in self.data:
             row_elements = self.generate_row_elements(entry)
             row_key = tuple(row_elements)
@@ -79,9 +164,11 @@ class Experiment_Helper:
                 result = 'Err'
             else:
                 result = 'N/A'
-
             file_data[row_key][entry['file']] = result
             stats[row_key][result] += 1
+            if 'time' in entry:
+                times[row_key] += entry['time']
+                benchmark_counts[row_key] += 1
 
         with open(output_filename, 'w', newline='') as csvfile:
             csvwriter = csv.writer(csvfile)
@@ -105,151 +192,171 @@ class Experiment_Helper:
                 csvwriter.writerow(row)
 
             csvwriter.writerow([])
-            stats_header = ['SMT Solver', 'Method', 'Template',
-                            'Strengthen', 'Num Disjunctions', 'T', 'F', 'Err', 'X', 'N/A']
+            stats_header = ['SMT Solver', 'Method', 'Template', 'Strengthen', 'Num Disjunctions', 'T', 'F', 'Err', 'X', 'U', 'N/A', 'Avg Time']
             csvwriter.writerow(stats_header)
             for row_key, counter in stats.items():
                 stats_row = list(row_key)
                 for key in stats_header[5:]:
                     stats_row.append(counter[key])
+                avg_time = times[row_key] / benchmark_counts[row_key] if benchmark_counts[row_key] > 0 else 0
+                print(benchmark_counts[row_key])
+                stats_row.append(avg_time)
                 csvwriter.writerow(stats_row)
 
-    def plot_basic_template(self):
+    def calculate_verified_rate(self):
+        result_df = pd.DataFrame(columns=['Tool', 'Template', 'Verified Rate'])
+
+        templates = ['bv_interval', 'bv_zone', 'bv_octagon', 'bv_poly']
+        solvers = [('z3', None), ('q3b', None), ('cegis', 'yices')]
+        template_map = {
+            'bv_interval': 'int', 'bv_zone': 'zone', 'bv_octagon': 'oct', 'bv_poly': 'poly'
+        }
         result = {}
         for entry in self.data:
             if 'num_disjunctions' in entry or 'power' in entry.get('template', '') or 'strength' in entry or 'template' not in entry:
                 continue
-            if entry['template'] in ['bv_interval', 'bv_octagon', 'bv_poly', 'bv_zone']:
-                solver = 'CS' + entry['cegis_solver'] if entry['smt_solver'] == 'cegis' else entry['smt_solver']
-                template = entry['template']
-                bits = '32bits' if '32bits' in entry['bits'] else '64bits'
-                safe = entry.get('safe', False)
 
-                key = (solver, template, bits)
-                if key not in result:
-                    result[key] = {'correct': 0, 'total': 0}
-                result[key]['total'] += 1
-                if safe:
-                    result[key]['correct'] += 1
+            template = entry['template']
+            if template not in templates:
+                continue
+            template = template_map[template]
+            smt_solver = entry.get('smt_solver')
+            cegis_solver = entry.get('cegis_solver')
+            solver_tuple = (smt_solver, cegis_solver)
 
-        data_list = []
-        for key in result:
-            result[key]['accuracy'] = result[key]['correct'] / result[key]['total']
-            solver, template, bits = key
-            accuracy = result[key]['accuracy']
-            data_list.append({'solver': solver, 'template': template, 'bits': bits, 'accuracy': accuracy})
+            if solver_tuple not in solvers:
+                continue
 
-        df = pd.DataFrame(data_list)
+            safe = entry.get('safe', False)
 
-        plt.figure(figsize=(12, 6))
-        sns.lineplot(data=df, x='solver', y='accuracy',dashes=False, hue='template', style='bits', markers=True)
+            key = (smt_solver, template)
+            if key not in result:
+                result[key] = {'correct': 0, 'total': 0}
 
-        plt.ylabel('Accuracy')
-        plt.xticks(rotation=45)
-        plt.legend(title='Template & Bits', bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+            result[key]['total'] += 1
+            if safe:
+                result[key]['correct'] += 1
+
+        for key, value in result.items():
+            solver, template = key
+            rate = value['correct'] / value['total'] * 100
+            new_row = pd.DataFrame(
+                [{'Tool': solver, 'Template': template, 'Verified Rate': rate}])
+            result_df = pd.concat([result_df, new_row], ignore_index=True)
+
+        return result_df
+
+    def plot_grouped_bar_chart(self):
+        verified_rate_df = self.calculate_verified_rate()
+
+        color_dict = {
+            'z3': '#9dc3e7',
+            'q3b': '#a9d18f',
+            'cegis': '#e5b1a9'
+        }
+
+        sns.set_style("whitegrid")
+
+        # 创建一个颜色列表，用于barplot中的palette参数
+        color_palette = [color_dict[tool]
+                         for tool in verified_rate_df['Tool'].unique()]
+
+        ax = sns.barplot(data=verified_rate_df, x='Template',
+                         y='Verified Rate', hue='Tool', palette=color_palette)
+
+        # 设置填充样式
+        hatches = ['', '/', 'x']
+        num_tools = len(verified_rate_df['Tool'].unique())
+
+        # 对于每个工具，设置相应的填充样式
+        for i, tool in enumerate(verified_rate_df['Tool'].unique()):
+            bars = [patch for patch in ax.patches if patch.get_fc() == ax.get_legend().legend_handles[i].get_facecolor()]
+            for bar in bars:
+                bar.set_hatch(hatches[i])
+
+        # 重命名图例标签
+        new_legend_labels = {
+            'z3': 'QI_z3',
+            'q3b': 'BB_q3b',
+            'cegis': 'IS_yices'
+        }
+
+        handles, labels = ax.get_legend_handles_labels()
+        font_properties = FontProperties(weight='bold')
+        ax.legend(handles, [new_legend_labels[label] for label in labels], loc='upper center', bbox_to_anchor=(0.5, 1.10), ncol=len(verified_rate_df['Tool'].unique()), frameon=False,prop=font_properties)
         plt.tight_layout()
 
-        plt.savefig('accuracy_plot.svg', format='svg')
-        plt.show()
+        plt.savefig('Verified rate.pdf')
 
-    def plot_top_10_cumulative_time_and_accuracy(self, output_file, specific_key=None, specific_value=None):
-        cumulative_data = {}
-        success_count = {}
+    def plot_cumulative_time_per_template(self, output_file):
+        templates = ["bv_poly", "bv_interval", "bv_zone", "bv_octagon"]
 
-        for data in self.data:
-            if specific_key is not None and data.get(specific_key) != specific_value:
-                continue
-            method = data["method"]
-            template = data.get("template", "None")
-            smt_solver = data.get("smt_solver", "None")
-            cegis_solver = data.get("cegis_solver", "None")
-            num_disjunctions = data.get("num_disjunctions", "None")
-            prop_strengthen = data.get("strengthen", "None")
+        # Adjusted colors to be lighter and more muted
+        colors = {
+            "bv_poly": "#FF6666",     # Lighter Red
+            "bv_interval": "#66B266",  # Lighter Green
+            "bv_zone": "#FFCC99",    # Lighter Orange
+            "bv_octagon": "#FFFF99"  # Lighter Yellow
+        }
+        label_mapping = {
+            "bv_poly": "poly/QI_z3",
+            "bv_interval": "int/QI_z3",
+            "bv_zone": "zone/QI_z3",
+            "bv_octagon": "oct/QI_z3"
+        }
 
-            key = (method, template, smt_solver, cegis_solver,
-                   num_disjunctions, prop_strengthen)
-            time = data["time"]
-            is_success = data.get("safe", False)
+        # Line styles for each template
+        line_styles = {"bv_poly": ":", "bv_interval": "--",
+                    "bv_zone": "-.", "bv_octagon": "-"}
 
-            if key not in cumulative_data:
-                cumulative_data[key] = [time]
-                success_count[key] = 1 if is_success else 0
-            else:
-                cumulative_data[key].append(cumulative_data[key][-1] + time)
-                success_count[key] += 1 if is_success else 0
+        cumulative_data = {template: [] for template in templates}
+        time_data = {template: [] for template in templates}
 
-        success_rate = {
-            key: success_count[key] / len(cumulative_data[key]) for key in cumulative_data.keys()}
-        top_success_rate_keys = sorted(
-            success_rate, key=success_rate.get, reverse=True)[:10]
+        for data_entry in self.data:
+            if data_entry.get("template", "") in templates and \
+                    data_entry["smt_solver"] == "z3" and \
+                    data_entry["lang"] == "chc" and \
+                    data_entry["method"] == "efsmt":
 
-        linestyles = ['-', '--', '-.', ':', (0, (3, 1, 1, 1)), (0, (3, 5, 1, 5)),
-                      (0, (1, 1)), (0, (5, 10)), (0, (5, 5)), (0, (5, 1, 1, 1))]
+                cumulative_data[data_entry["template"]].append(data_entry["time"])
 
+        for template, times in cumulative_data.items():
+            cumulative_time = 0
+            for time in times:
+                cumulative_time += time
+                time_data[template].append(cumulative_time)
         plt.figure()
-        for i, key in enumerate(top_success_rate_keys):
-            times = cumulative_data[key]
-            label = " / ".join([str(x) for x in key if x != "None"])
+        for template, times in time_data.items():
             sns.lineplot(x=list(range(len(times))), y=times,
-                         label=label, linestyle=linestyles[i])
+                        label=label_mapping[template],
+                        color=colors[template],
+                        linestyle=line_styles[template])
 
-        plt.title("Cumulative Time vs. File Index (Top 10 Success Rates)")
-        plt.xlabel("File Index")
+        plt.title("Cumulative Time vs. Benchmark Index")
+        plt.xlabel("Benchmark Index")
         plt.ylabel("Cumulative Time (s)")
 
-        plt.figure()
-        for i, key in enumerate(top_success_rate_keys):
-            times = cumulative_data[key]
-            label = " / ".join([str(x) for x in key if x != "None"])
-            sns.lineplot(x=list(range(len(times))), y=times,
-                         label=label, linestyle=linestyles[i])
+        # Setting the plot background color to light gray
+        ax = plt.gca()
+        for spine in ax.spines.values():
+            spine.set_edgecolor('#D0D0D0')  # Light gray
 
-        plt.title(
-            f"Cumulative Time vs. File Index (Top 10 Success Rates, {specific_key}={specific_value})")
-        plt.xlabel("File Index")
-        plt.ylabel("Cumulative Time (s)")
+        # Adjusting the tick color to match the spine color
+        ax.tick_params(colors='#D0D0D0')
+        # Bold legend text
+        font_properties = FontProperties(weight='bold')
+        plt.legend(fontsize='small', prop=font_properties, loc='upper center',
+                bbox_to_anchor=(0.5, 1.15), ncol=4, frameon=False)
 
-        plt.legend(fontsize='small')
-        file_suffix = f"_{specific_key}_{specific_value}" if specific_key is not None and specific_value is not None else ""
-        plt.savefig(
-            os.path.join(output_file, f'cumulative_success_rate{file_suffix}.svg'),format='svg', dpi=600)
-
-        plt.figure()
-        for i, key in enumerate(top_success_rate_keys):
-            success_ratios = [sum(cumulative_data[key][:j + 1]) / (j + 1)
-                              for j in range(len(cumulative_data[key]))]
-            label = " / ".join([str(x) for x in key if x != "None"])
-            sns.lineplot(x=list(range(len(success_ratios))),
-                         y=success_ratios, label=label, linestyle=linestyles[i])
-
-        plt.title(
-            f"Cumulative Success Rate vs. File Index (Top 10 Success Rates, {specific_key}={specific_value})")
-        plt.xlabel("File Index")
-        plt.ylabel("Cumulative Success Rate")
-
-        plt.legend(fontsize='small')
-        plt.savefig(
-            os.path.join(output_file, f'cumulative_success_rate{file_suffix}.png'), dpi=600)
-
-        print("Top 10 Success Rates:")
-        for key in top_success_rate_keys:
-            method_str = " / ".join([str(x) for x in key if x != "None"])
-            rate = success_rate[key]
-            print(f"{method_str}: {rate:.2%}")
-
-        print("All Success Rates (sorted):")
-        sorted_success_rate = sorted(
-            success_rate.items(), key=lambda x: x[1], reverse=True)
-        for key, rate in sorted_success_rate:
-            method_str = " / ".join([str(x) for x in key if x != "None"])
-            print(f"{method_str}: {rate:.2%}")
-
-    def heat_map_between_teamplte_and_solver(self, output_file='.', specify_smt_solver=[],bits='32bits'):
+        plt.savefig('./cumulative_time_per_template.pdf',
+                    dpi=600, format='pdf')
+    def heat_map_between_teamplte_and_solver(self, output_file='.'):
         method_data = []
+        NameMap = {""}
         for entry in self.data:
-            if entry['method'] == 'efsmt' and bits in entry['bits']:
+            if entry['method'] == 'efsmt':
                 result = {
-                    'solver': entry['smt_solver'] if entry['smt_solver'] != 'cegis' else 'cegis_' + entry[
+                    'solver': entry['smt_solver'] if entry['smt_solver'] != 'cegis' else entry[
                         'cegis_solver'],
                     'template': entry['template'],
                     'time': entry['time'],
@@ -259,15 +366,17 @@ class Experiment_Helper:
                     result['solver'] = 'QI_' + result['solver']
                 elif result['solver'] in all_bit_blasting_solver:
                     result['solver'] = 'BB_' + result['solver']
-                elif result['solver'] in all_cegis_solver:
-                    result['solver'] = 'CS_' + result['solver']
-                if specify_smt_solver and result['solver'] not in specify_smt_solver:
-                    continue
+                elif "cegis_"+ result['solver'] in all_cegis_solver:
+                    result['solver'] = 'IS_' + result['solver']
                 method_data.append(result)
-
+        template_map = {
+            'bv_interval': 'int', 'bv_zone': 'zone', 'bv_octagon': 'oct', 'bv_poly': 'poly',
+            'power_bv_interval': 'PW_int', 'power_bv_zone': 'PW_zone', 'power_bv_octagon': 'PW_oct', 'power_bv_poly': 'PW_poly'
+        }
         heatmap_data = {}
         for entry in method_data:
-            key = (entry['solver'], entry['template'])
+            template=entry['template']
+            key = (entry['solver'], template_map[template])
             if key not in heatmap_data:
                 heatmap_data[key] = {
                     'success_count': 1 if entry['success'] else 0, 'total_count': 1}
@@ -291,18 +400,46 @@ class Experiment_Helper:
         # cmap = sns.light_palette(as_cmap=True, start=.5, rot=-.75)  # Use a softer color palette
         sns.heatmap(heatmap_df, annot=True, cmap='Blues', fmt='.1%',
                     linewidths=0.5, linecolor='gray')  # Add linewidths and linecolor
-        plt.title("Success Rate Heatmap (Method: efsmt)")
+        plt.title("Verified Rate Heatmap (only PS)")
         plt.xlabel("Template")
         plt.ylabel("Solver")
+
+        file_name = "./verfied_heatmap.pdf"
+        plt.savefig(file_name, dpi=300, format='pdf')
         
-        index = 1
-        file_name = os.path.join(output_file, f"heatmap_{bits}.svg")
-        
-        while os.path.exists(file_name):
-            file_name = os.path.join(output_file, f"heatmap_{bits}_{index}.svg")
-            index += 1
-        plt.savefig(file_name, dpi=300,format='svg')
-        print("my name is"+file_name)
+        time_data = {}
+        for entry in method_data:
+            template = entry['template']
+            key = (entry['solver'], template_map[template])
+            if key not in time_data:
+                time_data[key] = {
+                    'total_time': entry['time'],'count': 1 }
+            else:
+                time_data[key]['total_time'] += entry['time']
+                time_data[key]['count'] += 1
+
+        average_times = {key: value['total_time'] / value['count'] if value['count'] > 0 else 0
+                         for key, value in time_data.items()}
+        for key, value in time_data.items():
+            print(value['count'])
+        time_heatmap_df = pd.DataFrame.from_dict(
+            average_times, orient='index', columns=['average_time'])
+        time_heatmap_df = time_heatmap_df.reset_index()
+        time_heatmap_df[['solver', 'template']] = pd.DataFrame(
+            time_heatmap_df['index'].tolist(), index=time_heatmap_df.index)
+        time_heatmap_df = time_heatmap_df.pivot_table(values='average_time', index=[
+            'solver'], columns=['template'])
+
+        plt.figure(figsize=(8, 6))
+        sns.set(font_scale=0.8)
+        sns.heatmap(time_heatmap_df, annot=True, cmap='Blues', fmt='.1f',
+                    linewidths=0.5, linecolor='gray')
+        plt.title("Average Time Heatmap (only PS)")
+        plt.xlabel("Template")
+        plt.ylabel("Solver")
+
+        file_name_time = "./average_time_heatmap.pdf"
+        plt.savefig(file_name_time, dpi=300, format='pdf')
 
     def box_map(self, output_file):
         boxplot_data = []
@@ -379,7 +516,7 @@ def init(mode):
     for subdir, dirs, files in os.walk(SAVEDIR):
 
         for file in files:
-            # print(file)
+            print(file)
             if file.endswith(".json"):
                 file_path = os.path.join(subdir, file)
                 with open(file_path, "r") as json_file:
@@ -421,22 +558,22 @@ def init(mode):
             if 11 in mode:
                 # if 'num_disjunctions' in data and data['num_disjunctions'] == 2:
                 # if 'smt_solver' not in data or data['smt_solver'] == 'g4' or data['smt_solver'] == 'gc4':
-                if data['lang']=='sygus' and 'strengthen' in data:
-                # if 'num_disjunctions' not in data and 'power' in data.get('template', ''):
+                if data['lang'] == 'sygus' and 'strengthen' in data:
+                    # if 'num_disjunctions' not in data and 'power' in data.get('template', ''):
                     os.remove(file_path)
                     print(f"{file_path} has been deleted.")
             if 13 in mode:
-                if data['lang']=='sygus':
-                    filename=data['file']
+                if data['lang'] == 'sygus':
+                    filename = data['file']
                     index = filename.find('.smt2')
                     if index != -1:
                         new_filename = filename[:index + len('.smt2')]
                     else:
                         print(data['file'])
-                    data['file']=new_filename
+                    data['file'] = new_filename
                     with open(file_path, "w") as json_file:
                         json.dump(data, json_file, indent=4)
-                    
+
             if 'bits' not in data:
                 bits_pattern = re.compile(r'(\d+bits_[un]*signed)')
                 bits_str = bits_pattern.search(file_path).group()
@@ -444,9 +581,10 @@ def init(mode):
                 data['bits'] = bits_str
                 if bits_str not in data['file']:
                     data['file'] = data['file'] + "_" + bits_str
-            if 'unsigned' in  data['bits']:
+            if 'unsigned' in data['bits']:
                 data_list.append(data)
-    safe_file = []
+    safe_file = set()
+    delete_file = set()
     if 12 in mode:
         num_disjunctions_counts = {2: 0, 5: 0, 10: 0}
         method_counts = {'pdr': 0, 'eld': 0}
@@ -459,10 +597,14 @@ def init(mode):
                 method_counts[data['method']] += 1
         print(num_disjunctions_counts, method_counts)
     for data in data_list:
-        if data.get("safe", False) == True:
-            safe_file.append(data["file"])
-
-    return data_list, safe_file
+        if data.get("safe", "") == True:
+            safe_file.add(data["file"])
+        elif data.get("safe", "") == False:
+            delete_file.add(data["file"])
+    for file in delete_file:
+        if file in safe_file:
+            safe_file.remove(file)
+    return data_list, list(safe_file)
 
 
 def collect_data(chc_dir, strengthen=False, disjunction=0):
@@ -480,7 +622,6 @@ def collect_data(chc_dir, strengthen=False, disjunction=0):
                         source = root.split('/')[-3]
                         # print(source)
                         solver = content['smt_solver']
-                        print(bits)
                         if solver == 'cegis':
                             solver = 'cegis' + content['cegis_solver']
                         if bits not in data:
@@ -551,54 +692,35 @@ if __name__ == "__main__":
     args = parser.parse_args()
     data_list, safe_file = init(args.mode)
     data_list = [data for data in data_list if data['file'] in safe_file]
-    if 1 in args.mode or 2 in args.mode:
-        # print(safe_file)
-        # new_data_list = [data for data in data_list if data.get('template',False) and (
-        #         data.get("smt_solver") in ['z3', 'z3qbf', 'caqe', 'q3b'] or data.get('cegis_solver') in ['z3'])]
-        if 2 in args.mode:
-            data_list = [
-                data for data in data_list if not data.get('strengthen')]
-            RQ1 = Experiment_Helper(data_list)
-            if not os.path.exists(SAVEDIR):
-                os.makedirs(SAVEDIR)
-            if 21 in args.mode:
-                RQ1.generate_csv(os.path.join(SAVEDIR, 'all.csv'))
-                RQ1.plot_top_10_cumulative_time_and_accuracy(SAVEDIR)
-                RQ1.variouts_images(SAVEDIR)
-            if 22 in args.mode:
-                RQ1.plot_basic_template()
+    print("-------------finish init data------------------------")
+
+    if 2 in args.mode:
+        # new_data_list = [
+        #     data for data in data_list if not data.get('strengthen')]
+        RQ1 = Experiment_Helper(data_list)
+        if not os.path.exists(SAVEDIR):
+            os.makedirs(SAVEDIR)
+        if 21 in args.mode:
+            RQ1.generate_csv(os.path.join(SAVEDIR, 'data.csv'))
+            # RQ1.plot_cumulative_time_per_template(SAVEDIR)
+            # RQ1.variouts_images(SAVEDIR)
+        if 22 in args.mode:
+            RQ1.plot_grouped_bar_chart()
     if 3 in args.mode:
-        # no strengthen and no disjunction template, generate basic csv table and its heat map
-        data = collect_data('./Result/chc')
-        generate_csv(data, output_file='basic_data.csv')
-        data_list=[data for data in data_list if 'strengthen' not in data]
-        RQ1_basic = Experiment_Helper(data_list)
-        RQ1_basic.heat_map_between_teamplte_and_solver(bits='32bits')
-        RQ1_basic.heat_map_between_teamplte_and_solver(bits='64bits')
+        RQ13 = Experiment_Helper(data_list)
+        RQ13.generate_table(output_file='table.csv')
+        # data = collect_data('./Result/chc')
     if 4 in args.mode:
-        # with strengthen and no disjunction template, generate basic csv table and its heat map
-        data = collect_data('./Result/chc', strengthen=True)
-        generate_csv(data, output_file='with_strength.csv')
-        data_list=[data for data in data_list if 'strengthen' in data]
-        RQ1_basic = Experiment_Helper(data_list)
-        RQ1_basic.heat_map_between_teamplte_and_solver(bits='32bits')
-        RQ1_basic.heat_map_between_teamplte_and_solver(bits='64bits')
-    if 5 in args.mode:
-        # with strengthen and no disjunction template, generate basic csv table and its heat map
-        data = collect_data(
-            './Result/chc', disjunction=args.disjunction)
-        generate_csv(
-            data, output_file=f'with_disjunction_{args.disjunction}.csv')
-        data_list=[data for data in data_list if 'strengthen' not in data and data.get('num_disjunctions')==args.disjunction]
-        print(data_list)
-        RQ1_basic = Experiment_Helper(data_list)
-        RQ1_basic.heat_map_between_teamplte_and_solver(bits='32bits')
-        RQ1_basic.heat_map_between_teamplte_and_solver(bits='64bits')
+        data_list = [data for data in data_list if 'strengthen' in data]
+        RQ14 = Experiment_Helper(data_list)
+        RQ14.heat_map_between_teamplte_and_solver()
+
     if 6 in args.mode:
-        choosen_method=['eld','pdr','cvc5sys']
-        choosen_template=['none']
-        data_list=[data for data in data_list if data['method'] in choosen_method or (data['method']=='efsmt' and data['template']==choosen_method)]
-        RQ2=Experiment_Helper()
+        choosen_method = ['eld', 'pdr', 'cvc5sys']
+        choosen_template = ['none']
+        data_list = [data for data in data_list if data['method'] in choosen_method or (
+            data['method'] == 'efsmt' and data['template'] == choosen_method)]
+        RQ2 = Experiment_Helper()
     # DONE:efsmt方法中，不同模板，求解器组合对应的'safe'验证成功率 【对应热力学图】
     # DONE:所有可选参数组合的验证情况【csv表格】
     # DONE:验证成功率最高的十种方法组合对应的时间累积图，正确率累积图【折线图】
