@@ -6,7 +6,7 @@ from pathlib import Path
 
 LIA_DIR = "./benchmarks/sygus-inv/LIA/2017.ASE_FiB"
 RESULT_DIR = "./result/"
-SCRIPT_PATH = "./scripts/syguslia2sygusbv.py"
+SCRIPT_PATH = "../syguslia2sygusbv.py"
 CVC5_BINARY = "./bin_solvers/bin/cvc5-Linux"
 TIMEOUT = 5
 
@@ -40,14 +40,3 @@ if __name__ == "__main__":
 
     print(f"Total time: {total_time}")
 
-    # for subdir, dirs, files in os.walk(LIA_DIR):
-    #     for file in files:
-    #         if file.endswith(".sl"):
-    #             input_file = os.path.join(subdir, file)
-    #             output_file = os.path.join(RESULT_DIR, file)
-    #             process_file(input_file, output_file)
-    #             result = run_cvc5(output_file)
-    #             if result:
-    #                 print(f"Results for {output_file}:\n{result}\n")
-    #             else:
-    #                 print(f"No results for {output_file} due to timeout\n")

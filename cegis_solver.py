@@ -74,10 +74,6 @@ if __name__ == "__main__":
     global g_efsmt_args
     import argparse
 
-    # demo_efsmt()
-    # solve_efsmt_file("/Users/rainoftime/Desktop/xx.smt2", "z3")
-    # exit(0)
-
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
     parser.add_argument('--smt-oracle', dest='smt_oracle', default='z3', type=str,

@@ -1,12 +1,29 @@
 
 # EFMC
 
+## 1. Introduction
 This toolkit provides a set of engines for verifying properties of programs. The engines are based on different approaches, such as template-based (constraint-based) approach, property-directed reachability (PDR), and K-induction. 
 Each engine has its own strengths and weaknesses, and can be used for different types of programs and properties. In this README, we provide a brief overview of each engine and how to use it.
 
+### 1.1 Entrance of the Verifier
+
+To verify a program specified via CHC or SyGuS 
+format (annotated with pre- and post conditions),
+you may use the following file
+~~~~
+prover.py
+~~~~
+
+### 1.2 Other Useful Files
+
+The following file can be used for solving exists-forlal problems
+over bit-vectors.
+~~~~
+cegis.py
+~~~~
 
 
-## 1. The Main Engines
+## 2. The Main Engines
 
 Currently, the users can choose three verification engiens
 - Template-based (Constraint-based) Approach
@@ -14,7 +31,7 @@ Currently, the users can choose three verification engiens
 - K-Induction
 
 
-### Template-based (Constraint-based) Approach
+### 2.1 Template-Based (Constraint-Based) Approach
 
 Related work:
 - Linear Invariant Generation using Non-linear Constarint Solving, CAV 03
@@ -38,7 +55,7 @@ python3 prover.py --engine efsmt --template bv_interval --lang chc --file benchm
           pdr (the PDR engine in Z3)
 ~~~~
 
-### Property-Directed Reachability (PDR)
+### 2.2 Property-Directed Reachability (PDR)
 
 In EFMC, we use the PDR engine inside Z3, named `Spacer`. To use it, you can run `prover.py` with the `pdr` engine. 
 
@@ -49,7 +66,7 @@ python3 prover.py --engine pdr --lang chc --file file.smt2
 ~~~~
 
 
-### K-Induction
+### 2.3 K-Induction
 
 K-induction is a powerful technique for proving safety properties of programs. It is based on the idea of proving that a property holds for the base case  and then proving that if the property holds for some state at a certain time step, it also holds for the next state.
 
@@ -60,9 +77,9 @@ Example:
 python3 prover.py --engine kind --lang chc --file file.smt2
 ~~~~
 
-## 2. Limitations and Future Work
+## 3. Limitations and Future Work
 
-### 2.1 Implementation of the Parsers
+### 3.1 Implementation of the Parsers
 
 The parsers (and the transition system) are limited and not robust
 - We assume there is only one loop, and there is one invariant (at loop header) to be generated.
@@ -73,7 +90,7 @@ The parsers (and the transition system) are limited and not robust
    - In practice, the `x!1` could be a constant
    - In some benchmarks, the primed variables could be ended with `'`
 
-### 2.2 Other Verification Engines
+### 3.2 Other Verification Engines
 
 #### Abductive Inference
 
@@ -86,7 +103,3 @@ TOOD: not implemented yet
 Currently, we have a very basic version (not used now).
 Perhaps it could be useful for Boolean programs.
 
-#### Quantifier Elimination 
-This one strictly follows the definition of strongest post-condition,
-which means we use quantifier elimination to compute the "image operation".
-But for loop, we use fixed-point iteration.
