@@ -1,14 +1,10 @@
-
 # TODO List
 
-
 Here are a few topics for further exploration.
-
 
 - Bugs and Issues
 - New Features
 - Optimizations
-
 
 ## 1. Bugs and Issues
 
@@ -25,7 +21,6 @@ Hopefully, the new version are OK.
 ### 2.1 Template-based (Constraint-based) Invariant Inference
 
 This is the original goal of the project.
-
 
 #### For Integer and Real Semantics
 

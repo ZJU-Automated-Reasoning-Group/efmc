@@ -54,6 +54,11 @@ def houdini(lemmas: [z3.ExprRef], transition: z3.ExprRef):
 
 
 def test_houdini():
+    """
+    Guess-and-check
+     - ML: SVM, DNN, Decision tree,..
+     - Grammar:
+    """
     # Test
     x = z3.Int("X")
     x_primed = z3.Int("X_p")

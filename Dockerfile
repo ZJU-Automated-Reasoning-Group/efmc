@@ -1,3 +1,6 @@
+# This file was used in the evaluation part of a paper.
+# As the development of the code, the dockerfile might be broken.
+
 # syntax=docker/dockerfile:1
 FROM ubuntu:22.04
 # docker build -t efmc:latest .
