@@ -10,7 +10,7 @@ Use quantifier elimination to compute the strongest inductive invariant?
 - The abstract transformer is strongest
 - The invariant is also?
 
-  TODO: this can be very slow; besides, it does not consider the ...
+  TODO: this can be very slow and may not terminate
 """
 
 logger = logging.getLogger(__name__)

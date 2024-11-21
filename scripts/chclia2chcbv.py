@@ -5,6 +5,7 @@ import os
 import z3
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse_sexpression
 from efmc.frontends.chc_parser import CHCParser, ground_quantifier
+from efmc.utils.z3_expr_utils import get_variables
 
 g_bitvector_width = 64
 g_bitvector_signedness = "signed"
@@ -179,9 +180,8 @@ def chclia2chcbv(tt):
 
     # 2. Second, create the quantified formula
     sol = z3.Solver()
-    from z3.z3util import get_vars
-    new_init_post_vars_list = get_vars(new_post_qf)
-    new_trans_vars_list = get_vars(new_trans_qf)
+    new_init_post_vars_list = get_variables(new_post_qf)
+    new_trans_vars_list = get_variables(new_trans_qf)
 
     sol.add(z3.ForAll(new_init_post_vars_list, new_init_qf))  # init
     sol.add(z3.ForAll(new_trans_vars_list, new_trans_qf))

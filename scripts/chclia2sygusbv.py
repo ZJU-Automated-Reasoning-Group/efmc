@@ -104,7 +104,6 @@ def chclia2sygusbv(tt):
     trans_vars = all_vars[int(len(all_vars) / 2):]
     print("init_vars = " , init_vars)
     print("trans_vars = " , trans_vars)
-    # init_vars = get_vars(init) # not good?
     # For BV
     # (declare-fun inv ((_ BitVec 8)) Bool)
     bv_inv_sig = "(synth-inv inv_fun ("

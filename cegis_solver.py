@@ -11,6 +11,7 @@ import z3
 
 from efmc.smttools.pysmt_solver import PySMTSolver
 from efmc.utils import big_and
+from efmc.utils.z3_expr_utils import get_variables
 
 logger = logging.getLogger(__name__)
 
@@ -19,8 +20,6 @@ def ground_quantifier(qexpr: z3.QuantifierRef):
     Seems this can only handle exists x . fml, or forall x.fml?
     FIXME: it seems that this can be very slow?
     """
-    from z3.z3util import get_vars
-    # get_vars can be slow
     body = qexpr.body()
     forall_vars = list()
     for i in range(qexpr.num_vars()):
@@ -31,7 +30,7 @@ def ground_quantifier(qexpr: z3.QuantifierRef):
 
     # Substitute the free variables in body with the expression in var_list.
     body = z3.substitute_vars(body, *forall_vars)
-    exists_vars = [x for x in get_vars(body) if x not in forall_vars]
+    exists_vars = [x for x in get_variables(body) if x not in forall_vars]
     return exists_vars, forall_vars, body
 
 

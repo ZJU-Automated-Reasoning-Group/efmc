@@ -3,6 +3,8 @@ from z3 import *
 from collections import defaultdict
 import argparse
 
+from efmc.utils.z3_expr_utils import get_variables
+
 TEMPLATE_BV_COUNTING = """
 #include <stdio.h>
 int mod (int a, int b)
@@ -140,8 +142,7 @@ def compile_ira_to_c_sat(formula):
     """
     TODO: finish the implementation?
     """
-    from z3.z3util import get_vars
-    input_vars = get_vars(formula)
+    input_vars = get_variables(formula)
     sig = []
     for var in input_vars:
         line = "  int {} ;".format(var)

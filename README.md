@@ -99,7 +99,4 @@ Related work:
 
 TOOD: not implemented yet
 
-#### Predicate Abstraction 
-Currently, we have a very basic version (not used now).
-Perhaps it could be useful for Boolean programs.
-
+#### LLM?

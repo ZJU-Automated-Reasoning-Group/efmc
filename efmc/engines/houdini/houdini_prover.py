@@ -4,7 +4,7 @@ Houdini algorithm for invariant inference
 Modified from https://github.com/sosy-lab/java-smt/blob/d05b4c8eeb3424be20cc1d9553eaffae81898857/src/org/sosy_lab/java_smt/example/HoudiniApp.java
 """
 import z3
-from z3.z3util import get_vars
+from efmc.utils.z3_expr_utils import get_variables
 
 
 def get_selector_var(idx: int):
@@ -18,7 +18,7 @@ def prime(exp: z3.ExprRef):
     :param exp:
     :return: a new formula
     """
-    all_vars = get_vars(exp)
+    all_vars = get_variables(exp)
     rep_map = []
     for v in all_vars:
         rep_map.append((v, z3.Int("{}_p".format(str(v)))))
