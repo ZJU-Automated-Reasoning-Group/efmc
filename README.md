@@ -1,5 +1,6 @@
 
 # EFMC
+SMT-based Software Model Checking
 
 ## 1. Introduction
 This toolkit provides a set of engines for verifying properties of programs. The engines are based on different approaches, such as template-based (constraint-based) approach, property-directed reachability (PDR), and K-induction. 
@@ -10,14 +11,16 @@ Each engine has its own strengths and weaknesses, and can be used for different 
 To verify a program specified via CHC or SyGuS 
 format (annotated with pre- and post conditions),
 you may use the following file
+
 ~~~~
 prover.py
 ~~~~
 
 ### 1.2 Other Useful Files
 
-The following file can be used for solving exists-forlal problems
+The following file can be used for solving exists-forall problems
 over bit-vectors.
+
 ~~~~
 cegis.py
 ~~~~
@@ -25,7 +28,7 @@ cegis.py
 
 ## 2. The Main Engines
 
-Currently, the users can choose three verification engiens
+Currently, the users can choose three verification engines
 - Template-based (Constraint-based) Approach
 - Property-Directed Reachability (PDR)
 - K-Induction
@@ -34,11 +37,11 @@ Currently, the users can choose three verification engiens
 ### 2.1 Template-Based (Constraint-Based) Approach
 
 Related work:
-- Linear Invariant Generation using Non-linear Constarint Solving, CAV 03
+- Linear Invariant Generation using Non-linear Constraint Solving, CAV 03
 - Constraint-Based Linear-Relations Analysis, SAS'04 
 - Non-Linear Loop Invariant Generation using Gröbner Bases, POPL'04 
-- Program analysis via constraint solving, PLDI'08 
-- Invgen: An efficient invariant generator, CAV'09 
+- Program Analysis via Constraint Solving, PLDI'08 
+- Invgen: An Efficient Invariant Generator, CAV'09 
 - SMT-Based Array Invariant Generation, VMCAI'13
 
 Currently, we do not apply Farkas' lemma, but use exists-forall SMT solving.
@@ -82,6 +85,7 @@ python3 prover.py --engine kind --lang chc --file file.smt2
 ### 3.1 Implementation of the Parsers
 
 The parsers (and the transition system) are limited and not robust
+
 - We assume there is only one loop, and there is one invariant (at loop header) to be generated.
    - No direct support for nested loops
    - No direct support for synthesizing multiple invariants at different locations of a lop
@@ -97,6 +101,11 @@ The parsers (and the transition system) are limited and not robust
 Related work:
 - Inductive Invariant Generation via Abductive Inference, OOPSLA 13
 
-TOOD: not implemented yet
+TODO: not implemented yet
 
-#### LLM?
+## Contributors
+
+Primary contributors to this project:
+- rainoftime / cutelimination
+- JasonJ2021
+- WindOctober
