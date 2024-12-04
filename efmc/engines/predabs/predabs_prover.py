@@ -6,6 +6,8 @@ This is an "old-school" version of the predicate abstraction domain.
 - Compute inductive invariant expressed in the element of the domain
 Currently we do not explore
 - Lazy abstraction, lazy abstraction with interpolation, etc...
+
+TODO: use more "advanced" CEGAR engines
 """
 
 import logging
