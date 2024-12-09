@@ -17,7 +17,7 @@ from efmc.sts import TransitionSystem
 from efmc.frontends import parse_sygus, parse_chc
 from efmc.engines.ef.ef_prover import EFProver
 from efmc.engines.pdr.pdr_prover import PDRProver
-from efmc.engines.kinduction.kinduction_prover import KInductionProver
+from efmc.engines.kinduction.kind_prover import KInductionProver
 from efmc.engines.qe import QuantifierEliminationProver
 
 from efmc.utils.global_config import g_verifier_args  # the parsed arguments

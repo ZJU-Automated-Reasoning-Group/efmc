@@ -3,14 +3,17 @@
 SMT-based Software Model Checking
 
 ## 1. Introduction
-This toolkit provides a set of engines for verifying properties of programs. The engines are based on different approaches, such as template-based (constraint-based) approach, property-directed reachability (PDR), and K-induction. 
-Each engine has its own strengths and weaknesses, and can be used for different types of programs and properties. In this README, we provide a brief overview of each engine and how to use it.
+EFMC is a toolkit for verifying program properties using SMT-based verification engines. 
+It implements multiple approaches including template-based verification, 
+property-directed reachability (PDR), and k-induction. 
+Each engine offers distinct advantages for different types of programs 
+and properties.
 
 ### 1.1 Entrance of the Verifier
 
-To verify a program specified via CHC or SyGuS 
-format (annotated with pre- and post conditions),
-you may use the following file
+The main verification interface is through prover.py, which supports programs specified in either CHC (Constrained Horn Clauses) or 
+SyGuS (Syntax-Guided Synthesis) format with pre- and 
+post-conditions.
 
 ~~~~
 prover.py
@@ -26,15 +29,16 @@ cegis.py
 ~~~~
 
 
-## 2. The Main Engines
+## 2. The Main Verification Engines
 
 Currently, the users can choose three verification engines
 - Template-based (Constraint-based) Approach
 - Property-Directed Reachability (PDR)
 - K-Induction
 
-
 ### 2.1 Template-Based (Constraint-Based) Approach
+This approach uses constraint solving to generate program 
+invariants based on predefined templates.
 
 Related work:
 - Linear Invariant Generation using Non-linear Constraint Solving, CAV 03
@@ -80,6 +84,9 @@ Example:
 python3 prover.py --engine kind --lang chc --file file.smt2
 ~~~~
 
+Related work:
+- Checking 
+
 ## 3. Limitations and Future Work
 
 ### 3.1 Implementation of the Parsers
@@ -96,12 +103,19 @@ The parsers (and the transition system) are limited and not robust
 
 ### 3.2 Other Verification Engines
 
+#### Abstract Interpretation
+
 #### Abductive Inference
 
 Related work:
 - Inductive Invariant Generation via Abductive Inference, OOPSLA 13
 
 TODO: not implemented yet
+
+#### Quantifier Instantiation
+
+Solving the quantified formulas that characterize inductive invariants
+directly (via different quantifier instantiation strategeis)
 
 ## Contributors
 

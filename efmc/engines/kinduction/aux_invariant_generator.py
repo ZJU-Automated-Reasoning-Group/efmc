@@ -3,8 +3,8 @@ Generating aux invariants for k-induction (not used for now)
 """
 import z3
 
-from efmc.sts import TransitionSystem
 from efmc.engines.ef.ef_prover import EFProver
+from efmc.sts import TransitionSystem
 
 
 class InvariantGenerator(object):

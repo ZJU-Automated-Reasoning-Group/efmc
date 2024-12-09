@@ -4,7 +4,7 @@ import z3
 
 from efmc.tests import TestCase, main
 from efmc.sts import TransitionSystem
-from efmc.engines.kinduction.kinduction_prover import KInductionProver
+from efmc.engines.kinduction.kind_prover import KInductionProver
 
 
 class TestKInductionBV(TestCase):

@@ -4,7 +4,7 @@ import z3
 
 from efmc.tests import TestCase, main
 from efmc.sts import TransitionSystem
-from efmc.engines.kinduction.kinduction_prover import KInductionProver
+from efmc.engines.kinduction.kind_prover import KInductionProver
 from efmc.tests.simple_sts import get_int_sys1, get_int_sys2, get_int_sys3, get_int_sys4, get_int_sys5, get_int_sys6
 
 

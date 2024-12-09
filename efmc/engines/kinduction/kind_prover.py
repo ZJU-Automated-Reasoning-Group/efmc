@@ -13,11 +13,12 @@ TODO:
 """
 import logging
 from functools import lru_cache
+
 import z3
+
+from efmc.engines.kinduction.aux_invariant_generator import InvariantGenerator
 # from typing import List
 from efmc.sts import TransitionSystem
-from efmc.engines.kinduction.aux_invariant_generator import InvariantGenerator
-
 from efmc.utils.z3_solver_utils import is_unsat
 
 logger = logging.getLogger(__name__)
