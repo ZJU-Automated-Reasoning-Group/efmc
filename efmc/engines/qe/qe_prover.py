@@ -1,10 +1,3 @@
-# coding: utf-8
-import time
-import logging
-import z3
-from efmc.sts import TransitionSystem
-from efmc.utils import is_valid
-
 """
 Use quantifier elimination to compute the strongest inductive invariant?
 - The abstract transformer is strongest
@@ -12,6 +5,14 @@ Use quantifier elimination to compute the strongest inductive invariant?
 
   TODO: this can be very slow and may not terminate
 """
+
+import logging
+import time
+
+import z3
+
+from efmc.sts import TransitionSystem
+from efmc.utils import is_valid
 
 logger = logging.getLogger(__name__)
 
