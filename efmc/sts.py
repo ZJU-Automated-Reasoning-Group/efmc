@@ -15,10 +15,11 @@ class TransitionSystem(object):
        1. Only one invariant
        2. Number of self.variables and self.prime_variables are the same
        3. All variables in self.variables have the same type, e.g., real/int
-      We should break 3 to support arrays
+      We should break these restrictions to support more programs.
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        # Default initialization
         self.all_variables = []  # self.variables + self.prime_variables
         self.variables = []  # x, y
         self.prime_variables = []  # x!, y!
@@ -33,6 +34,43 @@ class TransitionSystem(object):
         self.has_int = False
         self.has_real = False
         self.has_array = False
+
+        # Handle keyword arguments if provided
+        if kwargs:
+            self._init_from_kwargs(**kwargs)
+
+    def _init_from_kwargs(self, **kwargs):
+        """Initialize the transition system from keyword arguments."""
+        allowed_keys = {'variables', 'prime_variables', 'init', 'trans', 'post'}
+        for key, value in kwargs.items():
+            if key not in allowed_keys:
+                raise ValueError(f"Unexpected argument: {key}")
+            if key == 'variables':
+                self.variables = list(value)
+            elif key == 'prime_variables':
+                self.prime_variables = list(value)
+            elif key == 'init':
+                self.init = value
+            elif key == 'trans':
+                self.trans = value
+            elif key == 'post':
+                self.post = value
+
+        # Update all_variables after setting variables and prime_variables
+        self.all_variables = self.variables + self.prime_variables
+
+        sample_var = self.variables[0]
+        # print(sample_var.sort())
+        if z3.is_int(sample_var):
+            self.has_int = True
+        elif z3.is_real(sample_var):
+            self.has_real = True
+        elif z3.is_bv(sample_var):
+            self.has_bv = True
+        else:
+            raise NotImplementedError
+
+        self.initialized = True
 
     def set_signedness(self, ty: str):
         assert self.has_bv
@@ -125,37 +163,3 @@ class TransitionSystem(object):
         return "(set-logic HORN)\n" + sol.to_smt2()
 
 
-class BooleanProgram:
-    """
-    A transition system with only Boolean variables
-    E.g., "Boolean program"
-    """
-
-    def __init__(self):
-        self.all_variables = []  # self.variables + self.prime_variables
-        self.variables = []  # x, y
-        self.prime_variables = []  # x!, y!
-        self.trans = None  # formula about the relation of x, y, x!, y!
-        self.init = None  # formula about x, y
-        self.post = None  # formula about x, y
-        self.initialized = False
-
-    def __repr__(self):
-        print(self.all_variables)
-        print(self.init)
-        print(self.trans)
-        print(self.post)
-        return " "
-
-    def from_z3_cnts(self, ts: List):
-        self.all_variables, self.init, self.trans, self.post = ts[0], ts[1], ts[2], ts[3]
-        # print(self.all_variables)
-        for var in self.all_variables:
-            # print(str(var))
-            # FIXME: using name is not a good and general idea
-            if str(var).endswith('!'):
-                self.prime_variables.append(var)
-            else:
-                self.variables.append(var)
-        # print(self.variables, self.prime_variables)
-        self.initialized = True

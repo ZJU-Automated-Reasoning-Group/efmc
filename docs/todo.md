@@ -25,7 +25,6 @@ This is the original goal of the project.
 #### For Integer and Real Semantics
 
 - Add Farkas' Lemma based reduction
-- Parallel benchmarking and stats.
 
 NOTE: to perform the empirical study, we have two choices
 
@@ -55,7 +54,9 @@ Need fixing
 ### 2.3 Abduction-based Invariant Inference
 
 - Dillig's abduction algorithm
+- Other abduction algorithms
 - Dillig's abduction-based invariant inference algorithm
+- Other abduction-based invariant inference algorithms
 
 ### 2.4 Features: Frontends and Transition System
 
@@ -76,7 +77,7 @@ Perhaps we can integrate CoSA...
 
 ### Various Forms of Simplifications (Slicing, etc.)
 
-The queries from 2018.NeurIPS_Code2Inv may have many variables (e.g., 12).
+For example, the queries from 2018.NeurIPS_Code2Inv may have many variables (e.g., 12).
 However, most of them are not changed, and the final desired invariant may only need very few of them.
 Currently, the encoding used by the efsmt_solver is a bit stupid.
 

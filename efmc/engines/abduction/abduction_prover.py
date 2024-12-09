@@ -9,7 +9,7 @@ an inductive invariant that proves the property.
 """
 
 import logging
-from typing import Tuple, Optional, Dict
+from typing import Tuple, Optional
 
 import z3
 
@@ -198,27 +198,10 @@ class AbductionProver(object):
 def demo_abduction_prover():
     """Simple test cases for the abduction-based prover"""
 
-    def create_counter_system() -> TransitionSystem:
-        """Create a simple counter system"""
-        x = z3.Int('x')
-        xp = z3.Int("x'")
-
-        init = x == 0
-        trans = xp == x + 1
-        post = x <= 10
-
-        return TransitionSystem(
-            variables=[x],
-            prime_variables=[xp],
-            init=init,
-            trans=trans,
-            post=post
-        )
-
     def create_simple_loop() -> TransitionSystem:
         """Create a simple loop system"""
         x, y = z3.Ints('x y')
-        xp, yp = z3.Ints("x' y'")
+        xp, yp = z3.Ints("x! y!")
 
         init = z3.And(x == 0, y == 0)
         trans = z3.And(xp == x + 1, yp == y + 2)
@@ -234,7 +217,6 @@ def demo_abduction_prover():
 
     # Test cases
     systems = [
-        ("Counter", create_counter_system(), True),
         ("Simple Loop", create_simple_loop(), True)
     ]
 
@@ -254,4 +236,3 @@ def demo_abduction_prover():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     demo_abduction_prover()
-

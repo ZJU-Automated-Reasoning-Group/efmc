@@ -1,6 +1,6 @@
-from pysmt.smtlib.parser import SmtLibParser
 from pysmt.exceptions import SolverReturnedUnknownResultError
 from pysmt.shortcuts import Bool, get_model, Not, Solver, qelim, ForAll
+from pysmt.smtlib.parser import SmtLibParser
 
 
 # ==============================================================================

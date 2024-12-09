@@ -1,6 +1,9 @@
 """
 Houdini algorithm for invariant inference
 
+This module implements the Houdini algorithm for finding maximal inductive invariants,
+based on the paper by Flanagan and Leino: "Houdini, an Annotation Assistant for ESC/Java".
+
 Modified from https://github.com/sosy-lab/java-smt/blob/d05b4c8eeb3424be20cc1d9553eaffae81898857/src/org/sosy_lab/java_smt/example/HoudiniApp.java
 """
 import z3
@@ -18,11 +21,9 @@ def prime(exp: z3.ExprRef):
     :param exp:
     :return: a new formula
     """
-    all_vars = get_variables(exp)
-    rep_map = []
-    for v in all_vars:
-        rep_map.append((v, z3.Int("{}_p".format(str(v)))))
-    return z3.substitute(exp, rep_map)
+    variables = get_variables(exp)
+    substitutions = [(v, z3.Int(f"{v}_p")) for v in variables]
+    return z3.substitute(exp, substitutions)
 
 
 def houdini(lemmas: [z3.ExprRef], transition: z3.ExprRef):
@@ -53,7 +54,7 @@ def houdini(lemmas: [z3.ExprRef], transition: z3.ExprRef):
     return indexed
 
 
-def test_houdini():
+def demo_houdini():
     """
     Guess-and-check
      - ML: SVM, DNN, Decision tree,..
@@ -70,4 +71,4 @@ def test_houdini():
     print(result)
 
 
-test_houdini()
+demo_houdini()

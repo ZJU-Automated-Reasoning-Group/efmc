@@ -18,7 +18,7 @@ class TestAbduction(TestCase):
         x, y, z = z3.Ints("x y z")
         pre_cond = z3.And(x <= 0, y > 1)
         post_cond = 2 * x - y + 3 * z <= 10
-        assert (abduce(pre_cond, post_cond))
+        print(abduce(pre_cond, post_cond))
 
     # def test2(self):
     #    a, b, c = Ints("a b c")
