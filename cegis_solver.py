@@ -4,16 +4,24 @@ E.g. we can dump the queries from the template-based verification engine
 """
 import logging
 import time
-import z3
+from pathlib import Path
 
-# from efmc.engines.ef.efsmt.efsmt_config import \
-#    z3_exec, cvc5_exec, g_bin_solver_timeout, caqe_exec, g_efsmt_args
+import z3
 
 from efmc.smttools.pysmt_solver import PySMTSolver
 from efmc.utils import big_and
 from efmc.utils.z3_expr_utils import get_variables
 
+# from efmc.engines.ef.efsmt.efsmt_config import \
+#    z3_exec, cvc5_exec, g_bin_solver_timeout, caqe_exec, g_efsmt_args
+
 logger = logging.getLogger(__name__)
+
+
+class EFSMTSolverError(Exception):
+    """Base exception for EFSMT solver errors."""
+    pass
+
 
 def ground_quantifier(qexpr: z3.QuantifierRef):
     """
@@ -54,18 +62,21 @@ def solve_efsmt_file(file_name: str, smt_oracle: str):
      Returns:
     sol (PySMTSolver): The solution to the EFSMT problem.
     """
+    if not Path(file_name).is_file():
+        raise EFSMTSolverError(f"Input file not found: {file_name}")
+
     # Parse the SMT2 file into a Z3 formula.
     fml = big_and(z3.parse_smt2_file(file_name))
-     # Ground the quantifiers in the formula.
+    # Ground the quantifiers in the formula.
     exists_vars, forall_vars, qf_fml = ground_quantifier(fml)
-     # Start the timer.
+    # Start the timer.
     start = time.time()
-     # Create a PySMTSolver object.
+    # Create a PySMTSolver object.
     sol = PySMTSolver()
-     # Solve the EFSMT problem.
+    # Solve the EFSMT problem.
     print(sol.efsmt(evars=exists_vars, uvars=forall_vars, z3fml=qf_fml,
                     esolver_name=smt_oracle, fsolver_name=smt_oracle))
-     # Print the time taken.
+    # Print the time taken.
     print("time: ", time.time() - start)
 
 
