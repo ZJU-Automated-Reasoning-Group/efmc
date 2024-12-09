@@ -1,17 +1,18 @@
-import os
+import argparse
 import json
+import os
 import sys
 from copy import deepcopy
 from datetime import datetime
 from typing import Tuple
+
 from syncode import Syncode
 from utils import Logger
-import argparse
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 
 
-def init(model: str, grammar: str, device:str):
+def init(model: str, grammar: str, device: str):
     syncode = Syncode(
         model=model,
         mode="grammar_mask",
@@ -28,10 +29,10 @@ def init(model: str, grammar: str, device:str):
 
 
 def main(
-    llm: Syncode,
-    datasets_file: str,
-    prompt: Tuple[str, str],
-    num_samples: int = 1,
+        llm: Syncode,
+        datasets_file: str,
+        prompt: Tuple[str, str],
+        num_samples: int = 1,
 ):
     Logger.debug = True
     try:
@@ -57,9 +58,9 @@ def main(
                 benchmark_code = open(benchmark, "r").read()
                 prompt_text_template = deepcopy(prompt_text)
                 prompt = (
-                    prompt_system
-                    + "\n"
-                    + prompt_text_template.format(code=benchmark_code)
+                        prompt_system
+                        + "\n"
+                        + prompt_text_template.format(code=benchmark_code)
                 )
                 benchmark_log = {"file": benchmark, "prompt": prompt, "completions": []}
                 Logger.log_model_request(
@@ -83,7 +84,7 @@ def main(
 
 
 def parse_args(
-    args: argparse.Namespace,
+        args: argparse.Namespace,
 ) -> Tuple[str, str, str, Tuple[str, str], int]:
     parser = argparse.ArgumentParser(
         description="Run experiments using Syncode on LLMs"
@@ -92,7 +93,8 @@ def parse_args(
         "--model",
         type=str,
         default="meta-llama/CodeLlama-7b-Instruct-hf",
-        choices=["meta-llama/CodeLlama-7b-Instruct-hf", "Qwen/Qwen2.5-Coder-7B", "meta-llama/Llama-3.1-8B", "meta-llama/Llama-3.1-8B-Instruct"],
+        choices=["meta-llama/CodeLlama-7b-Instruct-hf", "Qwen/Qwen2.5-Coder-7B", "meta-llama/Llama-3.1-8B",
+                 "meta-llama/Llama-3.1-8B-Instruct"],
         help="Model to use",
     )
     parser.add_argument(
@@ -126,7 +128,7 @@ def parse_args(
         default=15,
         help="Number of samples to generate for each benchmark",
     )
-    
+
     return parser.parse_args(args)
 
 
