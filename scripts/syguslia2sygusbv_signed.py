@@ -1,12 +1,13 @@
 """
-CHC(LIA) to SYGUS(BV)
+CHC(LIA) to SYGUS(BV), unsigned
 """
 import os
-import z3
 import sys
+
+import z3
+
 sys.path.append("/efmc")
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse_sexpression
-from efmc.frontends.chc_parser import CHCParser, ground_quantifier
 
 g_bitvector_width = 32
 g_bitvector_signedness = "signed"
@@ -124,9 +125,9 @@ def syguslia2sygusbv(tt):
         bv_init_vars.append(str(var))
     # print(bv_init_vars_sig)
     # print(init)
-    bv_init_cnt = "(define-fun pre_fun ({}) Bool\n"  \
+    bv_init_cnt = "(define-fun pre_fun ({}) Bool\n" \
                   "       {})\n".format(" ".join(bv_init_vars_sig),
-                                                      ira2bv(init.sexpr()))
+                                        ira2bv(init.sexpr()))
     # print(bv_init_cnt)
     bv_fml_str += bv_init_cnt
     # print(bv_fml_str)
@@ -139,17 +140,17 @@ def syguslia2sygusbv(tt):
         bv_all_vars_sig.append("({} {})".format(str(var), z3.BitVec(str(var), g_bitvector_width).sort().sexpr()))
         bv_all_vars.append(str(var))
 
-    bv_trans_cnt = "(define-fun trans_fun ({}) Bool\n"  \
-                  "       {})\n".format(" ".join(bv_all_vars_sig),
-                                                      ira2bv(trans.sexpr()))
+    bv_trans_cnt = "(define-fun trans_fun ({}) Bool\n" \
+                   "       {})\n".format(" ".join(bv_all_vars_sig),
+                                         ira2bv(trans.sexpr()))
     # print(bv_trans_cnt)
     # print(bv_trans_cnt)
     bv_fml_str += bv_trans_cnt
 
     # Post cnt
-    bv_post_cnt = "(define-fun post_fun ({}) Bool\n"  \
+    bv_post_cnt = "(define-fun post_fun ({}) Bool\n" \
                   "       {})\n\n".format(" ".join(bv_init_vars_sig),
-                                                      ira2bv(post.sexpr()))
+                                          ira2bv(post.sexpr()))
 
     # print(bv_post_cnt)
     bv_fml_str += bv_post_cnt
@@ -182,7 +183,6 @@ def test_main():
 
 
 def process_file(filename: str, target_dir: str):
-
     print("Processing ", filename)
     try:
         with open(filename, "r") as f:

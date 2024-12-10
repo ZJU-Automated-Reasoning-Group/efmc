@@ -10,13 +10,24 @@ Here are a few topics for further exploration.
 
 + **The OMT solving engine of Z3**
 
-  Some versions of Z3's Optimize() has bugs, which affect the correctness of `symabs_prover.py`, which relies on
+Some versions of Z3's Optimize() has bugs, which affect the correctness of `symabs_prover.py`, which relies on
   `symabs/symbolic_abstraction.py` (it uses OMT of Z3)
 
 Maybe we should be able to choose self-compiled/pre-built python packages for Z3.
 Hopefully, the new version are OK.
 
 ## 2. New Features
+
+### 2.0 Frontend
+We need to frontend to improve the applicability
+
+- C to SyGuS
+- C to CHC 
+   Eldarica, Linera-Arbitrary支持
+- C to TransitionSystem
+- Btor?
+- MCMT(?)
+- Lustre
 
 ### 2.1 Template-based (Constraint-based) Invariant Inference
 

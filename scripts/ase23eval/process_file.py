@@ -6,7 +6,7 @@ from pathlib import Path
 
 LIA_DIR = "./benchmarks/sygus-inv/LIA/2017.ASE_FiB"
 RESULT_DIR = "./result/"
-SCRIPT_PATH = "../syguslia2sygusbv.py"
+SCRIPT_PATH = "../syguslia2sygusbv_signed.py"
 CVC5_BINARY = "./bin_solvers/bin/cvc5-Linux"
 TIMEOUT = 5
 
