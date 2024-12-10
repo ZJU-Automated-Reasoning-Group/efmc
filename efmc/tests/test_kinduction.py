@@ -31,9 +31,10 @@ class TestKInduction(TestCase):
         sts.from_z3_cnts([all_vars, pre, trans, post])
         pp = KInductionProver(sts)
         start = time.time()
-        pp.solve(k=20)
-        print("time: ", time.time() - start)
-        assert True
+        res = pp.solve(k=20)
+        assert(res == "safe")
+        # print("time: ", time.time() - start)
+
 
     def test_kind2(self):
         print("Running one test...")
@@ -42,9 +43,9 @@ class TestKInduction(TestCase):
         pp = KInductionProver(sts)
         pp.use_aux_invariant = False
         start = time.time()
-        pp.solve(k=20)
-        print("time: ", time.time() - start)
-        assert True
+        res= pp.solve(k=20)
+        assert(res == "unsafe")
+        # print("time: ", time.time() - start)
 
 
 if __name__ == '__main__':

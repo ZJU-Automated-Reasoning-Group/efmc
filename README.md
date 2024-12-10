@@ -36,6 +36,10 @@ Currently, the users can choose three verification engines
 - Property-Directed Reachability (PDR)
 - K-Induction
 
+
+TBD: Download (or auto build) some verifiers for comparison 
+
+
 ### 2.1 Template-Based (Constraint-Based) Approach
 This approach uses constraint solving to generate program 
 invariants based on predefined templates.
@@ -85,7 +89,8 @@ python3 prover.py --engine kind --lang chc --file file.smt2
 ~~~~
 
 Related work:
-- Checking 
+- Checking Safety Properties using Induction and a SAT-solver, FMCAD'00
+- Software Verification using K-induction, SAS'11
 
 ## 3. Limitations and Future Work
 
@@ -100,6 +105,12 @@ The parsers (and the transition system) are limited and not robust
    there primed variables end with `!`.
    - In practice, the `x!1` could be a constant
    - In some benchmarks, the primed variables could be ended with `'`
+- There is no support for arrays (e.g., ALIA)
+
+To extend the applicability, we need more frontends:
+- Frontend for C programs (for more software verification benchmarks)
+- Frontend for btor2 (for hardware model checking benchmarks)
+
 
 ### 3.2 Other Verification Engines
 
@@ -108,7 +119,7 @@ The parsers (and the transition system) are limited and not robust
 #### Abductive Inference
 
 Related work:
-- Inductive Invariant Generation via Abductive Inference, OOPSLA 13
+- Inductive Invariant Generation via Abductive Inference, OOPSLA'13
 
 TODO: not implemented yet
 
@@ -117,11 +128,7 @@ TODO: not implemented yet
 Solving the quantified formulas that characterize inductive invariants
 directly (via different quantifier instantiation strategeis)
 
-## TBD
-
-- Frontend (for C programs)
-- Download (or auto build) some verifiers for comparison 
-
+#### Auto-Active?
 
 For more topics, please refer to ``docs/todo.md``
 

@@ -24,9 +24,9 @@ class TestKInductionBV(TestCase):
         pp = KInductionProver(sts)
         pp.use_aux_invariant = True
         start = time.time()
-        pp.solve(k=20)
-        print("time: ", time.time() - start)
-        assert True
+        res = pp.solve(k=20)
+        # print("time: ", time.time() - start)
+        assert (res == "safe")
 
 
 if __name__ == '__main__':

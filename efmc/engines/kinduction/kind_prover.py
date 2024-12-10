@@ -161,6 +161,7 @@ class KInductionProver(object):
 
     def solve(self, k: int):
         """Interleaves BMC and K-Ind to verify the property."""
+
         if self.use_aux_invariant:
             # print("Generating aux invariant..")
             inv_gen = InvariantGenerator(self.sts)
@@ -181,13 +182,13 @@ class KInductionProver(object):
                 print("--> Bug found at step %d" % (b + 1))
                 # print(s.model())
                 print("unsafe")
-                return
+                return "unsafe"
 
             f_kind = self.get_k_induction(b)
             logger.debug("   [K-IND]  Checking bound %d..." % (b + 1))
             if is_unsat(f_kind):
                 print("--> The system is proved safe at {}".format((b + 1)))
                 print("safe")
-                return
+                return "safe"
         print("unknown")
-        return
+        return "unknown"
