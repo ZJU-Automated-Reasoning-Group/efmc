@@ -1,10 +1,12 @@
 """
 Standalone tool for solving EFSMT queries
 E.g. we can dump the queries from the template-based verification engine
+
+Example usage:
+    python efsmt_solver.py --file query.smt2 --smt-oracle z3 --timeout 30
 """
 import logging
 import time
-from pathlib import Path
 
 import z3
 
@@ -28,18 +30,21 @@ def ground_quantifier(qexpr: z3.QuantifierRef):
     Seems this can only handle exists x . fml, or forall x.fml?
     FIXME: it seems that this can be very slow?
     """
-    body = qexpr.body()
-    forall_vars = list()
-    for i in range(qexpr.num_vars()):
-        vi_name = qexpr.var_name(i)
-        vi_sort = qexpr.var_sort(i)
-        vi = z3.Const(vi_name, vi_sort)
-        forall_vars.append(vi)
+    try:
+        body = qexpr.body()
+        forall_vars = list()
+        for i in range(qexpr.num_vars()):
+            vi_name = qexpr.var_name(i)
+            vi_sort = qexpr.var_sort(i)
+            vi = z3.Const(vi_name, vi_sort)
+            forall_vars.append(vi)
 
-    # Substitute the free variables in body with the expression in var_list.
-    body = z3.substitute_vars(body, *forall_vars)
-    exists_vars = [x for x in get_variables(body) if x not in forall_vars]
-    return exists_vars, forall_vars, body
+        # Substitute the free variables in body with the expression in var_list.
+        body = z3.substitute_vars(body, *forall_vars)
+        exists_vars = [x for x in get_variables(body) if x not in forall_vars]
+        return exists_vars, forall_vars, body
+    except Exception as e:
+        raise EFSMTSolverError(f"Failed to ground quantifier: {str(e)}")
 
 
 def demo_efsmt():
@@ -62,32 +67,40 @@ def solve_efsmt_file(file_name: str, smt_oracle: str):
      Returns:
     sol (PySMTSolver): The solution to the EFSMT problem.
     """
-    if not Path(file_name).is_file():
-        raise EFSMTSolverError(f"Input file not found: {file_name}")
 
-    # Parse the SMT2 file into a Z3 formula.
-    fml = big_and(z3.parse_smt2_file(file_name))
-    # Ground the quantifiers in the formula.
-    exists_vars, forall_vars, qf_fml = ground_quantifier(fml)
     # Start the timer.
     start = time.time()
-    # Create a PySMTSolver object.
-    sol = PySMTSolver()
-    # Solve the EFSMT problem.
-    print(sol.efsmt(evars=exists_vars, uvars=forall_vars, z3fml=qf_fml,
-                    esolver_name=smt_oracle, fsolver_name=smt_oracle))
-    # Print the time taken.
-    print("time: ", time.time() - start)
+    try:
+        # Parse the SMT2 file into a Z3 formula.
+        fml = big_and(z3.parse_smt2_file(file_name))
+        # Ground the quantifiers in the formula.
+        exists_vars, forall_vars, qf_fml = ground_quantifier(fml)
+        # Create a PySMTSolver object
+        sol = PySMTSolver()
+        res = sol.efsmt(evars=exists_vars, uvars=forall_vars, z3fml=qf_fml,
+                        esolver_name=smt_oracle, fsolver_name=smt_oracle)
+        print(res)
+        print("time: ", time.time() - start)
+    except Exception as e:
+        return str(e)
 
 
-if __name__ == "__main__":
-    global g_efsmt_args
+def main():
     import argparse
 
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
     parser.add_argument('--smt-oracle', dest='smt_oracle', default='z3', type=str,
                         help="Specify the SMT engine used by PySMT")
-    # parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
-    g_args = parser.parse_args()
-    solve_efsmt_file(g_args.file, g_args.smt_oracle)
+    parser.add_argument('--timeout', dest='timeout', default=8, type=int, help="timeout")
+    parser.add_argument('--verbose', action='store_true',
+                        help="Enable verbose logging")
+    args = parser.parse_args()
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+
+    solve_efsmt_file(args.file, args.smt_oracle)
+
+
+if __name__ == "__main__":
+    exit(main())

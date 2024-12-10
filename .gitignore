@@ -1,5 +1,5 @@
 tmp_files/*
-!data/regressions/chc
+!data/Regression/chc_bv
 bin_solvers/*
 !bin_solvers/download.py
 !bin_solvers/download.sh

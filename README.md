@@ -117,6 +117,14 @@ TODO: not implemented yet
 Solving the quantified formulas that characterize inductive invariants
 directly (via different quantifier instantiation strategeis)
 
+## TBD
+
+- Frontend (for C programs)
+- Download (or auto build) some verifiers for comparison 
+
+
+For more topics, please refer to ``docs/todo.md``
+
 ## Contributors
 
 Primary contributors to this project:
