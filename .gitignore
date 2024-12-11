@@ -1,3 +1,4 @@
+docs/build
 tmp_files/*
 !data/Regression/chc_bv
 bin_solvers/*
