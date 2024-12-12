@@ -68,6 +68,8 @@ class TransitionSystem(object):
         elif z3.is_bv(sample_var):
             self.has_bv = True
         else:
+            # FIXME: it should be easy to handle handle
+            #  Boolean variables?
             raise NotImplementedError
 
         self.initialized = True
