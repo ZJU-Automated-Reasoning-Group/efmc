@@ -13,7 +13,7 @@ from typing import Tuple, Optional
 
 import z3
 
-from efmc.engines.abduction.abduction import qe_abduce
+from efmc.engines.abduction.abductor.abductor import qe_abduce
 from efmc.sts import TransitionSystem
 
 logger = logging.getLogger(__name__)
@@ -253,4 +253,3 @@ class AbductionProver(object):
             return True, inv
         logger.info("Verification failed. System is unsafe or invariant generation did not succeed.")
         return False, None
-

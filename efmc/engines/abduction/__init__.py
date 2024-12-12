@@ -1,1 +1,1 @@
-from .abduction import abduce
+from efmc.engines.abduction.abductor.abductor import abduce
