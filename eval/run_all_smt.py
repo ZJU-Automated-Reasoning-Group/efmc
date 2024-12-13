@@ -9,129 +9,203 @@ from multiprocessing.pool import Pool
 import signal
 from threading import Timer
 import logging
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--output', dest='output', default='~/tmp/res', type=str)
-parser.add_argument('--timeout', dest='timeout', default=30, type=int, help="timeout for each solving")
-parser.add_argument('--workers', dest='workers', default=1, type=int, help="num threads for this file")
-parser.add_argument('--dir', dest='dir', default='no', type=str)
-parser.add_argument("-v", "--verbose", help="increase output verbosity",
-                    action="store_true")
-
-args = parser.parse_args()
-
-if args.verbose:
-    logging.basicConfig(level=logging.DEBUG)
-
-m_num_process = args.workers  # thread
-out_dir = args.output
-g_timeout = args.timeout
-
-m_tools = [
-    'tool_name_a --option sth',
-    'tool_name_b --option sth',
-]
+from datetime import datetime
+from typing import Dict, List, Tuple
+import psutil
+import json
 
 
-def find_smt2(path):
-    flist = []  # path to smtlib2 files
-    for root, dirs, files in os.walk(path):
-        for fname in files:
-            if os.path.splitext(fname)[1] == '.smt2':
-                flist.append(os.path.join(root, fname))
-    return flist
+class Solver:
+    def __init__(self, name: str, command: str):
+        self.name = name
+        self.command = command
 
 
-def split_list(alist, wanted_parts=1):
-    length = len(alist)
-    return [alist[i * length // wanted_parts: (i + 1) * length // wanted_parts]
-            for i in range(wanted_parts)]
+class SolverResult:
+    def __init__(self, runtime: float, memory: float, timeout: bool, error: str = None, output: str = None):
+        self.runtime = runtime
+        self.memory = memory  # Peak memory in MB
+        self.timeout = timeout
+        self.error = error
+        self.output = output
 
 
-def terminate(process, is_timeout):
-    if process.poll() is None:
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Multi-solver SMT benchmark runner')
+    parser.add_argument('--output', dest='output', default='~/tmp/res', type=str,
+                        help='Output directory for results')
+    parser.add_argument('--timeout', dest='timeout', default=30, type=int,
+                        help='Timeout for each solving attempt (seconds)')
+    parser.add_argument('--workers', dest='workers', default=1, type=int,
+                        help='Number of parallel workers')
+    parser.add_argument('--dir', dest='dir', required=True, type=str,
+                        help='Directory containing SMT2 files')
+    parser.add_argument('--verbose', '-v', action='store_true',
+                        help='Increase output verbosity')
+    parser.add_argument('--config', type=str, default='solvers.json',
+                        help='JSON configuration file for solvers')
+    return parser.parse_args()
+
+
+def setup_logging(verbose: bool, output_dir: str):
+    log_level = logging.DEBUG if verbose else logging.INFO
+    log_file = os.path.join(output_dir, f'benchmark_{datetime.now():%Y%m%d_%H%M%S}.log')
+    logging.basicConfig(
+        level=log_level,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()
+        ]
+    )
+
+
+def load_solvers(config_file: str) -> List[Solver]:
+    try:
+        with open(config_file) as f:
+            config = json.load(f)
+        return [Solver(solver['name'], solver['command']) for solver in config['solvers']]
+    except Exception as e:
+        logging.error(f"Failed to load solver configuration: {e}")
+        sys.exit(1)
+
+
+def find_smt2(path: str) -> List[str]:
+    try:
+        return [os.path.join(root, f) for root, _, files in os.walk(path)
+                for f in files if f.endswith('.smt2')]
+    except Exception as e:
+        logging.error(f"Error while searching for SMT2 files: {e}")
+        return []
+
+
+def get_process_memory(process) -> float:
+    try:
+        process = psutil.Process(process.pid)
+        return process.memory_info().rss / 1024 / 1024  # Convert to MB
+    except:
+        return 0.0
+
+
+def run_solver(solver: Solver, input_file: str, timeout: int) -> SolverResult:
+    cmd = solver.command.split() + ['--file', input_file]
+    is_timeout = False
+    start_time = time.time()
+    try:
+        process = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            preexec_fn=os.setsid
+        )
+
+        timer = Timer(timeout, lambda p: os.killpg(p.pid, signal.SIGTERM), [process])
+        timer.start()
+
         try:
-            process.terminate()
-            # os.system("kill -9 " + str(process.pid)) # is this OK?
-            is_timeout[0] = True
-        except Exception as e:
-            print("error for interrupting")
-            print(e)
+            stdout, stderr = process.communicate(timeout=timeout)
+            peak_memory = get_process_memory(process)
+            output = stdout.decode('utf-8')
+            error = stderr.decode('utf-8') if stderr else None
+        except subprocess.TimeoutExpired:
+            is_timeout = True
+            os.killpg(process.pid, signal.SIGTERM)
+            process.kill()
+            output = "TIMEOUT"
+            error = "Solver exceeded time limit"
+            peak_memory = get_process_memory(process)
+        finally:
+            timer.cancel()
+
+        runtime = time.time() - start_time
+        return SolverResult(runtime, peak_memory, is_timeout, error, output)
+
+    except Exception as e:
+        logging.error(f"Error running solver {solver.name} on {input_file}: {e}")
+        return SolverResult(0.0, 0.0, False, str(e))
 
 
-def solve_formulas(flist):
+def solve_formulas(args: Tuple[List[str], List[Solver], int]) -> Dict:
+    files, solvers, timeout = args
     results = {}
-    for tmp_file in flist:
-        try:
-            m_res = []
-            for _ in m_tools:
-                m_res.append(-1)
-
-            for k in range(len(m_tools)):
-                tool = m_tools[k]
-                cmd_tool = []
-                for cc in tool.split(' '):
-                    cmd_tool.append(cc)
-                cmd_tool.append('--file')
-                cmd_tool.append(tmp_file)
-
-                logging.debug(cmd_tool)
-                # TODO: calculate the time
-                start_time = time.time()
-
-                ptool = subprocess.Popen(cmd_tool, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                is_timeout = [False]
-                # Give the process more time to kill the binary solvers?
-                timertool = Timer(g_timeout + 3, terminate, args=[ptool, is_timeout])
-                timertool.start()
-                out_tool = ptool.stdout.readlines()
-                out_tool = ' '.join([str(element.decode('UTF-8')) for element in out_tool])
-
-                logging.debug(out_tool)
-                ptool.stdout.close()
-                timertool.cancel()
-
-                end_time = time.time()
-                runtime = end_time - start_time
-                # if is_timeout[0] == True:
-                m_res[k] = runtime
-
-            results[tmp_file] = m_res
-        except Exception as e:
-            print(e)
-    print("one worker finished!")
+    for input_file in files:
+        file_results = {}
+        for solver in solvers:
+            logging.debug(f"Running {solver.name} on {input_file}")
+            result = run_solver(solver, input_file, timeout)
+            file_results[solver.name] = result
+        results[input_file] = file_results
     return results
 
 
-tp = Pool(m_num_process)
+def write_results(results: List[Dict], output_dir: str, solvers: List[Solver]):
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_file = os.path.join(output_dir, f'results_{timestamp}.csv')
 
+    headers = ['File'] + [f'{s.name}_time,{s.name}_memory,{s.name}_timeout,{s.name}_error'
+                          for s in solvers]
 
-def signal_handler(sig, frame):
-    tp.terminate()
-    print("We are finish here, have a good day!")
-    os.system('pkill -9 python')
-    os.system('pkill -9 python3')
-    sys.exit(0)
+    with open(output_file, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(headers)
 
+        for result_dict in results:
+            for input_file, solver_results in result_dict.items():
+                row = [input_file]
+                for solver in solvers:
+                    result = solver_results.get(solver.name)
+                    if result:
+                        row.extend([
+                            f"{result.runtime:.2f}",
+                            f"{result.memory:.2f}",
+                            str(result.timeout),
+                            result.error or ''
+                        ])
+                writer.writerow(row)
 
-signal.signal(signal.SIGINT, signal_handler)
+    logging.info(f"Results written to {output_file}")
 
 
 def main():
-    flist = find_smt2(args.dir)
-    print("Num Files: ", len(flist))
-    all_results = []
-    files = split_list(flist, m_num_process)
-    for i in range(0, m_num_process):
-        result = tp.apply_async(solve_formulas, args=(files[i],))
-        all_results.append(result)
-    tp.close()
-    tp.join()
-    final_res = []
-    for result in all_results:
-        final_res.append(result.get())
+    args = parse_arguments()
 
-    # TODO: write results to CSV
+    # Create output directory
+    os.makedirs(args.output, exist_ok=True)
+
+    # Setup logging
+    setup_logging(args.verbose, args.output)
+
+    # Load solver configurations
+    solvers = load_solvers(args.config)
+    logging.info(f"Loaded {len(solvers)} solvers")
+
+    # Find SMT2 files
+    files = find_smt2(args.dir)
+    logging.info(f"Found {len(files)} SMT2 files")
+
+    # Split files for parallel processing
+    chunks = [files[i::args.workers] for i in range(args.workers)]
+
+    # Create process pool
+    with Pool(args.workers) as pool:
+        try:
+            results = pool.map(solve_formulas,
+                               [(chunk, solvers, args.timeout) for chunk in chunks])
+
+            # Write results
+            write_results(results, args.output, solvers)
+
+        except KeyboardInterrupt:
+            pool.terminate()
+            logging.info("Benchmark interrupted by user")
+            sys.exit(1)
+        except Exception as e:
+            logging.error(f"Error during benchmark execution: {e}")
+            pool.terminate()
+            sys.exit(1)
+        finally:
+            pool.close()
+            pool.join()
 
 
 if __name__ == "__main__":
