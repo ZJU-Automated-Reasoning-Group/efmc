@@ -238,7 +238,7 @@ class EFProver:
         else:
             raise NotImplementedError
 
-    def solve(self) -> bool:
+    def solve(self):
         """The interface for calling different engines"""
         print("Start solving: ")
         print("Used template: {}".format(str(self.ct.template_type)))

@@ -127,7 +127,7 @@ class AbductionProver(object):
 
         Checks:
             1. init → inv        (Initiation)
-            2. inv ∧ T → inv'   (Inductiveness)
+            2. inv ∧ T → inv'    (Inductiveness)
             3. inv → post        (Safety)
 
         Returns:

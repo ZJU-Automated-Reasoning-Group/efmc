@@ -1,10 +1,11 @@
 # coding: utf-8
 import logging
+
 import z3
 
-from efmc.tests import TestCase, main
 from efmc.engines.ef.ef_prover import EFProver
 from efmc.sts import TransitionSystem
+from efmc.tests import TestCase, main
 
 
 class TestBitVecOctagonTemplate(TestCase):
@@ -30,10 +31,9 @@ class TestBitVecOctagonTemplate(TestCase):
         ef_prover.set_template("bv_octagon")
         ef_prover.set_solver("z3api")  # Use z3's Python API
         # ef_prover.set_solver("cvc5")
-        ef_prover.solve()
+        # ef_prover.solve()
+        assert "sat" == ef_prover.solve()
         # print(sts.to_chc_str())
-
-
 
 
 if __name__ == '__main__':

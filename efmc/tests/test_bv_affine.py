@@ -30,7 +30,7 @@ class TestBitVecAffineTemplate(TestCase):
         ef_prover.set_template("power_bv_affine", num_disjunctions=2)
         ef_prover.set_solver("z3api")  # Use z3's Python API
         # ef_prover.set_solver("cvc5")
-        ef_prover.solve()
+        assert ("unsat" == ef_prover.solve())
 
 
 if __name__ == '__main__':

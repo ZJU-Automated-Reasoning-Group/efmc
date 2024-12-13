@@ -31,9 +31,9 @@ class TestBitVecZoneTemplate(TestCase):
         ef_prover.set_template("bv_zone")
         ef_prover.set_solver("z3api")  # Use z3's Python API
         # ef_prover.set_solver("cvc5")
-        # ef_prover.generate_vc()
+        # vc = ef_prover.generate_vc()
         # print(vc)
-        ef_prover.solve()
+        xx= ef_prover.solve()
         # print(sts.to_chc_str())
 
 

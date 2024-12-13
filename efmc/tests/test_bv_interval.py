@@ -34,7 +34,7 @@ class TestBitVecIntervalTemplate(TestCase):
         # vc = ef_prover.generate_vc()
         # print(vc)
         res = ef_prover.solve()
-        print(res)
+        assert res == "sat"
         # print(sts.to_chc_str())
 
 

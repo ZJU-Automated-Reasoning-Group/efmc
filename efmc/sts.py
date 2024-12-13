@@ -34,6 +34,7 @@ class TransitionSystem(object):
         self.has_int = False
         self.has_real = False
         self.has_array = False
+        self.has_bool = False
 
         # Handle keyword arguments if provided
         if kwargs:
@@ -67,6 +68,8 @@ class TransitionSystem(object):
             self.has_real = True
         elif z3.is_bv(sample_var):
             self.has_bv = True
+        elif z3.is_bool(sample_var):
+            self.has_bool = True
         else:
             # FIXME: it should be easy to handle handle
             #  Boolean variables?
@@ -101,14 +104,14 @@ class TransitionSystem(object):
         for var in self.all_variables:
             # print(str(var))
             # FIXME: using name is not a good and general idea
-            if str(var).endswith('!'):
+            if str(var).endswith("!") or str(var).endswith("'"):
                 self.prime_variables.append(var)
             else:
                 self.variables.append(var)
         # print(self.variables, self.prime_variables)
 
         # FIXME: currently, we assume that each variable has the same type
-        #  However, we may want to support sys that has different types of variables.
+        #  However, we may want to support sts that has different types of variables.
         sample_var = self.variables[0]
         # print(sample_var.sort())
         if z3.is_int(sample_var):
@@ -125,7 +128,7 @@ class TransitionSystem(object):
 
     def analyze_and_simplify(self):
         """Simplify the problem?"""
-        self.trans = ctx_simplify(self.trans)
+        self.trans = ctx_simplify(self.trans)  # ctx_simplify can be slow
 
     def to_chc_constraints(self) -> z3.ExprRef:
         if self.has_array:
@@ -141,6 +144,8 @@ class TransitionSystem(object):
         elif self.has_bv:
             bv_size = self.variables[0].sort().size()
             for _ in range(len(self.variables)): inv_sig += "z3.BitVecSort({}), ".format(str(bv_size))
+        elif self.has_bool:
+            for _ in range(len(self.variables)): inv_sig += "z3.BoolSort(), "
         else:
             raise NotImplementedError
 
@@ -163,5 +168,3 @@ class TransitionSystem(object):
         sol = z3.Solver()
         sol.add(self.to_chc_constraints())
         return "(set-logic HORN)\n" + sol.to_smt2()
-
-

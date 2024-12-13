@@ -5,6 +5,7 @@ import z3
 from efmc.tests import TestCase, main
 from efmc.sts import TransitionSystem
 from efmc.engines.kinduction.kind_prover import KInductionProver
+from efmc.engines.kinduction.kind_prover_inc import KInductionProverInc  # to test the incremental one
 from efmc.tests.simple_sts import get_int_sys1, get_int_sys2, get_int_sys3, get_int_sys4, get_int_sys5, get_int_sys6
 
 
@@ -30,7 +31,7 @@ class TestKInduction(TestCase):
         sts = TransitionSystem()
         sts.from_z3_cnts([all_vars, pre, trans, post])
         pp = KInductionProver(sts)
-        start = time.time()
+        # start = time.time()
         res = pp.solve(k=20)
         assert(res == "safe")
         # print("time: ", time.time() - start)
@@ -42,7 +43,7 @@ class TestKInduction(TestCase):
         sts.from_z3_cnts(get_int_sys2())
         pp = KInductionProver(sts)
         pp.use_aux_invariant = False
-        start = time.time()
+        # start = time.time()
         res= pp.solve(k=20)
         assert(res == "unsafe")
         # print("time: ", time.time() - start)

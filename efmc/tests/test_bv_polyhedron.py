@@ -1,10 +1,11 @@
 # coding: utf-8
 import logging
+
 import z3
 
-from efmc.tests import TestCase, main
 from efmc.engines.ef.ef_prover import EFProver
 from efmc.sts import TransitionSystem
+from efmc.tests import TestCase, main
 
 
 class TestBitVecPolyhedronTemplate(TestCase):
@@ -30,7 +31,7 @@ class TestBitVecPolyhedronTemplate(TestCase):
         ef_prover.set_template("power_bv_poly", num_disjunctions=2)
         ef_prover.set_solver("z3api")  # Use z3's Python API
         # ef_prover.set_solver("cvc5")
-        ef_prover.solve()
+        assert "unsat" == ef_prover.solve()
 
 
 if __name__ == '__main__':

@@ -3,15 +3,27 @@ Parser for SyGuS files based on a simple S-expression parser
 
 NOTE: I only this file for inputs in the style of the SyGuS invariant track. It could be used for SyGuS(PBE)
 To keep this file independent, I do not important other files in this project.
+
+This parser handles:
+- S-expression parsing
+- Grammar extraction
+- Transition system conversion
+- Support for multiple data types (Int, Real, Array, BitVec)
 """
 import z3
+from typing import Union, List, Tuple, Set, Dict, Optional
 
-# Being explicit about Types
+
+# Type definitions
 Symbol = str
-Number = (int, float)
-Atom = (Symbol, Number)
-List = list
-Expr = (Atom, List)
+Number = Union[int, float]
+Atom = Union[Symbol, Number]
+Expr = Union[Atom, List]
+
+
+class SyGuSParsingError(Exception):
+    """Custom exception for SyGuS parsing errors"""
+    pass
 
 
 def input_to_list(string: str) -> [str]:
@@ -36,6 +48,7 @@ def input_to_list(string: str) -> [str]:
 
 def tokenize(chars: str) -> list:
     """Convert a string of characters into a list of tokens."""
+
     return chars.replace('(', ' ( ').replace(')', ' ) ').replace('" "', 'space').split()
 
 
@@ -52,7 +65,7 @@ def read_from_tokens(tokens: list) -> Expr:
     token = tokens.pop(0)
     if token == '(':
         L = []
-        while tokens[0] != ')':
+        while tokens and tokens[0] != ')':
             L.append(read_from_tokens(tokens))
         tokens.pop(0)  # pop off ')'
         return L
@@ -127,6 +140,7 @@ def get_grammar(lines: [str]):
             nonterminals = get_nonterminals(s)
             terminals, productions = get_terms_prods(s)
             return nonterminals, terminals, productions, start_sym
+    raise ValueError("No 'synth-fun' command found in the input.")
 
 
 pre_func_names = ["pre_fun", "PreF", "pre-f"]
@@ -135,6 +149,9 @@ post_func_names = ["post_fun", "PostF", "post-f"]
 
 
 class SyGusInVParser:
+    """
+    Parser for SyGuS Invariant Track problems.
+    """
 
     def __init__(self, inputs: str, to_real: bool):
         # print("to real? ", to_real)
@@ -199,8 +216,10 @@ class SyGusInVParser:
         # print(self.post_fun_body)
 
     def process_func(self, slist):
+        """Process a 'define-fun' command to extract function bodies and variables.
+        """
         # print(slist)
-        assert len(slist) >= 5
+        assert len(slist) >= 5 # why?
         func_name = slist[1]
         if func_name in pre_func_names:
             self.pre_fun_body = self.to_sexpr(slist[4])
@@ -293,7 +312,7 @@ class SyGusInVParser:
         return all_vars, init, trans, post
 
 
-def test_parser():
+def demo_parser():
     tt = [
         ";\n",
         "(set-logic LIA)",
@@ -329,11 +348,11 @@ def test_parser():
     (check-synth)
             """
     # ss = SyGusInVParser("\n".join(tt_arr), to_real=False)
-    ss = SyGusInVParser(alia, to_real=False)
+    ss = SyGusInVParser(tt, to_real=False)
     all_vars, init, trans, post = ss.get_transition_system()
     print(init, "\n", trans, "\n", post)
     # print(input_to_list(tttt))
 
 
 if __name__ == '__main__':
-    test_parser()
+    demo_parser()
