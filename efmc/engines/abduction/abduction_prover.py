@@ -19,9 +19,63 @@ from efmc.sts import TransitionSystem
 logger = logging.getLogger(__name__)
 
 
+def check_entailment(expr1: z3.ExprRef, expr2: z3.ExprRef, timeout=10000) -> bool:
+    """
+    Check if expr1 entails expr2 using Z3 solver.
+
+    Args:
+        expr1 (z3.ExprRef): The expression that is assumed to hold.
+        expr2 (z3.ExprRef): The expression that is to be entailed by expr1.
+        timeout (int): Solver timeout in milliseconds.
+
+    Returns:
+        bool: True if expr1 entails expr2, False otherwise.
+    """
+    s = z3.Solver()
+    # s.set("timeout", timeout)
+    entailment_check = z3.And(expr1, z3.Not(expr2))
+    s.add(entailment_check)
+    result = s.check()
+    if result == z3.unsat:
+        return True
+    elif result == z3.sat:
+        return False
+    else:
+        logger.warning("Solver returned unknown for equivalence check.")
+        return False
+
+
+def are_expressions_equivalent(expr1: z3.ExprRef, expr2: z3.ExprRef, timeout=10000) -> bool:
+    """
+    Check if two Z3 expressions are logically equivalent.
+
+    Args:
+        expr1 (z3.ExprRef): First expression.
+        expr2 (z3.ExprRef): Second expression.
+        timeout (int): Solver timeout in milliseconds.
+
+    Returns:
+        bool: True if expressions are equivalent, False otherwise.
+    """
+    s = z3.Solver()
+    s.set("timeout", timeout)
+    # Check if (expr1 AND NOT expr2) OR (NOT expr1 AND expr2) is UNSAT
+    equivalence_check = z3.Or(z3.And(expr1, z3.Not(expr2)),
+                              z3.And(expr2, z3.Not(expr1)))
+    s.add(equivalence_check)
+    result = s.check()
+    if result == z3.unsat:
+        return True
+    elif result == z3.sat:
+        return False
+    else:
+        logger.warning("Solver returned unknown for equivalence check.")
+        return False
+
+
 class AbductionProver(object):
 
-    def __init__(self, system: TransitionSystem):
+    def __init__(self, system: TransitionSystem, timeout: int = 10000, max_iterations: int = 300):
         """
         Initialize the AbductionProver with a given transition system.
 
@@ -35,11 +89,13 @@ class AbductionProver(object):
             var_map_rev: Maps next state variables to current state variables [(x'
         """
         self.sts = system
-        self.var_map = []
-        self.var_map_rev = []
-        for i in range(len(self.sts.variables)):
-            self.var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
-            self.var_map_rev.append((self.sts.prime_variables[i], self.sts.variables[i]))
+        self.var_map = list(zip(self.sts.variables, self.sts.prime_variables))
+        self.var_map_rev = list(zip(self.sts.prime_variables, self.sts.variables))
+        # self.var_map = []
+        # self.var_map_rev = []
+        #for i in range(len(self.sts.variables)):
+        #    self.var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
+        #    self.var_map_rev.append((self.sts.prime_variables[i], self.sts.variables[i]))
 
     def check_inductiveness(self, inv: z3.ExprRef) -> Tuple[bool, Optional[z3.ModelRef]]:
         """
@@ -67,9 +123,14 @@ class AbductionProver(object):
         s.add(self.sts.trans)
         s.add(z3.Not(inv_prime))
 
-        if s.check() == z3.sat:
+        result = s.check()
+        if result == z3.unsat:
+            return True, None
+        elif result == z3.sat:
             return False, s.model()
-        return True, None
+        else:
+            logger.warning("Solver returned unknown for inductiveness check.")
+            return False, None
 
     def strengthen_from_cti(self, inv: z3.ExprRef, cti: z3.ModelRef) -> z3.ExprRef:
         """
@@ -104,11 +165,18 @@ class AbductionProver(object):
         pre_cond = z3.And(inv, pre_state)
         post_cond = z3.substitute(inv, self.var_map_rev)
 
-        # Use abduction to find ψ such that:
-        # inv ∧ ψ → inv'
-        # where ψ eliminates the CTI
+        # Incorporate the transition relati on to ensure strengthening considers transitions
+        # FIXME: should we do this?...
+        combined_pre_cond = z3.And(pre_cond, self.sts.trans)
 
-        strengthening = qe_abduce(pre_cond, post_cond)
+        # Use abduction to find ψ such that:
+        # combined_pre_cond ∧ ψ → post_cond
+
+        # FIXME: should this function take sts.trans into consideration
+
+        strengthening = qe_abduce(combined_pre_cond, post_cond)
+        # print("stren ", strengthening)
+        # logger.debug("Strengthening condition from abduction: {}".format(strengthening))
         if strengthening is None:
             # If abduction fails, exclude just the CTI point
             strengthening = z3.Not(pre_state)
@@ -158,33 +226,6 @@ class AbductionProver(object):
 
         return True, None
 
-    def are_expressions_equivalent(self, expr1: z3.ExprRef, expr2: z3.ExprRef, timeout=10000) -> bool:
-        """
-        Check if two Z3 expressions are logically equivalent.
-
-        Args:
-            expr1 (z3.ExprRef): First expression.
-            expr2 (z3.ExprRef): Second expression.
-            timeout (int): Solver timeout in milliseconds.
-
-        Returns:
-            bool: True if expressions are equivalent, False otherwise.
-        """
-        s = z3.Solver()
-        s.set("timeout", timeout)
-        # Check if (expr1 AND NOT expr2) OR (NOT expr1 AND expr2) is UNSAT
-        equivalence_check = z3.Or(z3.And(expr1, z3.Not(expr2)),
-                                  z3.And(z3.Not(expr1), expr2))
-        s.add(equivalence_check)
-        result = s.check()
-        if result == z3.unsat:
-            return True
-        elif result == z3.sat:
-            return False
-        else:
-            logger.warning("Solver returned unknown for equivalence check.")
-            return False
-
     def invgen(self) -> Optional[z3.ExprRef]:
         """
         Generate an inductive invariant using abduction-based refinement.
@@ -200,7 +241,7 @@ class AbductionProver(object):
             Inductive invariant formula if found, None otherwise
         """
         inv = self.sts.post
-        max_iterations = 100  # Prevent infinite loops
+        max_iterations = 300  # Prevent infinite loops
         iteration = 0
 
         logger.info("Starting invariant generation...")
@@ -227,8 +268,8 @@ class AbductionProver(object):
             new_inv = self.strengthen_from_cti(inv, cti)
 
             # Check if the invariant has been strengthened meaningfully
-            # Use Z3's equivalence check instead of Python's '=='
-            if self.are_expressions_equivalent(new_inv, inv):
+            if are_expressions_equivalent(new_inv, inv):
+                # if not check_entailment(new_inv, inv):
                 logger.warning("Failed to strengthen invariant; no progress made.")
                 return None
 
@@ -238,7 +279,7 @@ class AbductionProver(object):
         logger.warning("Max iterations reached")
         return None
 
-    def verify(self) -> Tuple[bool, Optional[z3.ExprRef]]:
+    def solve(self) -> Tuple[bool, Optional[z3.ExprRef]]:
         """
         Verify the system using abductive invariant generation.
 

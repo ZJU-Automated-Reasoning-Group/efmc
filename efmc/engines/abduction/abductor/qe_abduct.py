@@ -24,6 +24,7 @@ def qe_abduce(pre_cond: z3.BoolRef, post_cond: z3.BoolRef) -> Optional[z3.ExprRe
         Returns formula over z (vars in post but not in pre)
     """
     try:
+        # print(pre_cond, post_cond)
         aux_fml = z3.Implies(pre_cond, post_cond)
 
         # Variables to keep: those in post but not in pre

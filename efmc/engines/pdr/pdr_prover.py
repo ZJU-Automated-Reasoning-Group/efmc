@@ -19,7 +19,7 @@ class PDRProver:
     def __init__(self, system: TransitionSystem):
         self.sts = system
 
-    def solve(self):
+    def solve(self) -> str:
         """From transition system to CHC"""
         assert self.sts.initialized
 
@@ -58,10 +58,12 @@ class PDRProver:
             print("PDR time: ", time.time() - start)
             print("safe")
             print("Invariant: ", s.model().eval(inv(self.sts.variables)))
+            return "safe"
         elif res == z3.unsat:
             print("PDR time: ", time.time() - start)
             print("unsafe")
+            return "unsafe"
         else:
             print("PDR error")
             print("unknown")
-        print("")
+            return "unknown"

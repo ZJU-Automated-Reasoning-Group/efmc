@@ -175,7 +175,7 @@ def demo_abduction_prover():
         print("K induction result: ", kind_res)
 
         prover = AbductionProver(system)
-        safe, inv = prover.verify()
+        safe, inv = prover.solve()
 
         print(f"System is {'safe' if safe else 'unsafe'}")
         print(f"Expected: {'safe' if expected_safe else 'unsafe'}")

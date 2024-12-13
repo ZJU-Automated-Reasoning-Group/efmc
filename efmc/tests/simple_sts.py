@@ -33,7 +33,9 @@ def get_int_sys2():
 
 
 def get_int_sys3():
-    """ Simple loop: Same as above, but loop bound is symbolic(k) instead of 10."""
+    """ Simple loop: Same as above, but loop bound is symbolic(k) instead of 10.
+    Label: buggy
+    """
     x, l, k, _p_x, _p_l, _p_k = z3.Reals('x l k x! l! k!')
     init = z3.And(x == 0, l == 0, k >= 0)  # Doesn't work for init = z3.And(x==0,l==0) since k can be negative.
     trans = z3.And(_p_k == k, z3.Or(
