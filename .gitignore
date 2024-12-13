@@ -59,7 +59,7 @@ temp.h
 # *.pdf
 
 *.csv
-test*
+# test*
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
