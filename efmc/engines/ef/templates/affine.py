@@ -1,8 +1,8 @@
 """Affine domain over integer or real variables
+# FIXME: it seems that this file is not implemented yet
 """
 import logging
-import z3
-from efmc.engines.ef.templates.abstract_template import TemplateType, Template
+from efmc.engines.ef.templates.abstract_template import *
 from efmc.sts import TransitionSystem
 from efmc.utils import big_and, big_or
 

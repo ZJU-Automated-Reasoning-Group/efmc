@@ -1,8 +1,8 @@
 """Octagon template over integer or real variables
 """
 import logging
-import z3
-from efmc.engines.ef.templates.abstract_template import TemplateType, Template
+
+from efmc.engines.ef.templates.abstract_template import *
 from efmc.sts import TransitionSystem
 
 logger = logging.getLogger(__name__)

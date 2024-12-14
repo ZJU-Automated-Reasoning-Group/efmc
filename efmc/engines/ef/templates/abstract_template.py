@@ -27,6 +27,7 @@ class TemplateType(Enum):
     BV_DISJUNCTIVE_OCTAGON = 20
     BV_DISJUNCTIVE_AFFINE = 21
     BV_DISJUNCTIVE_POLYHEDRON = 22
+    BV_BITWISE = 23
 
 
 class Template(object):

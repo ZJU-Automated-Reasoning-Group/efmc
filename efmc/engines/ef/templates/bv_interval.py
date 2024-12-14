@@ -1,10 +1,9 @@
 """Interval template over bit-vector variables
 """
-import z3
 
-from efmc.sts import TransitionSystem
-from efmc.engines.ef.templates.abstract_template import TemplateType, Template
+from efmc.engines.ef.templates.abstract_template import *
 from efmc.engines.ef.templates.bv_utils import Signedness
+from efmc.sts import TransitionSystem
 from efmc.utils import big_and
 
 

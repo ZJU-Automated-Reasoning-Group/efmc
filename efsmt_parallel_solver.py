@@ -24,11 +24,11 @@ from pysmt.logics import *
 from pysmt.shortcuts import (And, Bool, Not, Solver, Symbol, get_model, NotEquals)
 from pysmt.smtlib.parser import SmtLibParser
 from pysmt.typing import BVType
+from pysmt.fnode import FNode
 
 logger = logging.getLogger(__name__)
 
 bitvec_width = 32
-
 vcc_test = False
 
 

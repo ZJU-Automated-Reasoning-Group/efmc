@@ -5,21 +5,19 @@ This file is the default external interface for calling different engines inside
 import logging
 import os
 import signal
-import sys
-import psutil
 import subprocess
+import sys
 from threading import Timer
-import time
-import signal
-from multiprocessing import Process, cpu_count, Queue,Manager,Lock
 from typing import List
-from efmc.sts import TransitionSystem
-from efmc.frontends import parse_sygus, parse_chc
-from efmc.engines.ef.ef_prover import EFProver
-from efmc.engines.pdr.pdr_prover import PDRProver
-from efmc.engines.kinduction.kind_prover import KInductionProver
-from efmc.engines.qe import QuantifierEliminationProver
 
+import psutil
+
+from efmc.engines.ef.ef_prover import EFProver
+from efmc.engines.kinduction.kind_prover import KInductionProver
+from efmc.engines.pdr.pdr_prover import PDRProver
+from efmc.engines.qe import QuantifierEliminationProver
+from efmc.frontends import parse_sygus, parse_chc
+from efmc.sts import TransitionSystem
 from efmc.utils.global_config import g_verifier_args  # the parsed arguments
 
 logger = logging.getLogger(__name__)
@@ -38,14 +36,19 @@ g_bv_templates = ["bv_interval", "power_bv_interval",
 
 # "bv_affine", "power_bv_affine"
 
-def signal_handler(sig, frame):
-    """The signal_handler function handles signals sent to the process.
-    """
-    print("handling signals")
-    parent = psutil.Process(os.getpid())
-    for child in parent.children(recursive=True):
-        child.kill()
-    sys.exit(0)
+def setup_signal_handlers():
+    """Configure signal handlers for graceful termination."""
+
+    def handler(sig, frame):
+        logger.info("Handling termination signal")
+        parent = psutil.Process(os.getpid())
+        for child in parent.children(recursive=True):
+            child.kill()
+        sys.exit(0)
+
+    for sig in [signal.SIGINT, signal.SIGQUIT, signal.SIGABRT, signal.SIGTERM]:
+        signal.signal(sig, handler)
+
 
 def terminate(process: subprocess.Popen, is_timeout: List[bool]):
     if process.poll() is None:
@@ -58,16 +61,16 @@ def terminate(process: subprocess.Popen, is_timeout: List[bool]):
             print(es)
             pass
 
+
 def solve_with_bin_solver(cmd: List[str], timeout=3600) -> str:
     """ cmd should be a complete cmd"""
     is_timeout = [False]
 
-    p = subprocess.Popen(cmd ,stderr=subprocess.STDOUT)
+    p = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
     timer = Timer(timeout, terminate, args=[p, is_timeout])
     timer.start()
     p.wait()
     timer.cancel()
-
 
 
 def solve_with_qe(sts: TransitionSystem):
@@ -119,7 +122,8 @@ def solve_with_ef(sts: TransitionSystem):
             exit(0)
     else:
         ef_prover = EFProver(sts, prop_strengthen=g_verifier_args.prop_strengthen,
-                             validate_invariant=g_verifier_args.validate_invariant,pysmt_solver=g_verifier_args.pysmt_solver )
+                             validate_invariant=g_verifier_args.validate_invariant,
+                             pysmt_solver=g_verifier_args.pysmt_solver)
         if g_verifier_args.template in g_int_real_templates:
             ef_prover.set_template(g_verifier_args.template, num_disjunctions=g_verifier_args.num_disjunctions)
             # the default one is "z3api"
@@ -148,10 +152,10 @@ def solve_chc_file(file_name: str, prover="efsmt"):
     """
     # global g_verifier_args
     if prover == "eld":
-        cmd = ["./bin_solvers/bin/eld" , file_name]
+        cmd = ["./bin_solvers/bin/eld", file_name]
         solve_with_bin_solver(cmd, g_verifier_args.timeout)
         return
-    
+
     all_vars, init, trans, post = parse_chc(file_name, to_real_type=False)
     print("Finish parsing CHC file")
     sts = TransitionSystem()
@@ -189,7 +193,7 @@ def solve_sygus_file(filename: str, prover="all"):
     #   I cast integer variables to reals (this can be bad?) when parsing.
     #   A better idea is to transform the transition system after the parsing
     if prover == "cvc5sys":
-        cmd = ["./bin_solvers/bin/cvc5-Linux" , filename]
+        cmd = ["./bin_solvers/bin/cvc5-Linux", filename]
         solve_with_bin_solver(cmd, g_verifier_args.timeout)
         return
     all_vars, init, trans, post = parse_sygus(filename, to_real_type=False)
@@ -223,10 +227,7 @@ if __name__ == "__main__":
     global g_verifier_args
     import argparse
 
-    signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGQUIT, signal_handler)
-    signal.signal(signal.SIGABRT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+    setup_signal_handlers()
 
     # dir_path = os.path.dirname(os.path.realpath(__file__))
     # fib_04.sl needs disjunctive?
@@ -234,7 +235,6 @@ if __name__ == "__main__":
     # solve_chc_file(dir_path + '/benchmarks/chc/bv/2017.ASE_FIB/32bits_signed/fib_15.sl_32bits_signed.smt2',
     #               prover="efsmt")
     # exit(0)
-
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--file', dest='file', default='none', type=str, help="Path to the input file")
     parser.add_argument('--engine', dest='engine', default='efsmt', type=str, help='''Set the engine:
@@ -284,8 +284,7 @@ if __name__ == "__main__":
     parser.add_argument('--timeout', dest='timeout', default=3000, type=int, help="timeout")
     # parser.add_argument('--threads', dest='threads', default=4, type=int, help="threads")
 
-    parser.add_argument( '--verbose', dest='verbosity', default=1, type=int, help='verbosity level')
-
+    parser.add_argument('--verbose', dest='verbosity', default=1, type=int, help='verbosity level')
 
     g_verifier_args = parser.parse_args()
     """

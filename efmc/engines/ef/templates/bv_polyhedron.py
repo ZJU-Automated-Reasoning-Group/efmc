@@ -1,10 +1,9 @@
 """Template polyhedral domain over bit-vectors
 """
-import z3
+from efmc.engines.ef.templates.abstract_template import *
+from efmc.engines.ef.templates.bv_utils import Signedness
 # from typing import List
 from efmc.sts import TransitionSystem
-from efmc.engines.ef.templates.abstract_template import TemplateType, Template
-from efmc.engines.ef.templates.bv_utils import Signedness
 from efmc.utils import big_and, big_or
 
 

@@ -3,10 +3,8 @@
 import itertools
 import logging
 
-import z3
-
+from efmc.engines.ef.templates.abstract_template import *
 from efmc.sts import TransitionSystem
-from efmc.engines.ef.templates.abstract_template import TemplateType, Template
 from efmc.utils import get_variables
 
 logger = logging.getLogger(__name__)
@@ -125,7 +123,6 @@ class ZoneTemplate(Template):
         raise NotImplementedError
 
 
-
 class DisjunctiveZoneTemplate(Template):
 
     def __init__(self, sts: TransitionSystem, **kwargs):
@@ -159,7 +156,6 @@ class DisjunctiveZoneTemplate(Template):
         self.template_cnt_trans = None
         self.add_template_cnts()
 
-
     def add_template_vars(self):
         """
         Add several groups of template vars
@@ -182,7 +178,6 @@ class DisjunctiveZoneTemplate(Template):
             self.template_vars.append(vars_for_dis)
         # print(self.template_vars)
 
-
     def add_template_cnts(self):
         raise NotImplementedError
 
@@ -194,4 +189,3 @@ class DisjunctiveZoneTemplate(Template):
 
     def build_ranking_function_expr(self):
         raise NotImplementedError
-

@@ -1,8 +1,7 @@
 """Octagon template over bit-vector variables
 """
 import itertools
-import z3
-from efmc.engines.ef.templates.abstract_template import Template, TemplateType
+from efmc.engines.ef.templates.abstract_template import *
 from efmc.engines.ef.templates.bv_utils import Signedness
 from efmc.sts import TransitionSystem
 from efmc.utils import get_variables, big_and, big_or
