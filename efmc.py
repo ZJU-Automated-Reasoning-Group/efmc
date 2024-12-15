@@ -289,8 +289,8 @@ if __name__ == "__main__":
     g_verifier_args = parser.parse_args()
     """
     A few examples
-    python3 prover.py --file benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl --engine efsmt
-    python3 prover.py --lang chc --engine efsmt --file benchmarks/chc/bv/2017.ASE_FIB/8bits_unsigned/fib_04.sl_8bits_unsigned.smt2 --template bv_octagon --prevent-over-under-flows 0
+    python3 efmc.py --file benchmarks/sygus-inv/LIA/2017.ASE_FiB/fib_01.sl --engine efsmt
+    python3 efmc.py --lang chc --engine efsmt --file benchmarks/chc/bv/2017.ASE_FIB/8bits_unsigned/fib_04.sl_8bits_unsigned.smt2 --template bv_octagon --prevent-over-under-flows 0
     """
     if g_verifier_args.verbosity == 2:
         logging.basicConfig(level=logging.DEBUG)
