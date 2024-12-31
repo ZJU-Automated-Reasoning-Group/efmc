@@ -63,7 +63,7 @@ def run_solver(solver_path: str, config: SolverConfig, input_file: str,
                 result.stdout, result.stderr, elapsed)
     except subprocess.TimeoutExpired:
         elapsed = time.time() - start_time
-        return (input_file, config.engine, -1, "", "Timeout", elapsed)
+        return input_file, config.engine, -1, "", "Timeout", elapsed
 
 
 def main():
