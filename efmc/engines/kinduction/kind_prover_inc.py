@@ -141,3 +141,8 @@ class KInductionProverInc:
                 self._add_transition_at_k(k)
 
         return "unknown"
+
+
+def main():
+    from efmc.sts import TransitionSystem
+

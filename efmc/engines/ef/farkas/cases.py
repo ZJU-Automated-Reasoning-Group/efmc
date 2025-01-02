@@ -108,4 +108,3 @@ def demo_cases():
     ]
 
     return test_cases
-

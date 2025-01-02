@@ -1,4 +1,6 @@
-"""Affine relation domain over bit-vectors
+"""FIXME: this file is not used yet
+
+Affine relation domain over bit-vectors
 """
 from efmc.engines.ef.templates.abstract_template import *
 from efmc.sts import TransitionSystem

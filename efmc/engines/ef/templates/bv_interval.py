@@ -119,6 +119,7 @@ class DisjunctiveBitVecIntervalTemplate(Template):
         self.template_cnt_init_and_post = None
         self.template_cnt_trans = None
         self.add_template_cnts()
+        
 
     def add_template_vars(self):
         for i in range(self.num_disjunctions):
