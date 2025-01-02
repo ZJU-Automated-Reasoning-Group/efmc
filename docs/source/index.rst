@@ -5,7 +5,7 @@ Welcome to EFMC's documentation
    :maxdepth: 2
    :caption: Contents:
 
-   intro
+   verification
    abduction
    kinduction
    predabs

@@ -124,3 +124,13 @@ Choosing `k`
 
 - **Small Systems**: `k = 1` may suffice.
 - **Complex Dependencies**: Larger values of `k` may be necessary to capture necessary dependencies.
+
+
+======================
+References
+======================
+
+- Clarke, E. M., Grumberg, O., & Peled, D. A. (1999). Model checking. MIT press.
+- Donaldson, A. F., Haller, L., & Kroening, D. (2011). Strengthening induction-based verification using k-induction. In Formal Methods in Computer-Aided Design (FMCAD), 2011 (pp. 51-58). IEEE.
+- Bradley, A. R., & Manna, Z. (2007). The Calculus of Computation: Decision Procedures with Applications to Verification. Springer Science & Business Media.
+- Sheeran, M., Singh, S., & Stålmarck, G. (2000). Checking safety properties using induction and a SAT-solver. In International Conference on Formal Methods in Computer-Aided Design (pp. 108-125). Springer, Berlin, Heidelberg.
