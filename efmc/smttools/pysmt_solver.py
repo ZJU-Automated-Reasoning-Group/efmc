@@ -25,6 +25,20 @@ logger = logging.getLogger(__name__)
 
 
 def to_pysmt_vars(z3vars: [z3.ExprRef]):
+    """
+    Convert a list of Z3 variables to PySMT variables.
+    Args:
+        z3vars (list of z3.ExprRef): A list of Z3 variables to be converted.
+    Returns:
+        list of pysmt.fnode.FNode: A list of PySMT variables corresponding to the input Z3 variables.
+    Raises:
+        NotImplementedError: If a variable type is not supported.
+    The function supports the following Z3 variable types:
+        - Integer
+        - Real
+        - Bit-Vector
+        - Boolean
+    """
     res = []
     for v in z3vars:
         if z3.is_int(v):

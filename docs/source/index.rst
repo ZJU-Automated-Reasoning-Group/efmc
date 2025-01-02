@@ -6,12 +6,15 @@ Welcome to EFMC's documentation
    :caption: Contents:
 
    verification
+   absint
+   ltl
    abduction
    kinduction
    predabs
    synthesis
    template
    third-party
+   nonlinear
    todo
 
 Indices and tables

@@ -8,6 +8,59 @@ behaviors of the program, so that the analysis is sound but not necessarily
 complete.
 
 
+===========================
+Chaotic Iteration
+===========================
+
+The basic idea of abstraction interpretation is to iteratively apply an abstract
+transformer to an abstract state until a fixpoint is reached. The abstract
+transformer is a function that maps an abstract state to another abstract state.
+The fixpoint is reached when the abstract state does not change anymore. 
+This process is often called chaotic iteration, and it is guaranteed to converge to a fixpoint
+
+Widening
+========
+
+Widening is a technique used in abstract interpretation to ensure the convergence of the iterative analysis process. When the abstract state space is infinite or very large, the analysis might not reach a fixpoint in a reasonable amount of time. Widening accelerates the convergence by forcing the iteration to jump to a broader abstract state, effectively over-approximating the union of the states encountered during the iteration. This guarantees that the analysis will terminate, although it may result in a less precise fixpoint.
+
+Lookahead Widening
+----------------------
+
+Guided Static Analysis
+-----------------------
+
+Widening with Thresholds
+------------------------
+
+Policy Iteration
+-----------------------
+
+
+===========================
+Systematic Abstraction
+===========================
+
+Making Abstraction Interpretation Complete
+==========================================
+
+
+
+=============================
+Abstract Interpretation Tools
+=============================
+
+Astree: developed by the French Space Agency (CNES) for the verification of critical embedded software.
+
+PolySpace: by MathWorks for the verification of embedded software.
+
+CodeSonar: by GrammaTech
+
+
+TVLA: by Tom Reps and his group at the University of Wisconsin-Madison, as well as Mooly Sagiv and his group at Tel Aviv University.
+
+IKOS: by NASA 
+
+Crab
 
 ===========================
 References
