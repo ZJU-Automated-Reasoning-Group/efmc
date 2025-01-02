@@ -3,12 +3,7 @@
 SMT-based Software Model Checking
 
 ## 1. Introduction
-
-EFMC is a toolkit for verifying program properties using SMT-based verification engines.
-It implements multiple approaches including template-based verification,
-property-directed reachability (PDR), and k-induction.
-Each engine offers distinct advantages for different types of programs
-and properties.
+EFMC is a toolkit for verifying program properties using SMT-based verification engines. It implements multiple approaches, including template-based verification, property-directed reachability (PDR), Houdini, and k-induction. Each engine offers distinct advantages for different types of programs and properties.
 
 ### 1.1 Entrance of the Verifier
 
@@ -138,9 +133,6 @@ To extend the applicability, we need more frontends:
 Solving the quantified formulas that characterize inductive invariants
 directly (via different quantifier instantiation strategeis)
 
-#### Auto-Active?
-
-For more topics, please refer to ``docs/todo.md``
 
 ## Contributors
 

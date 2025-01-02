@@ -1,11 +1,11 @@
 """
-EFBV parallel Solver by pysmt and mutiprocessing
+EFBV parallel solver by pysmt and mutiprocessing
 
 TODO: complete simple idea for parallel
 
 FIXME: Because some unknown reason(may be because different process has different FormulaManager in pysmt but it's strange there is no problem in Process rather than pool)
 This parallel method need a file to input phi in child Process
-Or use eval and send str(what actually used)
+Or use eval and send str (what actually used)
 HAS FIXED BY SMTLIB2 EXPRESSION
 
 FIXME: When phi exist overflow or underflow, will return Wrong answer!
