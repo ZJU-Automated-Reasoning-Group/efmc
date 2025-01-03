@@ -1,33 +1,60 @@
-from enum import Enum
+from enum import Enum, auto
+from typing import Optional
+from abc import ABC, abstractmethod
 import z3
 
 
 class TemplateType(Enum):
-    """Template type"""
-    INTERVAL = 0
-    ZONE = 1
-    OCTAGON = 2
-    AFFINE = 3
-    POLYHEDRON = 4
-    DISJUNCTIVE_INTERVAL = 5
-    DISJUNCTIVE_ZONE = 6
-    DISJUNCTIVE_OCTAGON = 7
-    DISJUNCTIVE_AFFINE = 8
-    DISJUNCTIVE_POLYHEDRON = 9
-    ARRAY = 10
-    STRING = 11
-    FLOAT = 12
-    BV_INTERVAL = 13
-    BV_ZONE = 14
-    BV_OCTAGON = 15
-    BV_AFFINE = 16
-    BV_POLYHEDRON = 17
-    BV_DISJUNCTIVE_INTERVAL = 18
-    BV_DISJUNCTIVE_ZONE = 19
-    BV_DISJUNCTIVE_OCTAGON = 20
-    BV_DISJUNCTIVE_AFFINE = 21
-    BV_DISJUNCTIVE_POLYHEDRON = 22
-    BV_BITWISE = 23
+    """Enumeration of supported template types for program verification.
+    
+    Categories:
+    - Basic: Simple numeric domains (INTERVAL, ZONE, etc.)
+    - Disjunctive: Unions of basic domains
+    - Bit-Vector: Templates for bit-vector arithmetic
+    - Special: Arrays, strings, floating-point
+    """
+    # Basic numeric domains
+    INTERVAL = auto()
+    ZONE = auto()
+    OCTAGON = auto()
+    AFFINE = auto()
+    POLYHEDRON = auto()
+    
+    # Disjunctive domains
+    DISJUNCTIVE_INTERVAL = auto()
+    DISJUNCTIVE_ZONE = auto()
+    DISJUNCTIVE_OCTAGON = auto()
+    DISJUNCTIVE_AFFINE = auto()
+    DISJUNCTIVE_POLYHEDRON = auto()
+    
+    # Special domains
+    ARRAY = auto()
+    STRING = auto()
+    FLOAT = auto()
+    
+    # Bit-vector domains
+    BV_INTERVAL = auto()
+    BV_ZONE = auto()
+    BV_OCTAGON = auto()
+    BV_AFFINE = auto()
+    BV_POLYHEDRON = auto()
+    BV_DISJUNCTIVE_INTERVAL = auto()
+    BV_DISJUNCTIVE_ZONE = auto()
+    BV_DISJUNCTIVE_OCTAGON = auto()
+    BV_DISJUNCTIVE_AFFINE = auto()
+    BV_DISJUNCTIVE_POLYHEDRON = auto()
+    BV_BITMASK = auto()
+
+
+    @classmethod
+    def is_disjunctive(cls, template_type: 'TemplateType') -> bool:
+        """Check if the template type is disjunctive."""
+        return 'DISJUNCTIVE' in template_type.name
+    
+    @classmethod
+    def is_bitvector(cls, template_type: 'TemplateType') -> bool:
+        """Check if the template type uses bit-vector arithmetic."""
+        return template_type.name.startswith('BV_')   
 
 
 class Template(object):
@@ -36,7 +63,7 @@ class Template(object):
 
     def add_template_vars(self):
         """Initialize the template variables"""
-        raise NotImplementedError
+        pass
 
     def add_template_cnts(self):
         """Add constraints for the template variables (according to specification of inductive loop invariant)
@@ -44,20 +71,20 @@ class Template(object):
          to the template variables. Perhaps we need to  design a good interface for doing this.
          (For example, we may want to compute the "minimal/most precise" inductive invariant).
         """
-        raise NotImplementedError
+        pass
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
         """Build an invariant from a model, i.e., finding assignments of the template vars
         :param model the model used for building expr
         :param use_prime_variables deciding using x, y or x!, y!
         """
-        raise NotImplementedError
+        pass
 
     def add_template_cnts_for_ranking_function(self):
         """Add constraints for the template variables (according to specification of ranking function)
         """
-        raise NotImplementedError
+        pass
 
     def build_ranking_function_expr(self):
         """Building the expression for the ranking function"""
-        raise NotImplementedError
+        pass
