@@ -22,12 +22,35 @@ def prime(exp: z3.ExprRef):
     :return: a new formula
     """
     variables = get_variables(exp)
-    substitutions = [(v, z3.Int(f"{v}_p")) for v in variables]
+    substitutions = []
+    for v in variables:
+        sort = v.sort()
+        if z3.is_bv_sort(sort):
+            substitutions.append((v, z3.BitVec(f"{v}_p", sort.size())))
+        elif sort == z3.RealSort():
+            substitutions.append((v, z3.Real(f"{v}_p")))
+        else:  # default to Int
+            substitutions.append((v, z3.Int(f"{v}_p")))
     return z3.substitute(exp, substitutions)
 
 
 def houdini(lemmas: [z3.ExprRef], transition: z3.ExprRef):
-    """Find the maximal inductive subset for the given lemmas and transition"""
+    """Find the maximal inductive subset for the given lemmas and transition.
+
+    This implementation of the Houdini algorithm finds the largest subset of candidate invariants that form an inductive invariant together. It iteratively removes lemmas that break inductiveness until reaching a fixed point.
+
+    Args:
+        lemmas (List[z3.ExprRef]): List of candidate invariant expressions to check
+        transition (z3.ExprRef): Transition relation of the system
+
+    Returns:
+        dict: Dictionary mapping indices to lemmas that form the maximal inductive subset
+
+    Example:
+        >>> lemmas = [x >= 0, x <= 10]  # candidate invariants
+        >>> trans = And(x' == x + 1)    # transition relation
+        >>> inductive = houdini(lemmas, trans)
+    """
     annotated = []
     annotated_primes = []
     indexed = {}

@@ -1,9 +1,6 @@
 """
 Ported from https://github.com/pysmt/pysmt/blob/97c6eda689bbc7707602c2b3a3e1444f9d75166d/examples/model_checking.py
 
-For incremental k-induction, we may refer to
-   https://github.com/SRI-CSL/sally/blob/80f19306bed842e7a706f178cc5e2972d342482c/src/engine/kind/kind_engine.cpp
-
 TODO:
    - Different approaches for creating vars and exprs
    - Incremental version (e.g., build the exprs incrementally, and use incremental solving)
@@ -38,9 +35,13 @@ class KInductionProver(object):
 
         self.use_bv = system.has_bv
         if self.use_bv:
-            self.bv_size = system.variables[0].size()  # FIXME: not a good idea
+
+            # FIXME: this is not a good idea, as different variables
+            #  can have different sizes
+            self.bv_size = system.variables[0].size()
         self.use_int = system.has_int
-        self.user_real = system.has_real
+        self.use_real = system.has_real
+        self.use_bool = system.has_bool
 
         self.init_0 = z3.substitute(self.sts.init, self.get_subs(0))
         self.unrolled_system = []  # T(0,1) & T(1,2) & ... & T(k-1,k)
@@ -52,8 +53,10 @@ class KInductionProver(object):
             return z3.BitVec("{}!".format(str(var)), self.bv_size)
         elif self.use_int:
             return z3.Int("%s!" % str(var))
-        elif self.user_real:
+        elif self.use_real:
             return z3.Real("%s!" % str(var))
+        elif self.use_bool:
+            return z3.Bool("%s!" % str(var))
         else:
             raise NotImplementedError
 
@@ -63,8 +66,10 @@ class KInductionProver(object):
             return z3.BitVec("{0}@{1}".format(str(var), t), self.bv_size)
         elif self.use_int:
             return z3.Int("{0}@{1}".format(str(var), t))
-        elif self.user_real:
+        elif self.use_real:
             return z3.Real("{0}@{1}".format(str(var), t))
+        elif self.use_bool:
+            return z3.Bool("{0}@{1}".format(str(var), t))
         else:
             raise NotImplementedError
         # return z3.Int("%s@%d" % (str(variable), t))

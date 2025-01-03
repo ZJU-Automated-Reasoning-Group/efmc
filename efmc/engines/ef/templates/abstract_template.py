@@ -43,6 +43,7 @@ class TemplateType(Enum):
     BV_DISJUNCTIVE_OCTAGON = auto()
     BV_DISJUNCTIVE_AFFINE = auto()
     BV_DISJUNCTIVE_POLYHEDRON = auto()
+    BV_PARITY = auto()
     BV_BITMASK = auto()
 
 
@@ -57,34 +58,59 @@ class TemplateType(Enum):
         return template_type.name.startswith('BV_')   
 
 
-class Template(object):
-    """Abstract interface for template-based verification
+class Template(ABC):
+    """Abstract base class for template-based verification.
+    
+    This class defines the interface for template-based program verification,
+    including methods for managing template variables, constraints, and
+    building invariants and ranking functions.
     """
 
-    def add_template_vars(self):
-        """Initialize the template variables"""
-        pass
-
-    def add_template_cnts(self):
-        """Add constraints for the template variables (according to specification of inductive loop invariant)
-        TODO: in some cases, we may want to iteratively/gradually add new constraints
-         to the template variables. Perhaps we need to  design a good interface for doing this.
-         (For example, we may want to compute the "minimal/most precise" inductive invariant).
+    @abstractmethod
+    def add_template_vars(self) -> None:
+        """Initialize the template variables.
+        
+        This method should set up all necessary template variables
+        required for the verification process.
         """
         pass
 
-    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
-        """Build an invariant from a model, i.e., finding assignments of the template vars
-        :param model the model used for building expr
-        :param use_prime_variables deciding using x, y or x!, y!
+    @abstractmethod
+    def add_template_cnts(self) -> None:
+        """Add constraints for the template variables.
+        
+        Adds constraints according to the specification of inductive loop invariant.
+        These constraints define the shape and properties of the invariant.
         """
         pass
 
-    def add_template_cnts_for_ranking_function(self):
-        """Add constraints for the template variables (according to specification of ranking function)
+    @abstractmethod
+    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool) -> z3.ExprRef:
+        """Build an invariant expression from a model.
+        
+        Args:
+            model: Z3 model containing variable assignments
+            use_prime_variables: If True, use primed variables (x', y'), otherwise use (x, y)
+            
+        Returns:
+            Z3 expression representing the invariant
         """
         pass
 
-    def build_ranking_function_expr(self):
-        """Building the expression for the ranking function"""
+    @abstractmethod
+    def add_template_cnts_for_ranking_function(self) -> None:
+        """Add constraints for ranking function template variables.
+        
+        Defines constraints that ensure the ranking function meets
+        termination requirements.
+        """
+        pass
+
+    @abstractmethod
+    def build_ranking_function_expr(self) -> z3.ExprRef:
+        """Build the ranking function expression.
+        
+        Returns:
+            Z3 expression representing the ranking function
+        """
         pass

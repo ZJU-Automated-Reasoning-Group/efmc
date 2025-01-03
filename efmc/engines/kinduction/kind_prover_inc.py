@@ -35,6 +35,7 @@ class KInductionProverInc:
         self.use_bv = system.has_bv
         self.use_int = system.has_int
         self.use_real = system.has_real
+        self.use_bool = system.has_bool
         if self.use_bv:
             self.bv_size = system.variables[0].size()
 
@@ -61,6 +62,8 @@ class KInductionProverInc:
                 result = z3.Int(name)
             elif self.use_real:
                 result = z3.Real(name)
+            elif self.use_bool:
+                result = z3.Bool(name)
             else:
                 raise NotImplementedError("Unsupported variable type")
             self._var_at_time_cache[key] = result
