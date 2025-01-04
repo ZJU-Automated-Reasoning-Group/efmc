@@ -2,7 +2,8 @@
 """
 Constraint/template based invariant inference using EFSMT solving
 NOTE:
- - We assume there is only one invariant to be synthesized.
+ - We assume there is only one invariant to be synthesized
+ - There is only one pair of <pre, post> from TransitionSystem
  - This file relies heavily on the templates in efmc.templates
 """
 
@@ -111,6 +112,10 @@ class EFProver:
             elif template_name == "power_bv_poly":
                 self.ct = DisjunctiveBitVecPolyhedronTemplate(self.sts,
                                                               num_disjunctions=num_disjunctions)
+            elif template_name == "bitmask":
+                self.ct = BitMasksTemplate(self.sts)
+            elif template_name == "bitpredabs":
+                self.ct = BitPredAbsTemplate(self.sts)
             else:
                 raise NotImplementedError
         else:
@@ -170,6 +175,8 @@ class EFProver:
                 self.logic = "UFLIA"  # or UFLIA?
             else:
                 self.logic = "UFNIA"  # or UFNIA?
+        elif self.sts.has_bool:
+            self.logic == "UF"
         else:
             raise NotImplementedError
 
@@ -299,6 +306,8 @@ class EFProver:
                                                                self.sts.post)))
 
         # Add additional cnts to restrict the template variables (only for int/real)
+        # FIXME: this seems to be some "technicla debt" (not sure why we do this)
+        #  Indeed, for most domains, get_additional_cnts_for_template_vars() returns true.
         if self.ct.template_type == TemplateType.INTERVAL or \
                 self.ct.template_type == TemplateType.DISJUNCTIVE_INTERVAL or \
                 self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.OCTAGON:

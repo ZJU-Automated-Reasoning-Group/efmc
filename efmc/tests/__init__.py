@@ -1,3 +1,4 @@
+import logging
 try:
     import unittest2 as unittest
 except ImportError:
@@ -15,6 +16,7 @@ class TestCase(unittest.TestCase):
         """
         Hook method for setting up the test fixture before exercising it.
         """
+        logging.basicConfig(level=logging.DEBUG)
         pass
 
     def tearDown(self):

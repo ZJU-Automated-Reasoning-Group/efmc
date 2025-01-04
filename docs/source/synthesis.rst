@@ -1,5 +1,5 @@
 Program Synthesis
-===============
+=======================
 
 The Syntax-Guided Synthesis (SyGuS) framework provides a unified format for describing program synthesis problems by specifying (1) logical specifications of desired functionalities and (2) the syntax allowed for the implementation. Given these two inputs, SyGuS tools search for a program within the set of programs allowed by the syntax that satisfies the specifications.
 
@@ -43,3 +43,15 @@ where :math:`\sigma = \langle m', n', x', y' \rangle` denotes that the new state
 
    T(\sigma, \sigma')  &\equiv  (x < n) \land (x' = x + 1) \land (m' = m) \land (n' = n)  \\
    &\land  [(x' \leq m \land y' = y) \lor (x' > m \land y' = y + 1)]
+
+
+
+=============
+References
+=============
+
+.. [Gulwani2011] Sumit Gulwani. "Automating String Processing in Spreadsheets using Input-Output Examples." POPL, 2011.
+
+.. [Gulwani2014] Sumit Gulwani, Oleksandr Polozov, and Rishabh Singh. "Program Synthesis." Foundations and Trends in Programming Languages, 2014.
+
+.. [Alur2013] Rajeev Alur, Dana Fisman, Rishabh Singh, and Armando Solar-Lezama. "SyGuS-Comp 2013: Results and Analysis." Technical Report, University of Pennsylvania, 2013.

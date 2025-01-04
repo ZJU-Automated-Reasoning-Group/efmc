@@ -1,13 +1,13 @@
 """
 Standalone tool for solving EFSMT queries
 E.g. we can dump the queries from the template-based verification engine
+FIXME: we should support all the solvers in efmc/engines/efj/efsmt/efsmt_solver.py
 
 Example usage:
     python efsmt_solver.py --file query.smt2 --smt-oracle z3 --timeout 30
 """
 import logging
 import time
-
 import z3
 
 from efmc.smttools.pysmt_solver import PySMTSolver

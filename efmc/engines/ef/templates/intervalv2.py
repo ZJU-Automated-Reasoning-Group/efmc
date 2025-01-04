@@ -4,15 +4,11 @@
 """
 import logging
 
-import z3
-
+from efmc.engines.ef.templates.abstract_template import *
 from efmc.sts import TransitionSystem
-# from typing import List
-from efmc.engines.ef.templates.abstract_template import TemplateType, Template
 from efmc.utils import big_and
 
 logger = logging.getLogger(__name__)
-
 
 
 class IntervalTemplateV2(Template):
@@ -108,5 +104,3 @@ class DisjunctiveIntervalTemplateV2:
 
     def __init__(self):
         raise NotImplementedError
-
-

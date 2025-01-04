@@ -1,10 +1,10 @@
 More Third-Party Tools
+==============================
+
+
 =========================
-
-
-=======
 SyGuS
-=======
+=========================
 
 
 SyGuS solvers for invariant synthesis/generation:

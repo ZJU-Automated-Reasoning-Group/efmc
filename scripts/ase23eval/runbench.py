@@ -213,7 +213,7 @@ def solve_file(file_path, ef_template, smt_solver, cegis_solver, file_name):
     cmd = [
         "python3",
         CUR_DIR +
-        "/prover.py",
+        "/efmc.py",
         "--engine",
         METHOD,
         "--lang",

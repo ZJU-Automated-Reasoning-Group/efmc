@@ -12,6 +12,7 @@ from .bv_zone import BitVecZoneTemplate, DisjunctiveBitVecZoneTemplate
 from .bv_octagon import BitVecOctagonTemplate, DisjunctiveBitVecOctagonTemplate
 from .bv_affine import BitVecAffineTemplate, DisjunctiveBitVecAffineTemplate
 from .bv_polyhedron import BitVecPolyhedronTemplate, DisjunctiveBitVecPolyhedronTemplate
+from .bv_bitwise import BitMasksTemplate, BitPredAbsTemplate
 
 # Export (TODO: maybe export shorter names)
 TemplateType = TemplateType
@@ -36,3 +37,6 @@ BitVecAffineTemplate = BitVecAffineTemplate
 DisjunctiveBitVecAffineTemplate = DisjunctiveBitVecAffineTemplate
 BitVecPolyhedronTemplate = BitVecPolyhedronTemplate
 DisjunctiveBitVecPolyhedronTemplate = DisjunctiveBitVecPolyhedronTemplate
+
+BitMasksTemplate = BitMasksTemplate
+BitPredAbsTemplate = BitPredAbsTemplate

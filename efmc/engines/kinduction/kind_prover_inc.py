@@ -35,6 +35,7 @@ class KInductionProverInc:
         self.use_bv = system.has_bv
         self.use_int = system.has_int
         self.use_real = system.has_real
+        self.use_bool = system.has_bool
         if self.use_bv:
             self.bv_size = system.variables[0].size()
 
@@ -61,6 +62,8 @@ class KInductionProverInc:
                 result = z3.Int(name)
             elif self.use_real:
                 result = z3.Real(name)
+            elif self.use_bool:
+                result = z3.Bool(name)
             else:
                 raise NotImplementedError("Unsupported variable type")
             self._var_at_time_cache[key] = result
@@ -141,3 +144,21 @@ class KInductionProverInc:
                 self._add_transition_at_k(k)
 
         return "unknown"
+
+
+def main():
+    x, y, _p_x, _p_y = z3.Reals('x y x! y!')
+    init = z3.And(x == 0, y == 8)
+    trans = z3.Or(z3.And(x < 8, y <= 8, _p_x == x + 2, _p_y == y - 2), z3.And(x == 8, _p_x == 0, y == 0, _p_y == 8))
+    post = z3.Not(z3.And(x == 0, y == 0))  # Is valid.
+    all_vars = [x, y, _p_x, _p_y]
+
+    from efmc.sts import TransitionSystem
+    sts = TransitionSystem()
+
+    sts.from_z3_cnts([all_vars, init, trans, post])
+    pp = KInductionProverInc(sts)
+    res = pp.solve(k=20)
+
+if __name__ == '__main__':
+    main()

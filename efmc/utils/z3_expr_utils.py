@@ -1,7 +1,3 @@
-from typing import List, Set
-import z3
-from z3.z3util import get_vars
-
 """
 - absolute_value_bv
 - absolute_value_int
@@ -27,6 +23,10 @@ from z3.z3util import get_vars
 - z3_value_to_python
 - get_z3_logic
 """
+
+from typing import List, Set
+import z3
+from z3.z3util import get_vars
 
 
 def absolute_value_bv(bv):

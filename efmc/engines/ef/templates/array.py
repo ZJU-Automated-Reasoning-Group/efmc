@@ -1,11 +1,10 @@
-# coding: utf-8
-# from typing import List
+"""
+FIXME: this file is not used yet
+"""
 import logging
 
-import z3
-
+from efmc.engines.ef.templates.abstract_template import *
 from efmc.sts import TransitionSystem
-from efmc.engines.ef.templates.abstract_template import TemplateType, Template
 
 logger = logging.getLogger(__name__)
 

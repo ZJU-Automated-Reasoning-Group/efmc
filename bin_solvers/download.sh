@@ -1,4 +1,7 @@
 #!/bin/bash
+# This file is used by the Dockerfile outside (for a previous ASE'23 work)
+# And it is not used for now
+
 z3_version=z3-4.10.2-x64-glibc-2.31
 pwd
 current_dir=$(pwd)

@@ -27,6 +27,7 @@ class EFSMTSolver:
         self.logic = logic
 
         self.seed = kwargs.get("seed", 1)  # random seed
+        # the solver for solving the EF problem
         self.solver = kwargs.get("solver", "z3")
 
         self.initialized = False

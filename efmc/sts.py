@@ -60,6 +60,10 @@ class TransitionSystem(object):
         # Update all_variables after setting variables and prime_variables
         self.all_variables = self.variables + self.prime_variables
 
+        # FIXME: currently, we assume that all variables are of the same type.
+        #  thus, we use the first variable to decide the type. However, this
+        #  is not a good idea. At least, we should suppor the mix of 
+        #  int/bv/real and bool, which is reasonable...
         sample_var = self.variables[0]
         # print(sample_var.sort())
         if z3.is_int(sample_var):

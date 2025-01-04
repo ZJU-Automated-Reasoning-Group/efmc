@@ -1,8 +1,6 @@
 Template-based Invariant Generation
 =====================================
 
-Constraint-Based Invariant Generation
-===================================
 
 Invariants are assertions about program variables that hold true throughout the execution of a program. They are used in program verification to describe sets of reachable program states and are an essential tool for reasoning about program correctness. In this section, we demonstrate how to compute invariants that prove certain error locations in a program to be unreachable using constraint-based techniques.
 
@@ -22,13 +20,15 @@ The key verification conditions are:
 
 - :math:`\forall x . Inv(x) \land G(x) \Rightarrow Post(x)`
 
+
+=======================
 Linear Arithmetic
----------------
+=======================
 
 In xx, Farkas' Lemma is used to eliminate universal quantifiers and propose a sound and complete constraint-solving framework for generating linear invariants. The result is a set of existentially quantified nonlinear constraints involving template parameters and parameters introduced by Farkas' Lemma. Finally, the problem is simplified to the satisfiability problem of quantifier-free nonlinear arithmetic formulas.
 
 Linear Invariants
-~~~~~~~~~~~~~~~
+------------------
 
 Consider the following simple program::
 
@@ -38,5 +38,10 @@ Consider the following simple program::
     }
     assert(i == 10);
 
+Nonlinear Invariants
+------------------
+
+
+=======================
 Nonlinear Arithmetic
--------------------
+=======================

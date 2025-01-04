@@ -2,8 +2,8 @@
 """
 # from typing import List
 import logging
-import z3
-from efmc.engines.ef.templates.abstract_template import TemplateType, Template
+
+from efmc.engines.ef.templates.abstract_template import *
 from efmc.sts import TransitionSystem
 from efmc.utils import big_and, big_or
 
@@ -157,7 +157,6 @@ class DisjunctivePolyTemplate(Template):
         # print(self.template_cnt_init_and_post)
         # print(self.template_cnt_trans)
 
-
     def add_template_vars(self):
         """
         Initialize self.template_vars
@@ -187,7 +186,6 @@ class DisjunctivePolyTemplate(Template):
             self.template_vars.append(vars_for_dis)
         # print(self.template_vars)
 
-
     def add_template_cnts(self):
         """
         For initializing self.template_cnt_init_and_post and self.template_cnt_trans
@@ -210,7 +208,6 @@ class DisjunctivePolyTemplate(Template):
 
         self.template_cnt_init_and_post = big_or(cnts_init_post)
         self.template_cnt_trans = big_or(cnts_trans)
-
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
         """
@@ -237,5 +234,3 @@ class DisjunctivePolyTemplate(Template):
 
     def build_ranking_function_expr(self):
         raise NotImplementedError
-
-

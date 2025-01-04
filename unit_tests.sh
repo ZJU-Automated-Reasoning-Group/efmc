@@ -7,3 +7,9 @@
 #                should be marked as slow using:
 #                    @pytest.mark.slow
 python3 -m pytest -m "not slow" -x efmc/tests
+
+# Run slow tests
+# python3 -m pytest -m slow -x efmc/tests
+
+# Run all tests
+# python3 -m pytest -x efmc/tests

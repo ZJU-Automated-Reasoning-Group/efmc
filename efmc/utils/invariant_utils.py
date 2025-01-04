@@ -1,11 +1,10 @@
 """
 A few functions for playing with inductive loop invariants
-
-
 """
 import z3
 
 from efmc.utils.z3_solver_utils import is_entail, is_sat, is_equiv
+from efmc.utils.z3_expr_utils import get_variables
 from efmc.sts import TransitionSystem
 
 
@@ -37,11 +36,22 @@ def check_invariant(sts: TransitionSystem, inv: z3.ExprRef, inv_in_prime_variabl
 
 
 
-def weaken_invariant(inv):
-    """"""
+def weaken_invariant(sts: TransitionSystem, inv: z3.ExprRef):
+    """
+    Weaken the invarant using different strategies
+    FIXME: think about the strategies, which may take the followings into considertions:
+      - The conterexample to the induciveness (CIT)
+      - The pre/post conditions
+      - ....
+    """
     return None
 
-def strengthen_invariant(inv):
-    """"""
+def strengthen_invariant(sts: TransitionSystem, inv: z3.ExprRef):
+    """Strengthen the invarant using different strategies
+    FIXME: think about the strategies, which may take the followings into considertions:
+      - The conterexample to the induciveness (CIT)
+      - The pre/post conditions
+      - ....
+    """
     return None
 
