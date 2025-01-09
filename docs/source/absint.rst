@@ -49,26 +49,30 @@ Making Abstraction Interpretation Complete
 Abstract Interpretation Tools
 =============================
 
-Astree: developed by the French Space Agency (CNES) for the verification of critical embedded software.
+- Astree: developed by the French Space Agency (CNES) for the verification of critical embedded software.
 
-PolySpace: by MathWorks for the verification of embedded software.
+- FramaC
 
-CodeSonar: by GrammaTech
+- PolySpace: by MathWorks for the verification of embedded software.
 
+- CodeSonar: by GrammaTech
 
-TVLA: by Tom Reps and his group at the University of Wisconsin-Madison, as well as Mooly Sagiv and his group at Tel Aviv University.
+- TVLA: by University of Wisconsin-Madison, Tel Aviv University, etc.
 
-IKOS: by NASA 
+- IKOS: by NASA 
 
-Crab
+- Crab
 
 ===========================
 References
 ===========================
 
-.. [CousotCousot77] P. Cousot and R. Cousot. Abstract interpretation: A unified lattice model for static analysis of programs by construction or approximation of fixpoints. In Proceedings of the 4th ACM SIGACT-SIGPLAN symposium on Principles of programming languages, pages 238-252, 1977.
-.. [CousotCousot92] P. Cousot and R. Cousot. Abstract interpretation frameworks. Journal of Logic and Computation, 2(4):511-547, 1992.
-.. [CousotCousot99] P. Cousot and R. Cousot. Systematic design of program analysis frameworks. In Proceedings of the 6th ACM SIGACT-SIGPLAN symposium on Principles of programming languages, pages 269-282, 1999.
-.. [Reps94] T. Reps. Solving demand versions of interprocedural analysis problems. In Proceedings of the 5th International Conference on Compiler Construction, pages 389-403, 1994.
-.. [Reps97] T. Reps, S. Horwitz, and M. Sagiv. Precise interprocedural dataflow analysis via graph reachability. In Proceedings of the 22nd ACM SIGPLAN-SIGACT symposium on Principles of programming languages, pages 49-61, 1995.
-.. [Reps98] T. Reps, S. Horwitz, M. Sagiv, and G. Rosay. Speeding up slicing. In Proceedings of the 2nd ACM SIGSOFT symposium on Foundations of software engineering, pages 11-20, 1994.
+.. [CC77] P. Cousot and R. Cousot. Abstract interpretation: A unified lattice model for static analysis of programs by construction or approximation of fixpoints. POPL'97.
+.. [CC92] P. Cousot and R. Cousot. Abstract interpretation frameworks. Journal of Logic and Computation, 2(4):511-547, 1992.
+.. [Reps94] T. Reps. Solving demand versions of interprocedural analysis problems.
+.. [Reps97] T. Reps, S. Horwitz, and M. Sagiv. Precise interprocedural dataflow analysis via graph reachability, POPL'95.
+.. [Reps98] T. Reps, S. Horwitz, M. Sagiv, and G. Rosay. Speeding up slicing. FSE'??
+.. [xx] A. Adje, S. Gaubert, and E. Goubault. Coupling Policy Iteration with Semidefinite Relaxation to Compute Accurate Numerical Invariants in Static
+Analysis. ESOP'10.
+.. [xx] A. Costan, S. Gaubert, E. Goubault, M. Martel, and S. Putot. A Policy Iteration Algorithm for Computing Fixed Points in Static Analysis of
+Programs. CAV'05.

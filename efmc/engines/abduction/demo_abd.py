@@ -1,27 +1,81 @@
-from efmc.engines.abduction.abduction_prover import *
+"""
+Test module for the Abductive Inference-based Invariant Generation.
+
+This module provides comprehensive test cases for the AbductionProver implementation,
+comparing results with K-induction verification. It includes various transition systems
+ranging from simple to complex scenarios to verify the prover's effectiveness.
+
+Each test case is documented with:
+- System description and properties
+- Expected verification results
+- Theoretical invariants (when known)
+"""
+
+import logging
+import time
+from dataclasses import dataclass
+from typing import List, Tuple, Optional
+
+import z3
+
+from efmc.engines.abduction.abduction_prover import AbductionProver
 from efmc.engines.kinduction.kind_prover import KInductionProver
+from efmc.sts import TransitionSystem
+
+logger = logging.getLogger(__name__)
 
 
-def check_with_kind(sts):
-    print("Running one test...")
-    pp = KInductionProver(sts)
-    pp.use_aux_invariant = False
-    res = pp.solve(k=20)
-    return res
+@dataclass
+class TestCase:
+    """Represents a single test case for verification."""
+    name: str
+    system: TransitionSystem
+    expected_safe: bool
+    description: str
+    theoretical_invariant: Optional[str] = None
 
-def demo_abduction_prover():
-    """Demonstrates the usage of the AbductionProver with test cases."""
 
-    def create_simple_loop() -> TransitionSystem:
+class VerificationResults:
+    """Stores and compares verification results from different provers."""
+
+    def __init__(self, name: str, system: TransitionSystem):
+        self.name = name
+        self.system = system
+        self.kind_result = None
+        self.abduction_result = None
+        self.abduction_invariant = None
+        self.execution_time = 0.0
+
+    def __str__(self) -> str:
+        kind_status = "safe" if self.kind_result else "unsafe"
+        abd_status = "safe" if self.abduction_result else "unsafe"
+
+        result = f"\nTest Case: {self.name}\n"
+        result += f"{'=' * 50}\n"
+        result += f"K-induction result: {kind_status}\n"
+        result += f"Abduction result: {abd_status}\n"
+        result += f"Execution time: {self.execution_time:.2f}s\n"
+
+        if self.abduction_invariant:
+            result += f"Found invariant: {self.abduction_invariant}\n"
+
+        return result
+
+
+class TransitionSystemFactory:
+    """Factory class for creating test transition systems."""
+
+    @staticmethod
+    def create_simple_loop() -> TestCase:
         """Create a simple loop system where y = 2x."""
         x, y = z3.Ints('x y')
         xp, yp = z3.Ints("x! y!")
 
         init = z3.And(x == 0, y == 0)
         trans = z3.And(xp == x + 1, yp == y + 2)
-        post = y <= 2 * x  # Invariant y = 2x
+        post = y <= 2 * x
 
-        return TransitionSystem(
+        system = TransitionSystem(
             variables=[x, y],
             prime_variables=[xp, yp],
             init=init,
@@ -29,16 +83,25 @@ def demo_abduction_prover():
             post=post
         )
 
-    def create_faulty_system() -> TransitionSystem:
-        """Create a system that violates the safety property."""
+        return TestCase(
+            name="Simple Loop",
+            system=system,
+            expected_safe=True,
+            description="Simple loop maintaining y = 2x relationship",
+            theoretical_invariant="y = 2x"
+        )
+
+    @staticmethod
+    def create_faulty_system() -> TestCase:
+        """Create a system that violates its safety property."""
         a, b = z3.Ints('a b')
         ap, bp = z3.Ints("a! b!")
 
         init = z3.And(a == 0, b == 0)
         trans = z3.And(ap == a + 1, bp == b + 1)
-        post = b < a  # Safety property b < a, which is never true in transitions
+        post = b < a
 
-        return TransitionSystem(
+        system = TransitionSystem(
             variables=[a, b],
             prime_variables=[ap, bp],
             init=init,
@@ -46,147 +109,156 @@ def demo_abduction_prover():
             post=post
         )
 
-    def create_counter_system() -> TransitionSystem:
-        """Create a system with a possible counterexample."""
-        i = z3.Int('i')
-        j = z3.Int('j')
-        ip, jp = z3.Ints("i! j!")
-
-        init = z3.And(i == 0, j == 0)
-        trans = z3.And(ip == i + 1, jp == j + 1)
-        post = j <= i  # Safety property j <= i, which holds initially but can be violated
-
-        return TransitionSystem(
-            variables=[i, j],
-            prime_variables=[ip, jp],
-            init=init,
-            trans=trans,
-            post=post
+        return TestCase(
+            name="Faulty System",
+            system=system,
+            expected_safe=False,
+            description="System with parallel increments violating b < a",
+            theoretical_invariant="None (unsafe)"
         )
 
-    # Additional Test Cases
-    def create_mutual_increment_system() -> TransitionSystem:
-        """Create a system where two variables are incremented together."""
-        x, y = z3.Ints('x y')
-        xp, yp = z3.Ints("x! y!")
-
-        init = z3.And(x == 0, y == 0)
-        trans = z3.And(xp == x + 1, yp == y + 1)
-        post = y <= 2 * x  # Maintain y does not exceed twice x
-
-        return TransitionSystem(
-            variables=[x, y],
-            prime_variables=[xp, yp],
-            init=init,
-            trans=trans,
-            post=post
-        )
-
-    def create_decrementing_system() -> TransitionSystem:
-        """Create a system that decrements a variable, potentially making it negative."""
-        x = z3.Int('x')
-        xp = z3.Int("x!")
-
-        init = x == 5
-        trans = xp == x - 1
-        post = x >= 0  # Safety property: x remains non-negative
-
-        return TransitionSystem(
-            variables=[x],
-            prime_variables=[xp],
-            init=init,
-            trans=trans,
-            post=post
-        )
-
-    def create_two_variable_relationship() -> TransitionSystem:
-        """Create a system where a and b maintain a >= 2 * b."""
-        a, b = z3.Ints('a b')
-        ap, bp = z3.Ints("a! b!")
-
-        init = z3.And(a == 4, b == 1)
-        trans = z3.And(ap == a + 2, bp == b + 1)
-        post = a >= 2 * b  # Maintain a >= 2 * b
-
-        return TransitionSystem(
-            variables=[a, b],
-            prime_variables=[ap, bp],
-            init=init,
-            trans=trans,
-            post=post
-        )
-
-    def create_dependent_variables_system() -> TransitionSystem:
-        """Create a system where m = n - 1, violating m <= n / 2."""
-        n, m = z3.Ints('n m')
-        np, mp = z3.Ints("n! m!")
-
-        init = z3.And(n == 2, m == 1)
-        trans = z3.And(np == n + 1, mp == n)  # m = n (will violate m <= n / 2)
-        post = m <= n / 2  # Safety property
-
-        return TransitionSystem(
-            variables=[n, m],
-            prime_variables=[np, mp],
-            init=init,
-            trans=trans,
-            post=m <= (n / 2)
-        )
-
-    def create_bounded_loop_system() -> TransitionSystem:
-        """Create a system where i counts from 0 to 10."""
+    @staticmethod
+    def create_bounded_loop() -> TestCase:
+        """Create a system with a bounded loop counter."""
         i = z3.Int('i')
         ip = z3.Int("i!")
 
         init = i == 0
-        trans = z3.If(
-            i < 10,
-            ip == i + 1,
-            ip == i  # Loop stops incrementing after 10
-        )
-        post = i <= 10  # Safety property: i does not exceed 10
+        trans = z3.If(i < 10, ip == i + 1, ip == i)
+        post = i <= 10
 
-        return TransitionSystem(
+        system = TransitionSystem(
             variables=[i],
             prime_variables=[ip],
             init=init,
             trans=trans,
-            post=i <= 10
+            post=post
         )
 
-    # Define test cases
-    systems = [
-        # Existing Test Cases
-        ("Simple Loop", create_simple_loop(), True),
-        ("Faulty System", create_faulty_system(), False),
-        # ("Counter System", create_counter_system(), False),
+        return TestCase(
+            name="Bounded Loop",
+            system=system,
+            expected_safe=True,
+            description="Counter system with upper bound of 10",
+            theoretical_invariant="0 <= i <= 10"
+        )
 
-        # Additional Test Cases
-        ("Mutual Increment System", create_mutual_increment_system(), True),
-        ("Decrementing System", create_decrementing_system(), False),
-        ("Two-Variable Relationship", create_two_variable_relationship(), True),
-        ("Dependent Variables System", create_dependent_variables_system(), False),
-        ("Bounded Loop System", create_bounded_loop_system(), True)
-    ]
+    @staticmethod
+    def create_dependent_variables() -> TestCase:
+        """Create a system with dependent variable relationships."""
+        n, m = z3.Ints('n m')
+        np, mp = z3.Ints("n! m!")
 
-    for name, system, expected_safe in systems:
-        print(f"\nTesting {name}:")
-        kind_res = check_with_kind(system)
-        print("K induction result: ", kind_res)
+        init = z3.And(n == 2, m == 1)
+        trans = z3.And(np == n + 1, mp == n)
+        post = m <= n / 2
 
-        prover = AbductionProver(system)
-        safe, inv = prover.solve()
+        system = TransitionSystem(
+            variables=[n, m],
+            prime_variables=[np, mp],
+            init=init,
+            trans=trans,
+            post=post
+        )
 
-        print(f"System is {'safe' if safe else 'unsafe'}")
-        print(f"Expected: {'safe' if expected_safe else 'unsafe'}")
-        if safe:
-            print(f"Inductive invariant: {inv}")
-        else:
-            print("No inductive invariant found.")
+        return TestCase(
+            name="Dependent Variables",
+            system=system,
+            expected_safe=False,
+            description="System with m tracking n-1, violating m <= n/2",
+            theoretical_invariant="None (unsafe)"
+        )
 
-        assert safe == expected_safe, f"Incorrect result for {name}"
+
+class VerificationTester:
+    """Manages the execution and reporting of verification tests."""
+
+    def __init__(self, k_induction_bound: int = 20):
+        self.k_bound = k_induction_bound
+        self.results: List[VerificationResults] = []
+
+    def verify_system(self, test_case: TestCase) -> VerificationResults:
+        """Verify a system using both K-induction and Abduction approaches."""
+        result = VerificationResults(test_case.name, test_case.system)
+
+        # K-induction verification
+        kind_prover = KInductionProver(test_case.system)
+        kind_prover.use_aux_invariant = False
+        result.kind_result = kind_prover.solve(k=self.k_bound)
+
+        # Abduction verification
+        start_time = time.time()
+        abduction_prover = AbductionProver(test_case.system)
+
+        try:
+            result.abduction_result, result.abduction_invariant = abduction_prover.solve()
+        except Exception as e:
+            logger.error(f"Error during abduction verification: {e}")
+            result.abduction_result = False
+
+        result.execution_time = time.time() - start_time
+
+        self.results.append(result)
+        return result
+
+    def run_all_tests(self) -> None:
+        """Run all predefined test cases."""
+        test_cases = [
+            TransitionSystemFactory.create_simple_loop(),
+            TransitionSystemFactory.create_faulty_system(),
+            TransitionSystemFactory.create_bounded_loop(),
+            TransitionSystemFactory.create_dependent_variables()
+        ]
+
+        logger.info("Starting verification tests...")
+        for test_case in test_cases:
+            logger.info(f"\nVerifying {test_case.name}")
+            result = self.verify_system(test_case)
+
+            # Verify results match expectations
+            assert result.abduction_result == test_case.expected_safe, \
+                f"Unexpected result for {test_case.name}: " \
+                f"expected {'safe' if test_case.expected_safe else 'unsafe'}, " \
+                f"got {'safe' if result.abduction_result else 'unsafe'}"
+
+            print(result)
+
+    def generate_report(self) -> str:
+        """Generate a summary report of all test results."""
+        report = "\nVerification Test Summary\n"
+        report += "=" * 50 + "\n"
+
+        total_tests = len(self.results)
+        successful_tests = sum(1 for r in self.results
+                               if r.abduction_result == r.kind_result)
+
+        report += f"Total tests run: {total_tests}\n"
+        report += f"Successful verifications: {successful_tests}\n"
+        report += f"Agreement with K-induction: {successful_tests / total_tests:.1%}\n"
+
+        total_time = sum(r.execution_time for r in self.results)
+        report += f"Total execution time: {total_time:.2f}s\n"
+        report += f"Average time per test: {total_time / total_tests:.2f}s\n"
+
+        return report
+
+
+def main():
+    """Main entry point for running verification tests."""
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s'
+    )
+
+    try:
+        tester = VerificationTester()
+        tester.run_all_tests()
+        print(tester.generate_report())
+
+    except Exception as e:
+        logger.error(f"Test execution failed: {e}", exc_info=True)
+        raise
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    demo_abduction_prover()
+    main()

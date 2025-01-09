@@ -22,5 +22,5 @@ The Houdini algorithm is implemented in the EFMC tool as a standalone invariant 
 References
 =============
 
-.. [1] K. R. M. Leino and F. Logozzo, "Houdini, an Annotation Assistant for ESC/Java," in FME, 2001.
+.. [1] K. R. M. Leino and F. Logozzo, Houdini, an Annotation Assistant for ESC/Java. FME'01.
 

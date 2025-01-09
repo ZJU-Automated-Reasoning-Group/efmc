@@ -102,6 +102,11 @@ def solve_with_ef(sts: TransitionSystem):
     # ef_prover.ignore_post_cond = True # an important flag
     global g_verifier_args
     if sts.has_bv:
+        if "bv" not in g_verifier_args.template:
+            print("Unsupported template: ", g_verifier_args.template)
+            print("You may try: ", g_bv_templates)
+            exit(0)
+            
         if g_verifier_args.prevent_over_under_flows > 0:
             ef_prover = EFProver(sts, prop_strengthen=g_verifier_args.prop_strengthen,
                                  validate_invariant=g_verifier_args.validate_invariant,
