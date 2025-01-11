@@ -19,9 +19,11 @@ def qe_abduce(pre_cond: z3.BoolRef, post_cond: z3.BoolRef) -> Optional[z3.ExprRe
         Optional[z3.ExprRef]: The abduced formula ψ if successful, None otherwise
 
     Example:
-        pre: x ≤ 0 ∧ y > 1
-        post: 2x − y + 3z ≤ 10
-        Returns formula over z (vars in post but not in pre)
+         >>> x, y, z = z3.Reals('x y z')
+        >>> pre = z3.And(x <= 0, y > 1)
+        >>> post = 2*x - y + 3*z <= 10
+        >>> result = qe_abduce(pre, post)
+        # Returns formula over z (since z appears only in post)
     """
     try:
         # print(pre_cond, post_cond)
