@@ -214,7 +214,7 @@ class DisjunctiveIntervalTemplate(Template):
                 # the second means "no upper bound"?
                 cnts.append(z3.Or(i3 == -1, z3.And(i3 == 0, i2 == 0)))
             dis_cnts.append(z3.And(cnts))
-        return big_and(dis_cnts)  # TODO: this should be And, but not Or (as they are the additional ones)?
+        return big_and(dis_cnts)
 
     def add_template_cnts(self):
         # FIXME: the following is from IntervalTemplate

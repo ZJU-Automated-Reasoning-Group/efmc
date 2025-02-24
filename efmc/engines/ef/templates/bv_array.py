@@ -56,7 +56,6 @@ class UFBVTemplate(Template):
     def __init__(self, system: TransitionSystem, **kwargs):
         self.template_type = TemplateType.ARRAY
         self.sts = system
-        # TODO: we should be "directly" pass system to IntervalTemplate
         # because it only deals with int/real?
 
         self.numeric_template = None

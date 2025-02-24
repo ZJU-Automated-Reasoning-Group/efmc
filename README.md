@@ -16,14 +16,6 @@ post-conditions.
 efmc.py
 ~~~~
 
-### 1.2 Other Useful Files
-
-The following file can be used for solving exists-forall problems
-over bit-vectors.
-
-~~~~
-efmst_solver.py
-~~~~
 
 ### Install the library?
 You can try the follwoing command (in a virtual environemnt)
@@ -33,6 +25,9 @@ pip install -e .
 
 Then, the `efmc` is a command-line tool.
 
+~~~~
+efmc --help
+~~~~
 
 ## 2. The Main Verification Engines
 

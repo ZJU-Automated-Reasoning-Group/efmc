@@ -60,7 +60,7 @@ def solve_with_bin_qbf(fml_str: str, solver_name: str):
         p_gene.stdout.close()  # close?
         timer_gene.cancel()
         if p_gene.poll() is None:
-            p_gene.terminate()  # TODO: need this?
+            p_gene.terminate()
 
         os.remove(tmp_filename)  # rm the tmp file
 
@@ -156,7 +156,7 @@ def solve_with_bin_smt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
         p_gene.stdout.close()  # close?
         timer_gene.cancel()
         if p_gene.poll() is None:
-            p_gene.terminate()  # TODO: need this?
+            p_gene.terminate()
 
         os.remove(tmp_filename)  # rm the tmp file
 
@@ -218,7 +218,7 @@ def demo_solver():
     p_gene.stdout.close()  # close?
     timer_gene.cancel()
     if p_gene.poll() is None:
-        p_gene.terminate()  # TODO: need this?
+        p_gene.terminate()
 
     print(out_gene)
 
