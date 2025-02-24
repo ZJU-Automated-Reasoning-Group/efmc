@@ -3,11 +3,11 @@ Test two functions:
 1. Abductive inference (e.g., using quantifier elimination or SyGuS)
 2. Abduction-based invariant inference (that use 1 as a sub-procedure)
 """
-import z3
+
 
 from efmc.tests import TestCase, main
 from efmc.engines.abduction import abduce
-
+import z3
 
 class TestAbduction(TestCase):
 

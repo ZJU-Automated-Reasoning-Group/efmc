@@ -1,37 +1,111 @@
 """
-New TransitionSystem
+Enhanced TransitionSystem that supports:
+1. Multiple invariants
+2. Mixed variable types (int, real, bool, bv, array)
+3. Flexible number of variables and prime variables
 """
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict, Set, Any, Optional, Tuple
 from collections import defaultdict
-from itertools import product
+import z3
 
 
 class TransitionSystem:
     def __init__(self):
-        self.states = set()
-        self.initial_states = set()
-        self.transitions = defaultdict(list)
-        self.labels = defaultdict(set)
+        # Core components
+        self.variables: Dict[str, z3.ExprRef] = {}  # name -> var
+        self.prime_variables: Dict[str, z3.ExprRef] = {}  # name -> primed var
+        self.invariants: List[z3.ExprRef] = []  # Multiple invariants
+        self.init: z3.ExprRef = None  # Initial states
+        self.trans: z3.ExprRef = None  # Transition relation
+        self.post: z3.ExprRef = None  # Property to verify
+        
+        # Type tracking
+        self.var_types: Dict[str, str] = {}  # Variable name -> type
+        self.type_vars: Dict[str, Set[str]] = defaultdict(set)  # Type -> variable names
+        
+    def add_variable(self, name: str, sort: z3.SortRef, prime: bool = False) -> z3.ExprRef:
+        """Add a variable with given sort (type)"""
+        var = z3.Const(name, sort)
+        var_type = str(sort)
+        
+        if prime:
+            self.prime_variables[name] = var
+        else:
+            self.variables[name] = var
+            self.var_types[name] = var_type
+            self.type_vars[var_type].add(name)
+            
+        return var
 
-    def add_state(self, state: Any, initial: bool = False):
-        self.states.add(state)
-        if initial:
-            self.initial_states.add(state)
+    def add_invariant(self, inv: z3.ExprRef):
+        """Add an invariant"""
+        self.invariants.append(inv)
 
-    def add_transition(self, source: Any, target: Any, action: Any):
-        self.transitions[source].append((action, target))
+    def set_init(self, init: z3.ExprRef):
+        """Set initial states condition"""
+        self.init = init
 
-    def add_label(self, state: Any, label: Any):
-        self.labels[state].add(label)
+    def set_trans(self, trans: z3.ExprRef):
+        """Set transition relation"""
+        self.trans = trans
 
-    def get_successors(self, state: Any, action: Optional[Any] = None) -> List[Any]:
-        if action is None:
-            return [target for _, target in self.transitions[state]]
-        return [target for act, target in self.transitions[state] if act == action]
+    def set_post(self, post: z3.ExprRef):
+        """Set post-condition (property to verify)"""
+        self.post = post
 
-    def get_labels(self, state: Any) -> set:
-        return self.labels[state]
+    def get_variables(self, var_type: Optional[str] = None) -> List[z3.ExprRef]:
+        """Get all variables, optionally filtered by type"""
+        if var_type is None:
+            return list(self.variables.values())
+        return [self.variables[name] for name in self.type_vars[var_type]]
 
-    def is_initial(self, state: Any) -> bool:
-        return state in self.initial_states
-    
+    def get_prime_variables(self, var_type: Optional[str] = None) -> List[z3.ExprRef]:
+        """Get all prime variables, optionally filtered by type"""
+        if var_type is None:
+            return list(self.prime_variables.values())
+        return [self.prime_variables[name] for name in self.type_vars[var_type]]
+
+    def get_all_variables(self) -> List[z3.ExprRef]:
+        """Get all variables (both normal and prime)"""
+        return self.get_variables() + self.get_prime_variables()
+
+    def to_chc_constraints(self) -> z3.ExprRef:
+        """Convert to CHC (Constrained Horn Clauses) constraints"""
+        s = z3.SolverFor("HORN")
+        
+        # Create separate invariant functions for different variable types
+        inv_funcs = {}
+        for type_name, var_names in self.type_vars.items():
+            if var_names:
+                vars_of_type = [self.variables[name] for name in var_names]
+                sort = vars_of_type[0].sort()
+                inv_name = f"inv_{type_name}"
+                inv_funcs[type_name] = z3.Function(inv_name, *([sort] * len(vars_of_type)), z3.BoolSort())
+
+        # Initial states imply invariants
+        for type_name, inv_func in inv_funcs.items():
+            vars_of_type = [self.variables[name] for name in self.type_vars[type_name]]
+            s.add(z3.ForAll(vars_of_type, 
+                          z3.Implies(self.init, inv_func(*vars_of_type))))
+
+        # Invariants and transition relation imply next state invariants
+        for type_name, inv_func in inv_funcs.items():
+            curr_vars = [self.variables[name] for name in self.type_vars[type_name]]
+            next_vars = [self.prime_variables[name] for name in self.type_vars[type_name]]
+            s.add(z3.ForAll(self.get_all_variables(),
+                          z3.Implies(z3.And(inv_func(*curr_vars), self.trans),
+                                   inv_func(*next_vars))))
+
+        # Invariants imply post-condition
+        for type_name, inv_func in inv_funcs.items():
+            vars_of_type = [self.variables[name] for name in self.type_vars[type_name]]
+            s.add(z3.ForAll(vars_of_type,
+                          z3.Implies(inv_func(*vars_of_type), self.post)))
+
+        return z3.And(s.assertions())
+
+    def to_chc_str(self) -> str:
+        """Convert to CHC format string"""
+        solver = z3.Solver()
+        solver.add(self.to_chc_constraints())
+        return "(set-logic HORN)\n" + solver.to_smt2()

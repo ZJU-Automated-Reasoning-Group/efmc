@@ -3,7 +3,7 @@
 # release to pypi?
 
 # Note: To use the 'upload' functionality of this file, you must:
-#   $ pipenv install twine --dev
+#   $ pipenv install twine --dev  # really?
 import io
 import os
 import sys
@@ -105,14 +105,14 @@ setup(
     python_requires=REQUIRES_PYTHON,
     url=URL,
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
-    # If your package is a single module, use this instead of 'packages':
-    # py_modules=['mypackage'],
-
-    # entry_points={
-    #     'console_scripts': ['mycli=mymodule:cli'],
-    # },
+    
+    entry_points={
+        'console_scripts': [
+            'efmc=efmc.cli.efmc:main',
+        ],
+    },
+    
     install_requires=REQUIRED,
-    # extras_require=EXTRAS,
     include_package_data=True,
     license='MIT',
     classifiers=[

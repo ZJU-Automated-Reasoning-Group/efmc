@@ -5,11 +5,11 @@ SMT-based Software Model Checking
 ## 1. Introduction
 EFMC is a toolkit for verifying program properties using SMT-based verification engines. It implements multiple approaches, including template-based verification, property-directed reachability (PDR), Houdini, and k-induction. Each engine offers distinct advantages for different types of programs and properties.
 
+
 ### 1.1 Entrance of the Verifier
 
 The main verification interface is through efmc.py, which supports programs specified in either CHC (Constrained Horn
-Clauses) or
-SyGuS (Syntax-Guided Synthesis) format with pre- and
+Clauses) or SyGuS (Syntax-Guided Synthesis) format with pre- and
 post-conditions.
 
 ~~~~
@@ -25,6 +25,15 @@ over bit-vectors.
 efmst_solver.py
 ~~~~
 
+### Install the library?
+You can try the follwoing command (in a virtual environemnt)
+~~~~
+pip install -e .
+~~~~
+
+Then, the `efmc` is a command-line tool.
+
+
 ## 2. The Main Verification Engines
 
 Currently, the users can choose three verification engines
@@ -32,7 +41,7 @@ Currently, the users can choose three verification engines
 - Template-based (Constraint-based) Approach
 - Property-Directed Reachability (PDR)
 - K-Induction
-- Abductive Inference
+- Abductive Inference (NOT Stable)
 
 TBD: Download (or auto build) some verifiers for comparison
 
