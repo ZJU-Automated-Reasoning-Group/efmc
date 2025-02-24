@@ -14,7 +14,7 @@ class BitVecAffineTemplate(Template):
     This class represents a template for affine relations over bit-vectors.
     It can be used to generate invariants for transition systems with bit-vector variables.
 
-    TODO: There are several variants. Some references
+    There are several variants. Some references
       - Matt elder et al., Abstract domains of affine relations, TOPLAS'14
       - Olm and Seidl, Precise interprocedural analysis through linear algebra, POPL'04
       - King and Sondergaard, Inferring congruence equations using SAT, CAV'08

@@ -15,7 +15,7 @@ Welcome to EFMC's documentation
    template
    third-party
    nonlinear
-   todo
+
 
 Indices and tables
 ==================

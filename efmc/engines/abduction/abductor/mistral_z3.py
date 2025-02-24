@@ -99,7 +99,7 @@ class MSASolver:
         if len(x_univl) >= 1:
             qfml = z3.ForAll(list(x_univl), self.formula)
         else:
-            qfml = self.formula  # TODO: is this OK?
+            qfml = self.formula
         s.add(qfml)
         if s.check() == z3.sat:
             return s.model()

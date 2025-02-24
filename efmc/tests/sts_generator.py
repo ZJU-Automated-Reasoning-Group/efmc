@@ -184,7 +184,7 @@ class TransitionSystemGenerator:
 def demo():
     gen = TransitionSystemGenerator()
     # Generate and print a boolean program
-    sts = gen.gen_lia_program()
+    sts = gen.gen_bv_program()
     print("Generated Program:")
     print(f"Init: {sts.init}")
     print(f"Trans: {sts.trans}")

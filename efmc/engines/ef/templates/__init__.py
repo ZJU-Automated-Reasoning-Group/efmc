@@ -14,7 +14,6 @@ from .bv_affine import BitVecAffineTemplate, DisjunctiveBitVecAffineTemplate
 from .bv_polyhedron import BitVecPolyhedronTemplate, DisjunctiveBitVecPolyhedronTemplate
 from .bv_bitwise import BitMasksTemplate, BitPredAbsTemplate
 
-# Export (TODO: maybe export shorter names)
 TemplateType = TemplateType
 IntervalTemplate = IntervalTemplate
 IntervalTemplateV2 = IntervalTemplateV2
