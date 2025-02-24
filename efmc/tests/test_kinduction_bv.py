@@ -1,4 +1,6 @@
-# coding: utf-8
+"""
+Test k-induction on bit-vector variables.
+"""
 import time
 import z3
 

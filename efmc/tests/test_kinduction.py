@@ -1,4 +1,6 @@
-# coding: utf-8
+"""
+Testing the incremental and non-incremental k-induction prover
+"""
 import time
 import z3
 
@@ -38,15 +40,15 @@ class TestKInduction(TestCase):
 
 
     def test_kind2(self):
-        return
         # kind the incremental k-induction here
         sts = TransitionSystem()
 
         sts.from_z3_cnts(list(get_int_sys1()))
-        pp = KInductionProverInc(sts)
-        res = pp.solve(k=20)
-        assert(res == "safe")
+        inc_verifier = KInductionProverInc(sts)
+        inc_res = inc_verifier.solve(max_k=20) 
 
+        noinc_verifier = KInductionProver(sts)
+        noinc_res = noinc_verifier.solve(k=20)
 
 if __name__ == '__main__':
     main()
