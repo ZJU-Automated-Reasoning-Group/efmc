@@ -8,6 +8,12 @@ Strategies for generization:
 - Abductive inference
 - Template-based generalization
 - ...
+
+Algorithms that may benefit from generalization:
+- IC3/DPR
+- CEGAR with Craig interpolant
+- Trace abstraction
+- ...
 """
 
 
