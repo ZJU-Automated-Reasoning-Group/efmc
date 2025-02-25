@@ -1,5 +1,7 @@
 """ Automated program verification for various transition systems specified in different formats
 This file is the default external interface for calling different engines inside the `efmc` dir
+
+NOTICE: We already provide a cli tool in efmc/cli/efmc.py. This file will not be used in the future.
 """
 
 import logging

@@ -19,7 +19,7 @@ class SolverConfig:
         self.additional_opts = additional_opts or []
 
     def get_command_args(self) -> List[str]:
-        cmd = ["efmc.py", "--engine", self.engine]
+        cmd = ["efmc", "--engine", self.engine]
         if self.template:
             cmd.extend(["--template", self.template])
         cmd.extend(["--aux-inv", str(self.aux_inv).lower()])

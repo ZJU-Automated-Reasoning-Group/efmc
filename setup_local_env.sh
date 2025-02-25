@@ -10,10 +10,16 @@ VENV_DIR="${SCRIPT_DIR}/venv"
 
 echo "Setting up EFMC environment..."
 
+# Check if python3 is available, otherwise use python
+PYTHON_CMD="python3"
+if ! command -v python3 &> /dev/null; then
+    PYTHON_CMD="python"
+fi
+
 # 1. Create virtual environment if it doesn't exist
 if [ ! -d "${VENV_DIR}" ]; then
     echo "Creating virtual environment..."
-    python3 -m venv "${VENV_DIR}"
+    $PYTHON_CMD -m venv "${VENV_DIR}"
 else
     echo "Virtual environment already exists."
 fi
@@ -26,7 +32,7 @@ pip install -r "${SCRIPT_DIR}/requirements.txt"
 
 # 3. Download solver binaries
 echo "Downloading solver binaries..."
-python "${SCRIPT_DIR}/bin_solvers/download.py"
+$PYTHON_CMD "${SCRIPT_DIR}/bin_solvers/download.py"
 
 # 4. Run tests
 echo "Running tests..."

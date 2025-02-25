@@ -36,6 +36,7 @@ def prime(exp: z3.ExprRef):
             substitutions.append((v, z3.Int(f"{v}_p")))
     return z3.substitute(exp, substitutions)
 
+
 class HoudiniProver:
     """Houdini-based invariant inference engine"""
     

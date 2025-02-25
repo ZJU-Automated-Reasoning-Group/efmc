@@ -13,8 +13,10 @@ logger = logging.getLogger(__name__)
 def check_invariant(sts: TransitionSystem, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRef):
     """Check whether the generated invariant is correct"""
     correct = True
-    
-    # 1. Check initiation
+
+    # TODO: should we check the three conditions all-in-one?
+
+    # 1. Check initiation: inv => sts.init
     if not is_entail(sts.init, inv):
         correct = False
         logger.error("Initiation check failed")
@@ -22,7 +24,7 @@ def check_invariant(sts: TransitionSystem, inv: z3.ExprRef, inv_in_prime_variabl
         if model:
             logger.error(f"Counterexample: {model}")
 
-    # 2. Check inductiveness
+    # 2. Check inductiveness: inv && sts.trans => inv'
     if not is_entail(z3.And(sts.trans, inv), inv_in_prime_variables):
         correct = False
         logger.error("Inductiveness check failed")
@@ -30,8 +32,10 @@ def check_invariant(sts: TransitionSystem, inv: z3.ExprRef, inv_in_prime_variabl
         if model:
             logger.error(f"Counterexample: {model}")
 
-    # 3. Check safety
+    # 3. Check safety/suffciency: inv => sts.post
+    # NOTICE: here the guard "C" is Hoare logic is "moved" to te transition relation, and we can just check is_entail(inv, sts.post) for correctness.
     if (not sts.ignore_post_cond) and (not is_entail(inv, sts.post)):
+        # for some applications, we may ignore the post condition
         correct = False
         logger.error("Safety check failed")
         model = get_counterexample(z3.And(inv, z3.Not(sts.post)))
@@ -55,6 +59,7 @@ def get_counterexample(formula: z3.ExprRef):
     if s.check() == z3.sat:
         return s.model()
     return None
+
 
 def weaken_invariant(sts: TransitionSystem, inv: z3.ExprRef) -> z3.ExprRef:
     """

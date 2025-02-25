@@ -213,7 +213,7 @@ def solve_file(file_path, ef_template, smt_solver, cegis_solver, file_name):
     cmd = [
         "python3",
         CUR_DIR +
-        "/efmc.py",
+        "/efmc.py",  # TBD: this file has been removed..
         "--engine",
         METHOD,
         "--lang",

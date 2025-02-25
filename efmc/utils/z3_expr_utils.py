@@ -452,3 +452,9 @@ def eval_predicates(m: z3.ModelRef, predicates: List[z3.BoolRef]):
         else:
             pass
     return res
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
+    
