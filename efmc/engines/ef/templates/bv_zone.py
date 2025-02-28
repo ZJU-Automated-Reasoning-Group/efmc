@@ -3,7 +3,7 @@
 import itertools
 
 from efmc.engines.ef.templates.abstract_template import *
-from efmc.engines.ef.templates.bv_utils import Signedness
+from efmc.utils.bv_utils import Signedness
 from efmc.sts import TransitionSystem
 from efmc.utils import get_variables, big_and, big_or
 

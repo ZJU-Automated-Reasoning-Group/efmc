@@ -1,6 +1,7 @@
 """Affine domain over integer or real variables
 # FIXME: it seems that this file is not implemented yet
 """
+
 import logging
 from efmc.engines.ef.templates.abstract_template import *
 from efmc.sts import TransitionSystem

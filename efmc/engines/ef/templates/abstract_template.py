@@ -1,3 +1,12 @@
+"""
+This module contains the abstract base class for template-based verification.
+
+The Template class is an abstract base class that defines the interface for
+template-based program verification. It provides methods for managing template
+variables, constraints, and building invariants and ranking functions.
+
+"""
+
 from enum import Enum, auto
 from typing import Optional
 from abc import ABC, abstractmethod
@@ -44,9 +53,6 @@ class TemplateType(Enum):
     BV_DISJUNCTIVE_AFFINE = auto()
     BV_DISJUNCTIVE_POLYHEDRON = auto()
     BV_BITMASK = auto()
-
-    # String domains
-    # ...?
 
 
     @classmethod

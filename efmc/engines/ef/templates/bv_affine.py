@@ -4,7 +4,7 @@ Affine relation domain over bit-vectors
 """
 from efmc.engines.ef.templates.abstract_template import *
 from efmc.sts import TransitionSystem
-from efmc.engines.ef.templates.bv_utils import Signedness
+from efmc.utils.bv_utils import Signedness
 from efmc.utils import big_and, big_or
 
 
