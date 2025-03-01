@@ -54,6 +54,28 @@ def box_optimize(fml: z3.ExprRef, minimize: List, maximize: List, timeout: int =
         return min_res, max_res
 
 
+def pareto_optimize(fml: z3.ExprRef, minimize: List, maximize: List, timeout: int = 0):
+    """
+    Returns a model based on given constraints as a tuple
+    :param fml: formula
+    :param minimize: list of minimization conditions
+    :param maximize: list of maximization conditions
+    :param timeout: timeout
+    """
+    s = z3.Optimize()
+    s.set("opt.priority", "pareto")
+    s.add(fml)
+    if timeout > 0:
+        s.set("timeout", timeout)
+    min_objectives = [s.minimize(e) for e in minimize]
+    max_objectives = [s.maximize(e) for e in maximize]
+    if s.check() == z3.sat:
+        min_res = [obj.value() for obj in min_objectives]
+        max_res = [obj.value() for obj in max_objectives]
+        return min_res, max_res 
+    else:
+        return None, None
+
 def maxsmt(hard: z3.BoolRef, soft: List[z3.BoolRef], weight: List[int], timeout=0) -> int:
     """
     Solving MaxSMT instances

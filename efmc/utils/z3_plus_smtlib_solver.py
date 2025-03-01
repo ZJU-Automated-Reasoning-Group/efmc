@@ -6,7 +6,7 @@ from threading import Timer
 
 import z3
 
-from arlib.utils.smtlib_solver import SmtlibProc
+from efmc.smttools.smtlib_solver import SmtlibProc
 
 """
 TODO: Use z3 as the default solve for handling "normal queries" (e.g., sat, equiv, entail, etc)

@@ -1,3 +1,5 @@
+.coverage
+.vscode
 *egg-info*
 rebase.sh
 docs/build

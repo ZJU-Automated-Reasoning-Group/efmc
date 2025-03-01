@@ -7,6 +7,7 @@ based on the paper by Flanagan and Leino: "Houdini, an Annotation Assistant for 
 Modified from https://github.com/sosy-lab/java-smt/blob/d05b4c8eeb3424be20cc1d9553eaffae81898857/src/org/sosy_lab/java_smt/example/HoudiniApp.java
 """
 import logging
+from typing import List
 import z3
 
 from efmc.sts import TransitionSystem
@@ -45,7 +46,7 @@ class HoudiniProver:
         self.sts = system
         self.logger = logging.getLogger(__name__)
 
-    def houdini(self, lemmas: [z3.ExprRef]):
+    def houdini(self, lemmas: List[z3.ExprRef]):
         """Find the maximal inductive subset for the given lemmas.
 
         Args:
@@ -93,8 +94,9 @@ class HoudiniProver:
             return "safe"
 
         # Generate candidate lemmas (currently using post-condition)
-        # TODO: implement more sophisticated lemma generation
+        # TODO: implement more sophisticated lemma generation, e.g., using the lemmas from the transition system
         lemmas = [self.sts.post]
+        # lemmas.extend(self.sts.invariants)
         
         # Run Houdini algorithm
         result = self.houdini(lemmas)

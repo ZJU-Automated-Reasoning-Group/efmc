@@ -99,6 +99,7 @@ def get_signedness(formula: z3.BitVecRef) -> Signedness:
         kind = expr.decl().kind()
         
         # Unsigned operations
+        # TOOD: are these correct??
         if kind in [z3.Z3_OP_BULT, z3.Z3_OP_BULE, 
                    z3.Z3_OP_BUGT, z3.Z3_OP_BUGE]:
             return Signedness.UNSIGNED

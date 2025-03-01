@@ -14,6 +14,8 @@ Algorithms that may benefit from generalization:
 - CEGAR with Craig interpolant
 - Trace abstraction
 - ...
+
+FIXME: by LLM, to check if the generalization is correct
 """
 
 
