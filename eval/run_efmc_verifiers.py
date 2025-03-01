@@ -1,4 +1,9 @@
-#!/usr/bin/env python3
+"""
+Regression script for running different configurations of efmc on all benchmarks in the given directory.
+
+"""
+
+
 import argparse
 import concurrent.futures
 import json

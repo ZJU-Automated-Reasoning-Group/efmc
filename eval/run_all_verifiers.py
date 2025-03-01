@@ -8,7 +8,7 @@ eldarica_path = ${ELDARICA_ROOT}/eld
 eldarica_options =
 
 Esampel usage
-python benchmark_runner.py --benchmark-dir /path/to/benchmarks --timeout 300 --parallel 4 --output-dir ./results
+python run_all_verifiers.py --benchmark-dir /path/to/benchmarks --timeout 300 --parallel 4 --output-dir ./results
 """
 
 #!/usr/bin/env python3
