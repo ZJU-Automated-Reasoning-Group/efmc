@@ -2,7 +2,10 @@
 CHC(LIA) to CHC(BV)
 """
 import os
+from typing import List
+
 import z3
+
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse_sexpression
 from efmc.frontends.chc_parser import CHCParser, ground_quantifier
 from efmc.utils.z3_expr_utils import get_variables
@@ -12,12 +15,15 @@ g_bitvector_signedness = "signed"
 
 
 def rep_operand(op: str) -> str:
+    """
+    Replace the operand with the corresponding BV operator.
+    """
     if g_bitvector_signedness == "signed":
         rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
                      "div": "bvsdiv",
                      ">=": "bvsge", "<=": "bvsle", ">": "bvsgt", "<": "bvslt"}
     else:
-        rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
+        rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvurem",
                      "div": "bvudiv",
                      ">=": "bvuge", "<=": "bvule", ">": "bvugt", "<": "bvult"}
 
@@ -26,7 +32,7 @@ def rep_operand(op: str) -> str:
     return op
 
 
-def to_bv_sexpr_misc(line: [str]):
+def to_bv_sexpr_misc(line: List[str]):
     """
     This is used for converting LIRA expressions to BV
     E.g.,

@@ -1,6 +1,7 @@
 # coding: utf-8
 """
 Augmenting Z3 using PySMT, e.g., interpolant generation
+FIXME: the name of this file can be confusing
 """
 import logging
 import z3

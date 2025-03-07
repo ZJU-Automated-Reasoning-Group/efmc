@@ -3,6 +3,7 @@ CHC(LIA) to SYGUS(BV)
 """
 import os
 import z3
+from typing import List
 from efmc.frontends.mini_sygus_parser import SyGusInVParser, parse_sexpression
 from efmc.frontends.chc_parser import CHCParser, ground_quantifier
 
@@ -16,7 +17,7 @@ def rep_operand(op: str) -> str:
                      "div": "bvudiv",
                      ">=": "bvsge", "<=": "bvsle", ">": "bvsgt", "<": "bvslt"}
     else:
-        rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvsdiv",
+        rep_rules = {"+": "bvadd", "-": "bvsub", "*": "bvmul", "%": "bvurem",
                      "div": "bvsdiv",
                      ">=": "bvuge", "<=": "bvule", ">": "bvugt", "<": "bvult"}
 
@@ -25,7 +26,7 @@ def rep_operand(op: str) -> str:
     return op
 
 
-def to_bv_sexpr_misc(line: [str]):
+def to_bv_sexpr_misc(line: List[str]):
     """
     This is used for converting LIRA expressions to BV
     E.g.,

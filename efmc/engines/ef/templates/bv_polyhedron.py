@@ -244,6 +244,7 @@ class DisjunctiveBitVecPolyhedronTemplate(Template):
         return big_or(cnts)
 
     def add_template_cnts_for_ranking_function(self):
+        """For tempalte-based ranking function synthesis"""
         raise NotImplementedError
 
     def build_ranking_function_expr(self):

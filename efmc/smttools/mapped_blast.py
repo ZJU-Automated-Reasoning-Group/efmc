@@ -22,6 +22,15 @@ def is_iff(exp: z3.ExprRef): return exp.decl().kind() == z3.Z3_OP_IFF
 
 
 def proj_id_last(var, n_proj_vars, n_vars):
+    """
+    Convert a projected variable ID to the original variable ID.
+
+    Args:
+        var: The projected variable ID to convert.
+        n_proj_vars: The number of projected variables.
+        n_vars: The total number of variables.
+    
+    """
     assert var != 0
     is_neg = var < 0
     if abs(var) <= n_proj_vars:

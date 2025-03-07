@@ -1,11 +1,14 @@
 """
+Regression script for running all verifiers on all benchmarks in the given directory.
 
 Example configuration file (benchmark_config.ini):
 [SOLVERS]
 z3_path = ${Z3_ROOT}/bin/z3
 z3_options = fp.engine=spacer
 eldarica_path = ${ELDARICA_ROOT}/eld
-eldarica_options =
+efmc_path = ${EFMC_ROOT}/efmc # really?
+
+We also have a default configuration inside the script.
 
 Esampel usage
 python run_all_verifiers.py --benchmark-dir /path/to/benchmarks --timeout 300 --parallel 4 --output-dir ./results
@@ -57,6 +60,7 @@ class BenchmarkConfig:
                 'z3_options': 'fp.engine=spacer',
                 'eldarica_path': '${ELDARICA_ROOT}/eld',
                 'eldarica_options': ''
+
             }
         }
 

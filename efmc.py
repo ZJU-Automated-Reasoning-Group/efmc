@@ -11,7 +11,6 @@ import subprocess
 import sys
 from threading import Timer
 from typing import List
-
 import psutil
 
 from efmc.engines.ef.ef_prover import EFProver
@@ -53,15 +52,21 @@ def setup_signal_handlers():
 
 
 def terminate(process: subprocess.Popen, is_timeout: List[bool]):
+    """Terminate a process and all its children"""
     if process.poll() is None:
         try:
-            # process.terminate()
-            os.kill(process.pid, signal.SIGKILL)
+            parent = psutil.Process(process.pid)
+            # Kill child processes first
+            for child in parent.children(recursive=True):
+                try:
+                    child.kill()
+                except psutil.NoSuchProcess:
+                    pass
+            # Kill parent process
+            parent.kill()
             is_timeout[0] = True
-        except Exception as es:
-            # print("error for interrupting")
-            print(es)
-            pass
+        except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
+            logger.error(f"Error terminating process: {e}")
 
 
 def solve_with_bin_solver(cmd: List[str], timeout=3600) -> str:
