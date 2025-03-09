@@ -28,7 +28,9 @@ REQUIRED = [
     'Cython~=0.29.34',
     'python-sat==0.1.8.dev1',
     'tqdm~=4.65.0',
-    'meson>=0.64'
+    'meson>=0.64',
+    'pytest~=7.3.2',
+    'coverage~=7.6.12'
 ]
 
 # The rest you shouldn't have to touch too much :)

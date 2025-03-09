@@ -35,6 +35,8 @@ get_int_sys9():
 
 import z3
 
+from efmc.sts import TransitionSystem
+
 
 def get_int_sys1():
     """
@@ -222,3 +224,40 @@ def get_int_sys10():
     
     all_vars = [free, alloc1, alloc2, _p_free, _p_alloc1, _p_alloc2]
     return all_vars, init, trans, post
+
+
+
+def create_simple_sts(use_real=True):
+    """
+    Create a simple transition system for testing purposes.
+    
+    Args:
+        use_real: If True, use real variables, otherwise use integer variables
+    
+    Returns:
+        A simple TransitionSystem instance
+    """
+    sts = TransitionSystem()
+    
+    # Create variables based on the type
+    if use_real:
+        x, y = z3.Reals('x y')
+        xp, yp = z3.Reals('x! y!')
+    else:
+        x, y = z3.Ints('x y')
+        xp, yp = z3.Ints('x! y!')
+    
+    # Set up the transition system
+    sts.variables = [x, y]
+    sts.prime_variables = [xp, yp]
+    
+    # Initial condition: x >= 0 and y >= 0
+    sts.init = z3.And(x >= 0, y >= 0)
+    
+    # Transition relation: x' = x + 1, y' = y + x
+    sts.trans = z3.And(xp == x + 1, yp == y + x)
+    
+    # Post-condition: y >= 0
+    sts.post = y >= 0
+    
+    return sts

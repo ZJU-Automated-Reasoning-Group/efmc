@@ -102,10 +102,30 @@ def run_solver(solver_path: str, config: SolverConfig, input_file: str,
         except subprocess.TimeoutExpired:
             # Kill only processes in our process group
             try:
+                # First try a gentle termination
                 os.killpg(pgid, signal.SIGTERM)
-                process.wait(timeout=2)
-            except subprocess.TimeoutExpired:
-                os.killpg(pgid, signal.SIGKILL)
+                
+                # Give it a short time to terminate gracefully
+                for _ in range(5):  # Try for 0.5 seconds
+                    if process.poll() is not None:
+                        break  # Process terminated
+                    time.sleep(0.1)
+                
+                # If still running, force kill
+                if process.poll() is None:
+                    os.killpg(pgid, signal.SIGKILL)
+                    
+                # Wait for process to be fully killed
+                process.wait(timeout=1)
+                
+            except (subprocess.TimeoutExpired, ProcessLookupError, PermissionError) as e:
+                logger.warning(f"Error while killing process group {pgid}: {str(e)}")
+                # Last resort: try to kill just the main process
+                try:
+                    process.kill()
+                    process.wait(timeout=1)
+                except Exception as e2:
+                    logger.error(f"Failed to kill process: {str(e2)}")
             
             elapsed = time.time() - start_time
             stdout, stderr = "", "Timeout"
