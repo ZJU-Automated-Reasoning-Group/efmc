@@ -10,9 +10,6 @@ eldarica_path = ${ELDARICA_ROOT}/eld
 efmc_path = ${EFMC_ROOT}/efmc # really?
 
 We also have a default configuration inside the script.
-
-Esampel usage
-python run_all_verifiers.py --benchmark-dir /path/to/benchmarks --timeout 300 --parallel 4 --output-dir ./results
 """
 
 #!/usr/bin/env python3

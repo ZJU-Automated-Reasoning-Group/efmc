@@ -52,7 +52,8 @@ class TemplateType(Enum):
     BV_DISJUNCTIVE_OCTAGON = auto()
     BV_DISJUNCTIVE_AFFINE = auto()
     BV_DISJUNCTIVE_POLYHEDRON = auto()
-    BV_BITMASK = auto()
+    BV_KNOWNBITS = auto()
+    BV_BITS_PREDICATE_ABSTRACTION = auto()
 
 
     @classmethod

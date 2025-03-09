@@ -8,8 +8,8 @@ from efmc.sts import TransitionSystem
 
 class TestBitVecBitWiseTemplate(TestCase):
 
-    def test_bv_bitmask(self):
-        """Test bit vector bitmask domain
+    def test_bv_knownbits(self):
+        """Test bit vector knownbits domain
         """
         # Define bit vector variables
         BV_SIZE = 6

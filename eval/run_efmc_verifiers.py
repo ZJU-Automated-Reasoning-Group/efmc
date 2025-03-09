@@ -10,6 +10,7 @@ import subprocess
 import sys
 import time
 from typing import List, Dict
+import signal
 
 
 # Set up logging
@@ -32,8 +33,7 @@ def setup_logging(log_level=logging.INFO):
 
 
 class SolverConfig:
-    def __init__(self, engine: str, template: str = None, aux_inv: bool = False,
-                 lang: str = "sygus", additional_opts: List[str] = None):
+    def __init__(self, engine: str, template: str = None, aux_inv: bool = False, lang: str = "sygus", additional_opts: List[str] = None):
         self.engine = engine
         self.template = template
         self.aux_inv = aux_inv
@@ -84,51 +84,78 @@ def run_solver(solver_path: str, config: SolverConfig, input_file: str,
     logger.debug(f"Running command: {' '.join(cmd)}")
     
     try:
-        result = subprocess.run(
+        # Create a new process group with unique group ID
+        process = subprocess.Popen(
             cmd,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=timeout
+            preexec_fn=os.setsid
         )
-        elapsed = time.time() - start_time
+        pgid = os.getpgid(process.pid)
         
-        # Initialize retcode with the process return code
-        retcode = result.returncode
+        try:
+            stdout, stderr = process.communicate(timeout=timeout)
+            elapsed = time.time() - start_time
+            retcode = process.returncode
+            
+        except subprocess.TimeoutExpired:
+            # Kill only processes in our process group
+            try:
+                os.killpg(pgid, signal.SIGTERM)
+                process.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                os.killpg(pgid, signal.SIGKILL)
+            
+            elapsed = time.time() - start_time
+            stdout, stderr = "", "Timeout"
+            retcode = -1
+            
+        # Create config_id
+        config_id = f"{config.engine}"
+        if config.template:
+            config_id += f"_{config.template}"
+        if config.aux_inv:
+            config_id += "_aux"
+        if "--prop-strengthen" in config.additional_opts:
+            config_id += "_strengthen"
         
         # Special handling for ef engine
-        if config.engine == "ef":
-            if "safe" in result.stdout.lower():
+        if config.engine == "ef" and stdout:
+            if "safe" in stdout.lower():
                 retcode = 0  # Success
-            elif "timeout" in result.stdout.lower():
+            elif "timeout" in stdout.lower():
                 retcode = -1  # Timeout
             else:
-                retcode = 1  # Failed (including "unknown" cases)
+                retcode = 1  # Failed]
+
+        if config.engine == "kind" and stdout:
+            if "unsafe" in stdout.lower() or "safe" in stdout.lower():
+                retcode = 0  # Success
+            elif "timeout" in stdout.lower():
+                retcode = -1  # Timeout
+            else:
+                retcode = 1  # Failed
         
-        if result.returncode != 0 and config.engine != "ef":
-            logger.warning(f"Solver failed for {os.path.basename(input_file)} with engine {config.engine}")
-            if "invalid expression, unexpected" in result.stderr:
-                logger.warning(f"Skipping {config.engine} due to parsing error")
-                return input_file, config.engine, result.returncode, "", "Skipped due to parsing error", elapsed
-        else:
-            logger.debug(f"Finished {os.path.basename(input_file)} with engine {config.engine} in {elapsed:.2f}s")
+        return (input_file, config_id, retcode, stdout, stderr, elapsed)
         
-        return (input_file, config.engine, retcode,
-                result.stdout, result.stderr, elapsed)
-    except subprocess.TimeoutExpired:
+    except Exception as e:
         elapsed = time.time() - start_time
-        logger.warning(f"Timeout for {os.path.basename(input_file)} with engine {config.engine} after {elapsed:.2f}s")
-        return input_file, config.engine, -1, "", "Timeout", elapsed
+        logger.error(f"Error running solver: {str(e)}")
+        return input_file, config_id, 1, "", str(e), elapsed
+
 
 
 def summarize_results(results: List[tuple]):
     logger = logging.getLogger('efmc_verifier')
     
-    # Group results by engine
-    engine_results = {}
+    # Group results by configuration
+    config_results = {}
     for result in results:
-        file, engine, retcode, stdout, stderr, elapsed = result
-        if engine not in engine_results:
-            engine_results[engine] = {
+        file, config_id, retcode, stdout, stderr, elapsed = result
+        
+        if config_id not in config_results:
+            config_results[config_id] = {
                 'total': 0,
                 'success': 0,
                 'timeout': 0,
@@ -140,7 +167,7 @@ def summarize_results(results: List[tuple]):
                 'files_failed': []
             }
         
-        stats = engine_results[engine]
+        stats = config_results[config_id]
         stats['total'] += 1
         stats['total_time'] += elapsed
         stats['max_time'] = max(stats['max_time'], elapsed)
@@ -157,8 +184,8 @@ def summarize_results(results: List[tuple]):
     
     # Print summary
     print("\n=== Summary of Results ===")
-    for engine, stats in engine_results.items():
-        print(f"\nEngine: {engine}")
+    for config_id, stats in config_results.items():
+        print(f"\nConfiguration: {config_id}")
         print(f"Total files processed: {stats['total']}")
         print(f"Successful verifications: {stats['success']} ({stats['success']*100/stats['total']:.1f}%)")
         print(f"Timeouts: {stats['timeout']} ({stats['timeout']*100/stats['total']:.1f}%)")
@@ -200,9 +227,15 @@ def main():
     # Default configurations if no config file is provided
     configs = {
         "default": [
-            SolverConfig("pdr", aux_inv=False, lang="chc"),
+            # SolverConfig("pdr", aux_inv=False, lang="chc"),
             SolverConfig("ef", template="bv_interval",
-                         aux_inv=False, lang="chc")
+                         aux_inv=False, lang="chc"
+                         ),
+            SolverConfig("kind", aux_inv=False, lang="chc"),
+            SolverConfig("ef", template="bv_interval",
+                         aux_inv=False, lang="chc",
+                         additional_opts=["--prop-strengthen"]
+                         )
         ]
     }
 
@@ -303,3 +336,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

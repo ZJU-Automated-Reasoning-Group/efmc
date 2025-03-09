@@ -1,103 +1,226 @@
 """
-TODO: by LLM, to be checked.
-Regression script for runnig all SMT solvers on all benchmarks in the given directory.
+Regression script for running different SMT solvers on all benchmarks in the given directory.
 """
-import csv
-import concurrent.futures
+import logging
 import argparse
+import concurrent.futures
+import json
 import os
 import subprocess
+import sys
 import time
-from typing import Dict, List, Tuple
+from typing import List, Dict
 
 
-class Solver:
-    def __init__(self, name: str, command: str):
+def setup_logging(log_level=logging.INFO):
+    logger = logging.getLogger('efsmt_solver')
+    logger.setLevel(log_level)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(log_level)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+    return logger
+
+
+class SolverConfig:
+    def __init__(self, name: str, command: str, additional_opts: List[str] = None):
         self.name = name
         self.command = command
+        self.additional_opts = additional_opts or []
 
-    def run(self, input_file: str, timeout: int) -> Tuple[float, float, bool, str]:
-        """
-        Run the solver on the given input file with the given timeout.
-        """
-        start_time = time.time()
+    def get_command_args(self, input_file: str) -> List[str]:
+        cmd = [self.command]
+        cmd.extend(self.additional_opts)
+        cmd.append(input_file)
+        return cmd
+
+
+def load_config(config_file: str) -> Dict[str, SolverConfig]:
+    logger = logging.getLogger('efsmt_solver')
+    logger.info(f"Loading configuration from {config_file}")
+    
+    with open(config_file) as f:
+        data = json.load(f)
+
+    configs = {}
+    for name, cfg in data.items():
+        configs[name] = SolverConfig(
+            name=name,
+            command=cfg.get("command"),
+            additional_opts=cfg.get("additional_opts", [])
+        )
+    
+    logger.info(f"Loaded {len(configs)} solvers")
+    return configs
+
+
+def run_solver(solver: SolverConfig, input_file: str, timeout: int) -> tuple:
+    logger = logging.getLogger('efsmt_solver')
+    start_time = time.time()
+    cmd = solver.get_command_args(input_file)
+    
+    logger.debug(f"Running command: {' '.join(cmd)}")
+    
+    try:
         result = subprocess.run(
-            [self.command, input_file],
+            cmd,
             capture_output=True,
             text=True,
             timeout=timeout
         )
-        end_time = time.time()
-        memory = result.memory_info().rss / 1024 / 1024  # Convert to MB
-        timeout = result.timeout
-        output = result.stdout
-        return end_time - start_time, memory, timeout, output
+        elapsed = time.time() - start_time
+        
+        # Initialize retcode
+        retcode = result.returncode
+        
+        if retcode != 0:
+            logger.warning(f"Solver {solver.name} failed for {os.path.basename(input_file)}")
+        else:
+            logger.debug(f"Finished {os.path.basename(input_file)} with {solver.name} in {elapsed:.2f}s")
+        
+        return (input_file, solver.name, retcode, result.stdout, result.stderr, elapsed)
+    except subprocess.TimeoutExpired:
+        elapsed = time.time() - start_time
+        logger.warning(f"Timeout for {os.path.basename(input_file)} with {solver.name} after {elapsed:.2f}s")
+        return input_file, solver.name, -1, "", "Timeout", elapsed
 
 
-def load_config(config_file: str) -> Dict[str, List[Solver]]:
-    """
-    Load the configuration from the given file.
-    """
-    config = {}
-    with open(config_file, 'r') as f:
-        for line in f:
-            if line.strip() == '':
-                continue
-            name, command = line.strip().split('=')
-            config[name] = command
-    return config
-
-
-def run_solver(solver: Solver, input_file: str, timeout: int) -> Tuple[float, float, bool, str]:
-    """
-    Run the solver on the given input file with the given timeout.
-    """
-    return solver.run(input_file, timeout)
-
-
-def run_all_solvers(config: Dict[str, List[Solver]], benchmark_dir: str, output_dir: str, timeout: int, parallel: int):
-    """
-    Run all solvers on all benchmarks in the given directory.
-    """
-    # Get all benchmark files
-    benchmark_files = []
-    for root, dirs, files in os.walk(benchmark_dir):
-        for file in files:
-            if file.endswith('.smt2'):
-                benchmark_files.append(os.path.join(root, file))
+def summarize_results(results: List[tuple]):
+    logger = logging.getLogger('efsmt_solver')
     
-    # Run solvers in parallel
-    with concurrent.futures.ThreadPoolExecutor(max_workers=parallel) as executor:
-        futures = [executor.submit(run_solver, solver, benchmark_file, timeout) for solver in config.values() for benchmark_file in benchmark_files]
-        results = [future.result() for future in concurrent.futures.as_completed(futures)]
+    solver_results = {}
+    for result in results:
+        file, solver_name, retcode, stdout, stderr, elapsed = result
+        if solver_name not in solver_results:
+            solver_results[solver_name] = {
+                'total': 0,
+                'success': 0,
+                'timeout': 0,
+                'failed': 0,
+                'total_time': 0.0,
+                'max_time': 0.0,
+                'files_success': [],
+                'files_timeout': [],
+                'files_failed': []
+            }
+        
+        stats = solver_results[solver_name]
+        stats['total'] += 1
+        stats['total_time'] += elapsed
+        stats['max_time'] = max(stats['max_time'], elapsed)
+        
+        if retcode == 0:
+            stats['success'] += 1
+            stats['files_success'].append(os.path.basename(file))
+        elif retcode == -1:
+            stats['timeout'] += 1
+            stats['files_timeout'].append(os.path.basename(file))
+        else:
+            stats['failed'] += 1
+            stats['files_failed'].append(os.path.basename(file))
     
-    # Write results to output file
-    with open(os.path.join(output_dir, 'results.csv'), 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(['Benchmark', 'Solver', 'Time', 'Memory', 'Timeout', 'Output'])
-        for result in results:
-            writer.writerow(result)
-
-def run_solvers(config: Dict[str, List[Solver]], benchmark_dir: str, output_dir: str, timeout: int, parallel: int):
-    """
-    Run all solvers on all benchmarks in the given directory.
-    """
-    run_all_solvers(config, benchmark_dir, output_dir, timeout, parallel)
+    print("\n=== Summary of Results ===")
+    for solver_name, stats in solver_results.items():
+        print(f"\nSolver: {solver_name}")
+        print(f"Total files processed: {stats['total']}")
+        print(f"Successful runs: {stats['success']} ({stats['success']*100/stats['total']:.1f}%)")
+        print(f"Timeouts: {stats['timeout']} ({stats['timeout']*100/stats['total']:.1f}%)")
+        print(f"Failed runs: {stats['failed']} ({stats['failed']*100/stats['total']:.1f}%)")
+        print(f"Total time: {stats['total_time']:.2f}s")
+        print(f"Average time: {stats['total_time']/stats['total']:.2f}s")
+        print(f"Max time: {stats['max_time']:.2f}s")
+        
+        if stats['files_timeout']:
+            print("\nTimeout files:")
+            for f in sorted(stats['files_timeout']):
+                print(f"  - {f}")
+        
+        if stats['files_failed']:
+            print("\nFailed files:")
+            for f in sorted(stats['files_failed']):
+                print(f"  - {f}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Run all SMT solvers on all benchmarks in the given directory.')
-    parser.add_argument('--benchmark-dir', type=str, required=True, help='Path to the directory containing the benchmarks')
-    parser.add_argument('--timeout', type=int, default=300, help='Timeout for each solver in seconds')
-    parser.add_argument('--parallel', type=int, default=4, help='Number of parallel solvers')
-    parser.add_argument('--output-dir', type=str, default='./results', help='Path to the output directory')
+    parser = argparse.ArgumentParser(description="Run SMT solvers on benchmarks")
+    parser.add_argument("--bench-dir", required=True, help="Directory containing benchmark files")
+    parser.add_argument("--timeout", type=int, required=True, help="Timeout in seconds")
+    parser.add_argument("--config", required=True, help="Configuration file in JSON format")
+    parser.add_argument("--parallel", action="store_true", help="Run solvers in parallel")
+    parser.add_argument("--log-level", default="INFO", 
+                       choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+                       help="Set the logging level")
     args = parser.parse_args()
+    
+    log_level = getattr(logging, args.log_level)
+    logger = setup_logging(log_level)
+    
+    logger.info(f"Starting SMT solvers with bench-dir={args.bench_dir}, timeout={args.timeout}s")
+    
+    configs = load_config(args.config)
+    
+    if not os.path.isdir(args.bench_dir):
+        logger.error(f"Benchmark directory does not exist: {args.bench_dir}")
+        sys.exit(1)
+        
+    benchmark_files = [
+        os.path.join(args.bench_dir, f)
+        for f in os.listdir(args.bench_dir)
+        if f.endswith(".smt2")
+    ]
+    
+    logger.info(f"Found {len(benchmark_files)} benchmark files")
+    
+    if not benchmark_files:
+        logger.warning(f"No .smt2 files found in {args.bench_dir}")
+        sys.exit(1)
+        
+    results = []
 
-    # Load configuration
-    config = load_config(args.config_file)
+    if args.parallel:
+        logger.info("Running in parallel mode")
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            futures = []
+            for solver in configs.values():
+                for benchmark in benchmark_files:
+                    futures.append(
+                        executor.submit(run_solver, solver, benchmark, args.timeout)
+                    )
 
-    # Run solvers
-    run_solvers(config, args.benchmark_dir, args.output_dir, args.timeout, args.parallel)
+            for future in concurrent.futures.as_completed(futures):
+                result = future.result()
+                results.append(result)
+                file, solver_name, retcode, stdout, stderr, elapsed = result
+                print(f"\nFile: {os.path.basename(file)}")
+                print(f"Solver: {solver_name}")
+                print(f"Return code: {retcode}")
+                print(f"Elapsed time: {elapsed:.2f}s")
+                if stdout: print(f"Output:\n{stdout}")
+                if stderr: print(f"Errors:\n{stderr}")
+                sys.stdout.flush()
+    else:
+        logger.info("Running in sequential mode")
+        for solver in configs.values():
+            for benchmark in benchmark_files:
+                result = run_solver(solver, benchmark, args.timeout)
+                results.append(result)
+                file, solver_name, retcode, stdout, stderr, elapsed = result
+                print(f"\nFile: {os.path.basename(file)}")
+                print(f"Solver: {solver_name}")
+                print(f"Return code: {retcode}")
+                print(f"Elapsed time: {elapsed:.2f}s")
+                if stdout: print(f"Output:\n{stdout}")
+                if stderr: print(f"Errors:\n{stderr}")
+                sys.stdout.flush()
 
-if __name__ == '__main__':
-    main()  
+    print("\n" + "="*80)
+    print("FINAL SUMMARY")
+    print("="*80)
+    logger.info(f"Completed {len(results)} solver runs")
+    summarize_results(results)
+    sys.stdout.flush()
+
+
+if __name__ == "__main__":
+    main()
