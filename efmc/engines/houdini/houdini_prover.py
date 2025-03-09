@@ -48,16 +48,18 @@ class HoudiniProver:
 
     def houdini(self, lemmas: List[z3.ExprRef]):
         """Find the maximal inductive subset for the given lemmas.
-
+    
         Args:
             lemmas: List of candidate invariant expressions to check
-
+    
         Returns:
             dict: Dictionary mapping indices to lemmas that form the maximal inductive subset
         """
         annotated = []
         annotated_primes = []
         indexed = {}
+        
+        self.logger.info(f"Starting Houdini algorithm with {len(lemmas)} candidate lemmas")
         
         # Create primed versions and selector variables
         for i in range(len(lemmas)):
@@ -67,19 +69,30 @@ class HoudiniProver:
             annotated.append(z3.Or(lemma, get_selector_var(i)))
             annotated_primes.append(z3.Or(primed, get_selector_var(i)))
             indexed[i] = lemma
-
+    
         prover = z3.Solver()
         prover.add(self.sts.trans)  # Add transition relation
         prover.add(z3.And(annotated))
         prover.add(z3.Not(z3.And(annotated_primes)))
-
+    
+        iteration = 0
+        initial_count = len(indexed)
+        
         while prover.check() != z3.unsat:
+            iteration += 1
             m = prover.model()
-            for i in range(len(annotated_primes)):
+            removed_in_iteration = 0
+            
+            for i in list(indexed.keys()):
                 annotated_prime = annotated_primes[i]
                 if z3.is_false(m.eval(annotated_prime)):
                     prover.add(get_selector_var(i))
                     del indexed[i]
+                    removed_in_iteration += 1
+            
+            self.logger.info(f"Iteration {iteration}: Removed {removed_in_iteration} lemmas, {len(indexed)}/{initial_count} remaining")
+        
+        self.logger.info(f"Houdini completed after {iteration} iterations with {len(indexed)}/{initial_count} lemmas remaining")
         return indexed
 
     def solve(self) -> str:
@@ -92,11 +105,9 @@ class HoudiniProver:
         if self.check_inductive(self.sts.post):
             self.logger.info("Post-condition is already inductive")
             return "safe"
-
-        # Generate candidate lemmas (currently using post-condition)
-        # TODO: implement more sophisticated lemma generation, e.g., using the lemmas from the transition system
-        lemmas = [self.sts.post]
-        # lemmas.extend(self.sts.invariants)
+    
+        # Generate candidate lemmas
+        lemmas = self.generate_candidate_lemmas()
         
         # Run Houdini algorithm
         result = self.houdini(lemmas)
@@ -110,6 +121,34 @@ class HoudiniProver:
         
         self.logger.info("Could not find inductive invariant")
         return "unknown"
+    
+    def generate_candidate_lemmas(self):
+        """Generate candidate lemmas for invariant inference"""
+        lemmas = []
+        
+        # Add post-condition as a candidate
+        lemmas.append(self.sts.post)
+        
+        # Add existing invariants from the transition system
+        # FIXME: add the field "invariatns" for TransitionSystem
+        if hasattr(self.sts, 'invariants') and self.sts.invariants:
+            lemmas.extend(self.sts.invariants)
+        
+        # Add bounds for integer variables
+        for var in self.sts.variables:
+            if var.sort() == z3.IntSort():
+                # Add simple bounds
+                lemmas.append(var >= 0)  # Non-negativity
+                
+        # Add equality and inequality relationships between variables
+        for i, var1 in enumerate(self.sts.variables):
+            for var2 in self.sts.variables[i+1:]:
+                if var1.sort() == var2.sort():
+                    lemmas.append(var1 <= var2)
+                    lemmas.append(var1 >= var2)
+        
+        self.logger.info(f"Generated {len(lemmas)} candidate lemmas")
+        return lemmas
 
     def check_inductive(self, formula: z3.ExprRef) -> bool:
         """Check if a formula is inductive"""
@@ -185,6 +224,32 @@ def demo_houdini():
     result = prover.solve()
     print(f"Verification result: {result}")
 
+def demo_houdini_complex():
+    """Demo using a more complex transition system with multiple variables"""
+    x = z3.Int("x")
+    y = z3.Int("y")
+    x_prime = z3.Int("x_p")
+    y_prime = z3.Int("y_p")
+    
+    sts = TransitionSystem()
+    sts.init = z3.And(x == 0, y == 0)
+    sts.trans = z3.And(x_prime == x + y, y_prime == y + 1)
+    sts.post = x >= 0
+    sts.variables = [x, y]
+    sts.prime_variables = [x_prime, y_prime]
+    sts.all_variables = [x, y, x_prime, y_prime]
+    sts.initialized = True
+    
+    # Add some invariants as hints
+    sts.invariants = [y >= 0]
+    
+    prover = HoudiniProver(sts)
+    result = prover.solve()
+    print(f"Verification result: {result}")
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    print("Running simple Houdini demo:")
     demo_houdini()
+    print("\nRunning complex Houdini demo:")
+    demo_houdini_complex()

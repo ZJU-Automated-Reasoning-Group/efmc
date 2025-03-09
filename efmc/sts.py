@@ -26,6 +26,7 @@ class TransitionSystem(object):
         self.trans = None  # formula about the relation of x, y, x!, y!
         self.init = None  # formula about x, y
         self.post = None  # formula about x, y
+        self.invariants = []  # list of additional invariants/lemmas (which can be specified by the user or inferred)
         self.initialized = False
 
         self.has_bv = False
@@ -42,7 +43,7 @@ class TransitionSystem(object):
 
     def _init_from_kwargs(self, **kwargs):
         """Initialize the transition system from keyword arguments."""
-        allowed_keys = {'variables', 'prime_variables', 'init', 'trans', 'post'}
+        allowed_keys = {'variables', 'prime_variables', 'init', 'trans', 'post', 'invariants'}
         for key, value in kwargs.items():
             if key not in allowed_keys:
                 raise ValueError(f"Unexpected argument: {key}")
@@ -56,6 +57,8 @@ class TransitionSystem(object):
                 self.trans = value
             elif key == 'post':
                 self.post = value
+            elif key == 'invariants':
+                self.invariants = list(value) if isinstance(value, (list, tuple)) else [value]
 
         # Update all_variables after setting variables and prime_variables
         self.all_variables = self.variables + self.prime_variables
@@ -166,9 +169,157 @@ class TransitionSystem(object):
                                                    self.post)))
 
         return z3.And(s.assertions())
-
+    
     def to_chc_str(self) -> str:
         """Convert to CHC format"""
+        assert self.initialized
         sol = z3.Solver()
         sol.add(self.to_chc_constraints())
         return "(set-logic HORN)\n" + sol.to_smt2()
+
+    def to_uf_quant_str(self) -> str:
+        """Convert to UF quantifiied format"""
+        assert self.initialized
+        sol = z3.Solver()
+        sol.add(self.to_chc_constraints())
+        if self.has_bv:
+            logic = "UFBV"
+        elif self.has_int:
+            logic = "UFLIA"
+        elif self.has_real:
+            logic = "UFLRA"
+        else:
+            logic = "ALL"
+        return "(set-logic {})\n".format(logic) + sol.to_smt2()
+
+    def to_smt2(self) -> str:
+        """Convert to SMT2 format"""
+        return self.to_uf_quant_str()
+
+    def to_z3_cnts(self) -> List:
+        return self.all_variables, self.init, self.trans, self.post
+
+    
+    def simulate(self, steps=10, random_seed=None, concrete_init=None):
+        """Simulate the execution of the transition system (similar to dynamic executions)
+
+        FIXME: by LLM, to check.
+        
+        Args:
+            steps: Number of simulation steps to perform
+            random_seed: Optional seed for random choices
+            concrete_init: Optional concrete initial state as a dictionary {var_name: value}
+            
+        Returns:
+            List of states, where each state is a dictionary mapping variable names to values
+        """
+        assert self.initialized
+        
+        import random
+        if random_seed is not None:
+            random.seed(random_seed)
+            
+        # Create solver for checking conditions
+        solver = z3.Solver()
+        
+        # Find an initial state
+        state = {}
+        if concrete_init:
+            # Use provided initial state
+            state = concrete_init.copy()
+            # Verify that it satisfies the init condition
+            state_constraints = []
+            for var in self.variables:
+                var_name = str(var)
+                if var_name in state:
+                    state_constraints.append(var == state[var_name])
+            
+            solver.push()
+            solver.add(z3.And(state_constraints))
+            solver.add(self.init)
+            if solver.check() != z3.sat:
+                raise ValueError("Provided initial state does not satisfy init condition")
+            solver.pop()
+        else:
+            # Generate a random initial state
+            solver.push()
+            solver.add(self.init)
+            if solver.check() != z3.sat:
+                raise ValueError("Init condition is unsatisfiable")
+            
+            model = solver.model()
+            for var in self.variables:
+                var_name = str(var)
+                value = model.eval(var, model_completion=True)
+                state[var_name] = value
+            solver.pop()
+        
+        # Store the sequence of states
+        trace = [state.copy()]
+        
+        # Simulate steps
+        for _ in range(steps):
+            # Create constraints for current state
+            current_state_constraints = []
+            for var in self.variables:
+                var_name = str(var)
+                if var_name in state:
+                    current_state_constraints.append(var == state[var_name])
+            
+            # Find next state
+            solver.push()
+            solver.add(z3.And(current_state_constraints))
+            solver.add(self.trans)
+            
+            if solver.check() != z3.sat:
+                # No valid next state
+                break
+                
+            model = solver.model()
+            next_state = {}
+            
+            # Extract values for next state
+            for var in self.variables:
+                var_name = str(var)
+                # Find corresponding prime variable
+                for prime_var in self.prime_variables:
+                    prime_var_name = str(prime_var)
+                    # Check if this is the prime version of var
+                    if prime_var_name.endswith("!") and prime_var_name[:-1] == var_name:
+                        value = model.eval(prime_var, model_completion=True)
+                        next_state[var_name] = value
+                        break
+                    elif prime_var_name.endswith("'") and prime_var_name[:-1] == var_name:
+                        value = model.eval(prime_var, model_completion=True)
+                        next_state[var_name] = value
+                        break
+                    elif prime_var_name.endswith("_p") and prime_var_name[:-2] == var_name:
+                        value = model.eval(prime_var, model_completion=True)
+                        next_state[var_name] = value
+                        break
+            
+            solver.pop()
+            
+            # Update current state
+            state = next_state
+            trace.append(state.copy())
+            
+            # Check if post-condition is violated
+            solver.push()
+            state_constraints = []
+            for var in self.variables:
+                var_name = str(var)
+                if var_name in state:
+                    state_constraints.append(var == state[var_name])
+            
+            solver.add(z3.And(state_constraints))
+            solver.add(z3.Not(self.post))
+            
+            if solver.check() == z3.sat:
+                print("Post-condition violated at step", len(trace)-1)
+            
+            solver.pop()
+        
+        return trace
+
+

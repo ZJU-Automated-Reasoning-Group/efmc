@@ -9,7 +9,7 @@ from collections import defaultdict
 import z3
 
 
-class TransitionSystem:
+class NewTransitionSystem:
     def __init__(self):
         # Core components
         self.variables: Dict[str, z3.ExprRef] = {}  # name -> var
