@@ -8,8 +8,6 @@ import sys
 import os
 from z3 import Solver, Int, Real, sat, unsat, And, Or, Not, Implies
 
-# Add the parent directory to the path to import the module
-# sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 from efmc.engines.ef.farkas.farkas import FarkasLemma
 
 

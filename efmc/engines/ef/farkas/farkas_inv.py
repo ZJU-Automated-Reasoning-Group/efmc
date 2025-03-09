@@ -7,9 +7,6 @@ from typing import List, Dict, Tuple, Optional, Any
 import sys
 import os
 
-# Add the parent directory to the path to import the module
-# sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from efmc.engines.ef.templates.abstract_template import Template
 from efmc.engines.ef.farkas.farkas import FarkasLemma
 from efmc.sts import TransitionSystem

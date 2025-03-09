@@ -18,12 +18,15 @@ logger = logging.getLogger(__name__)
 
 
 def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef):
-    return is_valid(z3.Implies(inv, old_inv))
+    # Check if we've reached a fixpoint (inv implies old_inv AND old_inv implies inv)
+    return is_valid(z3.Implies(inv, old_inv)) and is_valid(z3.Implies(old_inv, inv))
 
 
 class QuantifierEliminationProver:
-    def __init__(self, system: TransitionSystem):
+    def __init__(self, system: TransitionSystem, timeout=None, verbose=True):
         self.sts = system
+        self.timeout = timeout  # Timeout in seconds
+        self.verbose = verbose
         """
         var_map = [(x, xp), (y, yp)]
         var_map_rev = [(xp ,x), (yp, y)]
@@ -36,33 +39,55 @@ class QuantifierEliminationProver:
 
     def solve(self):
         start = time.time()
-        old_inv = False
+        old_inv = z3.BoolVal(False)  # Use z3.BoolVal instead of Python's False
         inv = self.sts.init
         i = 0
-        print("QE-based invariant inference starting!!!")
+        
+        if self.verbose:
+            print("QE-based invariant inference starting!!!")
+            
         while not fixpoint(old_inv, inv):
-            print("\nInv at ", i, ": ", inv)
+            if self.verbose:
+                print(f"\nIteration {i}, Inv: {inv}")
+                
             i = i + 1
+            
+            # Check timeout
+            if self.timeout and time.time() - start > self.timeout:
+                print(f"Timeout reached after {time.time() - start:.2f} seconds")
+                return "timeout"
+                
             qfml = z3.Exists(self.sts.variables, z3.And(inv, self.sts.trans))
-            # compute the best abstract transformer
-            onestep = z3.Tactic('qe2')(qfml).as_expr()  # sometimes, 'qe' is better
+            
+            # Try different QE tactics if one fails
+            try:
+                # compute the best abstract transformer
+                onestep = z3.Tactic('qe2')(qfml).as_expr()
+            except z3.Z3Exception:
+                try:
+                    # Fall back to regular qe if qe2 fails
+                    onestep = z3.Tactic('qe')(qfml).as_expr()
+                except z3.Z3Exception:
+                    print("QE tactics failed, using default simplification")
+                    onestep = z3.simplify(qfml)
+                    
             # rename
             onestep = z3.substitute(onestep, self.var_map_rev)
-            old_inv = inv  # Is this correct?
+            old_inv = inv
             inv = z3.simplify(z3.Or(inv, onestep))
-            # inv = ctx_simplify(Or(inv, onestep))
-        # print("\n")
 
-        if is_valid(z3.Implies(inv, post)):
-            print(">>> SAFE\n\n")
-            print("QE success time: ", time.time() - start)
-            print("Invariant: ", z3.simplify(inv))
+        # Check if the invariant implies the post-condition
+        if is_valid(z3.Implies(inv, self.sts.post)):
+            if self.verbose:
+                print(">>> SAFE\n")
+                print(f"QE success time: {time.time() - start:.2f} seconds")
+                print(f"Invariant: {z3.simplify(inv)}")
+            return "safe"
         else:
-            # FIXME: I think QE-based invariant inference is "sound and complete"
-            # FIXME: If the invariant cannot prove the post, the program is unsafe.
-            print(">>> UNSAFE \n\n")
-            print("QE UNSAFE time: ", time.time() - start)
-        return
+            if self.verbose:
+                print(">>> UNSAFE\n")
+                print(f"QE UNSAFE time: {time.time() - start:.2f} seconds")
+            return "unsafe"
 
 
 if __name__ == '__main__':
@@ -75,5 +100,6 @@ if __name__ == '__main__':
     sts = TransitionSystem()
     sts.from_z3_cnts([all_vars, init, trans, post])
 
-    pp = QuantifierEliminationProver(sts)
-    pp.solve()
+    pp = QuantifierEliminationProver(sts, timeout=60)  # Set a 60-second timeout
+    result = pp.solve()
+    print(f"Final result: {result}")

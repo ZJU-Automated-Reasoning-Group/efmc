@@ -27,15 +27,16 @@ class KInductionProver(object):
     This one is non-incremental
     """
 
-    def __init__(self, system: TransitionSystem):
+    def __init__(self, system: TransitionSystem, verbose=False, show_model=False):
         """Init"""
         self.sts = system
         self.use_aux_invariant = False  # use aux invariant generate by other tools
         self.aux_invariant = None
+        self.verbose = verbose
+        self.show_model = show_model
 
         self.use_bv = system.has_bv
         if self.use_bv:
-
             # FIXME: this is not a good idea, as different variables
             #  can have different sizes
             self.bv_size = system.variables[0].size()
@@ -92,15 +93,12 @@ class KInductionProver(object):
     def get_unrolling(self, k):
         """Unrolling of the transition relation from 0 to k:
         E.g. T(0,1) & T(1,2) & ... & T(k-1,k)
-        for i in range(k + 1):
-            subs_i = self.get_subs(i)
-            res.append(z3.substitute(self.sts.trans, subs_i))
         """
-        if k == 0:
-            self.unrolled_system.append(z3.substitute(self.sts.trans, self.get_subs(0)))
-        else:
-            self.unrolled_system.append(z3.substitute(self.sts.trans, self.get_subs(k)))
-        return self.unrolled_system
+        # Fix the unrolling implementation to ensure we have all transitions up to k
+        if len(self.unrolled_system) <= k:
+            for i in range(len(self.unrolled_system), k + 1):
+                self.unrolled_system.append(z3.substitute(self.sts.trans, self.get_subs(i)))
+        return self.unrolled_system[:k+1]
 
     def get_simple_path(self, k):
         """Simple path constraint for k-induction:
@@ -152,48 +150,76 @@ class KInductionProver(object):
 
     def get_k_induction(self, k: int):
         """Returns the K-Induction encoding at step K"""
-        # FIXME
         prop_k = z3.substitute(self.sts.post, self.get_subs(k))
+        formula_parts = [
+            z3.And(self.get_unrolling(k)),
+            z3.And(self.get_k_hypothesis(k)),
+            self.get_simple_path(k),
+            z3.Not(prop_k)
+        ]
+        
+        # Add auxiliary invariants if available
         if self.use_aux_invariant:
             k_aux_inv = self.strength_via_invariant(k)
-            print("Aux invariant: ", k_aux_inv)
-            # TODO: add k_aux_inv to the following formula? (need to check correctness first..)
-
-        return z3.And(z3.And(self.get_unrolling(k)),
-                      z3.And(self.get_k_hypothesis(k)),
-                      self.get_simple_path(k),
-                      z3.Not(prop_k))
+            if self.verbose:
+                print("Aux invariant: ", k_aux_inv)
+            # Add auxiliary invariants to the formula
+            formula_parts.append(z3.And(k_aux_inv))
+            
+        return z3.And(*formula_parts)
 
     def solve(self, k: int):
         """Interleaves BMC and K-Ind to verify the property."""
 
         if self.use_aux_invariant:
-            # print("Generating aux invariant..")
+            if self.verbose:
+                print("Generating auxiliary invariant...")
             inv_gen = InvariantGenerator(self.sts)
             aux_inv = inv_gen.generate_via_ef()
-            # print("aux inv", aux_inv)
+            if self.verbose:
+                print("Generated auxiliary invariant:", aux_inv)
             if not z3.is_true(aux_inv):
                 self.aux_invariant = aux_inv
             else:
-                self.use_aux_invariant = False  # the invariant generator does not work
+                self.use_aux_invariant = False
+                if self.verbose:
+                    print("Invariant generator produced trivial invariant, disabling auxiliary invariants")
 
         print("Checking property %s..." % str(self.sts.post))
         for b in range(k):
             f_bmc = self.get_bmc(b)
-            logger.debug("   [BMC]    Checking bound %d..." % (b + 1))
+            if self.verbose:
+                print(f"[BMC] Checking bound {b+1}...")
+            else:
+                logger.debug("   [BMC]    Checking bound %d..." % (b + 1))
+                
             s = z3.Solver()
             s.add(f_bmc)
-            if s.check() == z3.sat:
+            result = s.check()
+            if result == z3.sat:
                 print("--> Bug found at step %d" % (b + 1))
-                # print(s.model())
+                if self.show_model:
+                    model = s.model()
+                    print("Model (counterexample):")
+                    for i in range(b + 2):  # Show states from 0 to b+1
+                        print(f"State {i}:")
+                        for var in self.sts.variables:
+                            var_at_time = self.at_time(var, i)
+                            if var_at_time in model:
+                                print(f"  {var} = {model[var_at_time]}")
                 print("unsafe")
                 return "unsafe"
 
             f_kind = self.get_k_induction(b)
-            logger.debug("   [K-IND]  Checking bound %d..." % (b + 1))
+            if self.verbose:
+                print(f"[K-IND] Checking bound {b+1}...")
+            else:
+                logger.debug("   [K-IND]  Checking bound %d..." % (b + 1))
+                
             if is_unsat(f_kind):
                 print("--> The system is proved safe at {}".format((b + 1)))
                 print("safe")
                 return "safe"
+                
         print("unknown")
         return "unknown"

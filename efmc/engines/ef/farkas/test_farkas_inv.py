@@ -8,7 +8,6 @@ import sys
 import os
 from z3 import And, Real, Not, BoolVal, is_and
 
-# Fix the import statement to match the actual module name
 from efmc.engines.ef.farkas.farkas_inv import FarkasTemplate
 from efmc.engines.ef.farkas.farkas import FarkasLemma
 from efmc.sts import TransitionSystem
@@ -110,6 +109,8 @@ class TestFarkasTemplate(unittest.TestCase):
         with patch.object(FarkasLemma, 'apply_farkas_lemma', return_value=mock_farkas_constraints):
             # Call the method under test
             template.add_template_cnts()
+
+            print(template.template_cnt_trans)
             
             # Verify that the template_cnt fields were set
             self.assertIsNotNone(template.template_cnt_init_and_post)
@@ -135,4 +136,6 @@ class TestFarkasTemplate(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    # Replace the default test runner with one that doesn't buffer output
+    unittest.main(buffer=False)
+    

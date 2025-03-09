@@ -1,3 +1,4 @@
+# from CVC4
 #!/bin/bash
 
 set -euo pipefail

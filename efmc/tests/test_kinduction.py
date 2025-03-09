@@ -8,7 +8,7 @@ from efmc.tests import TestCase, main
 from efmc.sts import TransitionSystem
 from efmc.engines.kinduction.kind_prover import KInductionProver
 from efmc.engines.kinduction.kind_prover_inc import KInductionProverInc  # to test the incremental one
-from efmc.tests.simple_sts import get_int_sys1, get_int_sys2, get_int_sys3, get_int_sys4, get_int_sys5, get_int_sys6
+from efmc.tests.simple_sts import get_int_sys1, get_int_sys2, get_int_sys3, get_int_sys4, get_int_sys5, get_int_sys6, get_int_sys7, get_int_sys8, get_int_sys9, get_int_sys10
 
 
 class TestKInduction(TestCase):
@@ -50,5 +50,22 @@ class TestKInduction(TestCase):
         noinc_verifier = KInductionProver(sts)
         noinc_res = noinc_verifier.solve(k=20)
 
+        assert(inc_res == noinc_res)
+    
+    def test_kind2(self):
+        # kind the incremental k-induction here
+        sts = TransitionSystem()
+
+        sts.from_z3_cnts(list(get_int_sys2()))
+        inc_verifier = KInductionProverInc(sts)
+        inc_res = inc_verifier.solve(max_k=20) 
+
+        noinc_verifier = KInductionProver(sts)
+        noinc_res = noinc_verifier.solve(k=20)
+
+        assert(inc_res == noinc_res)
+
+
 if __name__ == '__main__':
     main()
+
