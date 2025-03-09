@@ -105,21 +105,3 @@ class Template(ABC):
             Z3 expression representing the invariant
         """
         pass
-
-    @abstractmethod
-    def add_template_cnts_for_ranking_function(self) -> None:
-        """Add constraints for ranking function template variables.
-        
-        Defines constraints that ensure the ranking function meets
-        termination requirements.
-        """
-        pass
-
-    @abstractmethod
-    def build_ranking_function_expr(self) -> z3.ExprRef:
-        """Build the ranking function expression.
-        
-        Returns:
-            Z3 expression representing the ranking function
-        """
-        pass

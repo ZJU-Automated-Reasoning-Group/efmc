@@ -149,12 +149,6 @@ class IntervalTemplate(Template):
         # print("cnts for invariant: ", cnts)
         return big_and(cnts)
 
-    def add_template_cnts_for_ranking_function(self):
-        raise NotImplementedError
-
-    def build_ranking_function_expr(self):
-        raise NotImplementedError
-
 
 class DisjunctiveIntervalTemplate(Template):
     """
@@ -267,8 +261,3 @@ class DisjunctiveIntervalTemplate(Template):
 
         return z3.Or(cnts_dis)
 
-    def add_template_cnts_for_ranking_function(self):
-        raise NotImplementedError
-
-    def build_ranking_function_expr(self):
-        raise NotImplementedError

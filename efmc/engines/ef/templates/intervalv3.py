@@ -76,11 +76,6 @@ class IntervalTemplateV3(Template):
         """Build an invariant from a model (fixing the values of the template vars)"""
         raise NotImplementedError
 
-    def add_template_cnts_for_ranking_function(self):
-        raise NotImplementedError
-
-    def build_ranking_function_expr(self):
-        raise NotImplementedError
 
 
 class DisjunctiveIntervalTemplateV3:
