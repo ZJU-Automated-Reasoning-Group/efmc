@@ -1,4 +1,5 @@
 """
+TODO: by LLM, to be checked.
 Regression script for runnig all SMT solvers on all benchmarks in the given directory.
 """
 import csv

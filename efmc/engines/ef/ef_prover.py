@@ -49,6 +49,9 @@ class EFProver:
         # Use "template = P and template" as the actual invariant template (a simple strengthening strategy)
         self.prop_strengthening = kwargs.get("prop_strengthen", False)
 
+        # abstraction refinement?
+        self.abs_refine = kwargs.get("abs_refine", False)
+
         # The SMT solver for dealing with the EFSMT queries
         self.solver = kwargs.get("solver", "z3api")
 

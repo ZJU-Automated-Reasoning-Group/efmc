@@ -1,4 +1,4 @@
-"""Command-line interface for EFMC (Enhanced Formal Model Checker)
+"""Command-line interface for EFMC.
 This module provides the main CLI interface for running different verification engines
 on transition systems specified in various formats.
 """
@@ -68,6 +68,7 @@ class EFMCRunner:
             ef_prover = EFProver(
                 sts,
                 prop_strengthen=g_verifier_args.prop_strengthen,
+                abs_refine=g_verifier_args.abs_refine,
                 validate_invariant=g_verifier_args.validate_invariant,
                 no_overflow=g_verifier_args.prevent_over_under_flows > 0,
                 no_underflow=g_verifier_args.prevent_over_under_flows > 0,
@@ -86,6 +87,7 @@ class EFMCRunner:
             ef_prover = EFProver(
                 sts,
                 prop_strengthen=g_verifier_args.prop_strengthen,
+                abs_refine=g_verifier_args.abs_refine,
                 validate_invariant=g_verifier_args.validate_invariant,
                 pysmt_solver=g_verifier_args.pysmt_solver
             )
@@ -173,7 +175,7 @@ class EFMCRunner:
 
 def parse_arguments():
     """Parse command line arguments"""
-    parser = argparse.ArgumentParser(description='EFMC - Enhanced Formal Model Checker')
+    parser = argparse.ArgumentParser(description='EFMC - A Software Model Checker')
     
     parser.add_argument('--file', type=str, required=True,
                       help='Input file to verify')
@@ -184,33 +186,30 @@ def parse_arguments():
     parser.add_argument('--engine', type=str, 
                       choices=['ef', 'pdr', 'kind', 'qe', 'eld'],
                       default='ef', help='Verification engine to use')
+
+    # options for template-based verification
     
     parser.add_argument('--template', type=str,
                       help='Template for invariant generation')
     
     parser.add_argument('--efsmt-solver', type=str, default='z3',
                       help='SMT solver for EFSMT')
-    
+
+    # used in cegis-style solver implemented on top of pysmt's API
     parser.add_argument('--pysmt-solver', type=str, default='z3',
                       help='PySMT solver to use')
     
     parser.add_argument('--prop-strengthen', action='store_true',
                       help='Enable property strengthening')
-    
-    parser.add_argument('--validate-invariant', action='store_true',
-                      help='Validate generated invariants')
+
+    parser.add_argument('--abs-refine', action='store_true',
+                      help='Enable abstraction refinement')
     
     parser.add_argument('--prevent-over-under-flows', type=int, default=0,
                       help='Prevent over/underflows in bitvector operations')
     
     parser.add_argument('--num-disjunctions', type=int, default=1,
                       help='Number of disjunctions in template')
-    
-    parser.add_argument('--kind-k', type=int, default=1,
-                      help='K value for k-induction')
-    
-    parser.add_argument('--kind-aux-inv', action='store_true',
-                      help='Use auxiliary invariants in k-induction')
     
     parser.add_argument('--signedness', type=str,
                       choices=['signed', 'unsigned'],
@@ -221,6 +220,16 @@ def parse_arguments():
     
     parser.add_argument('--dump-qbf', action='store_true',
                       help='Dump constraints in QBF format')
+
+    parser.add_argument('--validate-invariant', action='store_true',
+                      help='Validate generated invariants')
+
+    # options for k-induction
+    parser.add_argument('--kind-k', type=int, default=1,
+                      help='K value for k-induction')
+    
+    parser.add_argument('--kind-aux-inv', action='store_true',
+                      help='Use auxiliary invariants in k-induction')
 
     return parser.parse_args()
 

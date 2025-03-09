@@ -1,4 +1,5 @@
 """
+TODO: by LLM, to be checked.
 Regression script for running all verifiers on all benchmarks in the given directory.
 
 Example configuration file (benchmark_config.ini):
