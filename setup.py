@@ -111,7 +111,9 @@ setup(
     entry_points={
         'console_scripts': [
             'efmc=efmc.cli.efmc:main',
-            'efsmt=efmc.cli.efsmt:main',  # Added EFSMT CLI entry point
+            'efsmt=efmc.cli.efsmt:main',  
+            'efsmt_par=efmc.cli.efsmt_par:main'
+            # Added EFSMT CLI entry point
         ],
     },
     

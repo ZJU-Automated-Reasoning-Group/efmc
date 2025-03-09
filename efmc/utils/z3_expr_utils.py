@@ -67,6 +67,36 @@ def get_expr_vars(exp):
                 if e.num_args() == 0 and e.decl().kind() == z3.Z3_OP_UNINTERPRETED:
                     syms.add(e)
                 else:
+                    # Add children in reverse order
+                    # This maintains DFS traversal order when using pop()
+                    # stack.extend(reversed(e.children())) # shoud we?
+                    stack.extend(e.children())
+
+        return list(syms)
+    except z3.Z3Exception as ex:
+        print(ex)
+        return False
+
+def get_expr_vars_v2(exp):
+    # For complex expressions with shared subexpressions, add a visited set to avoid processing the same subexpression multiple times
+    try:
+        syms = set()
+        visited = set()
+        stack = [exp]
+
+        while stack:
+            e = stack.pop()
+            e_id = z3.Z3_get_ast_id(e.ctx.ref(), e.as_ast())
+            
+            if e_id in visited:
+                continue
+                
+            visited.add(e_id)
+            
+            if z3.is_app(e):
+                if e.num_args() == 0 and e.decl().kind() == z3.Z3_OP_UNINTERPRETED:
+                    syms.add(e)
+                else:
                     stack.extend(e.children())
 
         return list(syms)
