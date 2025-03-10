@@ -58,7 +58,6 @@ class BenchmarkConfig:
                 'z3_options': 'fp.engine=spacer',
                 'eldarica_path': '${ELDARICA_ROOT}/eld',
                 'eldarica_options': ''
-
             }
         }
 

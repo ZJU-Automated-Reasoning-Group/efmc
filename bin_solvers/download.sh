@@ -1,5 +1,7 @@
 #!/bin/bash
 # This file is used by the Dockerfile outside (for a previous ASE'23 work)
+# We may only keep the pysmt-install related commands, so that we can use 
+# differnet SMT solvers via the pysmt's Python API.
 # And it is not used for now
 
 z3_version=z3-4.10.2-x64-glibc-2.31

@@ -1,4 +1,6 @@
 """
+FIXME: this file is not used for now.
+
 EFBV parallel solver by pysmt and mutiprocessing
 
 Improved implementation with:

@@ -76,9 +76,14 @@ class EFMCRunner:
     def run_ef_prover(self, sts: TransitionSystem) -> None:
         """Run template-based invariant generation using EF prover"""
         if sts.has_bv:
-            if "bv" not in g_verifier_args.template:
+            if g_verifier_args.template == "auto":
+                g_verifier_args.template = "bv_interval"
+            elif "bv" not in g_verifier_args.template:
                 self.logger.error(f"Unsupported template: {g_verifier_args.template}")
                 self.logger.info(f"Available templates: {TEMPLATES['bitvector']}")
+                sys.exit(1)
+            else:
+                self.logger.error(f"Unsupported template: {g_verifier_args.template}")
                 sys.exit(1)
 
             ef_prover = EFProver(
@@ -107,8 +112,11 @@ class EFMCRunner:
                 validate_invariant=g_verifier_args.validate_invariant,
                 pysmt_solver=g_verifier_args.pysmt_solver
             )
-            
-            if g_verifier_args.template in TEMPLATES['int_real']:
+
+            if g_verifier_args.template == "auto":
+                ef_prover.set_template("interval")
+                ef_prover.set_solver(g_verifier_args.efsmt_solver)        
+            elif g_verifier_args.template in TEMPLATES['int_real']:
                 ef_prover.set_template(g_verifier_args.template,
                                      num_disjunctions=g_verifier_args.num_disjunctions)
                 ef_prover.set_solver(g_verifier_args.efsmt_solver)
@@ -235,7 +243,7 @@ def parse_arguments():
 
     # Template-based verification options
     template_group = parser.add_argument_group('Template-based verification options')
-    template_group.add_argument('--template', type=str,
+    template_group.add_argument('--template', type=str, default="auto",
                       help='Template for invariant generation. For integer/real: interval, power_interval, zone, octagon, affine, power_affine, poly, power_poly. For bitvector: bv_interval, power_bv_interval, bv_zone, power_bv_zone, bv_octagon, power_bv_octagon, bv_poly, power_bv_poly')
     template_group.add_argument('--num-disjunctions', type=int, default=1,
                       help='Number of disjunctions in template')
@@ -249,16 +257,23 @@ def parse_arguments():
     # Solver options
     # currently, only affect the ef engine?
     solver_group = parser.add_argument_group('Solver options')
-    solver_group.add_argument('--efsmt-solver', type=str, default='z3',
+
+    # "z3api" means we use the z3py API to solve the constraints "in memory"
+    solver_group.add_argument('--efsmt-solver', type=str, default='z3api',
                       help='The solver to use for EFSMT solving')
     solver_group.add_argument('--pysmt-solver', type=str, default='z3',
                       help='SMT solver for the CEGIS-based EFSMT solving (implemented via pysmt)')
+
+    # Currently, the timeout is not used for the engines inside efmc
+    # It is better to control the timeout in some "upper-level" scripts.
+    # solver_group.add_argument('timeout', type=int, default=5,
+    #                      help='Timeout in seconds for the verification engine')
     
     # Bitvector options
     bv_group = parser.add_argument_group('Bitvector options')
     bv_group.add_argument('--prevent-over-under-flows', type=int, default=0,
                       help='Prevent over/underflows in bitvector operations')
-    bv_group.add_argument('--signedness', type=str,
+    bv_group.add_argument('--signedness', type=str, default='signed',
                       choices=['signed', 'unsigned'],
                       help='Signedness for bitvector operations')
     

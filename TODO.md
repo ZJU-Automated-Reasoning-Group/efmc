@@ -2,9 +2,17 @@
 
 Here are a few topics for further exploration:
 
+- Dataset
 - Bugs and Issues
 - New Features
 - Optimizations
+
+## 0. Dataset
+
+First, we need to collect more benchmarks with known oracles (safe or unsafe.), espcially for bit-vector semantics.
+
+If safe, it is better to provide the inductive invariant.
+If unsafe, it is better to provide the counterexample.
 
 ## 1. Bugs and Issues
 
@@ -53,7 +61,7 @@ We have two choices:
 
 #### For Bit-Vector Semantics
 
-- Accelerating EF(BV) solving: `efsmt_parallel_solver.py` (multi-process, uses SMT-LIB2 string communication, relatively slow; may have bugs)
+- Accelerating EF(BV) solving: `efsmt_par.py` (multi-process, uses SMT-LIB2 string communication, relatively slow; may have bugs)
 - More invariant templates: E.g., bit-wise templates (parity, bit-mask, ...?)
 
 - More benchmarks, e.g.,: [vmt-chc-benchmarks](https://github.com/chc-comp/vmt-chc-benchmarks/tree/master/bv)
