@@ -1,5 +1,7 @@
 """
 Generating aux invariants for k-induction (not used for now)
+- Template-based invariant generation
+- Houdini
 """
 import z3
 
