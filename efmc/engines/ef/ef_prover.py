@@ -115,8 +115,10 @@ class EFProver:
             elif template_name == "power_bv_poly":
                 self.ct = DisjunctiveBitVecPolyhedronTemplate(self.sts,
                                                               num_disjunctions=num_disjunctions)
-            elif template_name == "bitmask":
-                self.ct = BitMasksTemplate(self.sts)
+            # TBD
+            elif template_name == "knownbits":
+                self.ct = KnownBitsTemplate(self.sts)
+            # TBD
             elif template_name == "bitpredabs":
                 self.ct = BitPredAbsTemplate(self.sts)
             else:
@@ -171,7 +173,7 @@ class EFProver:
                 #   See the coe in efmc/templates/interval.val
                 self.logic = "UFLRA"  # or LRA?
             else:
-                self.logic = "UFNRA"  # or UFNRA?
+                self.logic = "UFNRA"  # or NRA?
         elif self.sts.has_int:
             template = self.ct.template_type
             if template == TemplateType.ZONE or template == TemplateType.INTERVAL:
@@ -197,6 +199,7 @@ class EFProver:
             print("Inductive wrong!")
 
         # 3. Post
+        # Sometiemes, we may want to ignore the post condition, e.g., purely invariant generation
         if (not self.ignore_post_cond) and (not is_entail(inv, self.sts.post)):
             correct = False
             print("Post not good!")
@@ -218,11 +221,7 @@ class EFProver:
         ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver)
         forall_vars = self.sts.all_variables
         # exists_vars = []
-        # for ele in self.ct.template_vars:
-        #    if isinstance(ele, list):
-        #        for v in ele: exists_vars.append(v)
-        #    else:
-        #        exists_vars.append(ele)
+        
         exists_vars = extract_all(self.ct.template_vars)
         ef_solver.init(exist_vars=exists_vars, forall_vars=forall_vars, phi=qf_vc)
 
@@ -284,7 +283,8 @@ class EFProver:
         """
         s = z3.Solver()
         if self.prop_strengthening:
-            # use "template = P and template" as the invariant template
+            # Since we use "template = P and template" as the invariant template,
+            # we need to adjunct the logic for generating the constraints
             var_map = []  # x' to x, y' to y
             for i in range(len(self.sts.variables)):
                 var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
@@ -387,7 +387,7 @@ class EFProver:
             print("EFSMT success time: ", time.time() - start)
             m = s.model()
             if self.prop_strengthening:
-                # use "template = P and template" as the invariant template
+                # Since we use "template = P and template" as the invariant template, we need to adjunst the logic for builidng the invariant
                 inv = z3.And(self.sts.post, self.ct.build_invariant_expr(m, use_prime_variables=False))
                 print("Invariant: ", inv)
                 if self.validate_invariant:

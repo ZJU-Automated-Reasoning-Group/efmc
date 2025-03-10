@@ -55,7 +55,7 @@ class FormulaGenerator:
 
     @staticmethod
     def random_real():
-        return z3.IntVal(random.randint(-100, 100))
+        return z3.RealVal(random.randint(-100, 100))
 
     def int_from_int(self):
         # TODO: also use constant
