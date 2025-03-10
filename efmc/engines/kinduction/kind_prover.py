@@ -101,7 +101,7 @@ class KInductionProver(object):
         return self.unrolled_system[:k+1]
 
     def get_simple_path(self, k):
-        """Simple path constraint for k-induction:
+        """Simple path constraint for k-induction (a trick/heuristic):
            each time encodes a different state
            TODO: simplify a bit?..
         """
@@ -168,7 +168,7 @@ class KInductionProver(object):
             
         return z3.And(*formula_parts)
 
-    def solve(self, k: int):
+    def solve(self, k: int) -> str:
         """Interleaves BMC and K-Ind to verify the property."""
 
         if self.use_aux_invariant:

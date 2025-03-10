@@ -1,8 +1,19 @@
 # coding: utf-8
 """
-Augmenting Z3 using PySMT, e.g., interpolant generation
 FIXME: the name of this file can be confusing
+
+Augmenting Z3 using PySMT, e.g., interpolant generation
+APIs of this file: 
+- to_pysmt_vars: Convert Z3 variables to PySMT variables
+- PySMTSolver.convert: Convert Z3 formula to PySMT formula
+- PySMTSolver.check_with_pysmt: Check satisfiability using PySMT solver
+- PySMTSolver.check_portfolio: Check satisfiability using multiple solvers
+- PySMTSolver.all_smt: Sample k models of a formula
+- PySMTSolver.binary_interpolant: Generate binary interpolant (Craig interpolant)
+- PySMTSolver.sequence_interpolant: Generate sequence interpolant 
+- PySMTSolver.efsmt: Solve exists-forall formula (used by the template-based invariant inference engine)
 """
+
 import logging
 import z3
 from pysmt.logics import QF_BV  # AUTO
@@ -150,9 +161,7 @@ class PySMTSolver(z3.Solver):
             z3_seq_itp.append(Solver(name='z3').converter.convert(cnt))
         return z3_seq_itp
 
-    def efsmt(self, evars: [z3.ExprRef], uvars: [z3.ExprRef], z3fml: z3.ExprRef, logic=QF_BV, maxloops=None,
-              esolver_name="z3", fsolver_name="z3",
-              verbose=False):
+    def efsmt(self, evars: [z3.ExprRef], uvars: [z3.ExprRef], z3fml: z3.ExprRef, logic=QF_BV, maxloops=None, esolver_name="z3", fsolver_name="z3", verbose=False):
         """Solves exists x. forall y. phi(x, y)"""
 
         _, phi = PySMTSolver.convert(z3fml)
@@ -201,4 +210,5 @@ def test():
     print(sol.binary_interpolant(fml_a, fml_b))
     print(sol.sequence_interpolant([fml_a, fml_b]))
 
-# test()
+if __name__ == "__main__":
+    test()

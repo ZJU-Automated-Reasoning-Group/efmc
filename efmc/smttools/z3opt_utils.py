@@ -94,3 +94,5 @@ def maxsmt(hard: z3.BoolRef, soft: List[z3.BoolRef], weight: List[int], timeout=
             if z3.is_false(m.eval(soft[i], True)):
                 cost += weight[i]
     return cost
+
+

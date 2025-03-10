@@ -31,6 +31,9 @@ class EFSMTSolver:
         self.solver = kwargs.get("solver", "z3")
 
         self.initialized = False
+        # the pysmt library allows for using different SMT solvers
+        # NOTE: it seems that only z3 is installed automatically when we install pysmt
+        # For other SMT solvers, we need to use the pysmt-install command to install
         self.pysmt_solver = kwargs.get("pysmt_solver", "z3")
 
     def set_tactic(self, name: str):
@@ -137,7 +140,6 @@ class EFSMTSolver:
 
         # 3. Simple cegis-based approach
         elif self.solver == "cegis":
-            # TODO: other engines in pysmt
             print("solving via cegis_solver")
             return self.solve_with_simple_cegis()
 
