@@ -9,17 +9,22 @@ import os
 import signal
 import sys
 from pathlib import Path
-
+import logging
+import subprocess
+from threading import Timer
+from typing import List
 import psutil
 
-from efmc.engines.ef.ef_prover import EFProver
-from efmc.engines.kinduction.kind_prover import KInductionProver
-from efmc.engines.pdr.pdr_prover import PDRProver
-from efmc.engines.qe import QuantifierEliminationProver
-from efmc.engines.qi import QuantifierInstantiationProver
 from efmc.frontends import parse_sygus, parse_chc
 from efmc.sts import TransitionSystem
 from efmc.efmc_config import g_verifier_args, update_config_from_globals
+
+from efmc.engines.ef import EFProver
+from efmc.engines.kinduction import KInductionProver
+from efmc.engines.pdr import PDRProver
+from efmc.engines.qe import QuantifierEliminationProver
+from efmc.engines.qi import QuantifierInstantiationProver
+from efmc.engines.houdini import HoudiniProver
 
 # Available templates
 TEMPLATES = {
@@ -36,6 +41,18 @@ TEMPLATES = {
         "bv_poly", "power_bv_poly"
     ]
 }
+
+
+def solve_with_bin_verifier(cmd: List[str], timeout=3600) -> str:
+    """ cmd should be a complete cmd"""
+    is_timeout = [False]
+
+    p = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
+    timer = Timer(timeout, terminate, args=[p, is_timeout])
+    timer.start()
+    p.wait()
+    timer.cancel()
+
 
 class EFMCRunner:
     """Main runner class for EFMC verification tasks"""
@@ -137,10 +154,10 @@ class EFMCRunner:
 
     def verify_chc(self, filename: str) -> None:
         """Verify CHC format file"""
-        if g_verifier_args.engine == "eld":
+        if g_verifier_args.use_eld:
             eld_path = str(Path(__file__).parent.parent.parent / "bin_solvers/bin/eld")
             cmd = [eld_path, filename]
-            # Use subprocess to run eld
+            solve_with_bin_verifier(cmd, g_verifier_args.timeout)
             return
 
         all_vars, init, trans, post = parse_chc(filename, to_real_type=False)
@@ -156,6 +173,14 @@ class EFMCRunner:
 
     def verify_sygus(self, filename: str) -> None:
         """Verify SyGuS format file"""
+        
+        # it is not a good idea to use the "engine" option
+        if g_verifier_args.use_cvc5sy:
+            from efmc.efmc_config import cvc5_exec
+            cmd = [cvc5_exec, filename]
+            solve_with_bin_verifier(cmd, g_verifier_args.timeout)
+            return
+
         all_vars, init, trans, post = parse_sygus(filename, to_real_type=False)
         self.logger.info("SyGuS file parsing completed")
         
@@ -174,7 +199,8 @@ class EFMCRunner:
             "pdr": self.run_pdr,
             "kind": self.run_k_induction,
             "qe": self.run_qe,
-            "qi": self.run_qi
+            "qi": self.run_qi,
+            "houdini": self.run_houdini  # Add Houdini engine
         }
         
         if g_verifier_args.engine not in engine_map:
@@ -183,6 +209,12 @@ class EFMCRunner:
             sys.exit(1)
             
         engine_map[g_verifier_args.engine](sts)
+
+    def run_houdini(self, sts: TransitionSystem) -> None:
+        """Run Houdini-based invariant inference"""
+        houdini_prover = HoudiniProver(sts)
+        res = houdini_prover.solve()
+        print("safe" if res == "safe" else "unknown")
 
 def parse_arguments():
     """Parse command line arguments"""
@@ -195,7 +227,7 @@ def parse_arguments():
     input_group.add_argument('--lang', type=str, choices=['chc', 'sygus', 'auto'],
                       default='auto', help='Input language format')
     input_group.add_argument('--engine', type=str, 
-                      choices=['ef', 'pdr', 'kind', 'qe', 'eld'],
+                      choices=['ef', 'pdr', 'kind', 'qe', 'eld', 'qi', 'houdini'],
                       default='ef', help='Verification engine to use')
     input_group.add_argument('--log-level', type=str, 
                       choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
@@ -248,6 +280,13 @@ def parse_arguments():
     qi_group = parser.add_argument_group('Quantifier instantiation-based verification options')
     qi_group.add_argument('--qi-strategy', type=str, default='mbqi',
                       help='Quantifier instantiation strategy (mbqi, ematching, mbqi+ematching)')
+
+    # third-party, binary verifiers
+    third_party_group = parser.add_argument_group('Third-party binary verifiers')
+    third_party_group.add_argument('--use-eld', type=bool, default=False,
+                      help='Use Eldrica (for CHC)')
+    third_party_group.add_argument('--use-cvc5sy', type=bool, default=False,
+                      help='Use cvc4sy (for SyGuS)')
 
     return parser.parse_args()
 
