@@ -5,13 +5,17 @@ SMT solvers that support quantifiers
 - MBQI (model-based quantifier instantiation)
 - Enumerative instantiation in CVC5
 
-Configuration z3 MBQI is enabled by
-- auto_config=false smt.ematching=false
+Configuration z3y
+- MBQI: auto_config=false smt.ematching=false
+- E-matching: auto_config=false smt.mbqi=false
+- M+E is enabled by default
 
-Configuration z3 E-matching is enabled by
--  auto_config=false smt.mbqi=false
+Configuration CVC5
+- E-matching
+- CEGQI
+- ...
 
-Configuration z3 M+E is enabled by default
+Currently, only Z3 is supported.
 """
 
 import logging
@@ -213,5 +217,21 @@ class QuantifierInstantiationProver:
                 best_result = result
                 
         return best_result, None
+
+    def set_strategy(self, strategy: str) -> None:
+        """
+        Set the QI strategy to use.
+        
+        Args:
+            strategy: QI strategy ('mbqi', 'ematching', 'combined', or 'auto')
+        Raises:
+            ValueError: If strategy is not supported
+        """
+        valid_strategies = ['mbqi', 'ematching', 'combined', 'auto']
+        if strategy not in valid_strategies:
+            raise ValueError(f"Unsupported QI strategy: {strategy}. Supported: {valid_strategies}")
+        self.qi_strategy = strategy
+        if self.verbose:
+            logger.info("Set QI strategy to: %s", strategy)
 
 

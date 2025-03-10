@@ -278,23 +278,32 @@ def parse_arguments():
                       help='Signedness for bitvector operations')
     
     # Output options
-    output_group = parser.add_argument_group('Output options')
-    output_group.add_argument('--dump-ef-smt2', action='store_true',
+    output_group = parser.add_argument_group('EFSMT constraint dumping options')
+    output_group.add_argument('--dump-ef-smt2', action='store_true', default=False,
                       help='Dump EF constraints in SMT2 format')
-    output_group.add_argument('--dump-qbf', action='store_true',
+    output_group.add_argument('--dump-qbf', action='store_true', default=False,
                       help='Dump constraints in QBF format')
+    output_group.add_argument('--dump-cnt-dir', dest='dump_cnt_dir', default="/tmp", type=str, help="The dir for storing the dumped constraints")
 
     # K-induction options
     kind_group = parser.add_argument_group('K-induction options')
     kind_group.add_argument('--kind-k', type=int, default=1,
                       help='K value for k-induction')
+    kind_group.add_argument('--kind-incremental', dest='kind_incremental', default=False, action='store_true',
+                        help="Use incremental k-induction (default: False)")
     kind_group.add_argument('--kind-aux-inv', action='store_true',
                       help='Use auxiliary invariants in k-induction')
+    kind_group.add_argument('--kind-aux-inv-alg', dest='kind_aux_inv_alg', default='default', type=str,
+                            help="Select the approach for generating auxiliary invariants. Options include: [top, int, houdini]")
 
     # Quantifier instantiation-based verification options
     qi_group = parser.add_argument_group('Quantifier instantiation-based verification options')
     qi_group.add_argument('--qi-strategy', type=str, default='mbqi',
-                      help='Quantifier instantiation strategy (mbqi, ematching, mbqi+ematching)')
+                      help='Quantifier instantiation strategy (mbqi, ematching, combined, auto)')
+
+    # PDR engine options: Allow for parsing options to Z3's PDR engine (named Spacer)
+    # FIXME: refer to the Z3 documentation for the options
+    # pdr_group = parser.add_argument_group('PDR engine options')
 
     # third-party, binary verifiers
     third_party_group = parser.add_argument_group('Third-party binary verifiers')
