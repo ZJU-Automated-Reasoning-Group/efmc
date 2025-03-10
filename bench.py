@@ -32,14 +32,13 @@ import argparse
 import concurrent.futures
 import json
 import logging
-import os
 import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
 
 from efmc.cli.efmc import EFMCRunner
-from efmc.utils.global_config import g_verifier_args
+from efmc.efmc_config import g_verifier_args, update_config_from_globals
 
 logger = logging.getLogger(__name__)
 

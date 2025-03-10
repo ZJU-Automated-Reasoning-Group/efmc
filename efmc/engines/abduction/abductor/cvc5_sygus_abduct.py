@@ -72,8 +72,9 @@ def solve_abduction(formula: z3.ExprRef) -> Tuple[bool, str]:
 
     try:
         # Call CVC5 with appropriate flags
+        from efmc.efmc_config import cvc5_exec
         result = subprocess.run(
-            ['cvc5', '--lang=sygus', '--produce-abducts', tmp_path],
+            [cvc5_exec, '--lang=sygus', '--produce-abducts', tmp_path],
             capture_output=True,
             text=True,
             check=True
@@ -110,3 +111,4 @@ if __name__ == "__main__":
         print("Found abduction solution:", result)
     else:
         print("Failed:", result)
+        

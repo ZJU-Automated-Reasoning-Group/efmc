@@ -19,7 +19,7 @@ from efmc.engines.pdr.pdr_prover import PDRProver
 from efmc.engines.qe import QuantifierEliminationProver
 from efmc.frontends import parse_sygus, parse_chc
 from efmc.sts import TransitionSystem
-from efmc.utils.global_config import g_verifier_args  # the parsed arguments
+from efmc.efmc_config import g_verifier_args, update_config_from_globals  # the parsed arguments
 
 logger = logging.getLogger(__name__)
 
@@ -315,6 +315,7 @@ if __name__ == "__main__":
 
 
     g_verifier_args = parser.parse_args()
+    update_config_from_globals()
 
     if g_verifier_args.verbosity == 2:
         logging.basicConfig(level=logging.DEBUG)

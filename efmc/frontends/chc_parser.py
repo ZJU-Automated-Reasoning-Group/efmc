@@ -8,7 +8,6 @@ from __future__ import print_function
 
 import z3
 
-
 def visitor(exp, seen):
     if exp in seen:
         return

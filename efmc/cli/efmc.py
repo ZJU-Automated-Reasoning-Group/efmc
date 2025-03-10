@@ -9,7 +9,6 @@ import os
 import signal
 import sys
 from pathlib import Path
-from typing import List
 
 import psutil
 
@@ -19,8 +18,7 @@ from efmc.engines.pdr.pdr_prover import PDRProver
 from efmc.engines.qe import QuantifierEliminationProver
 from efmc.frontends import parse_sygus, parse_chc
 from efmc.sts import TransitionSystem
-from efmc.utils.global_config import g_verifier_args
-
+from efmc.efmc_config import g_verifier_args, update_config_from_globals
 
 # Available templates
 TEMPLATES = {
@@ -237,6 +235,7 @@ def main():
     """Main entry point for the CLI"""
     global g_verifier_args
     g_verifier_args = parse_arguments()
+    update_config_from_globals()
     
     runner = EFMCRunner()
     

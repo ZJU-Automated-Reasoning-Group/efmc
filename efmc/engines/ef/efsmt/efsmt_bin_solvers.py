@@ -12,7 +12,7 @@ import uuid
 import z3
 
 from efmc.smttools.smtlib_solver import SMTLIBSolver
-from efmc.engines.ef.efsmt.efsmt_config import \
+from efmc.efmc_config import \
     z3_exec, cvc5_exec, g_bin_solver_timeout, caqe_exec, \
     btor_exec, bitwuzla_exec, yices_exec, math_exec, q3b_exec
 
