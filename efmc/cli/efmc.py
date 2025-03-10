@@ -16,6 +16,7 @@ from efmc.engines.ef.ef_prover import EFProver
 from efmc.engines.kinduction.kind_prover import KInductionProver
 from efmc.engines.pdr.pdr_prover import PDRProver
 from efmc.engines.qe import QuantifierEliminationProver
+from efmc.engines.qi import QuantifierInstantiationProver
 from efmc.frontends import parse_sygus, parse_chc
 from efmc.sts import TransitionSystem
 from efmc.efmc_config import g_verifier_args, update_config_from_globals
@@ -110,6 +111,17 @@ class EFMCRunner:
         pdr_prover = PDRProver(sts)
         pdr_prover.solve()
 
+    def run_qi(self, sts: TransitionSystem) -> None:
+        """Run the Quantifier Instantiation (QI) based verification"""
+        qi_prover = QuantifierInstantiationProver(sts)
+        
+        # Set the QI strategy based on the command-line argument
+        if hasattr(g_verifier_args, 'qi_strategy'):
+            qi_prover.set_strategy(g_verifier_args.qi_strategy)
+            self.logger.info(f"Using QI strategy: {g_verifier_args.qi_strategy}")
+        
+        qi_prover.solve()
+
     def run_k_induction(self, sts: TransitionSystem) -> None:
         """Run k-induction verification"""
         self.logger.info("Starting k-induction...")
@@ -161,7 +173,8 @@ class EFMCRunner:
             "ef": self.run_ef_prover,
             "pdr": self.run_pdr,
             "kind": self.run_k_induction,
-            "qe": self.run_qe
+            "qe": self.run_qe,
+            "qi": self.run_qi
         }
         
         if g_verifier_args.engine not in engine_map:
@@ -175,59 +188,66 @@ def parse_arguments():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description='EFMC - A Software Model Checker')
     
-    parser.add_argument('--file', type=str, required=True,
+    # Input and general options
+    input_group = parser.add_argument_group('Input options')
+    input_group.add_argument('--file', type=str, required=True,
                       help='Input file to verify')
-    
-    parser.add_argument('--lang', type=str, choices=['chc', 'sygus'],
-                      default='sygus', help='Input language format')
-    
-    parser.add_argument('--engine', type=str, 
+    input_group.add_argument('--lang', type=str, choices=['chc', 'sygus', 'auto'],
+                      default='auto', help='Input language format')
+    input_group.add_argument('--engine', type=str, 
                       choices=['ef', 'pdr', 'kind', 'qe', 'eld'],
                       default='ef', help='Verification engine to use')
+    input_group.add_argument('--log-level', type=str, 
+                      choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                      default='INFO', help='Set the logging level')
 
-    # options for template-based verification
-    
-    parser.add_argument('--template', type=str,
-                      help='Template for invariant generation')
-    
-    parser.add_argument('--efsmt-solver', type=str, default='z3',
-                      help='SMT solver for EFSMT')
-
-    # used in cegis-style solver implemented on top of pysmt's API
-    parser.add_argument('--pysmt-solver', type=str, default='z3',
-                      help='PySMT solver to use')
-    
-    parser.add_argument('--prop-strengthen', action='store_true',
-                      help='Enable property strengthening')
-
-    parser.add_argument('--abs-refine', action='store_true',
-                      help='Enable abstraction refinement')
-    
-    parser.add_argument('--prevent-over-under-flows', type=int, default=0,
-                      help='Prevent over/underflows in bitvector operations')
-    
-    parser.add_argument('--num-disjunctions', type=int, default=1,
+    # Template-based verification options
+    template_group = parser.add_argument_group('Template-based verification options')
+    template_group.add_argument('--template', type=str,
+                      help='Template for invariant generation. For integer/real: interval, power_interval, zone, octagon, affine, power_affine, poly, power_poly. For bitvector: bv_interval, power_bv_interval, bv_zone, power_bv_zone, bv_octagon, power_bv_octagon, bv_poly, power_bv_poly')
+    template_group.add_argument('--num-disjunctions', type=int, default=1,
                       help='Number of disjunctions in template')
+    template_group.add_argument('--prop-strengthen', action='store_true',
+                      help='Enable property strengthening')
+    template_group.add_argument('--abs-refine', action='store_true',
+                      help='Enable abstraction refinement')
+    template_group.add_argument('--validate-invariant', action='store_true',
+                      help='Validate generated invariants')
+
+    # Solver options
+    # currently, only affect the ef engine?
+    solver_group = parser.add_argument_group('Solver options')
+    solver_group.add_argument('--efsmt-solver', type=str, default='z3',
+                      help='The solver to use for EFSMT solving')
+    solver_group.add_argument('--pysmt-solver', type=str, default='z3',
+                      help='SMT solver for the CEGIS-based EFSMT solving (implemented via pysmt)')
     
-    parser.add_argument('--signedness', type=str,
+    # Bitvector options
+    bv_group = parser.add_argument_group('Bitvector options')
+    bv_group.add_argument('--prevent-over-under-flows', type=int, default=0,
+                      help='Prevent over/underflows in bitvector operations')
+    bv_group.add_argument('--signedness', type=str,
                       choices=['signed', 'unsigned'],
                       help='Signedness for bitvector operations')
     
-    parser.add_argument('--dump-ef-smt2', action='store_true',
+    # Output options
+    output_group = parser.add_argument_group('Output options')
+    output_group.add_argument('--dump-ef-smt2', action='store_true',
                       help='Dump EF constraints in SMT2 format')
-    
-    parser.add_argument('--dump-qbf', action='store_true',
+    output_group.add_argument('--dump-qbf', action='store_true',
                       help='Dump constraints in QBF format')
 
-    parser.add_argument('--validate-invariant', action='store_true',
-                      help='Validate generated invariants')
-
-    # options for k-induction
-    parser.add_argument('--kind-k', type=int, default=1,
+    # K-induction options
+    kind_group = parser.add_argument_group('K-induction options')
+    kind_group.add_argument('--kind-k', type=int, default=1,
                       help='K value for k-induction')
-    
-    parser.add_argument('--kind-aux-inv', action='store_true',
+    kind_group.add_argument('--kind-aux-inv', action='store_true',
                       help='Use auxiliary invariants in k-induction')
+
+    # Quantifier instantiation-based verification options
+    qi_group = parser.add_argument_group('Quantifier instantiation-based verification options')
+    qi_group.add_argument('--qi-strategy', type=str, default='mbqi',
+                      help='Quantifier instantiation strategy (mbqi, ematching, mbqi+ematching)')
 
     return parser.parse_args()
 
@@ -235,18 +255,32 @@ def main():
     """Main entry point for the CLI"""
     global g_verifier_args
     g_verifier_args = parse_arguments()
+    
+    # Configure logging based on the specified log level
+    logging.basicConfig(
+        level=getattr(logging, g_verifier_args.log_level),
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+    
     update_config_from_globals()
     
     runner = EFMCRunner()
-    
+
     if g_verifier_args.lang == "chc":
         runner.verify_chc(g_verifier_args.file)
     elif g_verifier_args.lang == "sygus":
         runner.verify_sygus(g_verifier_args.file)
-    else:
-        runner.logger.error(f"Unsupported input language: {g_verifier_args.lang}")
-        runner.logger.info("Supported languages: chc, sygus")
-        sys.exit(1)
+    else:  # the default value is "auto"
+        file_extension = os.path.splitext(g_verifier_args.file)[1].lower()
+        if file_extension == '.smt2':
+            runner.verify_chc(g_verifier_args.file)
+        elif file_extension == '.sy':
+            runner.verify_sygus(g_verifier_args.file)
+        else:
+            logging.error(f"Unsupported file extension: {file_extension}")
+            logging.info("Supported extensions: .smt2 (CHC), .sy (SyGuS)")
+            sys.exit(1)
+
 
 
 if __name__ == "__main__":
