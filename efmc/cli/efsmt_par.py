@@ -32,6 +32,12 @@ vcc_test = False
 SOLVER_TIMEOUT = 30  # seconds
 
 
+from efmc.engines.ef.efsmt.efsmt_parser import EFSMTParser, ParserError
+from pysmt.oracles import get_logic
+from pysmt.shortcuts import get_env
+from pysmt.smtlib.parser import SmtLibParser
+
+
 class ParallelEFBVSolver:
     def __init__(self, pool_size=cpu_count(), maxloops=50000, maxtask=cpu_count(), timeout=SOLVER_TIMEOUT):
         self.maxloops = maxloops
@@ -60,25 +66,15 @@ class ParallelEFBVSolver:
         self.res = None
         self.task_num = 0
         self.terminate_flag = manager.Value('b', False)
+        self.parser = EFSMTParser()
         
-    def __getstate__(self):
-        self_dict = self.__dict__.copy()
-        del self_dict['pool']
-
-        return self_dict
-
-    def __setstate__(self, state):
-        self.__dict__.update(state)
-
-    def __del__(self):
-        # Clean up pool if it exists
-        if hasattr(self, 'pool') and self.pool:
-            try:
-                active_pools.remove(self.pool)
-                self.pool.terminate()
-                self.pool.join()
-            except:
-                pass
+    def _convert_z3_to_pysmt(self, z3_expr):
+        """Convert Z3 expression to pySMT format"""
+        # Convert to SMT-LIB string and parse with pySMT
+        smt2_str = z3_expr.sexpr()
+        parser = SmtLibParser()
+        script = parser.get_script(StringIO(smt2_str))
+        return script.get_last_formula()
 
     def solve(self, phi, y):
         def thread_callback(res):
@@ -90,11 +86,20 @@ class ParallelEFBVSolver:
                 elif res is False:
                     self.if_sat = False
 
+        # Parse with EFSMTParser
+        self.parser.set_logic('BV')
+        z3_exists_vars, z3_forall_vars, z3_formula = self.parser.parse_smt2_string(phi)
+        
+        # Convert to pySMT format
+        formula = self._convert_z3_to_pysmt(z3_formula)
+        forall_vars = [self._convert_z3_to_pysmt(v) for v in z3_forall_vars]
+        exists_vars = [self._convert_z3_to_pysmt(v) for v in z3_exists_vars]
+        
         self.src_list = Manager().list()
-        self.src_list.append(phi)
-
+        self.src_list.append(str(formula))
+        
         y_str = ''
-        for y_s in y:
+        for y_s in forall_vars:
             y_str += str(y_s)
         self.src_list.append(y_str)
 
@@ -160,12 +165,12 @@ class ParallelEFBVSolver:
             return None
             
         try:
+            # Parse using stored formula
             y = [Symbol(n, BVType(bitvec_width)) for n in self.src_list[1]]
             parser = SmtLibParser()
             smtlib_file = StringIO(self.src_list[0])
-
             formula_list = parser.get_script(smtlib_file).commands
-
+            
             phi = Bool(True)
             for command in formula_list:
                 if command.name == "assert":
@@ -331,12 +336,27 @@ def run_test(y, f, timeout=SOLVER_TIMEOUT):
         print(f"error: {str(e)}")
 
 
-def run_parallel_test(y, f, timeout=SOLVER_TIMEOUT):
-    print("Parallel Testing " + str(f))
+def run_parallel_test(timeout=SOLVER_TIMEOUT):
+    fml = """
+(declare-fun x1 () (_ BitVec 8))
+(declare-fun x2 () (_ BitVec 8))
+(declare-fun x3 () (_ BitVec 8))
+(assert
+    (forall ((y1 (_ BitVec 8)) (y2 (_ BitVec 8)))
+        (=> (and (bvult y1 y2)
+                 (bvugt y2 x1))
+            (or (= (bvand x1 y1) x2)
+                (and (bvule (bvadd x2 y2) x3)
+                     (= (bvmul y1 x3) y2))))))"""
+    
+    parser = EFSMTParser()
+    parser.set_logic('BV')
+    exists_vars, forall_vars, formula = parser.parse_smt2_string(fml)
+    
     solver = None
     try:
         solver = ParallelEFBVSolver(timeout=timeout)
-        result = solver.solve(f, y)
+        result = solver.solve(fml, forall_vars)
         return result
     except KeyboardInterrupt:
         print("\nTest interrupted by user")
@@ -355,44 +375,6 @@ def run_parallel_test(y, f, timeout=SOLVER_TIMEOUT):
                 solver.pool.join()
             except:
                 pass
-
-
-def main():
-    x, y = [Symbol(n, BVType(bitvec_width)) for n in "xy"]
-    f_sat = ('''(set-logic QF_BV)
-        (declare-fun x () (_ BitVec %d))
-        (declare-fun y () (_ BitVec %d))
-        (assert (=> (and (bvugt y #x00000003) (bvult y #x0000000A)) (bvult (bvsub y (bvmul #x00000002 x)) #x00000007)))
-        (check-sat)''' % (bitvec_width, bitvec_width))
-    f_incomplete = ('''(set-logic QF_BV)
-        (declare-fun x () (_ BitVec %d))
-        (declare-fun y () (_ BitVec %d))
-        (assert (and (bvugt y #x00000003) (bvugt x #x00000001)))
-        (check-sat)''' % (bitvec_width, bitvec_width))
-
-    start = time.time()
-    run_test([y], f_sat)
-    end = time.time()
-    logger.info("Origin Sat Time: %s s" % (end - start))
-    print("\n\n")
-
-    start = time.time()
-    run_test([y], f_incomplete)
-    end = time.time()
-    logger.info("Origin UnSat Time: %s s" % (end - start))
-    print("\n\n")
-
-    start = time.time()
-    run_parallel_test([y], f_sat)
-    end = time.time()
-    logger.info("Parallel Sat Time: %s s" % (end - start))
-    print("\n\n")
-
-    start = time.time()
-    run_parallel_test([y], f_incomplete)
-    end = time.time()
-    logger.info("Parallel UnSat Time: %s s" % (end - start))
-    print("\n\n")
 
 
 # Add signal handler for graceful termination
@@ -415,4 +397,4 @@ signal.signal(signal.SIGINT, signal_handler)
 if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s',
                         level=logging.DEBUG)  # 配置输出格式、配置日志级别
-    main()
+    run_parallel_test()
