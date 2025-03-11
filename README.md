@@ -3,12 +3,12 @@
 SMT-based Software Model Checking
 
 ## 1. Introduction
-EFMC is a toolkit for verifying program properties using SMT-based verification engines. It implements multiple approaches, including template-based verification, property-directed reachability (PDR), Houdini, and k-induction. Each engine offers distinct advantages for different types of programs and properties.
+EFMC is a toolkit for verifying program properties using SMT-based verification engines. It implements multiple approaches, such as template-based verification, property-directed reachability (PDR), Houdini, and k-induction. Each engine offers distinct advantages for different types of programs and properties.
 
 
 ### 1.1 Entrance of the Verifier
 
-You can try the follwoing command (in a virtual environemnt)
+You can try the following command (in a virtual environemnt)
 ~~~~
 pip install -e .
 ~~~~
@@ -33,6 +33,8 @@ Currently, the users can choose three verification engines
 - Template-based (Constraint-based) Approach
 - Property-Directed Reachability (PDR)
 - K-Induction
+- Quantifier Instantiation
+- Houdini (NOT Stable)
 - Abductive Inference (NOT Stable)
 
 TBD: Download (or auto build) some verifiers for comparison
@@ -61,11 +63,13 @@ To run the engine, you may try two ways:
 Example:
 
 ~~~~
-efmc --engine efsmt --template bv_interval --lang chc --file benchmarks/bv/2017.ASE_FIB/8bits_unsigned/fib_04.sl_8bits_unsigned.smt2
+efmc --engine ef --template bv_interval --lang chc --file benchmarks/bv/2017.ASE_FIB/8bits_unsigned/fib_04.sl_8bits_unsigned.smt2
 
---engine: efsmt (the constraint-based approach)
+--engine: ef (the constraint-based approach)
           pdr (the PDR engine in Z3)
 ~~~~
+
+If lang is not specified, efmc will guess the language based on the file extension.
 
 ### 2.2 Property-Directed Reachability (PDR)
 
@@ -104,6 +108,10 @@ To be tested and refined (...)
 Related work:
 
 - Inductive Invariant Generation via Abductive Inference, OOPSLA'13
+
+#### Houdini
+
+#### Predicate Abstraction
 
 ## 3. Limitations and Future Work
 

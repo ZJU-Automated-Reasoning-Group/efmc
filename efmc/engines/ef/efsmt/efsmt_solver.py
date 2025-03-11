@@ -40,6 +40,7 @@ class EFSMTSolver:
         raise NotImplementedError
 
     def init(self, exist_vars, forall_vars, phi: z3.ExprRef):
+        """Initialize the solver"""
         self.exists_vars = exist_vars
         self.forall_vars = forall_vars
         self.phi = phi
@@ -99,8 +100,16 @@ class EFSMTSolver:
         tmp.write(qdimacs_str)
         tmp.close()
 
-    def dump_sat_file(self, dimacs_file_name: str):
-        raise NotImplementedError
+    def dump_cnf_file(self, dimacs_file_name: str):
+        """Dump to CNF formula"""
+        assert self.logic == "BV" or self.logic == "UFBV"
+        fml_manager = EFBVFormulaTranslator()
+        # FIXME: to_cnf_str() is not implemented
+        cnf_str = fml_manager.to_cnf_str(self.phi, existential_vars=self.exists_vars,
+                                         universal_vars=self.forall_vars)
+        tmp = open(dimacs_file_name, "w")
+        tmp.write(cnf_str)
+        tmp.close()
 
     def solve(self):
         """
@@ -109,7 +118,10 @@ class EFSMTSolver:
         assert self.initialized
         print("EFSMT solver: {}".format(self.solver))
         # 1. Quantifier instantiation approach
-        if self.solver == "z3":
+        if self.solver == "z3api":
+            # Use z3's Python API to solve the problem
+            return self.solve_with_z3_api()
+        elif self.solver == "z3":
             return solve_with_bin_smt(self.logic, self.exists_vars, self.forall_vars, self.phi, "z3")
         elif self.solver == "cvc5":
             return solve_with_bin_smt(self.logic, self.exists_vars, self.forall_vars, self.phi, "cvc5")
@@ -145,6 +157,47 @@ class EFSMTSolver:
 
         else:
             raise NotImplementedError
+
+    def solve_with_z3_api(self) -> str:
+        """
+        Solve Exists-Forall SMT problems directly using Z3's Python API.
+        
+        This method creates a Z3 solver instance and adds the quantified formula
+        that represents the Exists-Forall problem. It then checks satisfiability
+        and returns the result as a string.
+        
+        Returns:
+            str: "sat" if the formula is satisfiable, "unsat" if unsatisfiable,
+                 or "unknown" if Z3 cannot determine satisfiability.
+        """
+        print("Solving with Z3 API directly")
+        
+        # Create a solver instance
+        solver = z3.Solver()
+        
+        # Create quantified formula: Exists e. Forall f. phi(e, f)
+        # First, convert lists to tuples for Z3 quantifiers
+        # exists_vars_tuple = tuple(self.exists_vars)
+        forall_vars_tuple = tuple(self.forall_vars)
+        
+        # Create the quantified formula
+        # quantified_formula = z3.Exists(exists_vars_tuple, 
+        #                              z3.ForAll(forall_vars_tuple, self.phi))
+        quantified_formula = z3.ForAll(forall_vars_tuple, self.phi)
+        
+        # Add the formula to the solver
+        solver.add(quantified_formula)
+        
+        # Check satisfiability
+        result = solver.check()
+        
+        # Return result as string
+        if result == z3.sat:
+            return "sat"
+        elif result == z3.unsat:
+            return "unsat"
+        else:
+            return "unknown"
 
     def solve_with_simple_cegis(self) -> str:
         """Solve with a CEGIS-style algorithm, which consists of a "forall solver" and an "exists solver"

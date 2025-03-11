@@ -43,6 +43,27 @@ TEMPLATES = {
 }
 
 
+def terminate(process, is_timeout):
+    """Terminate a process and set the timeout flag"""
+    try:
+        # Try to terminate gracefully first
+        if process.poll() is None:  # Check if process is still running
+            process.terminate()
+            # Give it a moment to terminate
+            try:
+                process.wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                # Force kill if it doesn't terminate
+                process.kill()
+    except Exception:
+        # Ensure process is killed even if errors occur
+        try:
+            process.kill()
+        except Exception:
+            pass
+    is_timeout[0] = True
+
+
 def solve_with_bin_verifier(cmd: List[str], timeout=3600) -> str:
     """ cmd should be a complete cmd"""
     is_timeout = [False]
@@ -259,10 +280,14 @@ def parse_arguments():
     solver_group = parser.add_argument_group('Solver options')
 
     # "z3api" means we use the z3py API to solve the constraints "in memory"
-    solver_group.add_argument('--efsmt-solver', type=str, default='z3api',
-                      help='The solver to use for EFSMT solving')
-    solver_group.add_argument('--pysmt-solver', type=str, default='z3',
-                      help='SMT solver for the CEGIS-based EFSMT solving (implemented via pysmt)')
+    solver_group.add_argument('--efsmt-solver', dest='efsmt_solver', default='z3api', type=str, 
+                        help="Solver for the exists-forall SMT problem. Options include:\n"
+                             "1. Quantifier instantiation approach: [z3, cvc5, btor, yices2, mathsat, bitwuzla, z3api]\n"
+                             "2. Bit-blasting approach: [z3qbf, caqe, q3b, z3sat]\n"
+                             "3. CEGIS approach: [cegis] (implemented via pysmt, need to set pysmt_solver)")
+    
+    solver_group.add_argument('--pysmt-solver', dest='pysmt_solver', default="z3", type=str,
+                        help="Set the PySMT solver for the CEGIS solver's backend. Options include: [z3, cvc5, btor, yices2, mathsat, bitwuzla]")
 
     # Currently, the timeout is not used for the engines inside efmc
     # It is better to control the timeout in some "upper-level" scripts.
@@ -348,3 +373,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

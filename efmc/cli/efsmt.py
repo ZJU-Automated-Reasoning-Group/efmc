@@ -25,7 +25,7 @@ class EFSMTRunner:
         self.parser = EFSMTParser()
 
     def solve_efsmt_file(self, file_name: str, solver_name: str, logic: str = "BV", 
-                        dump_smt2: bool = False, dump_qbf: bool = False):
+                        dump_smt2: bool = False, dump_qbf: bool = False, dump_cnf: bool = False):
         """
         Solve the EFSMT problem from a file
         """
@@ -52,6 +52,12 @@ class EFSMTRunner:
                 self.logger.info(f"Dumped QBF formula to {out_file}")
                 return
             
+            if dump_cnf:
+                out_file = f"{file_name}.cnf"
+                ef_solver.dump_cnf_file(out_file)
+                self.logger.info(f"Dumped CNF formula to {out_file}")
+                return
+            
             # Solve
             result = ef_solver.solve()
             print(f"Result: {result}")
@@ -63,6 +69,7 @@ class EFSMTRunner:
         except Exception as e:
             self.logger.error(f"Error solving EFSMT: {str(e)}")
             return str(e)
+        
 
 def parse_arguments():
     """Parse command line arguments"""
@@ -80,58 +87,60 @@ def parse_arguments():
                       help='Logic to use for solving')
 
     # Solver options
-    solver_group = parser.add_argument_group('Solver options')
+    solver_group = parser.add_argument_group('EFSMT Solver options')
     
     # 1. QI-based
-    solver_group.add_argument('--solver', type=str, default='z3',
-                      choices=['z3', 'cvc5', 'btor', 'yices2', 'mathsat', 'bitwuzla'],
+    solver_group.add_argument('solver', type=str, default='z3',
+                      choices=['z3api', 'z3', 'cvc5', 'btor', 'yices2', 'mathsat', 'bitwuzla'],
                       help='SMT solver to use for direct solving (via quantifier instantiation)')
+   # "z3api": use Z3's Python API (other choices will all binary solvers)
 
     # 2. Bit-level (bit-blasting?)
-    solver_group.add_argument('--qbf-solver', type=str,
+    solver_group.add_argument('--qbf-solver', type=str, default='z3qbf',
                       choices=['z3qbf', 'caqe', 'q3b'],
                       help='QBF solver to use after translation to QBF')
-    solver_group.add_argument('--sat-solver', type=str,
+    solver_group.add_argument('--sat-solver', type=str, default='z3sat',
                       choices=['z3sat', 'cd', 'cd15', 'gc3', 'gc4', 'g3', 'g4', 'lgl',
                               'mcb', 'mpl', 'mg3', 'mc', 'm22', 'mgh'],
                       help='SAT solver to use after translation to SAT')
 
     # 3. CEGIS-based
-    solver_group.add_argument('--cegis', action='store_true',
-                      help='Use CEGIS-based solving approach')
+    solver_group.add_argument('--cegis', action='store_true', default=False,
+                      help='Use CEGIS-based solving approach（implemented in pysmt')
     solver_group.add_argument('--cegis-solver', type=str, default='pysmt-z3',
                       choices=['pysmt-z3', 'pysmt-cvc5', 'pysmt-btor', 
                               'pysmt-yices2', 'pysmt-mathsat', 'pysmt-bitwuzla'],
                       help='Set SMT oracle used by the CEGIS-based algorithm (via pysmt)')
 
-    solver_group.add_argument('--timeout', type=int, default=0,
+    solver_group.add_argument('--timeout', type=int, default=5,
                       help='Timeout in seconds (0 means no timeout)')
 
     # Output options
     output_group = parser.add_argument_group('Output options')
-    output_group.add_argument('--dump-smt2', action='store_true',
+    output_group.add_argument('--dump-smt2', action='store_true', default=False,
                       help='Dump the EFSMT query in SMT2 format')
-    output_group.add_argument('--dump-qbf', action='store_true',
+    output_group.add_argument('--dump-qbf', action='store_true', default=False,
                       help='Dump the EFSMT query in QBF format')
-    output_group.add_argument('--dump-cnf', action='store_true',
+    output_group.add_argument('--dump-cnf', action='store_true', default=False,
                       help='Dump the bit-blasted formula in CNF format')
-    output_group.add_argument('--output-dir', type=str,
+    output_group.add_argument('--output-dir', type=str, default='~/tmp',
                       help='Directory to store dumped files')
-    output_group.add_argument('--verbose', action='store_true',
+    output_group.add_argument('--verbose', action='store_true', default=False,
                       help='Enable verbose logging')
-    output_group.add_argument('--stats', action='store_true',
+    output_group.add_argument('--stats', action='store_true', default=False,
                       help='Print solving statistics')
 
     # Advanced options
     advanced_group = parser.add_argument_group('Advanced options')
-    advanced_group.add_argument('--simplify', action='store_true',
+    advanced_group.add_argument('--simplify', action='store_true', default=False,
                       help='Apply formula simplification before solving')
-    advanced_group.add_argument('--rewrite-exists', action='store_true',
+    advanced_group.add_argument('--rewrite-exists', action='store_true', default=False,
                       help='Rewrite existential quantifiers using Skolemization')
-    advanced_group.add_argument('--incremental', action='store_true',
+    advanced_group.add_argument('--incremental', action='store_true', default=False,
                       help='Use incremental solving when possible')
     
     return parser.parse_args()
+
 
 def main():
     """Main entry point"""
@@ -149,7 +158,9 @@ def main():
         dump_qbf=args.dump_qbf
     )
 
+
 if __name__ == "__main__":
     sys.exit(main())
+
 
     

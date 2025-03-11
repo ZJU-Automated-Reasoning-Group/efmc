@@ -254,9 +254,10 @@ class EFProver:
         print("Used logic: {}".format(str(self.logic)))
         # return self.solve_with_cegis_efsmt()  # FIXME: seems very slow
         if self.solver == "z3api":
+            # will call z3's Python API to solve the problem (no need to dump files)
             return self.solve_with_z3()
         else:
-            # call third-party solvers via EFSMTSolver
+            # Call third-party solvers via EFSMTSolver
             #   1. Dump to SMT-LIB2 file and call a binary solver (e.g., cvc5, z3..)
             #   2. Translate to various Boolean formats and use corresponding solvers
             #   3. Use PySMT-based implementation of the CEGIS-based solver
