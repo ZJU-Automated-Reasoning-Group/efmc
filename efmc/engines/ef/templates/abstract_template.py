@@ -65,6 +65,13 @@ class TemplateType(Enum):
     def is_bitvector(cls, template_type: 'TemplateType') -> bool:
         """Check if the template type uses bit-vector arithmetic."""
         return template_type.name.startswith('BV_')   
+    
+    @classmethod
+    def is_interval(cls, template_type: 'TemplateType') -> bool:
+        """Check if the template type is an interval."""
+        return template_type.name.startswith('INTERVAL')
+    
+    
 
 
 class Template(ABC):

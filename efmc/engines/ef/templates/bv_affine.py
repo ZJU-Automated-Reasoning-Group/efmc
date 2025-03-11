@@ -1,6 +1,7 @@
 """FIXME: this file is not used yet
 
 Affine relation domain over bit-vectors
+
 """
 from efmc.engines.ef.templates.abstract_template import *
 from efmc.sts import TransitionSystem
@@ -39,7 +40,7 @@ class BitVecAffineTemplate(Template):
 
         self.template_index = 0
 
-        #  number of linear inequalities (NOTE: interval, zone, and octagon domains do not need this)
+        #  number of linear equalities (NOTE: interval, zone, and octagon domains do not need this)
         #  thus, the following field is polyhedron-specific
         self.num_templates = 1
 

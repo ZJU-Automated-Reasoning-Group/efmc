@@ -1,6 +1,6 @@
 """Interval template over integer or real variables  (Version 1)
 
-  The encoding in this version is not elegant (but IntervalTemplateV2 is not complete, i.e., it will miss some states)
+The encoding in this version is not elegant (but IntervalTemplateV2 is not complete, i.e., it will miss some states)
 """
 import logging
 
