@@ -13,7 +13,6 @@ from efmc.utils.z3_expr_utils import get_variables
 from efmc.utils.z3_solver_utils import is_entail
 from efmc.smttools.z3opt_utils import box_optimize
 
-
 # import argparse
 
 
@@ -39,6 +38,7 @@ class BVSymbolicAbstraction:
         # self.poly_abs_as_fml = BoolVal(True)
 
         self.compact_opt = True
+        self.do_simplify = True
 
         self.obj_no_overflow = False
         self.obj_no_underflow = False
@@ -49,8 +49,13 @@ class BVSymbolicAbstraction:
     def do_simplification(self):
         """
         Simplify the formula using Z3 tactics.
-        If the formula is initialized, apply a sequence of tactics to simplify it.
+        If the formula is initialized and simplification is enabled, 
+        apply a sequence of tactics to simplify it.
         """
+        
+        if not self.do_simplify:
+            return
+            
         if self.initialized:
             # TODO: it seems that propagate-bv-bounds has bugs, which can be even
             #  non-terminating on some formulas
@@ -104,6 +109,9 @@ class BVSymbolicAbstraction:
             # return m.eval(exp).as_long()
 
     def max_once(self, exp: z3.ExprRef):
+        """
+        Maximize exp
+        """
         sol = z3.Optimize()
         sol.set("timeout", self.single_query_timeout)
         sol.add(self.formula)
@@ -119,7 +127,6 @@ class BVSymbolicAbstraction:
         Minimize and maximize the given multi_queries.
         Returns the conjunction of the minimized and maximized expressions.
         """
-
         # n_queries = len(multi_queries)
         # timeout = n_queries * self.single_query_timeout * 2 # is this reasonable?
         min_res, max_res = box_optimize(self.formula, minimize=multi_queries, maximize=multi_queries, timeout=30000)

@@ -13,15 +13,59 @@ logger = logging.getLogger(__name__)
 
 ############################
 def strongest_consequence(fml: z3.ExprRef, domain: str, k=None) -> z3.ExprRef:
+    """Compute the strongest consequence of a formula in a given domain.
+    
+    Args:
+        fml: The formula to abstract
+        domain: The abstract domain to use ('interval', 'bits', 'known_bits', 'bit_predicates')
+        k: Optional parameter for domain-specific configuration
+        
+    Returns:
+        A formula representing the strongest consequence in the specified domain
     """
-    """
-    raise NotImplementedError
+    if domain == 'interval':
+        from efmc.engines.symabs.bv_symabs import BVSymbolicAbstraction
+        # Create a symbolic abstraction object
+        symabs = BVSymbolicAbstraction()
+
+        # Initialize with the formula
+        symabs.formula = fml
+        symabs.initialized = True
+        
+        # Extract variables from the formula
+        symabs.vars = list(set([v for v in z3.z3util.get_vars(fml)]))
+        if not symabs.vars:
+            # If no variables, just return the formula
+            return fml
+        
+        # Simplify the formula
+        symabs.do_simplification()
+        
+        # Compute interval abstraction
+        symabs.interval_abs()
+        
+        # Return the interval abstraction as a formula
+        return symabs.interval_abs_as_fml
+    elif domain in ['bits', 'known_bits', 'bit_predicates']:
+        from efmc.engines.symabs.bits_symabs import strongest_consequence as bits_strongest_consequence
+        
+        # Map domain names
+        bits_domain = domain
+        if domain == 'bits':
+            bits_domain = 'all'
+            
+        # Compute the strongest consequence using bit-level abstractions
+        return bits_strongest_consequence(fml, bits_domain)
+    else:
+        raise NotImplementedError(f"Domain '{domain}' not implemented")
+
 
 
 def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef) -> bool:
     """Decide whether reaching a fixpoint or not..
     TODO: is this true? (e.g. should we check for equivalence?)"""
     return is_valid(z3.Implies(inv, old_inv))
+
 
 class SymbolicAbstractionProver(object):
     def __init__(self, system: TransitionSystem):

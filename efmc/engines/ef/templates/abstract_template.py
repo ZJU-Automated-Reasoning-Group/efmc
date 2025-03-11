@@ -28,6 +28,7 @@ class TemplateType(Enum):
     OCTAGON = auto()
     AFFINE = auto()
     POLYHEDRON = auto()
+    POLYNOMIAL = auto()
     
     # Disjunctive domains
     DISJUNCTIVE_INTERVAL = auto()
@@ -35,7 +36,7 @@ class TemplateType(Enum):
     DISJUNCTIVE_OCTAGON = auto()
     DISJUNCTIVE_AFFINE = auto()
     DISJUNCTIVE_POLYHEDRON = auto()
-    
+    DISJUNCTIVE_POLYNOMIAL = auto()
     # Special domains
     ARRAY = auto()
     STRING = auto()
@@ -110,5 +111,7 @@ class Template(ABC):
             
         Returns:
             Z3 expression representing the invariant
+            If use_prime_variables is True, the expression should be in terms of the primed variables.
+            Else, the expression should be in terms of the original variables.
         """
         pass

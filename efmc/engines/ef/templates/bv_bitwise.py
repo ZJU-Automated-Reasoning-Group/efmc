@@ -50,6 +50,9 @@ class KnownBitsTemplate(Template):
         return z3.And(cnts) if cnts else z3.BoolVal(True)
     
     def add_template_cnts(self):
+        """
+        Add constraints to the template variables.
+        """
         cnts = []
         for var in self.bit_vars:
             var_val = self.sts.variables[var]
