@@ -26,14 +26,20 @@ Widening is a technique used in abstract interpretation to ensure the convergenc
 Lookahead Widening
 ----------------------
 
+Lookahead widening is a technique used in abstract interpretation to improve the precision of the analysis. It works by looking ahead at the next few iterations of the analysis and using that information to make a more informed decision about the current abstract state.
+
+
 Guided Static Analysis
 -----------------------
 
 Widening with Thresholds
 ------------------------
 
+
+
 Policy Iteration
 -----------------------
+
 
 
 ===========================
@@ -42,6 +48,7 @@ Systematic Abstraction
 
 Making Abstraction Interpretation Complete
 ==========================================
+
 
 
 

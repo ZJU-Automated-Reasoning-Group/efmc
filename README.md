@@ -73,6 +73,8 @@ If lang is not specified, efmc will guess the language based on the file extensi
 
 ### 2.2 Property-Directed Reachability (PDR)
 
+Property-Directed Reachability (PDR), also known as IC3 (Incremental Construction of Inductive Clauses for Indubitable Correctness), is a formal verification technique that incrementally builds an inductive invariant to prove safety properties. PDR works by maintaining a sequence of over-approximations of reachable states and refining them through counterexample analysis.
+
 In EFMC, we use the PDR engine inside Z3, named `Spacer`. To use it, you can run `efmc` with the `pdr` engine.
 
 Example:
@@ -80,6 +82,11 @@ Example:
 ~~~~
 efmc --engine pdr --lang chc --file file.smt2
 ~~~~
+
+Related work:
+
+- Efficient Implementation of Property Directed Reachability, FMCAD'12
+
 
 ### 2.3 K-Induction
 
@@ -102,14 +109,27 @@ Related work:
 - Software Verification using K-induction, SAS'11
 
 #### 2.4 Abductive Inference
-
-To be tested and refined (...)
+Abductive inference is a form of logical reasoning that starts with an observation and then seeks to find the (simplest) explanation. 
 
 Related work:
 
 - Inductive Invariant Generation via Abductive Inference, OOPSLA'13
 
 #### Houdini
+
+Houdini is an algorithm for inferring conjunctive invariants through a process of iterative weakening. It starts with the strongest possible conjunctive candidate and progressively removes conjuncts that are not inductive until it reaches a fixed point.
+
+In EFMC, we have implemented Houdini in `efmc/engines/houdini`. To use it, you can run `efmc` with the `houdini` engine.
+
+Example:
+
+~~~~
+efmc --engine houdini --lang chc --file file.smt2
+~~~~
+
+Related work:
+
+- Houdini, an Annotation Assistant for ESC/Java, FME'01
 
 #### Predicate Abstraction
 
@@ -135,7 +155,7 @@ To extend the applicability, we need more frontends:
 
 ### 3.2 Other Verification Engines
 
-#### Abstract Interpretation
+#### Abstract Interpretation with Symbolic Abstraction
 
 #### Quantifier Instantiation
 
@@ -143,7 +163,24 @@ Solving the quantified formulas that characterize inductive invariants
 directly (via different quantifier instantiation strategeis)
 
 
-## Contributors
+## Contributing
+
+We welcome contributions to EFMC! Here's how you can contribute:
+
+1. **Bug Reports**: If you find a bug, please open an issue on GitHub with a clear description of the problem, steps to reproduce, and your environment details.
+
+2. **Feature Requests**: Have an idea for a new feature? Open an issue to discuss it.
+
+3. **Code Contributions**: Want to add a new feature or fix a bug?
+   - Fork the repository
+   - Create a new branch for your feature
+   - Add your code with appropriate tests
+   - Submit a pull request
+
+4. **Documentation**: Improvements to documentation are always welcome.
+
+5. **Testing**: Help us test EFMC on different benchmarks and platforms.
+
 
 Primary contributors to this project:
 

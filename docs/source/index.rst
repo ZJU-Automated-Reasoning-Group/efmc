@@ -5,6 +5,7 @@ Welcome to EFMC's documentation
    :maxdepth: 2
    :caption: Contents:
 
+   
    verification
    absint
    ltl
@@ -15,6 +16,8 @@ Welcome to EFMC's documentation
    template
    third-party
    nonlinear
+   houdini
+   verification-tutorial
 
 
 Indices and tables
