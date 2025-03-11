@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}About EFMC & EFSMT{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>About EFMC & EFSMT</h1>
+        <p class="lead">Learn more about these powerful verification tools.</p>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">EFMC: SMT-based Software Model Checking</h5>
+            </div>
+            <div class="card-body">
+                <p>EFMC is a toolkit for verifying program properties using SMT-based verification engines. It implements multiple approaches, such as template-based verification, property-directed reachability (PDR), Houdini, and k-induction. Each engine offers distinct advantages for different types of programs and properties.</p>
+                
+                <h5 class="mt-4">Verification Engines</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="card-title mb-0">Template-Based (Constraint-Based) Approach</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>This approach uses constraint solving to generate program invariants based on predefined templates.</p>
+                                <p><strong>Related work:</strong></p>
+                                <ul>
+                                    <li>Linear Invariant Generation using Non-linear Constraint Solving, CAV 03</li>
+                                    <li>Constraint-Based Linear-Relations Analysis, SAS'04</li>
+                                    <li>Non-Linear Loop Invariant Generation using Gröbner Bases, POPL'04</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="card-title mb-0">Property-Directed Reachability (PDR)</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>PDR, also known as IC3, is a formal verification technique that incrementally builds an inductive invariant to prove safety properties. It works by maintaining a sequence of over-approximations of reachable states and refining them through counterexample analysis.</p>
+                                <p><strong>Related work:</strong></p>
+                                <ul>
+                                    <li>Efficient Implementation of Property Directed Reachability, FMCAD'12</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="card-title mb-0">K-Induction</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>K-induction is a powerful technique for proving safety properties of programs. It is based on the idea of proving that a property holds for the base case and then proving that if the property holds for some state at a certain time step, it also holds for the next state.</p>
+                                <p><strong>Related work:</strong></p>
+                                <ul>
+                                    <li>Checking Safety Properties using Induction and a SAT-solver, FMCAD'00</li>
+                                    <li>Software Verification using K-induction, SAS'11</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h6 class="card-title mb-0">Houdini</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>Houdini is an algorithm for inferring conjunctive invariants through a process of iterative weakening. It starts with the strongest possible conjunctive candidate and progressively removes conjuncts that are not inductive until it reaches a fixed point.</p>
+                                <p><strong>Related work:</strong></p>
+                                <ul>
+                                    <li>Houdini, an Annotation Assistant for ESC/Java, FME'01</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">EFSMT: Exists-Forall SMT Solver</h5>
+            </div>
+            <div class="card-body">
+                <p>EFSMT is a tool for solving "exists-forall" SMT problems. These are problems of the form:</p>
+                <pre class="bg-light p-3">∃x. ∀y. φ(x, y)</pre>
+                <p>where φ is a quantifier-free formula, x and y are vectors of variables. This type of formula appears in many verification and synthesis tasks, including:</p>
+                <ul>
+                    <li>Program synthesis</li>
+                    <li>Parameter synthesis</li>
+                    <li>Invariant generation</li>
+                    <li>Game solving</li>
+                </ul>
+                <p>EFSMT implements efficient algorithms for solving these problems, which are generally more challenging than standard SMT problems due to the alternation of quantifiers.</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Web UI Demo</h5>
+            </div>
+            <div class="card-body">
+                <p>This web interface provides a convenient way to interact with EFMC and EFSMT tools through your browser. It allows you to:</p>
+                <ul>
+                    <li>Write or upload SMT code</li>
+                    <li>Choose different verification engines and options</li>
+                    <li>Run verification tasks and view results in real-time</li>
+                    <li>Explore example problems</li>
+                </ul>
+                <p>The interface is designed to be user-friendly and accessible, making it easier to experiment with these powerful verification tools without having to install them locally.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
