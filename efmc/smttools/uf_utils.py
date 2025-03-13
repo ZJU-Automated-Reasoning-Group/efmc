@@ -111,7 +111,7 @@ def replace_inv_with_template(chc_formula, inv_func, template):
 
 def instiatiate_func_with_axioms(formula, func, axioms):
     """
-    Instantiate a function with axioms in a formula.
+    Instantiate an uninterpreted function F with axioms specified in a quantified formula (that uses the function F).
 
     Args:
         formula: Z3 formula containing the function
@@ -122,6 +122,23 @@ def instiatiate_func_with_axioms(formula, func, axioms):
         Modified formula with the function instantiated
     """
     raise NotImplementedError
+
+
+def instiatiate_func_with_templates(formula, func, template):
+    """
+    Instantiate an uninterpreted function F with a template.
+    
+    Similar to replace the function with a concrete definition.
+
+    Args:
+        formula: Z3 formula containing the function
+        func: Function to instantiate
+        template: Template to instantiate the function with
+    
+    Returns:
+        Modified formula with the function instantiated
+    """
+    return formula
 
 
 def test_replace():

@@ -72,7 +72,7 @@ class EFProver:
     def set_solver(self, solver_name: str):
         self.solver = solver_name
 
-    def set_template(self, template_name: str, num_disjunctions=2):
+    def set_template(self, template_name: str, num_disjunctions=2, **kwargs):
         """Set self.ct (the template to use)"""
         if self.sts.has_bv:
             # the following domains are for bit-vector programs
@@ -118,9 +118,10 @@ class EFProver:
             # TBD
             elif template_name == "knownbits":
                 self.ct = KnownBitsTemplate(self.sts)
-            # TBD
             elif template_name == "bitpredabs":
                 self.ct = BitPredAbsTemplate(self.sts)
+            elif template_name == "bv_enhanced_pattern":
+                self.ct = EnhancedBitPatternTemplate(self.sts, **kwargs)
             else:
                 raise NotImplementedError
         else:
@@ -194,10 +195,19 @@ class EFProver:
             print("Init wrong!")
 
         # 2. Inductive
-        if not is_entail(z3.And(self.sts.trans, inv), inv_in_prime_variables):
+        # For bit-level invariants, we need to be more careful with the inductive check
+        # Create a solver to check the inductive condition
+        s = z3.Solver()
+        s.add(self.sts.trans)  # Add the transition relation
+        s.add(inv)             # Add the invariant for the current state
+        s.add(z3.Not(inv_in_prime_variables))  # Add the negation of the invariant for the next state
+        
+        # Check if the formula is satisfiable
+        if s.check() == z3.sat:
+            # If satisfiable, then the invariant is not inductive
             correct = False
             print("Inductive wrong!")
-
+        
         # 3. Post
         # Sometiemes, we may want to ignore the post condition, e.g., purely invariant generation
         if (not self.ignore_post_cond) and (not is_entail(inv, self.sts.post)):

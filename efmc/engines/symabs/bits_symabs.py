@@ -7,7 +7,7 @@ Compute most-precise (best) bit-level abstractions for bit-vector formulas.
 -  Bit Predicates Abstraction: We track relationships between individual bits of different variables, such as equality, negation (XOR), implication, conjunction, and disjunction. (Is this true?)
 - Combined Abstraction: We can compute both abstractions together to get a more precise result.
 
-(The full "predicate abstraction domain" is not implemented in this code.)
+(The full "predicate abstraction domain (the element in the domain is a Boolean combination over a set of Boolean variables)" is not implemented in this code.)
 
 This will be used to compute the strongest consequence of a formula in a given domain. The "strongest consequence" is operation is then used by the symabs_prover to compute the strongest inductive invariant.
 """

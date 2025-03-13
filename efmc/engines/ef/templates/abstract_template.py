@@ -55,6 +55,7 @@ class TemplateType(Enum):
     BV_DISJUNCTIVE_POLYHEDRON = auto()
     BV_KNOWNBITS = auto()
     BV_BITS_PREDICATE_ABSTRACTION = auto()
+    BV_ENHANCED_PATTERN = auto()
 
 
     @classmethod
