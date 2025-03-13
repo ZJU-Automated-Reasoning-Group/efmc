@@ -25,27 +25,38 @@ class KnownBitsTemplate(Template):
     bit-level operations like bitwise AND, OR, XOR, etc.
     """
     def __init__(self, ts: TransitionSystem):
-        super().__init__(ts)
         self.template_type = TemplateType.BV_KNOWNBITS
+        self.sts = ts
+        self.bit_correlations = []  # Initialize to empty list
+        
+        # Initialize template variables and constraints
+        self.add_template_vars()
+        
+        # Pre-compute to reduce redundant calling
+        self.template_cnt_init_and_post = None
+        self.template_cnt_trans = None
+        self.add_template_cnts()
         
     def add_template_vars(self):
-        self.template_vars = get_variables(self.sts.variables)
+        # Store the original Z3 variables
+        self.template_vars = self.sts.variables.copy()
         self.bit_vars = {}
+        
         # For each variable and each bit position, create two Boolean variables
         # to represent must-be-0 and must-be-1
-        for var in self.template_vars:
-            var_val = self.sts.variables[var]
-            if z3.is_bv(var_val):
-                bw = var_val.size()
-                self.bit_vars[var] = [(z3.Bool(f"must0_{var}_{i}"), 
-                                     z3.Bool(f"must1_{var}_{i}")) 
-                                    for i in range(bw)]
+        for i, var in enumerate(self.template_vars):
+            if z3.is_bv(var):
+                var_name = str(var)
+                bw = var.size()
+                self.bit_vars[i] = [(z3.Bool(f"must0_{var_name}_{j}"), 
+                                   z3.Bool(f"must1_{var_name}_{j}")) 
+                                  for j in range(bw)]
 
     def get_additional_cnts_for_template_vars(self):
         cnts = []
         # A bit cannot be must-be-0 and must-be-1 at the same time
-        for var in self.bit_vars:
-            for must0, must1 in self.bit_vars[var]:
+        for var_idx in self.bit_vars:
+            for must0, must1 in self.bit_vars[var_idx]:
                 cnts.append(z3.Not(z3.And(must0, must1)))
         return z3.And(cnts) if cnts else z3.BoolVal(True)
     
@@ -53,17 +64,35 @@ class KnownBitsTemplate(Template):
         """
         Add constraints to the template variables.
         """
+        # Constraints for original variables
         cnts = []
-        for var in self.bit_vars:
-            var_val = self.sts.variables[var]
-            for i, (must0, must1) in enumerate(self.bit_vars[var]):
-                # Extract i-th bit
-                bit_i = z3.Extract(i, i, var_val)
+        for var_idx in self.bit_vars:
+            var = self.template_vars[var_idx]
+            for j, (must0, must1) in enumerate(self.bit_vars[var_idx]):
+                # Extract j-th bit
+                bit_j = z3.Extract(j, j, var)
                 # If must0 is true, bit must be 0
-                cnts.append(z3.Implies(must0, bit_i == 0))
+                cnts.append(z3.Implies(must0, bit_j == 0))
                 # If must1 is true, bit must be 1
-                cnts.append(z3.Implies(must1, bit_i == 1))
-        return z3.And(cnts) if cnts else z3.BoolVal(True)
+                cnts.append(z3.Implies(must1, bit_j == 1))
+        
+        # Store constraints for original variables
+        self.template_cnt_init_and_post = z3.And(cnts) if cnts else z3.BoolVal(True)
+        
+        # Constraints for primed variables (for transition relation)
+        cnts_prime = []
+        for var_idx in self.bit_vars:
+            var_prime = self.sts.prime_variables[var_idx]
+            for j, (must0, must1) in enumerate(self.bit_vars[var_idx]):
+                # Extract j-th bit
+                bit_j = z3.Extract(j, j, var_prime)
+                # If must0 is true, bit must be 0
+                cnts_prime.append(z3.Implies(must0, bit_j == 0))
+                # If must1 is true, bit must be 1
+                cnts_prime.append(z3.Implies(must1, bit_j == 1))
+        
+        # Store constraints for primed variables
+        self.template_cnt_trans = z3.And(cnts_prime) if cnts_prime else z3.BoolVal(True)
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
         """
@@ -77,18 +106,19 @@ class KnownBitsTemplate(Template):
             Z3 expression representing the invariant
         """
         cnts = []
-        for var in self.bit_vars:
-            var_val = self.sts.prime_variables[var] if use_prime_variables else self.sts.variables[var]
-            for i, (must0, must1) in enumerate(self.bit_vars[var]):
+        for var_idx in self.bit_vars:
+            var = self.sts.prime_variables[var_idx] if use_prime_variables else self.template_vars[var_idx]
+            for j, (must0, must1) in enumerate(self.bit_vars[var_idx]):
                 if z3.is_true(model.eval(must0)):
-                    bit_i = z3.Extract(i, i, var_val)
-                    cnts.append(bit_i == 0)
+                    bit_j = z3.Extract(j, j, var)
+                    cnts.append(bit_j == 0)
                 elif z3.is_true(model.eval(must1)):
-                    bit_i = z3.Extract(i, i, var_val)
-                    cnts.append(bit_i == 1)
+                    bit_j = z3.Extract(j, j, var)
+                    cnts.append(bit_j == 1)
         return big_and(cnts) if cnts else z3.BoolVal(True)
 
 
+class BitPredAbsTemplate(Template):
     """
     Predicate abstraction domain over individual bits of bit-vector variables.
     
@@ -98,12 +128,20 @@ class KnownBitsTemplate(Template):
     the known bits domain alone.
     """
     def __init__(self, ts: TransitionSystem, **kwargs):
-        super().__init__(ts)
         self.template_type = TemplateType.BV_BITS_PREDICATE_ABSTRACTION
+        self.sts = ts
         self.num_predicates = kwargs.get("num_predicates", 5)
         
+        # Initialize template variables and constraints
+        self.add_template_vars()
+        
+        # Pre-compute to reduce redundant calling
+        self.template_cnt_init_and_post = None
+        self.template_cnt_trans = None
+        self.add_template_cnts()
+        
     def add_template_vars(self):
-        self.template_vars = get_variables(self.sts.variables)
+        self.template_vars = self.sts.variables.copy()
         self.bit_preds = []
         self.pred_vars = []
         
@@ -113,11 +151,10 @@ class KnownBitsTemplate(Template):
             
         # For each bit-vector variable, extract each bit as a potential predicate
         for var in self.template_vars:
-            var_val = self.sts.variables[var]
-            if z3.is_bv(var_val):
-                bw = var_val.size()
+            if z3.is_bv(var):
+                bw = var.size()
                 for i in range(bw):
-                    bit_i = z3.Extract(i, i, var_val) == 1
+                    bit_i = z3.Extract(i, i, var) == 1
                     self.bit_preds.append(bit_i)
     
     def get_additional_cnts_for_template_vars(self):
@@ -147,8 +184,23 @@ class KnownBitsTemplate(Template):
             
             # The predicate variable equals the constructed Boolean combination
             cnts.append(pred_var == z3.Or(disj_terms))
-            
-        return big_and(cnts) if cnts else z3.BoolVal(True)
+        
+        # Store constraints for original variables
+        self.template_cnt_init_and_post = big_and(cnts) if cnts else z3.BoolVal(True)
+        
+        # Constraints for primed variables (for transition relation)
+        # Create a substitution map from original to primed variables
+        var_subst = {}
+        for i, var in enumerate(self.template_vars):
+            if z3.is_bv(var):
+                var_subst[var] = self.sts.prime_variables[i]
+        
+        # Apply substitution to create constraints for primed variables
+        if var_subst:
+            self.template_cnt_trans = z3.substitute(self.template_cnt_init_and_post, 
+                                                   [(k, v) for k, v in var_subst.items()])
+        else:
+            self.template_cnt_trans = self.template_cnt_init_and_post
     
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
         """
@@ -164,8 +216,8 @@ class KnownBitsTemplate(Template):
         # Substitute variables if needed
         var_subst = {}
         if use_prime_variables:
-            for var in self.template_vars:
-                var_subst[self.sts.variables[var]] = self.sts.prime_variables[var]
+            for i, var in enumerate(self.template_vars):
+                var_subst[var] = self.sts.prime_variables[i]
         
         # Evaluate each predicate in the model
         cnts = []
@@ -191,255 +243,3 @@ class KnownBitsTemplate(Template):
                 cnts.append(pred_expr)
         
         return big_and(cnts) if cnts else z3.BoolVal(True)
-
-
-    """
-    An enhanced interval domain with flexible bit-level pattern tracking.
-    Combines interval bounds with sophisticated bit-pattern tracking mechanisms.
-    """
-    def __init__(self, sts: TransitionSystem, **kwargs):
-        self.template_type = TemplateType.BV_ENHANCED_PATTERN
-        
-        # Configuration options
-        self.max_tracked_patterns = kwargs.get("max_tracked_patterns", 3)
-        self.enable_bit_correlations = kwargs.get("enable_bit_correlations", True)
-        
-        # Store the transition system
-        self.sts = sts
-        
-        # Template variables
-        self.template_vars = []
-        self.bit_patterns = {}
-        self.bit_correlations = []
-        
-        self.add_template_vars()
-
-    def add_template_vars(self):
-        """Add template variables with enhanced bit-level tracking"""
-        # 1. Standard interval bounds for each variable
-        for var in self.sts.variables:
-            var_val = self.sts.variables[var]
-            if z3.is_bv(var_val):
-                bw = var_val.size()
-                
-                # Create interval bounds
-                lower = z3.BitVec(f"lower_{var}", bw)
-                upper = z3.BitVec(f"upper_{var}", bw)
-                
-                # Basic template vars (interval bounds)
-                self.template_vars.append((lower, upper))
-                
-                # 2. Flexible bit pattern tracking
-                self.bit_patterns[var] = []
-                
-                # 2.1. Bit masks (must be 0/1)
-                must_be_0_mask = z3.BitVec(f"must_0_{var}", bw)
-                must_be_1_mask = z3.BitVec(f"must_1_{var}", bw)
-                self.bit_patterns[var].append(("mask", must_be_0_mask, must_be_1_mask))
-                
-                # 2.2. Bit-field constraints (for specific ranges of bits)
-                for i in range(min(self.max_tracked_patterns, bw // 4)):
-                    # Create variables for tracking bit-field constraints
-                    field_start = z3.Int(f"field_start_{var}_{i}")
-                    field_width = z3.Int(f"field_width_{var}_{i}")
-                    field_value = z3.BitVec(f"field_value_{var}_{i}", min(8, bw))
-                    field_mask = z3.BitVec(f"field_mask_{var}_{i}", min(8, bw))
-                    self.bit_patterns[var].append(("field", field_start, field_width, field_value, field_mask))
-                
-                # 2.3. Parity tracking (odd/even number of 1s in specific bit ranges)
-                parity_mask = z3.BitVec(f"parity_mask_{var}", bw)
-                parity_value = z3.Bool(f"parity_value_{var}")
-                self.bit_patterns[var].append(("parity", parity_mask, parity_value))
-                
-                # 2.4. Modular constraints (value mod K = C)
-                modulus = z3.Int(f"modulus_{var}")
-                remainder = z3.Int(f"remainder_{var}")
-                self.bit_patterns[var].append(("modular", modulus, remainder))
-        
-        # 3. Bit correlations between variables
-        if self.enable_bit_correlations and len(self.sts.variables) > 1:
-            vars_list = list(self.sts.variables.keys())
-            for i in range(len(vars_list)):
-                for j in range(i+1, len(vars_list)):
-                    var1 = vars_list[i]
-                    var2 = vars_list[j]
-                    
-                    # Skip if either variable is not a bit-vector
-                    if not (z3.is_bv(self.sts.variables[var1]) and z3.is_bv(self.sts.variables[var2])):
-                        continue
-                    
-                    # 3.1. Bit-wise correlation (specific bits of var1 relate to specific bits of var2)
-                    corr_type = z3.Int(f"corr_type_{var1}_{var2}")  # 0=none, 1=eq, 2=neq, 3=impl
-                    bit_idx1 = z3.Int(f"bit_idx1_{var1}_{var2}")
-                    bit_idx2 = z3.Int(f"bit_idx2_{var1}_{var2}")
-                    self.bit_correlations.append((var1, var2, corr_type, bit_idx1, bit_idx2))
-
-    def get_additional_cnts_for_template_vars(self):
-        # No additional constraints needed for template variables
-        return z3.BoolVal(True)
-    
-    def add_template_cnts(self):
-        """Add constraints for the template variables"""
-        cnts = []
-        
-        # 1. Basic interval constraints
-        for i, var_name in enumerate(self.sts.variables):
-            var = self.sts.variables[var_name]
-            if not z3.is_bv(var):
-                continue
-            
-            lower, upper = self.template_vars[i]
-            
-            # Interval constraint
-            cnts.append(z3.ULE(lower, upper))  # Lower bound must be <= upper bound
-            cnts.append(z3.ULE(var, upper))    # Variable must be <= upper bound
-            cnts.append(z3.UGE(var, lower))    # Variable must be >= lower bound
-            
-            # 2. Bit pattern constraints
-            for pattern_type, *pattern_args in self.bit_patterns[var_name]:
-                if pattern_type == "mask":
-                    must_be_0_mask, must_be_1_mask = pattern_args
-                    # Masks cannot overlap (a bit cannot be both 0 and 1)
-                    cnts.append(must_be_0_mask & must_be_1_mask == 0)
-                    # Apply masks to the variable
-                    cnts.append((var & must_be_0_mask) == 0)
-                    cnts.append((var & must_be_1_mask) == must_be_1_mask)
-                    
-                    # Connect masks to interval bounds
-                    cnts.append((upper & must_be_0_mask) == 0)
-                    cnts.append((lower & must_be_1_mask) == must_be_1_mask)
-                    
-                elif pattern_type == "field":
-                    field_start, field_width, field_value, field_mask = pattern_args
-                    bw = var.sort().size()
-                    
-                    # Bounds for field parameters
-                    cnts.append(z3.And(field_start >= 0, field_start < bw))
-                    cnts.append(z3.And(field_width > 0, field_width <= 8))
-                    cnts.append(field_start + field_width <= bw)
-                    
-                    # Extract the field and check its value
-                    # (This is a simplified version - actual implementation would need to handle
-                    # the dynamic extraction based on field_start and field_width)
-                    # We'd use a series of if-then-else constructs to model this
-                    
-                    # For demonstration, we'll just add a placeholder constraint
-                    # In a real implementation, you'd need to create the extraction logic
-                    cnts.append(z3.Implies(
-                        z3.And(field_width > 0, field_mask != 0),
-                        z3.Bool(f"field_constraint_{var_name}")
-                    ))
-                    
-                elif pattern_type == "parity":
-                    parity_mask, parity_value = pattern_args
-                    # Count the number of 1 bits in (var & parity_mask)
-                    # This would require a popcount implementation
-                    # For simplicity, we'll just add a placeholder constraint
-                    cnts.append(z3.Implies(
-                        parity_mask != 0,
-                        z3.Bool(f"parity_constraint_{var_name}")
-                    ))
-                    
-                elif pattern_type == "modular":
-                    modulus, remainder = pattern_args
-                    # Bounds for modular parameters
-                    cnts.append(modulus > 1)
-                    cnts.append(z3.And(remainder >= 0, remainder < modulus))
-                    
-                    # The actual modular constraint
-                    # For bit-vectors, we need to implement modulo using bit operations
-                    # For powers of 2, this is simple: var & (modulus-1) == remainder
-                    # For other values, we'd need a more complex implementation
-                    
-                    # For demonstration, we'll just add a placeholder constraint
-                    cnts.append(z3.Implies(
-                        modulus > 1,
-                        z3.Bool(f"modular_constraint_{var_name}")
-                    ))
-        
-        # 3. Bit correlation constraints
-        for var1, var2, corr_type, bit_idx1, bit_idx2 in self.bit_correlations:
-            bw1 = self.sts.variables[var1].sort().size()
-            bw2 = self.sts.variables[var2].sort().size()
-            
-            # Bounds for bit indices
-            cnts.append(z3.And(bit_idx1 >= 0, bit_idx1 < bw1))
-            cnts.append(z3.And(bit_idx2 >= 0, bit_idx2 < bw2))
-            
-            # Correlation type constraints
-            # 0=none, 1=eq, 2=neq, 3=impl
-            cnts.append(z3.And(corr_type >= 0, corr_type <= 3))
-            
-            # Extract the bits (simplified - would need to be implemented with dynamic extraction)
-            bit1 = z3.Extract(0, 0, z3.LShR(self.sts.variables[var1], bit_idx1))
-            bit2 = z3.Extract(0, 0, z3.LShR(self.sts.variables[var2], bit_idx2))
-            
-            # Apply the correlation
-            cnts.append(z3.Implies(corr_type == 1, bit1 == bit2))  # equality
-            cnts.append(z3.Implies(corr_type == 2, bit1 != bit2))  # inequality
-            cnts.append(z3.Implies(corr_type == 3, z3.Implies(bit1 == 1, bit2 == 1)))  # implication
-        
-        return z3.And(cnts)
-
-    def build_invariant_expr(self, model, use_prime_variables=False):
-        """Build an invariant expression from the model"""
-        constraints = []
-        
-        # 1. Interval constraints
-        for i, var_name in enumerate(self.sts.variables):
-            var = self.sts.prime_variables[var_name] if use_prime_variables else self.sts.variables[var_name]
-            if not z3.is_bv(var):
-                continue
-            
-            lower, upper = [model[v] for v in self.template_vars[i]]
-            constraints.append(z3.And(z3.UGE(var, lower), z3.ULE(var, upper)))
-        
-        # 2. Bit pattern constraints
-        for var_name in self.bit_patterns:
-            var = self.sts.prime_variables[var_name] if use_prime_variables else self.sts.variables[var_name]
-            
-            for pattern_type, *pattern_args in self.bit_patterns[var_name]:
-                if pattern_type == "mask":
-                    must_be_0_mask, must_be_1_mask = [model[arg] for arg in pattern_args]
-                    
-                    # Only add constraints for non-zero masks
-                    if z3.is_bv_value(must_be_0_mask) and must_be_0_mask.as_long() != 0:
-                        constraints.append((var & must_be_0_mask) == 0)
-                        
-                    if z3.is_bv_value(must_be_1_mask) and must_be_1_mask.as_long() != 0:
-                        constraints.append((var & must_be_1_mask) == must_be_1_mask)
-                
-                # Add other pattern types similarly...
-                # For each pattern, check if it's active in the model and add the corresponding constraint
-        
-        # 3. Bit correlation constraints
-        for var1, var2, corr_type, bit_idx1, bit_idx2 in self.bit_correlations:
-            v1 = self.sts.prime_variables[var1] if use_prime_variables else self.sts.variables[var1]
-            v2 = self.sts.prime_variables[var2] if use_prime_variables else self.sts.variables[var2]
-            
-            corr_type_val = model[corr_type].as_long()
-            if corr_type_val > 0:  # If there's an active correlation
-                idx1 = model[bit_idx1].as_long()
-                idx2 = model[bit_idx2].as_long()
-                
-                bit1 = z3.Extract(0, 0, z3.LShR(v1, idx1))
-                bit2 = z3.Extract(0, 0, z3.LShR(v2, idx2))
-                
-                if corr_type_val == 1:  # equality
-                    constraints.append(bit1 == bit2)
-                elif corr_type_val == 2:  # inequality
-                    constraints.append(bit1 != bit2)
-                elif corr_type_val == 3:  # implication
-                    constraints.append(z3.Implies(bit1 == 1, bit2 == 1))
-        
-        return z3.And(constraints)
-    
-
-class BitPredAbsTemplate(Template):
-    """
-
-    FIXME: It is not very well-defined? Maybe focus on KnownBitsTemplate currently.
-    """
-    def __init__(self, sts: TransitionSystem, **kwargs):
-        super().__init__(sts)
-        self.template_type = TemplateType.BV_BITS_PREDICATE_ABSTRACTION

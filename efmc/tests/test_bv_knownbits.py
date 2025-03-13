@@ -4,210 +4,27 @@ import z3
 from efmc.tests import TestCase, main
 from efmc.engines.ef.ef_prover import EFProver
 from efmc.sts import TransitionSystem
-from efmc.engines.ef.templates.bv_enhanced_pattern import EnhancedBitPatternTemplate
-from efmc.engines.ef.templates.abstract_template import TemplateType
 
 
-class TestBitVecEnhancedPatternTemplate(TestCase):
-    """Test cases for the EnhancedBitPatternTemplate abstract domain."""
+class TestBitVecKnownBitsTemplate(TestCase):
+    """Test cases for the KnownBitsTemplate abstract domain."""
 
-    def test_enhanced_pattern_template_creation(self):
-        """Test the creation of an EnhancedBitPatternTemplate instance."""
+    def test_bv_knownbits_basic(self):
+        """Test basic functionality of the KnownBits domain.
+        
+        This test creates a simple transition system where:
+        - x starts at 0 and increments by 1 each step, saturating at 15
+        - y starts at 0 and increments by 2 each step, saturating at 30
+        
+        The property to verify is that if x's least significant bit is 1 (odd),
+        then y's least significant bit is 0 (even). This property holds because
+        x and y start at 0, and when x becomes odd (1,3,5...), y is always even (2,6,10...).
+        
+        The KnownBitsTemplate should be able to prove this property by tracking
+        the exact values of specific bits.
+        """
         print("\n" + "="*50)
-        print("RUNNING TEST: test_enhanced_pattern_template_creation")
-        print("="*50)
-        
-        # Define bit vector variables
-        BV_SIZE = 8
-        x, y = z3.BitVecs('x y', BV_SIZE)
-        px, py = z3.BitVecs('x! y!', BV_SIZE)
-        
-        # Create a dictionary mapping variable names to their Z3 expressions
-        variables = {'x': x, 'y': y}
-        prime_variables = {'x': px, 'y': py}
-        all_variables = [x, y, px, py]
-
-        # Define transition system constraints
-        init = z3.And(x == 0, y == 0)
-        trans = z3.And(px == x + 1, py == y + 2)
-        post = z3.Extract(0, 0, y) == 0
-
-        # Set up transition system
-        sts = TransitionSystem()
-        sts.variables = variables
-        sts.prime_variables = prime_variables
-        sts.all_variables = all_variables
-        sts.init = init
-        sts.trans = trans
-        sts.post = post
-        sts.has_bv = True
-        sts.set_signedness("unsigned")
-        
-        # Create the EnhancedBitPatternTemplate
-        template = EnhancedBitPatternTemplate(sts)
-        
-        # Check that the template was created correctly
-        self.assertEqual(template.template_type, TemplateType.BV_ENHANCED_PATTERN)
-        self.assertEqual(template.sts, sts)
-        
-        print("EnhancedBitPatternTemplate creation test passed!")
-        print("="*50 + "\n")
-
-    def test_enhanced_pattern_template_vars(self):
-        """Test the template variables creation in EnhancedBitPatternTemplate."""
-        print("\n" + "="*50)
-        print("RUNNING TEST: test_enhanced_pattern_template_vars")
-        print("="*50)
-        
-        # Define bit vector variables
-        BV_SIZE = 8
-        x, y = z3.BitVecs('x y', BV_SIZE)
-        px, py = z3.BitVecs('x! y!', BV_SIZE)
-        
-        # Create a dictionary mapping variable names to their Z3 expressions
-        variables = {'x': x, 'y': y}
-        prime_variables = {'x': px, 'y': py}
-        all_variables = [x, y, px, py]
-
-        # Define transition system constraints
-        init = z3.And(x == 0, y == 0)
-        trans = z3.And(px == x + 1, py == y + 2)
-        post = z3.Extract(0, 0, y) == 0
-
-        # Set up transition system
-        sts = TransitionSystem()
-        sts.variables = variables
-        sts.prime_variables = prime_variables
-        sts.all_variables = all_variables
-        sts.init = init
-        sts.trans = trans
-        sts.post = post
-        sts.has_bv = True
-        sts.set_signedness("unsigned")
-        
-        # Create the EnhancedBitPatternTemplate and add template variables
-        template = EnhancedBitPatternTemplate(sts)
-        
-        # Check that template_vars contains entries
-        self.assertTrue(len(template.template_vars) > 0)
-        
-        # Check that bit_patterns was created
-        self.assertTrue(hasattr(template, 'bit_patterns'))
-        
-        # Check that bit_correlations was created
-        self.assertTrue(hasattr(template, 'bit_correlations'))
-        
-        print("EnhancedBitPatternTemplate template_vars test passed!")
-        print("="*50 + "\n")
-
-    def test_enhanced_pattern_template_cnts(self):
-        """Test the template constraints in EnhancedBitPatternTemplate."""
-        print("\n" + "="*50)
-        print("RUNNING TEST: test_enhanced_pattern_template_cnts")
-        print("="*50)
-        
-        # Define bit vector variables
-        BV_SIZE = 8
-        x, y = z3.BitVecs('x y', BV_SIZE)
-        px, py = z3.BitVecs('x! y!', BV_SIZE)
-        
-        # Create a dictionary mapping variable names to their Z3 expressions
-        variables = {'x': x, 'y': y}
-        prime_variables = {'x': px, 'y': py}
-        all_variables = [x, y, px, py]
-
-        # Define transition system constraints
-        init = z3.And(x == 0, y == 0)
-        trans = z3.And(px == x + 1, py == y + 2)
-        post = z3.Extract(0, 0, y) == 0
-
-        # Set up transition system
-        sts = TransitionSystem()
-        sts.variables = variables
-        sts.prime_variables = prime_variables
-        sts.all_variables = all_variables
-        sts.init = init
-        sts.trans = trans
-        sts.post = post
-        sts.has_bv = True
-        sts.set_signedness("unsigned")
-        
-        # Create the EnhancedBitPatternTemplate
-        template = EnhancedBitPatternTemplate(sts)
-        
-        # Get the template constraints
-        template_cnts = template.template_cnt_init_and_post
-        
-        # Check that the constraints are a Z3 expression
-        self.assertTrue(z3.is_expr(template_cnts))
-        
-        # Create a solver and check that the constraints are satisfiable
-        solver = z3.Solver()
-        solver.add(template_cnts)
-        self.assertEqual(solver.check(), z3.sat)
-        
-        print("EnhancedBitPatternTemplate template_cnts test passed!")
-        print("="*50 + "\n")
-
-    def test_enhanced_pattern_build_invariant(self):
-        """Test the build_invariant_expr method of EnhancedBitPatternTemplate."""
-        print("\n" + "="*50)
-        print("RUNNING TEST: test_enhanced_pattern_build_invariant")
-        print("="*50)
-        
-        # Define bit vector variables
-        BV_SIZE = 8
-        x, y = z3.BitVecs('x y', BV_SIZE)
-        px, py = z3.BitVecs('x! y!', BV_SIZE)
-        
-        # Create a dictionary mapping variable names to their Z3 expressions
-        variables = {'x': x, 'y': y}
-        prime_variables = {'x': px, 'y': py}
-        all_variables = [x, y, px, py]
-
-        # Define transition system constraints
-        init = z3.And(x == 0, y == 0)
-        trans = z3.And(px == x + 1, py == y + 2)
-        post = z3.Extract(0, 0, y) == 0
-
-        # Set up transition system
-        sts = TransitionSystem()
-        sts.variables = variables
-        sts.prime_variables = prime_variables
-        sts.all_variables = all_variables
-        sts.init = init
-        sts.trans = trans
-        sts.post = post
-        sts.has_bv = True
-        sts.set_signedness("unsigned")
-        
-        # Create the EnhancedBitPatternTemplate
-        template = EnhancedBitPatternTemplate(sts)
-        
-        # Create a solver and add constraints
-        solver = z3.Solver()
-        solver.add(template.template_cnt_init_and_post)
-        
-        # Check if the model is satisfiable
-        result = solver.check()
-        self.assertEqual(result, z3.sat)
-        
-        # Get the model
-        model = solver.model()
-        
-        # Build the invariant expression
-        inv = template.build_invariant_expr(model)
-        
-        # Check that the invariant is a Z3 expression
-        self.assertTrue(z3.is_expr(inv))
-        
-        print("EnhancedBitPatternTemplate build_invariant test passed!")
-        print("="*50 + "\n")
-
-    def test_ef_prover_with_enhanced_pattern(self):
-        """Test using the EFProver with the EnhancedBitPatternTemplate."""
-        print("\n" + "="*50)
-        print("RUNNING TEST: test_ef_prover_with_enhanced_pattern")
+        print("RUNNING TEST: test_bv_knownbits_basic")
         print("="*50)
         
         # Define bit vector variables
@@ -218,26 +35,26 @@ class TestBitVecEnhancedPatternTemplate(TestCase):
         # Define transition system constraints
         init = z3.And(x == 0, y == 0)
         
-        # x is incremented by 1 each step
-        # y is incremented by 2 each step
-        x_update = x + 1
-        y_update = y + 2
+        # x is incremented by 1 each step, but saturates at 15
+        # y is incremented by 2 each step, but saturates at 30
+        x_update = z3.If(z3.ULT(x, 15), x + 1, 15)
+        y_update = z3.If(z3.ULT(y, 30), y + 2, 30)
         
         updates = z3.And(px == x_update, py == y_update)
         trans = updates
         
         # The property we want to verify: 
-        # y is always even (bit 0 is 0)
-        post = z3.Extract(0, 0, y) == 0
+        # If x is odd (bit 0 is 1), then y is even (bit 0 is 0)
+        post = z3.Implies(z3.Extract(0, 0, x) == 1, z3.Extract(0, 0, y) == 0)
 
         # Set up transition system
         sts = TransitionSystem()
         sts.from_z3_cnts([all_vars, init, trans, post])
         sts.set_signedness("unsigned")
 
-        # Configure and run EF prover with EnhancedBitPatternTemplate
+        # Configure and run EF prover with KnownBits template
         ef_prover = EFProver(sts, validate_invariant=True)
-        ef_prover.set_template("bv_enhanced_pattern")
+        ef_prover.set_template("knownbits")
         ef_prover.set_solver("z3api")
 
         result = ef_prover.solve()
@@ -245,10 +62,22 @@ class TestBitVecEnhancedPatternTemplate(TestCase):
         print("="*50 + "\n")
         self.assertEqual(result, "sat", "Expected satisfiable result")
 
-    def test_ef_prover_with_bitwise_operations(self):
-        """Test using the EFProver with the EnhancedBitPatternTemplate for bitwise operations."""
+    def test_bv_knownbits_bitwise_ops(self):
+        """Test KnownBits domain with bitwise operations.
+        
+        This test creates a transition system where:
+        - x starts at 0 and increments by 1 each step
+        - y is always the bitwise complement of x
+        - z is always the bitwise AND of x and y
+        
+        The property to verify is that z is always 0. This is true because
+        a bit and its complement can never both be 1, so their AND is always 0.
+        
+        The KnownBitsTemplate should be able to prove this by tracking the
+        exact relationship between bits of x, y, and z.
+        """
         print("\n" + "="*50)
-        print("RUNNING TEST: test_ef_prover_with_bitwise_operations")
+        print("RUNNING TEST: test_bv_knownbits_bitwise_ops")
         print("="*50)
         
         # Define bit vector variables
@@ -257,27 +86,32 @@ class TestBitVecEnhancedPatternTemplate(TestCase):
         all_vars = [x, y, z, px, py, pz]
 
         # Define transition system constraints
-        # x = 5 (101 in binary), y = 3 (011 in binary)
-        init = z3.And(x == 5, y == 3, z == (x & y))
+        # Initial state: x=0, y=~x (all 1s), z=x&y (all 0s)
+        init = z3.And(x == 0, y == ~x, z == (x & y))
         
-        # x and y remain constant, z is always x & y
-        updates = z3.And(px == x, py == y, pz == (px & py))
+        # Transition relation:
+        # x increments by 1 each step
+        # y is always the bitwise complement of x
+        # z is always the bitwise AND of x and y
+        x_update = x + 1
+        y_update = ~x_update
+        z_update = x_update & y_update
+        
+        updates = z3.And(px == x_update, py == y_update, pz == z_update)
         trans = updates
         
-        # The property we want to verify: 
-        # The 2nd bit (index 1) of z is always 0
-        # This is true because x has bit 1 as 0, y has bit 1 as 1,
-        # so their bitwise AND will have bit 1 as 0
-        post = z3.Extract(1, 1, z) == 0
+        # The property we want to verify:
+        # z is always 0 (since a bit and its complement can never both be 1)
+        post = z == 0
 
         # Set up transition system
         sts = TransitionSystem()
         sts.from_z3_cnts([all_vars, init, trans, post])
         sts.set_signedness("unsigned")
 
-        # Configure and run EF prover with EnhancedBitPatternTemplate
+        # Configure and run EF prover with KnownBits template
         ef_prover = EFProver(sts, validate_invariant=True)
-        ef_prover.set_template("bv_enhanced_pattern")
+        ef_prover.set_template("knownbits")
         ef_prover.set_solver("z3api")
 
         result = ef_prover.solve()
@@ -285,82 +119,60 @@ class TestBitVecEnhancedPatternTemplate(TestCase):
         print("="*50 + "\n")
         self.assertEqual(result, "sat", "Expected satisfiable result")
 
-    def test_ef_prover_with_shifting(self):
-        """Test using the EFProver with the EnhancedBitPatternTemplate for bit shifting."""
+    def test_bv_knownbits_bit_patterns(self):
+        """Test KnownBits domain with simple bit patterns.
+        
+        This test creates a transition system where:
+        - x starts with specific bits set (bit 0=1, bit 7=0)
+        - x is updated in a way that preserves these specific bits
+        
+        The property to verify is that these specific bits maintain their values.
+        This demonstrates the template's ability to track individual bits.
+        """
         print("\n" + "="*50)
-        print("RUNNING TEST: test_ef_prover_with_shifting")
+        print("RUNNING TEST: test_bv_knownbits_bit_patterns")
         print("="*50)
         
         # Define bit vector variables
         BV_SIZE = 8
-        x, y, px, py = z3.BitVecs('x y x! y!', BV_SIZE)
-        all_vars = [x, y, px, py]
+        x, px = z3.BitVecs('x x!', BV_SIZE)
+        all_vars = [x, px]
 
         # Define transition system constraints
-        init = z3.And(x == 1, y == 0)
+        # Initial state: x has bit 0 set to 1 and bit 7 set to 0
+        init = z3.And(
+            z3.Extract(0, 0, x) == 1,  # Least significant bit is 1
+            z3.Extract(7, 7, x) == 0   # Most significant bit is 0
+        )
         
-        # x is left-shifted by 1 bit each step (x << 1)
-        # y remains 0
-        x_update = x << 1
-        y_update = y
+        # Transition relation:
+        # x is updated but preserves bits 0 and 7
+        # We'll use a mask to ensure bit 0 stays 1 and bit 7 stays 0
+        mask_keep_bit0_set = 0x01     # 00000001 in binary
+        mask_keep_bit7_clear = 0x7F   # 01111111 in binary
         
-        updates = z3.And(px == x_update, py == y_update)
-        trans = updates
+        # Update x but preserve the specific bits
+        # (x & ~mask_keep_bit0_set) | mask_keep_bit0_set ensures bit 0 is 1
+        # x & mask_keep_bit7_clear ensures bit 7 is 0
+        x_update = z3.BitVecVal(mask_keep_bit0_set, BV_SIZE) | (x & z3.BitVecVal(~mask_keep_bit0_set & mask_keep_bit7_clear, BV_SIZE))
         
-        # The property we want to verify: 
-        # After the first step, the least significant bit of x is always 0
-        # This is true because left-shifting introduces a 0 in the LSB
-        post = z3.Implies(x != 1, z3.Extract(0, 0, x) == 0)
+        trans = px == x_update
+        
+        # The property we want to verify:
+        # Bit 0 of x is always 1 and bit 7 is always 0
+        post = z3.And(
+            z3.Extract(0, 0, x) == 1,
+            z3.Extract(7, 7, x) == 0
+        )
 
         # Set up transition system
         sts = TransitionSystem()
         sts.from_z3_cnts([all_vars, init, trans, post])
         sts.set_signedness("unsigned")
 
-        # Configure and run EF prover with EnhancedBitPatternTemplate
+        # Configure and run EF prover with KnownBits template
         ef_prover = EFProver(sts, validate_invariant=True)
-        ef_prover.set_template("bv_enhanced_pattern")
-        ef_prover.set_solver("z3api")
-
-        result = ef_prover.solve()
-        print(f"Result: {result}")
-        print("="*50 + "\n")
-        self.assertEqual(result, "sat", "Expected satisfiable result")
-
-    def test_ef_prover_with_bit_masking(self):
-        """Test using the EFProver with the EnhancedBitPatternTemplate for bit masking."""
-        print("\n" + "="*50)
-        print("RUNNING TEST: test_ef_prover_with_bit_masking")
-        print("="*50)
-        
-        # Define bit vector variables
-        BV_SIZE = 8
-        x, y, px, py = z3.BitVecs('x y x! y!', BV_SIZE)
-        all_vars = [x, y, px, py]
-
-        # Define transition system constraints
-        init = z3.And(x == 0x3F, y == (x & 0xF0))  # 0x3F = 00111111, 0xF0 = 11110000
-        
-        # x is updated with some complex bit manipulation
-        # y is always x with its lower 4 bits masked to 0
-        x_update = (x + 1) ^ 0x55  # XOR with 01010101
-        y_update = px & 0xF0       # Mask lower 4 bits to 0
-        
-        updates = z3.And(px == x_update, py == y_update)
-        trans = updates
-        
-        # The property we want to verify: 
-        # The lower 4 bits of y are always 0
-        post = (y & 0x0F) == 0
-
-        # Set up transition system
-        sts = TransitionSystem()
-        sts.from_z3_cnts([all_vars, init, trans, post])
-        sts.set_signedness("unsigned")
-
-        # Configure and run EF prover with EnhancedBitPatternTemplate
-        ef_prover = EFProver(sts, validate_invariant=True)
-        ef_prover.set_template("bv_enhanced_pattern")
+        ef_prover.set_template("knownbits")
         ef_prover.set_solver("z3api")
 
         result = ef_prover.solve()
