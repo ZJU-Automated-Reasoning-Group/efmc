@@ -1,6 +1,13 @@
 """
 For calling SMT and QBF solvers
+
+The available APIs
+- solve_with_bin_qbf: solve QBF via bin QBF solvers
+- solve_with_bin_smt: solve SMT via bin SMT solvers
+- solve_with_bin_smt_v2: solve SMT via bin SMT solvers (v2)
+- ...?
 """
+
 import os
 import time
 from typing import List
@@ -30,11 +37,27 @@ def terminate(process, is_timeout: List):
     """
     if process.poll() is None:
         try:
+            # First try to terminate gracefully
             process.terminate()
+            # Wait a short time for process to terminate
+            for _ in range(10):
+                if process.poll() is not None:
+                    break
+                time.sleep(0.1)
+            
+            # If process is still running, force kill it
+            if process.poll() is None:
+                process.kill()
+                
             is_timeout[0] = True
         except Exception as ex:
-            print("error for interrupting")
-            print(ex)
+            logger.error("Error while interrupting process: %s", str(ex))
+            # Try force kill as a last resort
+            try:
+                process.kill()
+            except Exception:
+                pass
+            is_timeout[0] = True
 
 
 def solve_with_bin_qbf(fml_str: str, solver_name: str):

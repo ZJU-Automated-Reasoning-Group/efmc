@@ -1,7 +1,7 @@
 """
 Parser for EFSMT (Exists-Forall SMT) formulas in SMT-LIB2 format
 We assume that the formula is of the form 
-    forall Y. Phi(X, Y), where is is existentially quantified
+    forall Y. Phi(X, Y), where X is the set of existentially quantified variables, and Y is the set of universally quantified variables.
 """
 
 from typing import Tuple, List, Union, Optional
@@ -12,6 +12,7 @@ from efmc.utils.z3_expr_utils import get_variables
 class ParserError(Exception):
     """Custom exception for parsing errors"""
     pass
+
 
 class EFSMTParser:
     """Parser for EFSMT (Exists-Forall SMT) formulas in SMT-LIB2 format"""

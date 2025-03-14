@@ -1,15 +1,16 @@
 # coding: utf-8
 """
 Translate Exists-Forall Bit-Vector Instances to Boolean Formulas
-- QBF: z3 expression, QDIMAS
-- SAT: z3 expression, DIMACS
-- BDD: the BDD in pyEDA?
+- QBF: Z3 expression, QDIMACS
+- SAT: Z3 expression, DIMACS
+- BDD: the BDD in pyEDA? (NOT IMPLEMENTED)
 
-For maintaining the correlations of bit-vec and Boolean world.
-
+We also maintain the correlations of bit-vector and Boolean world.
 Some references of QDIMACS
   http://www.qbflib.org/qdimacs.html
   http://beyondnp.org/pages/solvers/qbf-solvers/
+
+Later, we may refer to the code of Q3B (or directly use it), which translates general quantified bit-vector formulas to BDDs.
 """
 
 import logging
@@ -25,6 +26,8 @@ logger = logging.getLogger(__name__)
 
 
 class EFBV2BoolAux:
+    """
+    """
     def __init__(self):
         self.universal_bools = []
         self.existential_bools = []
@@ -202,6 +205,7 @@ class EFBV2BoolAux:
 
 class EFBVFormulaTranslator:
     """
+    This class translates EFSMT(BV) formulas to QBF and SAT formulas.
     """
 
     def __init__(self, **kwargs):

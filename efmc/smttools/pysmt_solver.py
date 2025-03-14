@@ -15,6 +15,7 @@ APIs of this file:
 """
 
 import logging
+from typing import List
 import z3
 from pysmt.logics import QF_BV  # AUTO
 from pysmt.oracles import get_logic
@@ -161,7 +162,7 @@ class PySMTSolver(z3.Solver):
             z3_seq_itp.append(Solver(name='z3').converter.convert(cnt))
         return z3_seq_itp
 
-    def efsmt(self, evars: [z3.ExprRef], uvars: [z3.ExprRef], z3fml: z3.ExprRef, logic=QF_BV, maxloops=None, esolver_name="z3", fsolver_name="z3", verbose=False):
+    def efsmt(self, evars: List[z3.ExprRef], uvars: List[z3.ExprRef], z3fml: z3.ExprRef, logic=QF_BV, maxloops=None, esolver_name="z3", fsolver_name="z3", verbose=False):
         """Solves exists x. forall y. phi(x, y)"""
 
         _, phi = PySMTSolver.convert(z3fml)

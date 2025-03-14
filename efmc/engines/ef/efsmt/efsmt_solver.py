@@ -1,7 +1,26 @@
 # coding: utf-8
 """
-The uniformed interface for solving Exists-ForAll problems
+The uniformed interface for solving Exists-ForAll problems over bit-vectors.
+
+Solver options:
+- "z3": Use Z3 SMT solver
+- "cvc5": Use CVC5 SMT solver
+- "btor": Use Boolector SMT solver
+- "bitwuzla": Use Bitwuzla SMT solver
+- "yices": Use Yices SMT solver
+- "mathsat": Use MathSAT SMT solver
+- "q3b": Use Q3B solver
+- "caqe": Use CAQE QBF solver
+- "cegis": Use CEGIS-based approach
+- "sat": Use SAT-based approach
+- ...?
+
+Approaches:
+- 1. Quantifier instantiation: Direct solving with SMT solvers that support quantifiers
+- 2. Bit-blasting: Translation to QBF, BDD, or SAT, and solving with QBF solvers, BDD solvers, or SAT solvers
+- 3. CEGIS: CEGIS-based iterative approach (using a SMT oracle for deciding quantifier-free formulas)
 """
+
 import logging
 # from enum import Enum
 # from typing import List
@@ -17,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 class EFSMTSolver:
-    """Solving exists forall problem"""
+    """Solving exists forall problem over bit-vectors."""
 
     def __init__(self, logic: str, **kwargs):
         self.phi = None
@@ -225,6 +244,7 @@ class EFSMTSolver:
             return "unknown"
 
     def solve_with_z3_sat(self):
+        """Quantifier elimination + SAT solving"""
         assert self.logic == "BV" or self.logic == "UFBV"
         print("Quantifier elimination + SAT solving")
         fml_manager = EFBVFormulaTranslator()

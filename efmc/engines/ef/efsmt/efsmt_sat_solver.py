@@ -1,3 +1,15 @@
+"""
+This module contains the code for the SAT solver for EFSMT.
+NOTE: the filename might be misleading. To sovle EFSMT problems with the SAT solver "directly", we need to translate the problem into a CNF formula.
+
+A possible way to solve EFSMT problems with the SAT solver is as follows:
+1. Translate the EFSMT problem into a QBF formula.
+2. Translate the QBF formula into a CNF formula via quantifier elimination.
+3. Solve the CNF formula using a SAT solver.
+
+See the implementation in the `efbv_to_bool.py` file.
+"""
+
 import logging
 # import sys
 from pysat.formula import CNF
@@ -28,6 +40,8 @@ sat_solvers_in_pysat = ['cd', 'cd15', 'gc3', 'gc4', 'g3',
 
 
 def solve_with_sat_solver(dimacs_str: str, solver_name: str) -> str:
+    """Solve a given DIMACS CNF formula using a SAT solver.
+    """
     assert solver_name in sat_solvers_in_pysat
     # print(dimacs_str)
     print("Calling SAT solver {}".format(solver_name))
