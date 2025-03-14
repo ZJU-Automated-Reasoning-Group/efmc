@@ -11,7 +11,7 @@ import z3
 
 from efmc.utils.z3_expr_utils import get_variables
 from efmc.utils.z3_solver_utils import is_entail
-from efmc.smttools.z3opt_utils import box_optimize
+from efmc.utils.z3opt_utils import box_optimize
 
 # import argparse
 

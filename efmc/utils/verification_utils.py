@@ -157,4 +157,4 @@ def check_invariant(sts: Any, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRe
     else:
         logger.info("Invariant verification successful")
     
-    return correct 
+    return correct

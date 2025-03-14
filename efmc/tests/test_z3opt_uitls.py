@@ -1,9 +1,8 @@
 import unittest
 from unittest.mock import patch, MagicMock, Mock
 import z3
-from typing import List
 
-from efmc.smttools.z3opt_utils import box_optimize, pareto_optimize, maxsmt
+from efmc.utils.z3opt_utils import box_optimize, pareto_optimize, maxsmt
 
 class TestBoxOptimize(unittest.TestCase):
     
