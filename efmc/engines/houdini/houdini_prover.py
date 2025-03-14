@@ -12,6 +12,7 @@ import z3
 
 from efmc.sts import TransitionSystem
 from efmc.utils.z3_expr_utils import get_variables
+from efmc.utils.verification_utils import VerificationResult
 
 logger = logging.getLogger(__name__)
 
@@ -95,16 +96,16 @@ class HoudiniProver:
         self.logger.info(f"Houdini completed after {iteration} iterations with {len(indexed)}/{initial_count} lemmas remaining")
         return indexed
 
-    def solve(self) -> str:
+    def solve(self) -> VerificationResult:
         """Main solving procedure.
         
         Returns:
-            str: "safe" if verified, "unknown" otherwise
+            VerificationResult: Object containing verification result and related data
         """
         # First check if post-condition itself is inductive
         if self.check_inductive(self.sts.post):
             self.logger.info("Post-condition is already inductive")
-            return "safe"
+            return VerificationResult(True, self.sts.post)
     
         # Generate candidate lemmas
         lemmas = self.generate_candidate_lemmas()
@@ -117,10 +118,10 @@ class HoudiniProver:
             inv = z3.And(*result.values())
             if self.verify_invariant(inv):
                 self.logger.info("Found inductive invariant")
-                return "safe"
+                return VerificationResult(True, inv)
         
         self.logger.info("Could not find inductive invariant")
-        return "unknown"
+        return VerificationResult(False, None)
     
     def generate_candidate_lemmas(self):
         """Generate candidate lemmas for invariant inference"""

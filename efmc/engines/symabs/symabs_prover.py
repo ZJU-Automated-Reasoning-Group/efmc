@@ -7,6 +7,7 @@ import z3
 
 from efmc.sts import TransitionSystem
 from efmc.utils import is_valid
+from efmc.utils.verification_utils import VerificationResult
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +81,7 @@ class SymbolicAbstractionProver(object):
             self.var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
             self.var_map_rev.append((self.sts.prime_variables[i], self.sts.variables[i]))
 
-    def solve(self):
+    def solve(self) -> VerificationResult:
         """External interface for verification"""
         preds_prime = []
         for pred in self.preds:
@@ -103,8 +104,8 @@ class SymbolicAbstractionProver(object):
         if is_valid(z3.Implies(inv, self.sts.post)):
             print(z3.simplify(inv))
             print(">>> SAFE\n\n")
+            return VerificationResult(True, inv)
         else:
             # need refinement
             print(">>> MAYBE?!?!\n\n")
-
-        return
+            return VerificationResult(False, None)

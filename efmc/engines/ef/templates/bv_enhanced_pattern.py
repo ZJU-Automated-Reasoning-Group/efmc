@@ -34,6 +34,17 @@ class EnhancedBitPatternTemplate(Template):
         self.template_cnt_init_and_post = self.add_template_cnts()
         self.template_cnt_trans = self.add_template_cnts()
 
+    def build_invariant(self, model: z3.ModelRef) -> z3.ExprRef:
+        """Build an invariant from a model.
+        
+        Args:
+            model: Z3 model containing values for template variables
+            
+        Returns:
+            Z3 expression representing the invariant
+        """
+        return self.build_invariant_expr(model)
+
     def add_template_vars(self):
         """Add template variables with enhanced bit-level tracking"""
         # 1. Standard interval bounds for each variable

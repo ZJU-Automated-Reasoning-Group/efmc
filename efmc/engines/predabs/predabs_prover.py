@@ -13,12 +13,14 @@ TODO: use more "advanced" CEGAR engines
 import logging
 from itertools import chain
 from itertools import combinations
-from typing import List
+from typing import List, Optional
 
 import z3
 
 from efmc.sts import TransitionSystem
 from efmc.utils import negate, is_sat, is_valid
+from efmc.utils.z3_solver_utils import fixpoint
+from efmc.utils.verification_utils import VerificationResult
 
 logger = logging.getLogger(__name__)
 
@@ -76,12 +78,6 @@ def stronget_consequence_simple(phi: z3.ExprRef, predicates: List[z3.ExprRef]) -
     return z3.simplify(res)
 
 
-def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef) -> bool:
-    """Decide whether reaching a fixpoint or not..
-    TODO: is this true? (e.g. should we check for equivalence?)"""
-    return is_valid(z3.Implies(inv, old_inv))
-
-
 class PredicateAbstractionProver(object):
     def __init__(self, system: TransitionSystem):
         self.sts = system
@@ -101,7 +97,7 @@ class PredicateAbstractionProver(object):
         """The element in the domain is the Boolean combinations of a set of predicates"""
         self.preds = predicates
 
-    def solve(self):
+    def solve(self) -> VerificationResult:
         """External interface for verifying"""
         preds_prime = []
         for pred in self.preds:
@@ -127,8 +123,8 @@ class PredicateAbstractionProver(object):
         if is_valid(z3.Implies(inv, self.sts.post)):
             print(z3.simplify(inv))
             print(">>> SAFE\n\n")
+            return VerificationResult(True, inv)
         else:
             # need refinement
             print(">>> MAYBE?!?!\n\n")
-
-        return
+            return VerificationResult(False, None)

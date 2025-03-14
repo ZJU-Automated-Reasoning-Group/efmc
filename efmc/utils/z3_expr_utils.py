@@ -17,6 +17,7 @@
 - is_pos_lit
 - is_neg_lit
 - is_lit
+- extract_all
 
 - create_function_body_str
 - z3_string_decoder
@@ -24,7 +25,7 @@
 - get_z3_logic
 """
 
-from typing import List, Set
+from typing import List, Set, Any
 import z3
 from z3.z3util import get_vars
 
@@ -482,6 +483,25 @@ def eval_predicates(m: z3.ModelRef, predicates: List[z3.BoolRef]):
         else:
             pass
     return res
+
+
+def extract_all(lst: List[Any]) -> List[Any]:
+    """
+    Extract all elements from nested lists.
+    
+    Args:
+        lst: A potentially nested list
+        
+    Returns:
+        A flattened list with all elements
+    """
+    results = []
+    for elem in lst:
+        if isinstance(elem, list):
+            results.extend(extract_all(elem))
+        else:
+            results.append(elem)
+    return results
 
 
 if __name__ == "__main__":

@@ -8,11 +8,13 @@ Use quantifier elimination to compute the strongest inductive invariant?
 
 import logging
 import time
+from typing import List, Optional
 
 import z3
 
 from efmc.sts import TransitionSystem
-from efmc.utils import is_valid
+from efmc.utils.z3_solver_utils import is_valid, fixpoint
+from efmc.utils.verification_utils import VerificationResult
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +39,13 @@ class QuantifierEliminationProver:
             self.var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
             self.var_map_rev.append((self.sts.prime_variables[i], self.sts.variables[i]))
 
-    def solve(self):
+    def solve(self) -> VerificationResult:
+        """
+        Verify the system using quantifier elimination.
+        
+        Returns:
+            VerificationResult: Object containing verification result and related data
+        """
         start = time.time()
         old_inv = z3.BoolVal(False)  # Use z3.BoolVal instead of Python's False
         inv = self.sts.init
@@ -55,7 +63,7 @@ class QuantifierEliminationProver:
             # Check timeout
             if self.timeout and time.time() - start > self.timeout:
                 print(f"Timeout reached after {time.time() - start:.2f} seconds")
-                return "timeout"
+                return VerificationResult(False, None)
                 
             qfml = z3.Exists(self.sts.variables, z3.And(inv, self.sts.trans))
             
@@ -82,12 +90,12 @@ class QuantifierEliminationProver:
                 print(">>> SAFE\n")
                 print(f"QE success time: {time.time() - start:.2f} seconds")
                 print(f"Invariant: {z3.simplify(inv)}")
-            return "safe"
+            return VerificationResult(True, inv)
         else:
             if self.verbose:
                 print(">>> UNSAFE\n")
                 print(f"QE UNSAFE time: {time.time() - start:.2f} seconds")
-            return "unsafe"
+            return VerificationResult(False, None)
 
 
 if __name__ == '__main__':

@@ -25,6 +25,7 @@ from efmc.engines.pdr import PDRProver
 from efmc.engines.qe import QuantifierEliminationProver
 from efmc.engines.qi import QuantifierInstantiationProver
 from efmc.engines.houdini import HoudiniProver
+from efmc.utils.verification_utils import VerificationResult
 
 # Available templates
 TEMPLATES = {
@@ -94,6 +95,19 @@ class EFMCRunner:
         for sig in [signal.SIGINT, signal.SIGQUIT, signal.SIGABRT, signal.SIGTERM]:
             signal.signal(sig, handler)
 
+    def print_verification_result(self, result: VerificationResult) -> None:
+        """Print verification result in a consistent format"""
+        if result.is_safe:
+            print("safe")
+            if result.invariant is not None:
+                print(f"Invariant: {result.invariant}")
+        else:
+            if result.counterexample is not None:
+                print("unsafe")
+                print(f"Counterexample: {result.counterexample}")
+            else:
+                print("unknown")
+
     def run_ef_prover(self, sts: TransitionSystem) -> None:
         """Run template-based invariant generation using EF prover"""
         if sts.has_bv:
@@ -149,13 +163,14 @@ class EFMCRunner:
         if g_verifier_args.dump_ef_smt2 or g_verifier_args.dump_qbf:
             ef_prover.dump_constraint(g_verifier_args)
         else:
-            res = ef_prover.solve()
-            print("safe" if res == "sat" else "unknown")
+            result = ef_prover.solve()
+            self.print_verification_result(result)
 
     def run_pdr(self, sts: TransitionSystem) -> None:
         """Run PDR/IC3 verification"""
         pdr_prover = PDRProver(sts)
-        pdr_prover.solve()
+        result = pdr_prover.solve()
+        self.print_verification_result(result)
 
     def run_qi(self, sts: TransitionSystem) -> None:
         """Run the Quantifier Instantiation (QI) based verification"""
@@ -166,7 +181,8 @@ class EFMCRunner:
             qi_prover.set_strategy(g_verifier_args.qi_strategy)
             self.logger.info(f"Using QI strategy: {g_verifier_args.qi_strategy}")
         
-        qi_prover.solve()
+        result = qi_prover.solve()
+        self.print_verification_result(result)
 
     def run_k_induction(self, sts: TransitionSystem) -> None:
         """Run k-induction verification"""
@@ -174,12 +190,14 @@ class EFMCRunner:
         kind_prover = KInductionProver(sts)
         if g_verifier_args.kind_aux_inv:
             kind_prover.use_aux_invariant = True
-        kind_prover.solve(int(g_verifier_args.kind_k))
+        result = kind_prover.solve(int(g_verifier_args.kind_k))
+        self.print_verification_result(result)
 
     def run_qe(self, sts: TransitionSystem) -> None:
         """Run quantifier elimination based verification"""
         qe_prover = QuantifierEliminationProver(sts)
-        qe_prover.solve()
+        result = qe_prover.solve()
+        self.print_verification_result(result)
 
     def verify_chc(self, filename: str) -> None:
         """Verify CHC format file"""
@@ -242,8 +260,8 @@ class EFMCRunner:
     def run_houdini(self, sts: TransitionSystem) -> None:
         """Run Houdini-based invariant inference"""
         houdini_prover = HoudiniProver(sts)
-        res = houdini_prover.solve()
-        print("safe" if res == "safe" else "unknown")
+        result = houdini_prover.solve()
+        self.print_verification_result(result)
 
 def parse_arguments():
     """Parse command line arguments"""

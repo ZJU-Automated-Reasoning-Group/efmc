@@ -17,6 +17,7 @@ import z3
 
 from efmc.engines.kinduction.aux_invariant_generator import InvariantGenerator
 from efmc.sts import TransitionSystem
+from efmc.utils.verification_utils import VerificationResult
 
 logger = logging.getLogger(__name__)
 
@@ -93,13 +94,16 @@ class KInductionProverInc:
         prop_k = z3.substitute(self.sts.post, self.get_subs(k))
         return prop_k
 
-    def solve(self, max_k: int, min_k: int = 0):
+    def solve(self, max_k: int, min_k: int = 0) -> VerificationResult:
         """
         Performs k-induction proof using incremental solving following Sally's approach.
 
         Args:
             max_k: Maximum bound to check
             min_k: Minimum bound before checking inductive step
+            
+        Returns:
+            VerificationResult: Object containing verification result and related data
         """
         if self.use_aux_invariant:
             inv_gen = InvariantGenerator(self.sts)
@@ -117,7 +121,8 @@ class KInductionProverInc:
 
             if self.solver1.check() == z3.sat:
                 print(f"--> Bug found at step {k}")
-                return "unsafe"
+                model = self.solver1.model()
+                return VerificationResult(False, None, model)
             self.solver1.pop()
 
             # Inductive case
@@ -138,14 +143,16 @@ class KInductionProverInc:
                 self.solver2.add(z3.Not(prop_k))
                 if self.solver2.check() == z3.unsat:
                     print(f"--> System proved safe at k={k}")
-                    return "safe"
+                    # Create an invariant from the k-induction proof
+                    invariant = self.sts.post
+                    return VerificationResult(True, invariant)
                 self.solver2.pop()
 
             # Prepare for next iteration
             if k < max_k - 1:
                 self._add_transition_at_k(k)
 
-        return "unknown"
+        return VerificationResult(False, None, None)
 
 
 def main():

@@ -21,80 +21,15 @@ The main algorithm:
 """
 
 import logging
-from dataclasses import dataclass
 from typing import Tuple, Optional, List, Sequence
 
 import z3
 
 from efmc.engines.abduction.abductor.abductor import qe_abduce
 from efmc.sts import TransitionSystem
+from efmc.utils.verification_utils import VerificationResult, SolverTimeout, check_entailment, are_expressions_equivalent
 
 logger = logging.getLogger(__name__)
-
-@dataclass
-class VerificationResult:
-    """Stores the result of the verification process."""
-    is_safe: bool
-    invariant: Optional[z3.ExprRef]
-    counterexample: Optional[z3.ModelRef] = None
-
-class SolverTimeout(Exception):
-    """Raised when the Z3 solver times out."""
-    pass
-
-def check_entailment(expr1: z3.ExprRef, expr2: z3.ExprRef, timeout: int = 10000) -> bool:
-    """
-    Check if expr1 entails expr2 using Z3 solver.
-
-    Args:
-        expr1: The expression that is assumed to hold
-        expr2: The expression that should be entailed by expr1
-        timeout: Solver timeout in milliseconds
-
-    Returns:
-        True if expr1 entails expr2, False otherwise
-
-    Raises:
-        SolverTimeout: If the solver times out
-    """
-    s = z3.Solver()
-    s.set("timeout", timeout)
-    s.add(z3.And(expr1, z3.Not(expr2)))
-
-    result = s.check()
-    if result == z3.unknown:
-        raise SolverTimeout("Solver timed out during entailment check")
-    return result == z3.unsat
-
-def are_expressions_equivalent(expr1: z3.ExprRef, expr2: z3.ExprRef, timeout: int = 10000) -> bool:
-    """
-    Check if two Z3 expressions are logically equivalent.
-
-    Args:
-        expr1: First expression
-        expr2: Second expression
-        timeout: Solver timeout in milliseconds
-
-    Returns:
-        True if expressions are equivalent, False otherwise
-
-    Raises:
-        SolverTimeout: If the solver times out
-    """
-    s = z3.Solver()
-    s.set("timeout", timeout)
-
-    # Check if (expr1 ∧ ¬expr2) ∨ (¬expr1 ∧ expr2) is unsatisfiable
-    equivalence_check = z3.Or(
-        z3.And(expr1, z3.Not(expr2)),
-        z3.And(z3.Not(expr1), expr2)
-    )
-    s.add(equivalence_check)
-
-    result = s.check()
-    if result == z3.unknown:
-        raise SolverTimeout("Solver timed out during equivalence check")
-    return result == z3.unsat
 
 class AbductionProver:
     """
@@ -117,6 +52,9 @@ class AbductionProver:
         # Create mappings between current and next-state variables
         self.var_map = list(zip(self.sts.variables, self.sts.prime_variables))
         self.var_map_rev = list(zip(self.sts.prime_variables, self.sts.variables))
+        
+        # Store the last counterexample for debugging
+        self.last_cti = None
 
     def check_inductiveness(self, inv: z3.ExprRef) -> Tuple[bool, Optional[z3.ModelRef]]:
         """
@@ -159,31 +97,51 @@ class AbductionProver:
         Returns:
             Strengthened invariant formula
         """
+        # Store the CTI for debugging
+        self.last_cti = cti
+        
         # Extract current state constraints from CTI
-        pre_state_constraints = [
-            v == cti[v] for v in self.sts.variables if v in cti
-        ]
+        pre_state_constraints = []
+        for v in self.sts.variables:
+            if v in cti:
+                pre_state_constraints.append(v == cti[v])
+        
         pre_state = z3.And(*pre_state_constraints) if pre_state_constraints else z3.BoolVal(True)
 
         # Extract next state constraints and substitute back to current variables
-        post_state_constraints = [
-            v == cti[v] for v in self.sts.prime_variables if v in cti
-        ]
+        post_state_constraints = []
+        for v in self.sts.prime_variables:
+            if v in cti:
+                post_state_constraints.append(v == cti[v])
+                
         post_state = z3.And(*post_state_constraints) if post_state_constraints else z3.BoolVal(True)
-        post_state = z3.substitute(post_state, self.var_map_rev)
+        post_state_unprime = z3.substitute(post_state, self.var_map_rev)
 
         # Set up abduction query
         pre_cond = z3.And(inv, pre_state, self.sts.trans)
-        post_cond = z3.substitute(inv, self.var_map_rev)
+        post_cond = z3.substitute(inv, self.var_map)  # This is inv'
 
-        # Perform abduction to find strengthening condition
-        strengthening = qe_abduce(pre_cond, post_cond)
-        if strengthening is None:
-            logger.debug("Abduction failed. Falling back to CTI exclusion.")
+        try:
+            # Perform abduction to find strengthening condition
+            strengthening = qe_abduce(pre_cond, post_cond)
+            if strengthening is None:
+                logger.debug("Abduction failed. Falling back to CTI exclusion.")
+                strengthening = z3.Not(pre_state)
+        except Exception as e:
+            logger.warning(f"Abduction error: {e}. Falling back to CTI exclusion.")
             strengthening = z3.Not(pre_state)
 
+        # Simplify the strengthened invariant
         new_inv = z3.simplify(z3.And(inv, strengthening))
         logger.debug(f"Strengthened invariant: {new_inv}")
+        
+        # Verify that the new invariant excludes the CTI
+        s = z3.Solver()
+        s.add(new_inv, pre_state)
+        if s.check() == z3.sat:
+            logger.warning("Strengthened invariant does not exclude CTI. Using direct exclusion.")
+            new_inv = z3.simplify(z3.And(inv, z3.Not(pre_state)))
+            
         return new_inv
 
     def verify_safety(self, inv: z3.ExprRef) -> VerificationResult:
@@ -232,6 +190,7 @@ class AbductionProver:
         """
         inv = self.sts.post
         iteration = 0
+        last_inv = None
 
         logger.info("Starting invariant generation...")
         while iteration < self.max_iterations:
@@ -261,7 +220,13 @@ class AbductionProver:
             if are_expressions_equivalent(new_inv, inv):
                 logger.warning("Failed to make progress in strengthening")
                 return None
-
+                
+            # Check if we're oscillating between two invariants
+            if last_inv is not None and are_expressions_equivalent(new_inv, last_inv):
+                logger.warning("Detected oscillation between invariants")
+                return None
+                
+            last_inv = inv
             inv = new_inv
             iteration += 1
 
@@ -281,7 +246,12 @@ class AbductionProver:
                 logger.info("System verified safe")
                 return VerificationResult(True, inv)
             logger.info("Could not verify system safety")
-            return VerificationResult(False, None)
+            # Return the last counterexample if available
+            return VerificationResult(False, None, self.last_cti)
         except SolverTimeout:
             logger.error("Verification timed out")
             return VerificationResult(False, None)
+        except Exception as e:
+            logger.error(f"Verification error: {e}")
+            return VerificationResult(False, None)
+        

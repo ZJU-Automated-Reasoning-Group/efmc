@@ -67,6 +67,17 @@ class BitVecIntervalTemplate(Template):
         self.template_cnt_init_and_post = z3.simplify(big_and(cnts))
         self.template_cnt_trans = z3.simplify(big_and(cnts_prime))
 
+    def build_invariant(self, model: z3.ModelRef) -> z3.ExprRef:
+        """Build an invariant from a model.
+        
+        Args:
+            model: Z3 model containing values for template variables
+            
+        Returns:
+            Z3 expression representing the invariant
+        """
+        return self.build_invariant_expr(model)
+
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
         """ Build an invariant from a model (fixing the values of the template vars)"""
         constraints = []
@@ -185,4 +196,15 @@ class DisjunctiveBitVecIntervalTemplate(Template):
             cnts_dis.append(big_and(cnts))
 
         return z3.Or(cnts_dis)
+
+    def build_invariant(self, model: z3.ModelRef) -> z3.ExprRef:
+        """Build an invariant from a model.
+        
+        Args:
+            model: Z3 model containing values for template variables
+            
+        Returns:
+            Z3 expression representing the invariant
+        """
+        return self.build_invariant_expr(model)
 

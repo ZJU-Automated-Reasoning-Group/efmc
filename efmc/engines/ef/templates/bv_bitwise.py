@@ -94,6 +94,18 @@ class KnownBitsTemplate(Template):
         # Store constraints for primed variables
         self.template_cnt_trans = z3.And(cnts_prime) if cnts_prime else z3.BoolVal(True)
 
+    def build_invariant(self, model: z3.ModelRef) -> z3.ExprRef:
+        """
+        Build an invariant from a model by fixing the values of template variables.
+        
+        Args:
+            model: Z3 model containing values for template variables
+            
+        Returns:
+            Z3 expression representing the invariant
+        """
+        return self.build_invariant_expr(model)
+
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
         """
         Build an invariant from a model by fixing the values of template variables.
@@ -202,6 +214,18 @@ class BitPredAbsTemplate(Template):
         else:
             self.template_cnt_trans = self.template_cnt_init_and_post
     
+    def build_invariant(self, model: z3.ModelRef) -> z3.ExprRef:
+        """
+        Build an invariant from a model.
+        
+        Args:
+            model: Z3 model containing values for template variables
+            
+        Returns:
+            Z3 expression representing the invariant
+        """
+        return self.build_invariant_expr(model)
+        
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
         """
         Build an invariant from a model by fixing the values of template variables.
@@ -209,7 +233,7 @@ class BitPredAbsTemplate(Template):
         Args:
             model: Z3 model containing values for template variables
             use_prime_variables: Whether to use primed variables in the invariant
-        
+            
         Returns:
             Z3 expression representing the invariant
         """
@@ -221,20 +245,9 @@ class BitPredAbsTemplate(Template):
         
         # Evaluate each predicate in the model
         cnts = []
-        for pred_var in self.pred_vars:
-            if z3.is_true(model.eval(pred_var)):
-                # Find which bit predicates are selected
-                pred_expr = z3.BoolVal(False)
-                for i, bit_pred in enumerate(self.bit_preds):
-                    sel = z3.Bool(f"sel_{pred_var}_{i}")
-                    neg_sel = z3.Bool(f"neg_sel_{pred_var}_{i}")
-                    
-                    if z3.is_true(model.eval(sel)):
-                        pred_expr = bit_pred
-                        break
-                    elif z3.is_true(model.eval(neg_sel)):
-                        pred_expr = z3.Not(bit_pred)
-                        break
+        for i, pred_var in enumerate(self.pred_vars):
+            if z3.is_true(model.eval(pred_var)) and i < len(self.bit_preds):
+                pred_expr = self.bit_preds[i]
                 
                 # Apply variable substitution if needed
                 if use_prime_variables and var_subst:
@@ -243,3 +256,5 @@ class BitPredAbsTemplate(Template):
                 cnts.append(pred_expr)
         
         return big_and(cnts) if cnts else z3.BoolVal(True)
+    
+    

@@ -11,6 +11,7 @@ import time
 import z3
 
 from efmc.sts import TransitionSystem
+from efmc.engines.abduction.abduction_prover import VerificationResult
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ class PDRProver:
     def __init__(self, system: TransitionSystem):
         self.sts = system
 
-    def solve(self) -> str:
+    def solve(self) -> VerificationResult:
         """From transition system to CHC"""
         assert self.sts.initialized
 
@@ -57,13 +58,14 @@ class PDRProver:
         if res == z3.sat:
             print("PDR time: ", time.time() - start)
             print("safe")
-            print("Invariant: ", s.model().eval(inv(self.sts.variables)))
-            return "safe"
+            invariant = s.model().eval(inv(self.sts.variables))
+            print("Invariant: ", invariant)
+            return VerificationResult(True, invariant)
         elif res == z3.unsat:
             print("PDR time: ", time.time() - start)
             print("unsafe")
-            return "unsafe"
+            return VerificationResult(False, None)
         else:
-            print("PDR error")
+            print("PDR time: ", time.time() - start)
             print("unknown")
-            return "unknown"
+            return VerificationResult(False, None)

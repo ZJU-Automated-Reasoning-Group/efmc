@@ -225,7 +225,137 @@ def get_int_sys10():
     all_vars = [free, alloc1, alloc2, _p_free, _p_alloc1, _p_alloc2]
     return all_vars, init, trans, post
 
+def get_int_sys11():
+    """
+    A complex system combining multiple properties to test abduction prover.
+    This system models a producer-consumer scenario with bounded buffer.
+    - 'produced' tracks total items produced
+    - 'consumed' tracks total items consumed
+    - 'buffer' tracks items in buffer (produced - consumed)
+    - 'state' tracks system state (0=normal, 1=overflow, 2=underflow)
+    
+    Properties to verify:
+    1. Buffer never exceeds capacity (10)
+    2. Buffer is never negative
+    3. If in normal state, buffer is within bounds
+    4. produced >= consumed always holds
+    """
+    produced, consumed, buffer, state = z3.Ints('produced consumed buffer state')
+    _p_produced, _p_consumed, _p_buffer, _p_state = z3.Ints('produced! consumed! buffer! state!')
+    capacity = 10
+    
+    # Initial state
+    init = z3.And(produced == 0, consumed == 0, buffer == 0, state == 0)
+    
+    # Transitions
+    # Produce item (normal state)
+    produce_normal = z3.And(
+        state == 0,
+        buffer < capacity,
+        _p_produced == produced + 1,
+        _p_consumed == consumed,
+        _p_buffer == buffer + 1,
+        _p_state == 0
+    )
+    
+    # Consume item (normal state)
+    consume_normal = z3.And(
+        state == 0,
+        buffer > 0,
+        _p_produced == produced,
+        _p_consumed == consumed + 1,
+        _p_buffer == buffer - 1,
+        _p_state == 0
+    )
+    
+    # Attempt to produce when buffer full (causes overflow)
+    produce_overflow = z3.And(
+        state == 0,
+        buffer == capacity,
+        _p_produced == produced + 1,
+        _p_consumed == consumed,
+        _p_buffer == buffer + 1,
+        _p_state == 1  # Overflow state
+    )
+    
+    # Attempt to consume when buffer empty (causes underflow)
+    consume_underflow = z3.And(
+        state == 0,
+        buffer == 0,
+        _p_produced == produced,
+        _p_consumed == consumed + 1,
+        _p_buffer == buffer - 1,
+        _p_state == 2  # Underflow state
+    )
+    
+    # Recovery from overflow state
+    recover_overflow = z3.And(
+        state == 1,
+        _p_produced == produced,
+        _p_consumed == consumed + 1,
+        _p_buffer == buffer - 1,
+        _p_state == z3.If(buffer - 1 <= capacity, 0, 1)
+    )
+    
+    # Recovery from underflow state
+    recover_underflow = z3.And(
+        state == 2,
+        _p_produced == produced + 1,
+        _p_consumed == consumed,
+        _p_buffer == buffer + 1,
+        _p_state == z3.If(buffer + 1 >= 0, 0, 2)
+    )
+    
+    # Combined transition relation
+    trans = z3.Or(
+        produce_normal,
+        consume_normal,
+        produce_overflow,
+        consume_underflow,
+        recover_overflow,
+        recover_underflow
+    )
+    
+    # Safety properties
+    # We want to verify that:
+    # 1. If in normal state, buffer is within bounds
+    # 2. produced >= consumed always holds
+    post = z3.And(
+        z3.Implies(state == 0, z3.And(buffer >= 0, buffer <= capacity)),
+        produced >= consumed
+    )
+    
+    all_vars = [produced, consumed, buffer, state, _p_produced, _p_consumed, _p_buffer, _p_state]
+    return all_vars, init, trans, post
 
+def get_int_sys12():
+    """
+    A system with an invalid property to test how the AbductionProver handles unsafe systems.
+    This is a modified version of get_int_sys7 where the property is intentionally invalid.
+    
+    The system has three counters (x, y, z) where:
+    - x increases by 1 in each step
+    - y increases by 2 in each step
+    - z increases by 3 in each step
+    
+    The invalid property claims that z = 2*x (which is false, since z = 3*x is the correct relation)
+    """
+    x, y, z, _p_x, _p_y, _p_z = z3.Ints('x y z x! y! z!')
+    init = z3.And(x == 0, y == 0, z == 0)
+    trans = z3.Or(
+        z3.And(x < 10, 
+               _p_x == x + 1,
+               _p_y == y + 2,
+               _p_z == z + 3),
+        z3.And(x >= 10,
+               _p_x == x,
+               _p_y == y,
+               _p_z == z)
+    )
+    # Invalid property (z should be 3*x, not 2*x)
+    post = z3.And(z == 2 * x, y == 2 * x)
+    all_vars = [x, y, z, _p_x, _p_y, _p_z]
+    return all_vars, init, trans, post
 
 def create_simple_sts(use_real=True):
     """

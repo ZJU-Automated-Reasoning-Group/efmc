@@ -10,6 +10,7 @@ NOTE:
 import logging
 import time
 # from enum import Enum
+from typing import List, Dict, Any, Optional, Union, Tuple
 
 import z3
 
@@ -17,24 +18,21 @@ from efmc.sts import TransitionSystem
 from efmc.utils import is_entail
 from efmc.engines.ef.templates import *
 from efmc.engines.ef.efsmt.efsmt_solver import EFSMTSolver
+from efmc.utils.z3_expr_utils import extract_all, ctx_simplify
+from efmc.utils.verification_utils import VerificationResult
 
 logger = logging.getLogger(__name__)
 
 
-def extract_all(lst):
-    """extract all elements from nested lists"""
-    results = []
-    for elem in lst:
-        if isinstance(elem, list):
-            results.extend(extract_all(elem))
-        else:
-            results.append(elem)
-    return results
-
-
 class EFProver:
     """
-    Exists-Forall SMT Solving for Inductive Invariant Inference
+    Template-based invariant inference using exists-forall SMT solving.
+    
+    This class implements a template-based approach to invariant inference,
+    where the invariant is assumed to have a specific form (template) with
+    unknown parameters. The verification problem is then reduced to finding
+    values for these parameters such that the resulting formula is an inductive
+    invariant.
     """
 
     def __init__(self, sts: TransitionSystem, **kwargs):
@@ -257,7 +255,7 @@ class EFProver:
         else:
             raise NotImplementedError
 
-    def solve(self):
+    def solve(self) -> VerificationResult:
         """The interface for calling different engines"""
         print("Start solving: ")
         print("Used template: {}".format(str(self.ct.template_type)))
@@ -284,8 +282,15 @@ class EFProver:
             # print("forall vars: ", forall_vars)
             ef_solver.init(exist_vars=exists_vars, forall_vars=forall_vars, phi=qf_vc)
             res = ef_solver.solve()
-            return res
-            # print("res..", res)
+            if res == "sat":
+                # Try to extract the model and build an invariant
+                model = ef_solver.get_model()
+                if model:
+                    invariant = self.ct.build_invariant(model)
+                    return VerificationResult(True, invariant)
+                return VerificationResult(True, None)
+            else:
+                return VerificationResult(False, None)
 
     def generate_vc(self) -> z3.ExprRef:
         """ Generate VC (Version 1)
@@ -377,7 +382,7 @@ class EFProver:
         logger.debug("Finish generating VC")
         return z3.ForAll(self.sts.all_variables, qf_vc)
 
-    def solve_with_z3(self) -> str:
+    def solve_with_z3(self) -> VerificationResult:
         """This is the main entrance for the verification"""
         s = z3.SolverFor(self.logic)
         vc = self.generate_vc2()
@@ -394,34 +399,13 @@ class EFProver:
         start = time.time()
         # print(s.to_smt2())
         check_res = s.check()
+        print("EFSMT time: ", time.time() - start)
         if check_res == z3.sat:
-            print("EFSMT success time: ", time.time() - start)
-            m = s.model()
-            if self.prop_strengthening:
-                # Since we use "template = P and template" as the invariant template, we need to adjunst the logic for builidng the invariant
-                inv = z3.And(self.sts.post, self.ct.build_invariant_expr(m, use_prime_variables=False))
-                print("Invariant: ", inv)
-                if self.validate_invariant:
-                    var_map = []  # x' to x, y' to y
-                    for i in range(len(self.sts.variables)):
-                        var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
-                    post_in_prime = z3.substitute(self.sts.post, var_map)  # post cond that uses x', y', ..
-                    inv_in_prime_variables = z3.And(post_in_prime,
-                                                    self.ct.build_invariant_expr(m, use_prime_variables=True))
-                    self.check_invariant(inv, inv_in_prime_variables)
-            else:
-                inv = self.ct.build_invariant_expr(m, use_prime_variables=False)
-                print("Invariant: ", inv)
-                if self.validate_invariant:
-                    inv_in_prime_variables = self.ct.build_invariant_expr(m, use_prime_variables=True)
-                    self.check_invariant(inv, inv_in_prime_variables)
-            self.inductive_invaraint = inv  # preserve the invariant
-            return "sat"
+            print("sat")
+            model = s.model()
+            invariant = self.ct.build_invariant(model)
+            return VerificationResult(True, invariant)
         else:
-            print("EFSMT fail time: ", time.time() - start)
-            print("Cannot verify using the template!")
-            print(check_res)
-            if check_res == z3.unknown:
-                print(s.reason_unknown())
-            return "unsat"
+            print("unknown")
+            return VerificationResult(False, None)
             

@@ -25,6 +25,7 @@ from typing import Optional, Dict, Any, Tuple
 import z3
 
 from efmc.sts import TransitionSystem
+from efmc.utils.verification_utils import VerificationResult
 
 logger = logging.getLogger(__name__)
 
@@ -129,12 +130,12 @@ class QuantifierInstantiationProver:
         solver.add(z3.ForAll(self.sts.variables,
                             z3.Implies(inv(*self.sts.variables), self.sts.post)))
 
-    def solve(self) -> str:
+    def solve(self) -> VerificationResult:
         """
         Verify the transition system using quantifier instantiation.
         
         Returns:
-            str: "safe" if verified, "unsafe" if property violation found, "unknown" otherwise
+            VerificationResult: Object containing verification result and related data
         """
         assert self.sts.initialized, "Transition system must be initialized before solving"
 
@@ -163,28 +164,28 @@ class QuantifierInstantiationProver:
                     logger.info("QI succeeded in %.2f seconds", solve_time)
                     logger.info("Invariant: %s", self.invariant)
                     
-                return "safe"
+                return VerificationResult(True, self.invariant)
                 
             elif result == z3.unsat:
                 if self.verbose:
                     logger.info("QI found property violation in %.2f seconds", solve_time)
                     
-                return "unsafe"
+                return VerificationResult(False, None)
                 
             else:
                 if self.verbose:
                     logger.warning("QI returned unknown result after %.2f seconds", solve_time)
                     logger.warning("Reason: %s", solver.reason_unknown())
                     
-                return "unknown"
+                return VerificationResult(False, None)
                 
         except z3.Z3Exception as e:
             logger.error("Z3 error during QI solving: %s", str(e))
-            return "unknown"
+            return VerificationResult(False, None)
             
         except Exception as e:
             logger.error("Unexpected error during QI solving: %s", str(e))
-            return "unknown"
+            return VerificationResult(False, None)
             
     def get_invariant(self) -> Optional[z3.ExprRef]:
         """
@@ -195,28 +196,29 @@ class QuantifierInstantiationProver:
         """
         return self.invariant
         
-    def try_multiple_strategies(self) -> Tuple[str, Optional[z3.ExprRef]]:
+    def try_multiple_strategies(self) -> VerificationResult:
         """
         Try multiple QI strategies and return the best result.
         
         Returns:
-            Tuple of (result, invariant)
+            VerificationResult: Object containing verification result and related data
         """
         strategies = ['mbqi', 'ematching', 'combined']
-        best_result = "unknown"
+        best_result = VerificationResult(False, None)
         
         for strategy in strategies:
             logger.info("Trying QI strategy: %s", strategy)
             self.qi_strategy = strategy
             result = self.solve()
             
-            if result == "safe":
-                return result, self.invariant
+            if result.is_safe:
+                return result
                 
-            if result == "unsafe":
+            # Keep the best result (prefer unsafe over unknown)
+            if not best_result.is_safe and result.counterexample is not None:
                 best_result = result
                 
-        return best_result, None
+        return best_result
 
     def set_strategy(self, strategy: str) -> None:
         """

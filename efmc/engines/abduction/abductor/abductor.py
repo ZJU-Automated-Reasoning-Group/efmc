@@ -60,7 +60,7 @@ def abduce(pre_cond: z3.BoolRef, post_cond: z3.BoolRef) -> Optional[z3.ExprRef]:
     if result is not None:
         return result
 
-    # Fall back to Dillig-style abduction
+    # Fall back to Dillig-style abduction (why fallback)
     return dillig_abduce(pre_cond, post_cond)
 
 

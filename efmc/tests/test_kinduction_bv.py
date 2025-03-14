@@ -28,7 +28,7 @@ class TestKInductionBV(TestCase):
         start = time.time()
         res = pp.solve(k=20)
         # print("time: ", time.time() - start)
-        assert (res == "safe")
+        self.assertTrue(res.is_safe, "Expected the system to be safe")
 
 
 if __name__ == '__main__':

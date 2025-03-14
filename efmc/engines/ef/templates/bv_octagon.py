@@ -182,6 +182,17 @@ class BitVecOctagonTemplate(Template):
 
         return big_and(cnts)
 
+    def build_invariant(self, model: z3.ModelRef) -> z3.ExprRef:
+        """Build an invariant from a model.
+        
+        Args:
+            model: Z3 model containing values for template variables
+            
+        Returns:
+            Z3 expression representing the invariant
+        """
+        return self.build_invariant_expr(model)
+
 
 
 class DisjunctiveBitVecOctagonTemplate(Template):
@@ -388,3 +399,14 @@ class DisjunctiveBitVecOctagonTemplate(Template):
 
             cnts_dis.append(big_and(cnts))
         return big_or(cnts_dis)
+        
+    def build_invariant(self, model: z3.ModelRef) -> z3.ExprRef:
+        """Build an invariant from a model.
+        
+        Args:
+            model: Z3 model containing values for template variables
+            
+        Returns:
+            Z3 expression representing the invariant
+        """
+        return self.build_invariant_expr(model)
