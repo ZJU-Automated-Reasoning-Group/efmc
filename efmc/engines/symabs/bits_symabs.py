@@ -4,10 +4,6 @@ Compute most-precise (best) bit-level abstractions for bit-vector formulas.
 
 
 - Known Bits Abstraction: For each bit position of each bit-vector variable, we track whether the bit must be 0, must be 1, or is unknown.
--  Bit Predicates Abstraction: We track relationships between individual bits of different variables, such as equality, negation (XOR), implication, conjunction, and disjunction. (Is this true?)
-- Combined Abstraction: We can compute both abstractions together to get a more precise result.
-
-(The full "predicate abstraction domain (the element in the domain is a Boolean combination over a set of Boolean variables)" is not implemented in this code.)
 
 This will be used to compute the strongest consequence of a formula in a given domain. The "strongest consequence" is operation is then used by the symabs_prover to compute the strongest inductive invariant.
 """
@@ -34,9 +30,8 @@ class BitSymbolicAbstraction:
     """
     Symbolic abstraction for bit-level properties of bit-vector formulas.
     
-    This class implements two main abstractions:
+    This class implements:
     1. Known bits: For each bit position, track if it must be 0, must be 1, or unknown
-    2. Bit predicates: Track relationships between individual bits
     """
     
     def __init__(self):
@@ -44,7 +39,6 @@ class BitSymbolicAbstraction:
         self.formula = z3.BoolVal(True)
         self.vars = []
         self.known_bits_abs_as_fml = z3.BoolVal(True)
-        self.bit_predicates_abs_as_fml = z3.BoolVal(True)
         
         # Timeout settings for queries
         self.single_query_timeout = 5000
@@ -56,7 +50,6 @@ class BitSymbolicAbstraction:
         
         # Bit-level information
         self.known_bits = {}  # Maps var -> list of (must_be_0, must_be_1) for each bit
-        self.bit_predicates = []  # List of predicates relating bits
         
     def do_simplification(self):
         """Simplify the formula if enabled"""
@@ -198,127 +191,7 @@ class BitSymbolicAbstraction:
         end = symabs_timer()
         logger.debug(f"Known bits abstraction took {end - start:.2f} seconds")
     
-    def check_bit_predicate(self, pred: z3.BoolRef) -> bool:
-        """Check if a bit predicate is implied by the formula"""
-        return is_entail(self.formula, pred)
-    
-    def generate_bit_predicates(self):
-        """Generate potential bit predicates to check"""
-        predicates = []
-        
-        # Only consider bit-vector variables
-        bv_vars = [var for var in self.vars if z3.is_bv(var)]
-        
-        # For each variable, generate predicates for individual bits
-        for var in bv_vars:
-            bv_size = var.sort().size()
-            
-            # Add predicates for individual bits
-            for i in range(bv_size):
-                bit_i = z3.Extract(i, i, var) == 1
-                predicates.append(bit_i)
-        
-        # For pairs of variables with the same bit-width, generate equality predicates
-        for i, var1 in enumerate(bv_vars):
-            for var2 in bv_vars[i+1:]:
-                if var1.sort().size() == var2.sort().size():
-                    bv_size = var1.sort().size()
-                    
-                    # Add predicates for corresponding bits
-                    for i in range(bv_size):
-                        bit1 = z3.Extract(i, i, var1) == 1
-                        bit2 = z3.Extract(i, i, var2) == 1
-                        
-                        # bit1 == bit2 (equality)
-                        predicates.append(bit1 == bit2)
-                        
-                        # bit1 == ~bit2 (negation/XOR relationship)
-                        predicates.append(bit1 == z3.Not(bit2))
-                        
-                        # bit1 => bit2 (implication)
-                        predicates.append(z3.Implies(bit1, bit2))
-                        
-                        # bit2 => bit1 (reverse implication)
-                        predicates.append(z3.Implies(bit2, bit1))
-                        
-                        # bit1 & bit2 (conjunction)
-                        predicates.append(z3.And(bit1, bit2))
-                        
-                        # bit1 | bit2 (disjunction)
-                        predicates.append(z3.Or(bit1, bit2))
-        
-        return predicates
-    
-    def bit_predicates_abs(self):
-        """Compute the bit predicates abstraction"""
-        if not self.initialized:
-            logger.warning("BitSymbolicAbstraction not initialized")
-            return
-        
-        start = symabs_timer()
-        
-        # Generate potential predicates
-        potential_predicates = self.generate_bit_predicates()
-        
-        # Check which predicates are implied by the formula
-        valid_predicates = []
-        for pred in potential_predicates:
-            if self.check_bit_predicate(pred):
-                valid_predicates.append(pred)
-        
-        # Simplify the predicates to remove redundancy
-        simplified_predicates = self.simplify_predicates(valid_predicates)
-        
-        # Convert valid predicates to a formula
-        if simplified_predicates:
-            self.bit_predicates_abs_as_fml = z3.And(*simplified_predicates)
-            self.bit_predicates = simplified_predicates
-        else:
-            self.bit_predicates_abs_as_fml = z3.BoolVal(True)
-            self.bit_predicates = []
-        
-        end = symabs_timer()
-        logger.debug(f"Bit predicates abstraction took {end - start:.2f} seconds")
-    
-    def simplify_predicates(self, predicates):
-        """Simplify a list of predicates by removing redundant ones"""
-        if not predicates:
-            return []
-        
-        # First, simplify each predicate
-        simplified = [z3.simplify(pred) for pred in predicates]
-        
-        # Remove duplicates
-        unique_preds = []
-        str_preds = set()
-        
-        for pred in simplified:
-            pred_str = str(pred)
-            if pred_str not in str_preds:
-                str_preds.add(pred_str)
-                unique_preds.append(pred)
-        
-        # Check for logical redundancy (if one predicate implies another)
-        non_redundant = []
-        for i, pred1 in enumerate(unique_preds):
-            is_redundant = False
-            
-            # Skip True and False predicates
-            if z3.is_true(pred1) or z3.is_false(pred1):
-                continue
-                
-            for j, pred2 in enumerate(unique_preds):
-                if i != j and is_entail(pred2, pred1) and not is_entail(pred1, pred2):
-                    # pred2 implies pred1 but not vice versa, so pred1 is weaker
-                    is_redundant = True
-                    break
-            
-            if not is_redundant:
-                non_redundant.append(pred1)
-        
-        return non_redundant
-    
-    def compute_abstraction(self, domain: str = "all"):
+    def compute_abstraction(self, domain: str = "known_bits"):
         """Compute the abstraction in the specified domain"""
         if not self.initialized:
             logger.warning("BitSymbolicAbstraction not initialized")
@@ -326,30 +199,23 @@ class BitSymbolicAbstraction:
         
         if domain in ["known_bits", "all"]:
             self.known_bits_abs()
-        
-        if domain in ["bit_predicates", "all"]:
-            self.bit_predicates_abs()
     
-    def get_abstraction_as_fml(self, domain: str = "all") -> z3.BoolRef:
+    def get_abstraction_as_fml(self, domain: str = "known_bits") -> z3.BoolRef:
         """Get the abstraction as a formula"""
-        if domain == "known_bits":
+        if domain in ["known_bits", "all"]:
             return self.known_bits_abs_as_fml
-        elif domain == "bit_predicates":
-            return self.bit_predicates_abs_as_fml
-        elif domain == "all":
-            return z3.And(self.known_bits_abs_as_fml, self.bit_predicates_abs_as_fml)
         else:
             logger.warning(f"Unknown domain: {domain}")
             return z3.BoolVal(True)
 
 
-def strongest_consequence(fml: z3.ExprRef, domain: str = "all") -> z3.ExprRef:
+def strongest_consequence(fml: z3.ExprRef, domain: str = "known_bits") -> z3.ExprRef:
     """
     Compute the strongest consequence of a formula in the bit-level domain.
     
     Args:
         fml: The formula to abstract
-        domain: The abstract domain to use ("known_bits", "bit_predicates", or "all")
+        domain: The abstract domain to use ("known_bits")
         
     Returns:
         A formula representing the strongest consequence in the specified domain
