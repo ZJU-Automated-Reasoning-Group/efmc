@@ -46,7 +46,11 @@ logger = logging.getLogger(__name__)
 
 
 class InductiveGeneralizer:
-    """Main class for inductive generalization"""
+    """Main class for inductive generalization
+    
+    
+    
+    """
     
     def __init__(self, sts: TransitionSystem):
         self.sts = sts

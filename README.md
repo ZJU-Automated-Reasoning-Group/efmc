@@ -28,7 +28,7 @@ efsmt -h
 
 ## 2. The Main Verification Engines
 
-Currently, the users can choose three verification engines
+Currently, the users can choose various verification engines
 
 - Template-based (Constraint-based) Approach
 - Property-Directed Reachability (PDR)
@@ -37,7 +37,7 @@ Currently, the users can choose three verification engines
 - Houdini (NOT Stable)
 - Abductive Inference (NOT Stable)
 
-TBD: Download (or auto build) some verifiers for comparison
+TBD: Download (or auto build) some third-party verifiers for comparison
 
 ### 2.1 Template-Based (Constraint-Based) Approach
 
