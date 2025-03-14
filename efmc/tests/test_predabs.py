@@ -10,7 +10,7 @@ from efmc.sts import TransitionSystem
 class TestPredicateAbstraction(TestCase):
 
     def test_bool_program(self):
-        return
+        # return
         x, y, xp, yp = z3.Bools("x y x! y!")
         init = z3.And(x, y)
         trans = z3.And(z3.Implies(y, xp == y, yp == y),

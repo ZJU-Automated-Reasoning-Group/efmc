@@ -60,8 +60,11 @@ FIXME: maybe choose the self-compiled python packages for Z3 (then we can use ne
 # print(optimize(fml, xp, minimize=True))
 # print(optimize(fml, xp, minimize=False))
 
+if __name__ == '__main__':
+    a, b = z3.Bools("a b")
+    fml_m = z3.Implies(z3.Not(a), b)
+    fml_n = z3.Or(a, b)
+    print(is_equiv(fml_m, fml_n))
 
-a, b = z3.Bools("a b")
-fml_m = z3.Implies(z3.Not(a), b)
-fml_n = z3.Or(a, b)
-print(is_equiv(fml_m, fml_n))
+
+

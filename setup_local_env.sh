@@ -34,7 +34,11 @@ pip install -r "${SCRIPT_DIR}/requirements.txt"
 echo "Downloading solver binaries..."
 $PYTHON_CMD "${SCRIPT_DIR}/bin_solvers/download.py"
 
-# 4. Run tests
+# 4. pysmt is installed in the venv, use pysmt-install to install BDD solver
+# echo "Installing BDD solver..."
+# pysmt-install --bdd
+
+# 5. Run tests
 echo "Running tests..."
 if [ -f "${SCRIPT_DIR}/unit_tests.sh" ]; then
     bash "${SCRIPT_DIR}/unit_tests.sh"

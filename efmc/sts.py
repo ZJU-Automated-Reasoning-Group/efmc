@@ -127,6 +127,8 @@ class TransitionSystem(object):
             self.has_real = True
         elif z3.is_bv(sample_var):
             self.has_bv = True
+        elif z3.is_bool(sample_var):
+            self.has_bool = True
         else:
             raise NotImplementedError
 

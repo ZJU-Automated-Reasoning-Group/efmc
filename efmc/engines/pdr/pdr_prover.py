@@ -11,7 +11,7 @@ import time
 import z3
 
 from efmc.sts import TransitionSystem
-from efmc.engines.abduction.abduction_prover import VerificationResult
+from efmc.utils.verification_utils import VerificationResult
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +35,8 @@ class PDRProver:
         elif self.sts.has_bv:
             bv_size = self.sts.variables[0].sort().size()
             for _ in range(len(self.sts.variables)): inv_sig += "z3.BitVecSort({}), ".format(str(bv_size))
+        elif self.sts.has_bool:
+            for _ in range(len(self.sts.variables)): inv_sig += "z3.BoolSort(), "
         else:
             raise NotImplementedError
 

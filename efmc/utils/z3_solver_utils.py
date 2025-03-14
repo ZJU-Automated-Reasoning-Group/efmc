@@ -257,6 +257,22 @@ def get_models(f: z3.BoolRef, k: int):
     else:
         return models
 
+
+def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef) -> bool:
+    """
+    Check if we've reached a fixpoint (inv implies old_inv AND old_inv implies inv).
+    This is used in various fixed-point computations for invariant generation.
+    
+    Args:
+        old_inv: The previous invariant
+        inv: The current invariant
+        
+    Returns:
+        True if a fixpoint is reached (old_inv and inv are equivalent), False otherwise
+    """
+    return is_valid(z3.Implies(inv, old_inv)) and is_valid(z3.Implies(old_inv, inv))
+
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
