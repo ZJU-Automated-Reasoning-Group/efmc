@@ -1,3 +1,7 @@
+"""
+Minimal Satisfying Assignment. adapted from algorithm by Alessandro Previti, Alexey S. Ignatiev
+"""
+
 from pysmt.exceptions import SolverReturnedUnknownResultError
 from pysmt.shortcuts import Bool, get_model, Not, Solver, qelim, ForAll
 from pysmt.smtlib.parser import SmtLibParser

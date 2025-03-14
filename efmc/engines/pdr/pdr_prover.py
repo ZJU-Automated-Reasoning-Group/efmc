@@ -70,4 +70,4 @@ class PDRProver:
         else:
             print("PDR time: ", time.time() - start)
             print("unknown")
-            return VerificationResult(False, None)
+            return VerificationResult(False, None, None, is_unknown=True)

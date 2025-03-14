@@ -101,6 +101,8 @@ class EFMCRunner:
             print("safe")
             if result.invariant is not None:
                 print(f"Invariant: {result.invariant}")
+        elif result.is_unknown:
+            print("unknown")
         else:
             if result.counterexample is not None:
                 print("unsafe")

@@ -222,4 +222,4 @@ class KInductionProver(object):
                 return VerificationResult(True, invariant)
                 
         print("unknown")
-        return VerificationResult(False, None, None)
+        return VerificationResult(False, None, None, is_unknown=True)

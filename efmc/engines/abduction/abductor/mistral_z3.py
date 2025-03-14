@@ -1,5 +1,5 @@
 """
-Minimal Satisfying Assignment. adapted from algo.by Alessandro Previti, Alexey S. Ignatiev
+Minimal Satisfying Assignment. adapted from algorithm by Alessandro Previti, Alexey S. Ignatiev
 """
 
 from typing import FrozenSet
@@ -95,6 +95,15 @@ class MSASolver:
         return best
 
     def get_model_forall(self, x_univl):
+        """
+        Get a model for the formula with the given variables universally quantified.
+        
+        Args:
+            x_univl: List of variables to be universally quantified
+            
+        Returns:
+            Model for the formula, or False if no model is found
+        """
         s = z3.Solver()
         if len(x_univl) >= 1:
             qfml = z3.ForAll(list(x_univl), self.formula)

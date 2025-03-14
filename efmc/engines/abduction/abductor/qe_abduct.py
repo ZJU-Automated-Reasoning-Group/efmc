@@ -1,3 +1,7 @@
+"""
+Quantifier elimination-based abduction implementation.
+"""
+
 from typing import Optional
 
 import z3

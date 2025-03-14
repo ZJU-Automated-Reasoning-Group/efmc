@@ -28,6 +28,7 @@ class VerificationResult:
     is_safe: bool
     invariant: Optional[z3.ExprRef]
     counterexample: Optional[z3.ModelRef] = None
+    is_unknown: bool = False
 
 class SolverTimeout(Exception):
     """Raised when the Z3 solver times out."""

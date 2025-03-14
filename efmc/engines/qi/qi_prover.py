@@ -177,7 +177,7 @@ class QuantifierInstantiationProver:
                     logger.warning("QI returned unknown result after %.2f seconds", solve_time)
                     logger.warning("Reason: %s", solver.reason_unknown())
                     
-                return VerificationResult(False, None)
+                return VerificationResult(False, None, None, is_unknown=True)
                 
         except z3.Z3Exception as e:
             logger.error("Z3 error during QI solving: %s", str(e))

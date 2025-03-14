@@ -127,4 +127,4 @@ class PredicateAbstractionProver(object):
         else:
             # need refinement
             print(">>> MAYBE?!?!\n\n")
-            return VerificationResult(False, None)
+            return VerificationResult(False, None, None, is_unknown=True)

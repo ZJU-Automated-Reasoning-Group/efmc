@@ -540,4 +540,4 @@ class BDDProver:
             print(f"BDD verification failed: {e}")
             print(f"BDD verification time: {time.time() - start:.2f} seconds")
             print("Unknown")
-            return VerificationResult(False, None)
+            return VerificationResult(False, None, None, is_unknown=True)

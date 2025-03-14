@@ -41,13 +41,17 @@ class VerificationResults:
     def __init__(self, name: str, system: TransitionSystem):
         self.name = name
         self.system = system
-        self.kind_result = None
+        self.kind_result = None  # Can be True (safe), False (unsafe), or None (unknown)
+        self.kind_is_unknown = False  # Flag to indicate if the result is unknown
         self.abduction_result = None
         self.abduction_invariant = None
         self.execution_time = 0.0
 
     def __str__(self) -> str:
-        kind_status = "safe" if self.kind_result else "unsafe"
+        if self.kind_is_unknown:
+            kind_status = "unknown"
+        else:
+            kind_status = "safe" if self.kind_result else "unsafe"
         abd_status = "safe" if self.abduction_result else "unsafe"
 
         result = f"\nTest Case: {self.name}\n"
@@ -56,7 +60,7 @@ class VerificationResults:
         result += f"Abduction result: {abd_status}\n"
         result += f"Execution time: {self.execution_time:.2f}s\n"
 
-        if self.abduction_invariant:
+        if self.abduction_invariant is not None:
             result += f"Found invariant: {self.abduction_invariant}\n"
 
         return result
@@ -184,14 +188,23 @@ class VerificationTester:
         # K-induction verification
         kind_prover = KInductionProver(test_case.system)
         kind_prover.use_aux_invariant = False
-        result.kind_result = kind_prover.solve(k=self.k_bound)
+        kind_result = kind_prover.solve(k=self.k_bound)
+        
+        # Check if the result is unknown
+        if kind_result.is_unknown:
+            result.kind_is_unknown = True
+            result.kind_result = None
+        else:
+            result.kind_result = kind_result.is_safe
 
         # Abduction verification
         start_time = time.time()
         abduction_prover = AbductionProver(test_case.system)
 
         try:
-            result.abduction_result, result.abduction_invariant = abduction_prover.solve()
+            verification_result = abduction_prover.solve()
+            result.abduction_result = verification_result.is_safe
+            result.abduction_invariant = verification_result.invariant
         except Exception as e:
             logger.error(f"Error during abduction verification: {e}")
             result.abduction_result = False
@@ -229,12 +242,21 @@ class VerificationTester:
         report += "=" * 50 + "\n"
 
         total_tests = len(self.results)
-        successful_tests = sum(1 for r in self.results
-                               if r.abduction_result == r.kind_result)
+        successful_tests = sum(1 for r, tc in zip(self.results, [
+            TransitionSystemFactory.create_simple_loop(),
+            TransitionSystemFactory.create_faulty_system(),
+            TransitionSystemFactory.create_bounded_loop(),
+            TransitionSystemFactory.create_dependent_variables()
+        ]) if r.abduction_result == tc.expected_safe)
 
         report += f"Total tests run: {total_tests}\n"
-        report += f"Successful verifications: {successful_tests}\n"
-        report += f"Agreement with K-induction: {successful_tests / total_tests:.1%}\n"
+        report += f"Successful abduction verifications: {successful_tests}\n"
+        report += f"Abduction accuracy: {successful_tests / total_tests:.1%}\n"
+
+        # Count how many k-induction results were unknown
+        unknown_kind_results = sum(1 for r in self.results if r.kind_is_unknown)
+        if unknown_kind_results > 0:
+            report += f"K-induction unknown results: {unknown_kind_results}/{total_tests}\n"
 
         total_time = sum(r.execution_time for r in self.results)
         report += f"Total execution time: {total_time:.2f}s\n"
