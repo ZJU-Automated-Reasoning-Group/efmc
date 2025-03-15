@@ -24,7 +24,7 @@ VERSION = '0.0.1'
 REQUIRED = [
     'PySMT==0.9.6',
     'z3-solver==4.13.0',
-    'psutil~=5.9.0',
+    'psutil~=7.0.0',
     'Cython~=0.29.34',
     'python-sat==0.1.8.dev1',
     'tqdm~=4.65.0',

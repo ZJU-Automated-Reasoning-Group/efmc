@@ -257,3 +257,5 @@ TSWLatexianTemp*
 *.pyo
 \#*\#
 
+venv_new
+venv_old
