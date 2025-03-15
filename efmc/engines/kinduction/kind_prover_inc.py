@@ -32,28 +32,27 @@ class KInductionProverInc:
         # Initialize caches first
         self._var_at_time_cache = {}
         self._substitution_cache = {}
-        
+
         self.use_bv = system.has_bv
         self.use_int = system.has_int
         self.use_real = system.has_real
         self.use_bool = system.has_bool
         if self.use_bv:
             self.bv_size = system.variables[0].sort().size()
-        
+
         # Create solvers
         self.solver1 = z3.Solver()  # For BMC
         self.solver2 = z3.Solver()  # For k-induction
-            
+
         # Initialize states after caches are ready
         self.init_0 = z3.substitute(self.sts.init, self.get_subs(0))
         self.post_0 = z3.substitute(self.sts.post, self.get_subs(0))
         self.solver1.add(self.init_0)
-    
+
         # Initialize auxiliary invariant flag
         self.use_aux_invariant = False
         self.aux_invariant = None
 
-        
     def _create_var_at_time(self, var: z3.ExprRef, t: int) -> z3.ExprRef:
         """Creates a variable at a specific time point with caching"""
         key = (str(var), t)

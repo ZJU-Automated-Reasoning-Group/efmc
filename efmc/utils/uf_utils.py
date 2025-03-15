@@ -2,7 +2,6 @@
 Some functions for working with Z3 uninterpreted functions.
 """
 
-
 from __future__ import print_function
 
 import z3
@@ -100,6 +99,7 @@ def replace_inv_with_template(chc_formula, inv_func, template):
     Returns:
         Modified formula with the invariant replaced by the template
     """
+
     def update(expression):
         if z3.is_app(expression) and z3.eq(expression.decl(), inv_func):
             args = [expression.arg(i) for i in range(expression.num_args())]
@@ -173,4 +173,3 @@ def test_replace():
 
 if __name__ == "__main__":
     test_replace()
-

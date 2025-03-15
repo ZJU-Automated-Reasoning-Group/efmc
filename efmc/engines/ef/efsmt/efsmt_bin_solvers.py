@@ -44,11 +44,11 @@ def terminate(process, is_timeout: List):
                 if process.poll() is not None:
                     break
                 time.sleep(0.1)
-            
+
             # If process is still running, force kill it
             if process.poll() is None:
                 process.kill()
-                
+
             is_timeout[0] = True
         except Exception as ex:
             logger.error("Error while interrupting process: %s", str(ex))
@@ -120,7 +120,6 @@ def solve_with_bin_smt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
                 exits_vars_names.add(name)
                 fml_str += "(declare-const {0} {1})\n".format(v.sexpr(), v.sort().sexpr())
         # print(exits_vars_names)
-
 
         quant_vars = "("
         for v in y:

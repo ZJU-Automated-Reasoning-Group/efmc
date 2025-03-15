@@ -117,7 +117,6 @@ class ZoneTemplate(Template):
         return z3.And(cnts)
 
 
-
 class DisjunctiveZoneTemplate(Template):
 
     def __init__(self, sts: TransitionSystem, **kwargs):
@@ -178,4 +177,3 @@ class DisjunctiveZoneTemplate(Template):
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
         raise NotImplementedError
-

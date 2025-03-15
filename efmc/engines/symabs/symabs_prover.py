@@ -32,34 +32,33 @@ def strongest_consequence(fml: z3.ExprRef, domain: str, k=None) -> z3.ExprRef:
         # Initialize with the formula
         symabs.formula = fml
         symabs.initialized = True
-        
+
         # Extract variables from the formula
         symabs.vars = list(set([v for v in z3.z3util.get_vars(fml)]))
         if not symabs.vars:
             # If no variables, just return the formula
             return fml
-        
+
         # Simplify the formula
         symabs.do_simplification()
-        
+
         # Compute interval abstraction
         symabs.interval_abs()
-        
+
         # Return the interval abstraction as a formula
         return symabs.interval_abs_as_fml
     elif domain in ['bits', 'known_bits']:
         from efmc.engines.symabs.bits_symabs import strongest_consequence as bits_strongest_consequence
-        
+
         # Map domain names
         bits_domain = domain
         if domain == 'bits':
             bits_domain = 'all'
-            
+
         # Compute the strongest consequence using bit-level abstractions
         return bits_strongest_consequence(fml, bits_domain)
     else:
         raise NotImplementedError(f"Domain '{domain}' not implemented")
-
 
 
 def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef) -> bool:
@@ -80,7 +79,7 @@ class SymbolicAbstractionProver(object):
         for i in range(len(self.sts.variables)):
             self.var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
             self.var_map_rev.append((self.sts.prime_variables[i], self.sts.variables[i]))
-        
+
         # Default domain for symbolic abstraction
         self.domain = 'interval'
         # Predicates for predicate abstraction
@@ -98,7 +97,7 @@ class SymbolicAbstractionProver(object):
         while not fixpoint(old_inv, inv):
             print("\nInv at ", i, ": ", inv)
             i = i + 1
-            
+
             # Compute the strongest consequence in the specified domain
             if self.sts.has_bv and self.domain in ['bits', 'known_bits']:
                 # Use bit-level abstractions for bit-vector formulas
@@ -106,7 +105,7 @@ class SymbolicAbstractionProver(object):
             else:
                 # Use interval abstraction by default
                 onestep = strongest_consequence(z3.And(inv, self.sts.trans), 'interval')
-                
+
             # Substitute prime variables back to non-prime variables
             onestep = z3.substitute(onestep, self.var_map_rev)
             old_inv = inv

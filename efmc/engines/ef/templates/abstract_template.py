@@ -29,7 +29,7 @@ class TemplateType(Enum):
     AFFINE = auto()
     POLYHEDRON = auto()
     POLYNOMIAL = auto()
-    
+
     # Disjunctive domains
     DISJUNCTIVE_INTERVAL = auto()
     DISJUNCTIVE_ZONE = auto()
@@ -41,7 +41,7 @@ class TemplateType(Enum):
     ARRAY = auto()
     STRING = auto()
     FLOAT = auto()
-    
+
     # Bit-vector domains
     BV_INTERVAL = auto()
     BV_ZONE = auto()
@@ -57,23 +57,20 @@ class TemplateType(Enum):
     BV_BITS_PREDICATE_ABSTRACTION = auto()
     BV_ENHANCED_PATTERN = auto()
 
-
     @classmethod
     def is_disjunctive(cls, template_type: 'TemplateType') -> bool:
         """Check if the template type is disjunctive."""
         return 'DISJUNCTIVE' in template_type.name
-    
+
     @classmethod
     def is_bitvector(cls, template_type: 'TemplateType') -> bool:
         """Check if the template type uses bit-vector arithmetic."""
-        return template_type.name.startswith('BV_')   
-    
+        return template_type.name.startswith('BV_')
+
     @classmethod
     def is_interval(cls, template_type: 'TemplateType') -> bool:
         """Check if the template type is an interval."""
         return template_type.name.startswith('INTERVAL')
-    
-    
 
 
 class Template(ABC):

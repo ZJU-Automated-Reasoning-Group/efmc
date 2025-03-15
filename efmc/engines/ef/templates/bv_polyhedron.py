@@ -122,7 +122,6 @@ class BitVecPolyhedronTemplate(Template):
         return big_and(cnts)
 
 
-
 class DisjunctiveBitVecPolyhedronTemplate(Template):
     """
     TODO: There are several variants. Some references

@@ -93,32 +93,31 @@ def get_signedness(formula: z3.BitVecRef) -> Signedness:
     """
     # get all variables in the formula
     variables = get_variables(formula)
-    
+
     def check_signedness_recursive(expr):
         if z3.is_const(expr):
             return Signedness.UNKNOWN
-            
+
         # Check operation kind
         kind = expr.decl().kind()
-        
+
         # Unsigned operations
         # TOOD: are these correct??
-        if kind in [z3.Z3_OP_BULT, z3.Z3_OP_BULE, 
-                   z3.Z3_OP_BUGT, z3.Z3_OP_BUGE]:
+        if kind in [z3.Z3_OP_BULT, z3.Z3_OP_BULE,
+                    z3.Z3_OP_BUGT, z3.Z3_OP_BUGE]:
             return Signedness.UNSIGNED
-            
+
         # Signed operations
         if kind in [z3.Z3_OP_BSLT, z3.Z3_OP_BSLE,
-                   z3.Z3_OP_BSGT, z3.Z3_OP_BSGE]:
+                    z3.Z3_OP_BSGT, z3.Z3_OP_BSGE]:
             return Signedness.SIGNED
-            
+
         # Recurse on children
         for child in expr.children():
             result = check_signedness_recursive(child)
             if result != Signedness.UNKNOWN:
                 return result
-                
+
         return Signedness.UNKNOWN
 
     return check_signedness_recursive(formula)
-

@@ -260,4 +260,3 @@ class DisjunctiveIntervalTemplate(Template):
             cnts_dis.append(big_and(cnts))
 
         return z3.Or(cnts_dis)
-

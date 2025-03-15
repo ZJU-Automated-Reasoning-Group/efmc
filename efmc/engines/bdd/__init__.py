@@ -1,1 +1,1 @@
-from efmc.engines.bdd.bdd_prover import BDDProver 
+from efmc.engines.bdd.bdd_prover import BDDProver

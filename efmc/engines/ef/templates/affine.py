@@ -116,7 +116,6 @@ class AffineTemplate(Template):
         return big_and(cnts)
 
 
-
 class DisjunctiveAffineTemplate(Template):
     """
     Affine relation (linear equality) analysis
@@ -224,4 +223,3 @@ class DisjunctiveAffineTemplate(Template):
             cnts.append(term == 0)
 
         return big_or(cnts)
-

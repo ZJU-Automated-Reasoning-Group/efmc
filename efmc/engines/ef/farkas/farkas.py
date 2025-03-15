@@ -24,7 +24,7 @@ class FarkasLemma:
         self.constraints = []
         self.variables = {}
         self.farkas_multipliers = []
-        
+
     def add_constraint(self, constraint):
         """
         Add a linear constraint to the system.
@@ -34,7 +34,7 @@ class FarkasLemma:
         """
         self.constraints.append(constraint)
         self.solver.add(constraint)
-        
+
     def add_constraints(self, constraints):
         """
         Add multiple linear constraints to the system.
@@ -44,7 +44,7 @@ class FarkasLemma:
         """
         for constraint in constraints:
             self.add_constraint(constraint)
-    
+
     def extract_coefficients(self, expr, variables):
         """
         Extract coefficients from a linear expression.
@@ -59,9 +59,9 @@ class FarkasLemma:
         coeffs = {}
         for var in variables:
             coeffs[var] = 0
-        
+
         constant = 0
-        
+
         # Handle different expression types
         if is_const(expr):
             constant = expr.as_long() if is_int_value(expr) else expr.numerator_as_long() / expr.denominator_as_long()
@@ -76,18 +76,24 @@ class FarkasLemma:
         elif is_mul(expr):
             if len(expr.children()) == 2:
                 if is_const(expr.children()[0]) and is_var(expr.children()[1]):
-                    coeff = expr.children()[0].as_long() if is_int_value(expr.children()[0]) else expr.children()[0].numerator_as_long() / expr.children()[0].denominator_as_long()
+                    coeff = expr.children()[0].as_long() if is_int_value(expr.children()[0]) else expr.children()[
+                                                                                                      0].numerator_as_long() / \
+                                                                                                  expr.children()[
+                                                                                                      0].denominator_as_long()
                     var = expr.children()[1]
                     if var in coeffs:
                         coeffs[var] += coeff
                 elif is_const(expr.children()[1]) and is_var(expr.children()[0]):
-                    coeff = expr.children()[1].as_long() if is_int_value(expr.children()[1]) else expr.children()[1].numerator_as_long() / expr.children()[1].denominator_as_long()
+                    coeff = expr.children()[1].as_long() if is_int_value(expr.children()[1]) else expr.children()[
+                                                                                                      1].numerator_as_long() / \
+                                                                                                  expr.children()[
+                                                                                                      1].denominator_as_long()
                     var = expr.children()[0]
                     if var in coeffs:
                         coeffs[var] += coeff
-        
+
         return coeffs, constant
-    
+
     def apply_farkas_lemma(self, variables):
         """
         Apply Farkas' Lemma to the system of constraints.
@@ -100,10 +106,10 @@ class FarkasLemma:
         """
         # Create Farkas multipliers (one for each constraint)
         self.farkas_multipliers = [Real(f"lambda_{i}") for i in range(len(self.constraints))]
-        
+
         # Add non-negativity constraints for Farkas multipliers
         farkas_constraints = [multiplier >= 0 for multiplier in self.farkas_multipliers]
-        
+
         # Extract coefficients from each constraint
         constraint_data = []
         for constraint in self.constraints:
@@ -123,22 +129,22 @@ class FarkasLemma:
                 expr = rhs - lhs
                 coeffs, constant = self.extract_coefficients(expr, variables)
                 constraint_data.append((coeffs, -constant, "<="))
-        
+
         # Apply Farkas' Lemma: for each variable, sum of (lambda_i * coeff_i) = 0
         for var in variables:
             sum_expr = 0
             for i, (coeffs, _, _) in enumerate(constraint_data):
                 sum_expr += self.farkas_multipliers[i] * coeffs.get(var, 0)
             farkas_constraints.append(sum_expr == 0)
-        
+
         # For the constant term: sum of (lambda_i * constant_i) < 0
         sum_const = 0
         for i, (_, constant, _) in enumerate(constraint_data):
             sum_const += self.farkas_multipliers[i] * constant
         farkas_constraints.append(sum_const < 0)
-        
+
         return farkas_constraints
-    
+
     def is_satisfiable(self):
         """
         Check if the system of constraints is satisfiable.
@@ -148,7 +154,7 @@ class FarkasLemma:
         """
         result = self.solver.check()
         return result == sat
-    
+
     def get_model(self):
         """
         Get a model (solution) for the constraints if satisfiable.
@@ -159,7 +165,7 @@ class FarkasLemma:
         if self.is_satisfiable():
             return self.solver.model()
         return None
-    
+
     def get_farkas_coefficients(self):
         """
         If the system is unsatisfiable, compute the Farkas coefficients.
@@ -171,7 +177,7 @@ class FarkasLemma:
         """
         if self.is_satisfiable():
             return None
-            
+
         # Get the unsat core if available
         if hasattr(self.solver, 'unsat_core'):
             core = self.solver.unsat_core()
@@ -184,11 +190,11 @@ class FarkasLemma:
                 else:
                     coefficients.append(0.0)
             return coefficients
-            
+
         # If unsat core is not available, we need a different approach
         # This is a placeholder for a more sophisticated implementation
         return [1.0] * len(self.constraints)  # Simplified
-    
+
     def prove_unsatisfiability(self):
         """
         Use Farkas' lemma to prove that the system is unsatisfiable.
@@ -199,10 +205,9 @@ class FarkasLemma:
         """
         if self.is_satisfiable():
             return False, {"message": "System is satisfiable"}
-            
+
         coefficients = self.get_farkas_coefficients()
         return True, {
             "message": "System is unsatisfiable",
             "farkas_coefficients": coefficients
         }
-        

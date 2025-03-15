@@ -162,7 +162,8 @@ class PySMTSolver(z3.Solver):
             z3_seq_itp.append(Solver(name='z3').converter.convert(cnt))
         return z3_seq_itp
 
-    def efsmt(self, evars: List[z3.ExprRef], uvars: List[z3.ExprRef], z3fml: z3.ExprRef, logic=QF_BV, maxloops=None, esolver_name="z3", fsolver_name="z3", verbose=False):
+    def efsmt(self, evars: List[z3.ExprRef], uvars: List[z3.ExprRef], z3fml: z3.ExprRef, logic=QF_BV, maxloops=None,
+              esolver_name="z3", fsolver_name="z3", verbose=False):
         """Solves exists x. forall y. phi(x, y)"""
 
         _, phi = PySMTSolver.convert(z3fml)
@@ -175,7 +176,7 @@ class PySMTSolver(z3.Solver):
             loops = 0
             result = "unknown"
             while maxloops is None or loops <= maxloops:
-            # while True:
+                # while True:
                 loops += 1
                 eres = esolver.solve()
                 if not eres:
@@ -198,6 +199,7 @@ class PySMTSolver(z3.Solver):
                         esolver.add_assertion(sub_phi)
             return result
 
+
 def test():
     x, y, z = z3.Ints("x y z")
     fml = z3.And(x > 10, y < 19, z == 3.0)
@@ -210,6 +212,7 @@ def test():
     fml_b = z3.And(y >= z, z > 0)
     print(sol.binary_interpolant(fml_a, fml_b))
     print(sol.sequence_interpolant([fml_a, fml_b]))
+
 
 if __name__ == "__main__":
     test()

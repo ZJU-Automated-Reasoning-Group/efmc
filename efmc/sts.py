@@ -171,7 +171,7 @@ class TransitionSystem(object):
                                                    self.post)))
 
         return z3.And(s.assertions())
-    
+
     def to_chc_str(self) -> str:
         """Convert to CHC format"""
         assert self.initialized
@@ -201,7 +201,6 @@ class TransitionSystem(object):
     def to_z3_cnts(self) -> List:
         return self.all_variables, self.init, self.trans, self.post
 
-    
     def simulate(self, steps=10, random_seed=None, concrete_init=None):
         """Simulate the execution of the transition system (similar to dynamic executions)
 
@@ -216,14 +215,14 @@ class TransitionSystem(object):
             List of states, where each state is a dictionary mapping variable names to values
         """
         assert self.initialized
-        
+
         import random
         if random_seed is not None:
             random.seed(random_seed)
-            
+
         # Create solver for checking conditions
         solver = z3.Solver()
-        
+
         # Find an initial state
         state = {}
         if concrete_init:
@@ -235,7 +234,7 @@ class TransitionSystem(object):
                 var_name = str(var)
                 if var_name in state:
                     state_constraints.append(var == state[var_name])
-            
+
             solver.push()
             solver.add(z3.And(state_constraints))
             solver.add(self.init)
@@ -248,17 +247,17 @@ class TransitionSystem(object):
             solver.add(self.init)
             if solver.check() != z3.sat:
                 raise ValueError("Init condition is unsatisfiable")
-            
+
             model = solver.model()
             for var in self.variables:
                 var_name = str(var)
                 value = model.eval(var, model_completion=True)
                 state[var_name] = value
             solver.pop()
-        
+
         # Store the sequence of states
         trace = [state.copy()]
-        
+
         # Simulate steps
         for _ in range(steps):
             # Create constraints for current state
@@ -267,19 +266,19 @@ class TransitionSystem(object):
                 var_name = str(var)
                 if var_name in state:
                     current_state_constraints.append(var == state[var_name])
-            
+
             # Find next state
             solver.push()
             solver.add(z3.And(current_state_constraints))
             solver.add(self.trans)
-            
+
             if solver.check() != z3.sat:
                 # No valid next state
                 break
-                
+
             model = solver.model()
             next_state = {}
-            
+
             # Extract values for next state
             for var in self.variables:
                 var_name = str(var)
@@ -299,13 +298,13 @@ class TransitionSystem(object):
                         value = model.eval(prime_var, model_completion=True)
                         next_state[var_name] = value
                         break
-            
+
             solver.pop()
-            
+
             # Update current state
             state = next_state
             trace.append(state.copy())
-            
+
             # Check if post-condition is violated
             solver.push()
             state_constraints = []
@@ -313,15 +312,13 @@ class TransitionSystem(object):
                 var_name = str(var)
                 if var_name in state:
                     state_constraints.append(var == state[var_name])
-            
+
             solver.add(z3.And(state_constraints))
             solver.add(z3.Not(self.post))
-            
+
             if solver.check() == z3.sat:
-                print("Post-condition violated at step", len(trace)-1)
-            
+                print("Post-condition violated at step", len(trace) - 1)
+
             solver.pop()
-        
+
         return trace
-
-

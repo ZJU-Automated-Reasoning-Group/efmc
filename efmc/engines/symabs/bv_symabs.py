@@ -13,6 +13,7 @@ from efmc.utils.z3_expr_utils import get_variables
 from efmc.utils.z3_solver_utils import is_entail
 from efmc.utils.z3opt_utils import box_optimize
 
+
 # import argparse
 
 
@@ -52,10 +53,10 @@ class BVSymbolicAbstraction:
         If the formula is initialized and simplification is enabled, 
         apply a sequence of tactics to simplify it.
         """
-        
+
         if not self.do_simplify:
             return
-            
+
         if self.initialized:
             # TODO: it seems that propagate-bv-bounds has bugs, which can be even
             #  non-terminating on some formulas

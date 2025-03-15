@@ -26,7 +26,6 @@ DisjunctiveAffineTemplate = DisjunctiveAffineTemplate
 PolyTemplate = PolyTemplate
 DisjunctivePolyTemplate = DisjunctivePolyTemplate
 
-
 BitVecIntervalTemplate = BitVecIntervalTemplate
 DisjunctiveBitVecIntervalTemplate = DisjunctiveBitVecIntervalTemplate
 BitVecZoneTemplate = BitVecZoneTemplate

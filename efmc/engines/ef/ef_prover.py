@@ -197,15 +197,15 @@ class EFProver:
         # Create a solver to check the inductive condition
         s = z3.Solver()
         s.add(self.sts.trans)  # Add the transition relation
-        s.add(inv)             # Add the invariant for the current state
+        s.add(inv)  # Add the invariant for the current state
         s.add(z3.Not(inv_in_prime_variables))  # Add the negation of the invariant for the next state
-        
+
         # Check if the formula is satisfiable
         if s.check() == z3.sat:
             # If satisfiable, then the invariant is not inductive
             correct = False
             print("Inductive wrong!")
-        
+
         # 3. Post
         # Sometiemes, we may want to ignore the post condition, e.g., purely invariant generation
         if (not self.ignore_post_cond) and (not is_entail(inv, self.sts.post)):
@@ -229,7 +229,7 @@ class EFProver:
         ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver)
         forall_vars = self.sts.all_variables
         # exists_vars = []
-        
+
         exists_vars = extract_all(self.ct.template_vars)
         ef_solver.init(exist_vars=exists_vars, forall_vars=forall_vars, phi=qf_vc)
 
@@ -408,4 +408,3 @@ class EFProver:
         else:
             print("unknown")
             return VerificationResult(False, None)
-            

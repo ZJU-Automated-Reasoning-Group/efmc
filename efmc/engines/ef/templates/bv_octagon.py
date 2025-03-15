@@ -194,7 +194,6 @@ class BitVecOctagonTemplate(Template):
         return self.build_invariant_expr(model)
 
 
-
 class DisjunctiveBitVecOctagonTemplate(Template):
 
     def __init__(self, sts: TransitionSystem, **kwargs):
@@ -399,7 +398,7 @@ class DisjunctiveBitVecOctagonTemplate(Template):
 
             cnts_dis.append(big_and(cnts))
         return big_or(cnts_dis)
-        
+
     def build_invariant(self, model: z3.ModelRef) -> z3.ExprRef:
         """Build an invariant from a model.
         

@@ -190,26 +190,26 @@ class EFSMTSolver:
                  or "unknown" if Z3 cannot determine satisfiability.
         """
         print("Solving with Z3 API directly")
-        
+
         # Create a solver instance
         solver = z3.Solver()
-        
+
         # Create quantified formula: Exists e. Forall f. phi(e, f)
         # First, convert lists to tuples for Z3 quantifiers
         # exists_vars_tuple = tuple(self.exists_vars)
         forall_vars_tuple = tuple(self.forall_vars)
-        
+
         # Create the quantified formula
         # quantified_formula = z3.Exists(exists_vars_tuple, 
         #                              z3.ForAll(forall_vars_tuple, self.phi))
         quantified_formula = z3.ForAll(forall_vars_tuple, self.phi)
-        
+
         # Add the formula to the solver
         solver.add(quantified_formula)
-        
+
         # Check satisfiability
         result = solver.check()
-        
+
         # Return result as string
         if result == z3.sat:
             return "sat"

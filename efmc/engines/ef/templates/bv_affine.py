@@ -129,7 +129,6 @@ class BitVecAffineTemplate(Template):
         return big_and(cnts)
 
 
-
 class DisjunctiveBitVecAffineTemplate(Template):
     """
     TODO: There are several different variants. Some references
@@ -177,8 +176,6 @@ class DisjunctiveBitVecAffineTemplate(Template):
         self.template_cnt_trans = None
         self.add_template_cnts()  # init the above constraints
 
-
-
     def add_template_vars(self):
         """
         Initialize self.template_vars
@@ -200,7 +197,6 @@ class DisjunctiveBitVecAffineTemplate(Template):
                 vars_for_dis.append(z3.BitVec("d%d_%d" % (i + 1, j), self.bv_size))
             self.template_vars.append(vars_for_dis)
         # print(self.template_vars)
-
 
     def add_template_cnts(self):
         """ For initializing self.template_cnt_init_and_post and self.template_cnt_trans
@@ -230,7 +226,6 @@ class DisjunctiveBitVecAffineTemplate(Template):
         self.template_cnt_init_and_post = big_or(cnt_init_and_post_dis)
         self.template_cnt_trans = big_or(cnt_trans_dis)
 
-
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
         """
         Build an invariant from a model, i.e., fixing the values of the template vars
@@ -253,4 +248,3 @@ class DisjunctiveBitVecAffineTemplate(Template):
             else:
                 cnts.append(term == 0)
         return big_or(cnts)
-

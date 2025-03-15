@@ -50,23 +50,23 @@ class QuantifierEliminationProver:
         old_inv = z3.BoolVal(False)  # Use z3.BoolVal instead of Python's False
         inv = self.sts.init
         i = 0
-        
+
         if self.verbose:
             print("QE-based invariant inference starting!!!")
-            
+
         while not fixpoint(old_inv, inv):
             if self.verbose:
                 print(f"\nIteration {i}, Inv: {inv}")
-                
+
             i = i + 1
-            
+
             # Check timeout
             if self.timeout and time.time() - start > self.timeout:
                 print(f"Timeout reached after {time.time() - start:.2f} seconds")
                 return VerificationResult(False, None)
-                
+
             qfml = z3.Exists(self.sts.variables, z3.And(inv, self.sts.trans))
-            
+
             # Try different QE tactics if one fails
             try:
                 # compute the best abstract transformer
@@ -78,7 +78,7 @@ class QuantifierEliminationProver:
                 except z3.Z3Exception:
                     print("QE tactics failed, using default simplification")
                     onestep = z3.simplify(qfml)
-                    
+
             # rename
             onestep = z3.substitute(onestep, self.var_map_rev)
             old_inv = inv

@@ -92,7 +92,7 @@ class EFSMTParser:
 
         body = qexpr.body()
         forall_vars = []
-        
+
         try:
             for i in range(qexpr.num_vars()):
                 vi_name = qexpr.var_name(i)

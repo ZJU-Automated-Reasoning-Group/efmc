@@ -47,4 +47,3 @@ class DisjunctiveOctagonTemplate(Template):
 
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool):
         raise NotImplementedError
-

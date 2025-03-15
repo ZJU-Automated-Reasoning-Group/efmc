@@ -27,9 +27,11 @@ import z3
 
 from efmc.engines.abduction.abductor.abductor import qe_abduce
 from efmc.sts import TransitionSystem
-from efmc.utils.verification_utils import VerificationResult, SolverTimeout, check_entailment, are_expressions_equivalent
+from efmc.utils.verification_utils import VerificationResult, SolverTimeout, check_entailment, \
+    are_expressions_equivalent
 
 logger = logging.getLogger(__name__)
+
 
 class AbductionProver:
     """
@@ -52,7 +54,7 @@ class AbductionProver:
         # Create mappings between current and next-state variables
         self.var_map = list(zip(self.sts.variables, self.sts.prime_variables))
         self.var_map_rev = list(zip(self.sts.prime_variables, self.sts.variables))
-        
+
         # Store the last counterexample for debugging
         self.last_cti = None
 
@@ -99,13 +101,13 @@ class AbductionProver:
         """
         # Store the CTI for debugging
         self.last_cti = cti
-        
+
         # Extract current state constraints from CTI
         pre_state_constraints = []
         for v in self.sts.variables:
             if v in cti:
                 pre_state_constraints.append(v == cti[v])
-        
+
         pre_state = z3.And(*pre_state_constraints) if pre_state_constraints else z3.BoolVal(True)
 
         # Extract next state constraints and substitute back to current variables
@@ -113,7 +115,7 @@ class AbductionProver:
         for v in self.sts.prime_variables:
             if v in cti:
                 post_state_constraints.append(v == cti[v])
-                
+
         post_state = z3.And(*post_state_constraints) if post_state_constraints else z3.BoolVal(True)
         post_state_unprime = z3.substitute(post_state, self.var_map_rev)
 
@@ -134,14 +136,14 @@ class AbductionProver:
         # Simplify the strengthened invariant
         new_inv = z3.simplify(z3.And(inv, strengthening))
         logger.debug(f"Strengthened invariant: {new_inv}")
-        
+
         # Verify that the new invariant excludes the CTI
         s = z3.Solver()
         s.add(new_inv, pre_state)
         if s.check() == z3.sat:
             logger.warning("Strengthened invariant does not exclude CTI. Using direct exclusion.")
             new_inv = z3.simplify(z3.And(inv, z3.Not(pre_state)))
-            
+
         return new_inv
 
     def verify_safety(self, inv: z3.ExprRef) -> VerificationResult:
@@ -220,12 +222,12 @@ class AbductionProver:
             if are_expressions_equivalent(new_inv, inv):
                 logger.warning("Failed to make progress in strengthening")
                 return None
-                
+
             # Check if we're oscillating between two invariants
             if last_inv is not None and are_expressions_equivalent(new_inv, last_inv):
                 logger.warning("Detected oscillation between invariants")
                 return None
-                
+
             last_inv = inv
             inv = new_inv
             iteration += 1
@@ -254,4 +256,3 @@ class AbductionProver:
         except Exception as e:
             logger.error(f"Verification error: {e}")
             return VerificationResult(False, None)
-        

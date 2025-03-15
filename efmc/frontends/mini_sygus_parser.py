@@ -13,7 +13,6 @@ This parser handles:
 import z3
 from typing import Union, List, Tuple, Set, Dict, Optional
 
-
 # Type definitions
 Symbol = str
 Number = Union[int, float]
@@ -219,7 +218,7 @@ class SyGusInVParser:
         """Process a 'define-fun' command to extract function bodies and variables.
         """
         # print(slist)
-        assert len(slist) >= 5 # why?
+        assert len(slist) >= 5  # why?
         func_name = slist[1]
         if func_name in pre_func_names:
             self.pre_fun_body = self.to_sexpr(slist[4])
@@ -295,7 +294,7 @@ class SyGusInVParser:
                     temp_cnts.append(z3.Int(var_sig[0]) == z3.IntVal(1))
         all_vars = get_vars(z3.And(z3.And(temp_cnts), z3.And(init, trans, post)))
         """
-        all_vars = []   # another way for collecting the signature
+        all_vars = []  # another way for collecting the signature
         for var_sig in self.all_vars:  # ['i', 'Int']
             if 'Int' in var_sig:
                 if self.to_real:

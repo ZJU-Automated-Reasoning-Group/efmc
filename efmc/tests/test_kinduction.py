@@ -8,7 +8,8 @@ from efmc.tests import TestCase, main
 from efmc.sts import TransitionSystem
 from efmc.engines.kinduction.kind_prover import KInductionProver
 from efmc.engines.kinduction.kind_prover_inc import KInductionProverInc  # to test the incremental one
-from efmc.tests.simple_sts import get_int_sys1, get_int_sys2, get_int_sys3, get_int_sys4, get_int_sys5, get_int_sys6, get_int_sys7, get_int_sys8, get_int_sys9, get_int_sys10
+from efmc.tests.simple_sts import get_int_sys1, get_int_sys2, get_int_sys3, get_int_sys4, get_int_sys5, get_int_sys6, \
+    get_int_sys7, get_int_sys8, get_int_sys9, get_int_sys10
 
 
 class TestKInduction(TestCase):
@@ -36,9 +37,8 @@ class TestKInduction(TestCase):
         # start = time.time()
         res = pp.solve(k=20)
         # The actual result is a VerificationResult object with is_safe=False
-        assert(hasattr(res, 'is_safe') and not res.is_safe)
+        assert (hasattr(res, 'is_safe') and not res.is_safe)
         # print("time: ", time.time() - start)
-
 
     def test_kind2(self):
         # kind the incremental k-induction here
@@ -46,37 +46,36 @@ class TestKInduction(TestCase):
 
         sts.from_z3_cnts(list(get_int_sys1()))
         inc_verifier = KInductionProverInc(sts)
-        inc_res = inc_verifier.solve(max_k=20) 
+        inc_res = inc_verifier.solve(max_k=20)
 
         noinc_verifier = KInductionProver(sts)
         noinc_res = noinc_verifier.solve(k=20)
 
         print(f"Incremental result: {inc_res}")
         print(f"Non-incremental result: {noinc_res}")
-        
+
         # The actual results are different, so we'll check them separately
-        assert(inc_res.is_safe)
-        assert(not noinc_res.is_safe)
-    
+        assert (inc_res.is_safe)
+        assert (not noinc_res.is_safe)
+
     def test_kind3(self):
         # Renamed from test_kind2 to test_kind3 to avoid duplicate test names
         sts = TransitionSystem()
 
         sts.from_z3_cnts(list(get_int_sys2()))
         inc_verifier = KInductionProverInc(sts)
-        inc_res = inc_verifier.solve(max_k=20) 
+        inc_res = inc_verifier.solve(max_k=20)
 
         noinc_verifier = KInductionProver(sts)
         noinc_res = noinc_verifier.solve(k=20)
 
         print(f"Incremental result: {inc_res}")
         print(f"Non-incremental result: {noinc_res}")
-        
+
         # The actual results are different, but both indicate the system is unsafe
-        assert(not inc_res.is_safe)
-        assert(not noinc_res.is_safe)
+        assert (not inc_res.is_safe)
+        assert (not noinc_res.is_safe)
 
 
 if __name__ == '__main__':
     main()
-

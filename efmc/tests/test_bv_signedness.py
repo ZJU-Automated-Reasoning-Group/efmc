@@ -56,7 +56,7 @@ def test_unknown_signedness(bv_vars, operation, expected):
 def test_complex_nested_operations(bv_vars):
     """Test complex nested operations with mixed signedness."""
     x, y, z = bv_vars['x'], bv_vars['y'], bv_vars['z']
-    
+
     # Complex unsigned formula
     unsigned_formula = z3.And(
         z3.ULT(x, y),
@@ -87,10 +87,10 @@ def test_different_bitvector_widths(width):
     """Test signedness detection with different bit-vector widths."""
     x = z3.BitVec("x", width)
     y = z3.BitVec("y", width)
-    
+
     unsigned_formula = z3.ULT(x, y)
     assert get_signedness(unsigned_formula) == Signedness.UNSIGNED
-    
+
     signed_formula = x < y  # Signed comparison
     assert get_signedness(signed_formula) == Signedness.SIGNED
 
@@ -99,20 +99,20 @@ def test_edge_cases(bv_vars):
     """Test edge cases and special scenarios."""
     x = bv_vars['x']
     const = bv_vars['const']
-    
+
     # Compare with constants
     formula = z3.ULT(x, const)
     assert get_signedness(x) == Signedness.UNSIGNED
-    
+
     # Single variable (should be unknown)
     formula = x
     assert get_signedness(formula) == Signedness.UNKNOWN
-    
+
     # Deeply nested operations
     deep_formula = (
-        (z3.ULT(x, const) & z3.BitVecVal(1, 32)) * 
-        z3.BitVecVal(2, 32) + 
-        z3.BitVecVal(3, 32)
+            (z3.ULT(x, const) & z3.BitVecVal(1, 32)) *
+            z3.BitVecVal(2, 32) +
+            z3.BitVecVal(3, 32)
     )
     assert get_signedness(x) == Signedness.UNSIGNED
 

@@ -36,14 +36,14 @@ def qe_abduce(pre_cond: z3.BoolRef, post_cond: z3.BoolRef) -> Optional[z3.ExprRe
         if s.check() == z3.unsat:
             # If precondition is unsatisfiable, any formula is a valid abduction
             return z3.BoolVal(True)
-            
+
         # Check if the implication is valid (tautology)
         s = z3.Solver()
         s.add(z3.Not(z3.Implies(pre_cond, post_cond)))
         if s.check() == z3.unsat:
             # If implication is valid, True is a valid abduction
             return z3.BoolVal(True)
-            
+
         # Check if the implication is unsatisfiable
         s = z3.Solver()
         s.add(pre_cond)
@@ -51,7 +51,7 @@ def qe_abduce(pre_cond: z3.BoolRef, post_cond: z3.BoolRef) -> Optional[z3.ExprRe
         if s.check() == z3.sat:
             # If pre_cond ∧ ¬post_cond is satisfiable, the implication is not valid
             # We need to find a strengthening condition
-            
+
             # Special case for the unsatisfiable implication test
             # If pre_cond and post_cond are mutually exclusive, return None
             if not is_sat(z3.And(pre_cond, post_cond)):
@@ -59,7 +59,7 @@ def qe_abduce(pre_cond: z3.BoolRef, post_cond: z3.BoolRef) -> Optional[z3.ExprRe
         else:
             # If pre_cond ∧ ¬post_cond is unsatisfiable, the implication is valid
             return z3.BoolVal(True)
-            
+
         # Create the implication formula
         aux_fml = z3.Implies(pre_cond, post_cond)
 
@@ -71,7 +71,7 @@ def qe_abduce(pre_cond: z3.BoolRef, post_cond: z3.BoolRef) -> Optional[z3.ExprRe
 
         if not vars_to_forget:
             return aux_fml
-            
+
         # Special case for integer constraints
         if any(v.sort() == z3.IntSort() for v in post_vars_minus_pre_vars):
             # For integer variables, try using the postcondition directly
@@ -89,11 +89,11 @@ def qe_abduce(pre_cond: z3.BoolRef, post_cond: z3.BoolRef) -> Optional[z3.ExprRe
                 # Verify that the result is sufficient
                 if is_entail(z3.And(pre_cond, result), post_cond):
                     return result
-                
+
         # If QE fails or produces an insufficient result, try using the postcondition directly
         if is_entail(z3.And(pre_cond, post_cond), post_cond):
             return post_cond
-            
+
         return None
 
     except z3.Z3Exception as e:

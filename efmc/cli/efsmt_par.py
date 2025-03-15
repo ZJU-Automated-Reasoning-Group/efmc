@@ -33,7 +33,6 @@ vcc_test = False
 # Add timeout for solver operations
 SOLVER_TIMEOUT = 30  # seconds
 
-
 from efmc.engines.ef.efsmt.efsmt_parser import EFSMTParser, ParserError
 from pysmt.oracles import get_logic
 from pysmt.shortcuts import get_env
@@ -69,7 +68,7 @@ class ParallelEFBVSolver:
         self.task_num = 0
         self.terminate_flag = manager.Value('b', False)
         self.parser = EFSMTParser()
-        
+
     def _convert_z3_to_pysmt(self, z3_expr):
         """Convert Z3 expression to pySMT format"""
         # Convert to SMT-LIB string and parse with pySMT
@@ -91,15 +90,15 @@ class ParallelEFBVSolver:
         # Parse with EFSMTParser
         self.parser.set_logic('BV')
         z3_exists_vars, z3_forall_vars, z3_formula = self.parser.parse_smt2_string(phi)
-        
+
         # Convert to pySMT format
         formula = self._convert_z3_to_pysmt(z3_formula)
         forall_vars = [self._convert_z3_to_pysmt(v) for v in z3_forall_vars]
         exists_vars = [self._convert_z3_to_pysmt(v) for v in z3_exists_vars]
-        
+
         self.src_list = Manager().list()
         self.src_list.append(str(formula))
-        
+
         y_str = ''
         for y_s in forall_vars:
             y_str += str(y_s)
@@ -113,10 +112,10 @@ class ParallelEFBVSolver:
 
         self.if_sat = None
         self.task_num = 0
-        
+
         # Add timeout handling
         start_time = time.time()
-        
+
         while not self.terminate_flag.value:
             # Check timeout
             if self.timeout and time.time() - start_time > self.timeout:
@@ -124,7 +123,7 @@ class ParallelEFBVSolver:
                 self.pool.close()
                 self.pool.join()
                 raise SolverReturnedUnknownResultError("Timeout")
-                
+
             # Check max loops
             with self.loops_lock:
                 if self.maxloops is not None and self.maxloops <= self.loops.value:
@@ -132,7 +131,7 @@ class ParallelEFBVSolver:
                     self.pool.join()
                     logger.debug("<Main> Exit due to max loops")
                     raise SolverReturnedUnknownResultError("Maximum iterations reached")
-            
+
             # Check if we have a result
             if self.if_sat is not None:
                 logger.debug("<Main> Exit with result: %s", "sat" if self.if_sat else "unsat")
@@ -143,7 +142,7 @@ class ParallelEFBVSolver:
                 else:
                     print("unsat")
                 return self.res
-                
+
             # Spawn new tasks if needed
             try:
                 with self.task_lock:
@@ -154,25 +153,25 @@ class ParallelEFBVSolver:
             except Exception as e:
                 logging.exception("Error spawning task: %s", str(e))
                 raise EnvironmentError(f"Failed to spawn task: {str(e)}")
-            
+
             # Add sleep to prevent CPU hogging
             time.sleep(0.01)
 
     def thread_process(self):
         if vcc_test:
             time.sleep(2)
-            
+
         # Check if we should terminate early
         if self.terminate_flag.value:
             return None
-            
+
         try:
             # Parse using stored formula
             y = [Symbol(n, BVType(bitvec_width)) for n in self.src_list[1]]
             parser = SmtLibParser()
             smtlib_file = StringIO(self.src_list[0])
             formula_list = parser.get_script(smtlib_file).commands
-            
+
             phi = Bool(True)
             for command in formula_list:
                 if command.name == "assert":
@@ -183,7 +182,7 @@ class ParallelEFBVSolver:
             with self.loops_lock:
                 loop = self.loops.value
                 self.loops.value += 1
-                
+
             # Early termination check
             if self.terminate_flag.value:
                 return None
@@ -194,13 +193,13 @@ class ParallelEFBVSolver:
                     with self.e_phi_lock:
                         for e in self.e_phi:
                             esolver.add_assertion(e)
-                        
+
                         # Check for already processed values to avoid redundant work
                         for val in self.processed_values:
                             for v, value in val.items():
                                 if v in x:
                                     esolver.add_assertion(NotEquals(v, value))
-                        
+
                         eres = esolver.solve()
 
                         if eres:
@@ -210,10 +209,10 @@ class ParallelEFBVSolver:
                                 value = esolver.get_value(v)
                                 current_assignment[v] = value
                                 logger.debug("<Child:%d> %d: %s = %s", os.getpid(), loop, v, value)
-                                
+
                             # Add to processed values
                             self.processed_values.append(current_assignment)
-                            
+
                             # Add constraints to avoid this assignment in future
                             for v, value in current_assignment.items():
                                 self.e_phi.append(NotEquals(v, value))
@@ -222,7 +221,7 @@ class ParallelEFBVSolver:
                     return None
 
                 # Release lock after solving
-                
+
                 # Check if another process found a solution
                 if self.terminate_flag.value or self.res:
                     return None
@@ -231,7 +230,7 @@ class ParallelEFBVSolver:
                     return False
                 else:
                     tau = {v: esolver.get_value(v) for v in x}
-                    
+
                     # Check for overflow/underflow in substitution
                     try:
                         sub_phi = phi.substitute(tau).simplify()
@@ -255,14 +254,14 @@ class ParallelEFBVSolver:
                             sigma = {v: fmodel[v] for v in y}
                             sub_phi = phi.substitute(sigma).simplify()
                             logger.debug("<Child:%d> %d: Sigma = %s", os.getpid(), loop, sigma)
-                            
+
                             with self.e_phi_lock:
                                 self.e_phi.append(sub_phi)
                             return None
                     except Exception as e:
                         logger.error("Model generation error: %s", str(e))
                         return None
-                        
+
         except Exception as e:
             logger.error("Thread process error: %s", str(e))
             return None
@@ -298,7 +297,7 @@ def efbv(y, phi, logic=QF_BV, maxloops=None,
             if timeout and time.time() - start_time > timeout:
                 logger.warning("Solver timeout reached after %s seconds", timeout)
                 raise SolverReturnedUnknownResultError("Timeout")
-                
+
             if vcc_test:
                 time.sleep(2)
 
@@ -350,11 +349,11 @@ def run_parallel_test(timeout=SOLVER_TIMEOUT):
             (or (= (bvand x1 y1) x2)
                 (and (bvule (bvadd x2 y2) x3)
                      (= (bvmul y1 x3) y2))))))"""
-    
+
     parser = EFSMTParser()
     parser.set_logic('BV')
     exists_vars, forall_vars, formula = parser.parse_smt2_string(fml)
-    
+
     solver = None
     try:
         solver = ParallelEFBVSolver(timeout=timeout)
@@ -389,12 +388,12 @@ def signal_handler(sig, frame):
             p.join()
     sys.exit(0)
 
+
 # Keep track of active pools for cleanup
 active_pools = []
 
 # Register signal handler
 signal.signal(signal.SIGINT, signal_handler)
-
 
 if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s',

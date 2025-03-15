@@ -5,11 +5,12 @@ import subprocess
 import os
 from typing import Tuple
 
+
 def z3_to_smtlib2_abduction(formula: z3.ExprRef, target_var: str) -> str:
     """Convert Z3 formula to SMT-LIB2 format with abduction syntax"""
     # Get base SMT-LIB2 representation of the formula
     base_smt = formula.sexpr()
-    
+
     # Construct the full SMT-LIB2 file content with abduction syntax
     smt2_content = f"""
 (set-logic ALL)
@@ -38,29 +39,34 @@ def z3_to_smtlib2_abduction(formula: z3.ExprRef, target_var: str) -> str:
 """
     return smt2_content
 
+
 def get_variable_declarations(formula: z3.ExprRef) -> str:
     """Extract and format variable declarations from Z3 formula"""
     decls = set()
+
     def collect_decls(f):
         if z3.is_const(f):
             decls.add(f"(declare-fun {f} () {f.sort()})")
         for child in f.children():
             collect_decls(child)
-    
+
     collect_decls(formula)
     return "\n".join(sorted(decls))
+
 
 def get_atomic_predicates(formula: z3.ExprRef) -> str:
     """Extract atomic predicates for grammar specification"""
     predicates = set()
+
     def collect_predicates(f):
         if z3.is_app(f) and f.decl().kind() in [z3.Z3_OP_LE, z3.Z3_OP_LT, z3.Z3_OP_GE, z3.Z3_OP_GT, z3.Z3_OP_EQ]:
             predicates.add(f.sexpr())
         for child in f.children():
             collect_predicates(child)
-    
+
     collect_predicates(formula)
     return " ".join(predicates)
+
 
 def solve_abduction(formula: z3.ExprRef) -> Tuple[bool, str]:
     """Solve abduction problem using CVC5"""
@@ -79,7 +85,7 @@ def solve_abduction(formula: z3.ExprRef) -> Tuple[bool, str]:
             text=True,
             check=True
         )
-        
+
         # Parse output
         output = result.stdout.strip()
         if 'unsat' in output.lower():
@@ -99,16 +105,16 @@ def solve_abduction(formula: z3.ExprRef) -> Tuple[bool, str]:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
 
+
 # Example usage
 if __name__ == "__main__":
     # Create example formula
     x = z3.Int('x')
     y = z3.Int('y')
     formula = z3.And(x > 0, y > x)
-    
+
     success, result = solve_abduction(formula)
     if success:
         print("Found abduction solution:", result)
     else:
         print("Failed:", result)
-        

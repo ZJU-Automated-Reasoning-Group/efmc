@@ -113,6 +113,7 @@ def get_int_sys6():
     all_vars = [i, j, k, l, _p_i, _p_j, _p_k, _p_l]
     return all_vars, init, trans, post
 
+
 def get_int_sys7():
     """
     A counter system with multiple variables and invariant properties.
@@ -122,7 +123,7 @@ def get_int_sys7():
     x, y, z, _p_x, _p_y, _p_z = z3.Ints('x y z x! y! z!')
     init = z3.And(x == 0, y == 0, z == 0)
     trans = z3.Or(
-        z3.And(x < 10, 
+        z3.And(x < 10,
                _p_x == x + 1,
                _p_y == y + 2,
                _p_z == z + 3),
@@ -135,6 +136,7 @@ def get_int_sys7():
     all_vars = [x, y, z, _p_x, _p_y, _p_z]
     return all_vars, init, trans, post
 
+
 def get_int_sys8():
     """
     A mutual exclusion-like system with two processes.
@@ -144,23 +146,24 @@ def get_int_sys8():
     pc1, pc2, _p_pc1, _p_pc2 = z3.Ints('pc1 pc2 pc1! pc2!')
     # States: 0=idle, 1=trying, 2=critical
     init = z3.And(pc1 == 0, pc2 == 0)
-    
+
     # Process 1 transitions
     p1_to_try = z3.And(pc1 == 0, _p_pc1 == 1, _p_pc2 == pc2)
     p1_to_crit = z3.And(pc1 == 1, pc2 != 2, _p_pc1 == 2, _p_pc2 == pc2)
     p1_to_idle = z3.And(pc1 == 2, _p_pc1 == 0, _p_pc2 == pc2)
-    
+
     # Process 2 transitions
     p2_to_try = z3.And(pc2 == 0, _p_pc2 == 1, _p_pc1 == pc1)
     p2_to_crit = z3.And(pc2 == 1, pc1 != 2, _p_pc2 == 2, _p_pc1 == pc1)
     p2_to_idle = z3.And(pc2 == 2, _p_pc2 == 0, _p_pc1 == pc1)
-    
+
     trans = z3.Or(p1_to_try, p1_to_crit, p1_to_idle,
-                 p2_to_try, p2_to_crit, p2_to_idle)
-    
+                  p2_to_try, p2_to_crit, p2_to_idle)
+
     post = z3.Not(z3.And(pc1 == 2, pc2 == 2))  # Mutual exclusion property
     all_vars = [pc1, pc2, _p_pc1, _p_pc2]
     return all_vars, init, trans, post
+
 
 def get_int_sys9():
     """
@@ -171,7 +174,7 @@ def get_int_sys9():
     """
     ticket, serving, _p_ticket, _p_serving = z3.Ints('ticket serving ticket! serving!')
     init = z3.And(ticket == 0, serving == 0)
-    
+
     # Either issue a new ticket or advance serving number
     trans = z3.Or(
         # Issue new ticket
@@ -179,10 +182,11 @@ def get_int_sys9():
         # Advance serving
         z3.And(serving < ticket, _p_serving == serving + 1, _p_ticket == ticket)
     )
-    
+
     post = ticket >= serving  # Valid invariant?
     all_vars = [ticket, serving, _p_ticket, _p_serving]
     return all_vars, init, trans, post
+
 
 def get_int_sys10():
     """
@@ -193,37 +197,38 @@ def get_int_sys10():
     """
     free, alloc1, alloc2, _p_free, _p_alloc1, _p_alloc2 = z3.Ints('free alloc1 alloc2 free! alloc1! alloc2!')
     total = 10  # Total resources in system
-    
+
     init = z3.And(free == total, alloc1 == 0, alloc2 == 0)
-    
+
     # Allocation and deallocation transitions
-    p1_alloc = z3.And(free >= 1, 
+    p1_alloc = z3.And(free >= 1,
                       _p_free == free - 1,
                       _p_alloc1 == alloc1 + 1,
                       _p_alloc2 == alloc2)
-    
+
     p2_alloc = z3.And(free >= 1,
                       _p_free == free - 1,
                       _p_alloc2 == alloc2 + 1,
                       _p_alloc1 == alloc1)
-    
+
     p1_dealloc = z3.And(alloc1 >= 1,
                         _p_free == free + 1,
                         _p_alloc1 == alloc1 - 1,
                         _p_alloc2 == alloc2)
-    
+
     p2_dealloc = z3.And(alloc2 >= 1,
                         _p_free == free + 1,
                         _p_alloc2 == alloc2 - 1,
                         _p_alloc1 == alloc1)
-    
+
     trans = z3.Or(p1_alloc, p2_alloc, p1_dealloc, p2_dealloc)
-    
+
     post = z3.And(free + alloc1 + alloc2 == total,  # Resource conservation
-                 free >= 0, alloc1 >= 0, alloc2 >= 0)  # No negative resources
-    
+                  free >= 0, alloc1 >= 0, alloc2 >= 0)  # No negative resources
+
     all_vars = [free, alloc1, alloc2, _p_free, _p_alloc1, _p_alloc2]
     return all_vars, init, trans, post
+
 
 def get_int_sys11():
     """
@@ -243,10 +248,10 @@ def get_int_sys11():
     produced, consumed, buffer, state = z3.Ints('produced consumed buffer state')
     _p_produced, _p_consumed, _p_buffer, _p_state = z3.Ints('produced! consumed! buffer! state!')
     capacity = 10
-    
+
     # Initial state
     init = z3.And(produced == 0, consumed == 0, buffer == 0, state == 0)
-    
+
     # Transitions
     # Produce item (normal state)
     produce_normal = z3.And(
@@ -257,7 +262,7 @@ def get_int_sys11():
         _p_buffer == buffer + 1,
         _p_state == 0
     )
-    
+
     # Consume item (normal state)
     consume_normal = z3.And(
         state == 0,
@@ -267,7 +272,7 @@ def get_int_sys11():
         _p_buffer == buffer - 1,
         _p_state == 0
     )
-    
+
     # Attempt to produce when buffer full (causes overflow)
     produce_overflow = z3.And(
         state == 0,
@@ -277,7 +282,7 @@ def get_int_sys11():
         _p_buffer == buffer + 1,
         _p_state == 1  # Overflow state
     )
-    
+
     # Attempt to consume when buffer empty (causes underflow)
     consume_underflow = z3.And(
         state == 0,
@@ -287,7 +292,7 @@ def get_int_sys11():
         _p_buffer == buffer - 1,
         _p_state == 2  # Underflow state
     )
-    
+
     # Recovery from overflow state
     recover_overflow = z3.And(
         state == 1,
@@ -296,7 +301,7 @@ def get_int_sys11():
         _p_buffer == buffer - 1,
         _p_state == z3.If(buffer - 1 <= capacity, 0, 1)
     )
-    
+
     # Recovery from underflow state
     recover_underflow = z3.And(
         state == 2,
@@ -305,7 +310,7 @@ def get_int_sys11():
         _p_buffer == buffer + 1,
         _p_state == z3.If(buffer + 1 >= 0, 0, 2)
     )
-    
+
     # Combined transition relation
     trans = z3.Or(
         produce_normal,
@@ -315,7 +320,7 @@ def get_int_sys11():
         recover_overflow,
         recover_underflow
     )
-    
+
     # Safety properties
     # We want to verify that:
     # 1. If in normal state, buffer is within bounds
@@ -324,9 +329,10 @@ def get_int_sys11():
         z3.Implies(state == 0, z3.And(buffer >= 0, buffer <= capacity)),
         produced >= consumed
     )
-    
+
     all_vars = [produced, consumed, buffer, state, _p_produced, _p_consumed, _p_buffer, _p_state]
     return all_vars, init, trans, post
+
 
 def get_int_sys12():
     """
@@ -343,7 +349,7 @@ def get_int_sys12():
     x, y, z, _p_x, _p_y, _p_z = z3.Ints('x y z x! y! z!')
     init = z3.And(x == 0, y == 0, z == 0)
     trans = z3.Or(
-        z3.And(x < 10, 
+        z3.And(x < 10,
                _p_x == x + 1,
                _p_y == y + 2,
                _p_z == z + 3),
@@ -357,6 +363,7 @@ def get_int_sys12():
     all_vars = [x, y, z, _p_x, _p_y, _p_z]
     return all_vars, init, trans, post
 
+
 def create_simple_sts(use_real=True):
     """
     Create a simple transition system for testing purposes.
@@ -368,7 +375,7 @@ def create_simple_sts(use_real=True):
         A simple TransitionSystem instance
     """
     sts = TransitionSystem()
-    
+
     # Create variables based on the type
     if use_real:
         x, y = z3.Reals('x y')
@@ -376,18 +383,18 @@ def create_simple_sts(use_real=True):
     else:
         x, y = z3.Ints('x y')
         xp, yp = z3.Ints('x! y!')
-    
+
     # Set up the transition system
     sts.variables = [x, y]
     sts.prime_variables = [xp, yp]
-    
+
     # Initial condition: x >= 0 and y >= 0
     sts.init = z3.And(x >= 0, y >= 0)
-    
+
     # Transition relation: x' = x + 1, y' = y + x
     sts.trans = z3.And(xp == x + 1, yp == y + x)
-    
+
     # Post-condition: y >= 0
     sts.post = y >= 0
-    
+
     return sts

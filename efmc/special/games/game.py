@@ -5,6 +5,8 @@ import re, logging
 from pysmt.shortcuts import *
 from pysmt.parsing import parse
 from pysmt.smtlib.parser import SmtLibParser
+
+
 # from subprocess import Popen, PIPE
 
 

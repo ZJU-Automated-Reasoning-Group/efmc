@@ -100,7 +100,7 @@ def test_parse():
 
     print(s.to_smt2())
 
-    
+
 def test_parse2():
     fml = """
 (declare-fun inv ((_ BitVec 8)) Bool)

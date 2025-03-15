@@ -22,6 +22,7 @@ from efmc.utils.z3_solver_utils import is_entail
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class VerificationResult:
     """Stores the result of the verification process."""
@@ -30,9 +31,11 @@ class VerificationResult:
     counterexample: Optional[z3.ModelRef] = None
     is_unknown: bool = False
 
+
 class SolverTimeout(Exception):
     """Raised when the Z3 solver times out."""
     pass
+
 
 def check_entailment(expr1: z3.ExprRef, expr2: z3.ExprRef, timeout: int = 10000) -> bool:
     """
@@ -57,6 +60,7 @@ def check_entailment(expr1: z3.ExprRef, expr2: z3.ExprRef, timeout: int = 10000)
     if result == z3.unknown:
         raise SolverTimeout("Solver timed out during entailment check")
     return result == z3.unsat
+
 
 def are_expressions_equivalent(expr1: z3.ExprRef, expr2: z3.ExprRef, timeout: int = 10000) -> bool:
     """
@@ -86,7 +90,8 @@ def are_expressions_equivalent(expr1: z3.ExprRef, expr2: z3.ExprRef, timeout: in
     result = s.check()
     if result == z3.unknown:
         raise SolverTimeout("Solver timed out during equivalence check")
-    return result == z3.unsat 
+    return result == z3.unsat
+
 
 def get_counterexample(formula: z3.ExprRef):
     """
@@ -103,6 +108,7 @@ def get_counterexample(formula: z3.ExprRef):
     if s.check() == z3.sat:
         return s.model()
     return None
+
 
 def check_invariant(sts: Any, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRef):
     """
@@ -157,5 +163,5 @@ def check_invariant(sts: Any, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRe
         logger.debug(f"Inv: {inv}")
     else:
         logger.info("Invariant verification successful")
-    
+
     return correct

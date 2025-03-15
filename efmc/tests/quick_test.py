@@ -65,6 +65,3 @@ if __name__ == '__main__':
     fml_m = z3.Implies(z3.Not(a), b)
     fml_n = z3.Or(a, b)
     print(is_equiv(fml_m, fml_n))
-
-
-

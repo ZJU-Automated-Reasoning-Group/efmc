@@ -78,13 +78,14 @@ def solve_with_bin_verifier(cmd: List[str], timeout=3600) -> str:
 
 class EFMCRunner:
     """Main runner class for EFMC verification tasks"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.setup_signal_handlers()
 
     def setup_signal_handlers(self):
         """Configure signal handlers for graceful termination"""
+
         def handler(sig, frame):
             self.logger.info("Handling termination signal")
             parent = psutil.Process(os.getpid())
@@ -132,10 +133,10 @@ class EFMCRunner:
                 no_underflow=g_verifier_args.prevent_over_under_flows > 0,
                 pysmt_solver=g_verifier_args.pysmt_solver
             )
-            
+
             if g_verifier_args.template in TEMPLATES['bitvector']:
-                ef_prover.set_template(g_verifier_args.template, 
-                                     num_disjunctions=g_verifier_args.num_disjunctions)
+                ef_prover.set_template(g_verifier_args.template,
+                                       num_disjunctions=g_verifier_args.num_disjunctions)
                 ef_prover.set_solver(g_verifier_args.efsmt_solver)
             else:
                 self.logger.error(f"Unsupported template: {g_verifier_args.template}")
@@ -152,10 +153,10 @@ class EFMCRunner:
 
             if g_verifier_args.template == "auto":
                 ef_prover.set_template("interval")
-                ef_prover.set_solver(g_verifier_args.efsmt_solver)        
+                ef_prover.set_solver(g_verifier_args.efsmt_solver)
             elif g_verifier_args.template in TEMPLATES['int_real']:
                 ef_prover.set_template(g_verifier_args.template,
-                                     num_disjunctions=g_verifier_args.num_disjunctions)
+                                       num_disjunctions=g_verifier_args.num_disjunctions)
                 ef_prover.set_solver(g_verifier_args.efsmt_solver)
             else:
                 self.logger.error(f"Unsupported template: {g_verifier_args.template}")
@@ -177,12 +178,12 @@ class EFMCRunner:
     def run_qi(self, sts: TransitionSystem) -> None:
         """Run the Quantifier Instantiation (QI) based verification"""
         qi_prover = QuantifierInstantiationProver(sts)
-        
+
         # Set the QI strategy based on the command-line argument
         if hasattr(g_verifier_args, 'qi_strategy'):
             qi_prover.set_strategy(g_verifier_args.qi_strategy)
             self.logger.info(f"Using QI strategy: {g_verifier_args.qi_strategy}")
-        
+
         result = qi_prover.solve()
         self.print_verification_result(result)
 
@@ -211,18 +212,18 @@ class EFMCRunner:
 
         all_vars, init, trans, post = parse_chc(filename, to_real_type=False)
         self.logger.info("CHC file parsing completed")
-        
+
         sts = TransitionSystem()
         sts.from_z3_cnts([all_vars, init, trans, post])
-        
+
         if sts.has_bv and g_verifier_args.signedness in ["signed", "unsigned"]:
             sts.set_signedness(g_verifier_args.signedness)
-            
+
         self.run_verifier(sts)
 
     def verify_sygus(self, filename: str) -> None:
         """Verify SyGuS format file"""
-        
+
         # it is not a good idea to use the "engine" option
         if g_verifier_args.use_cvc5sy:
             from efmc.efmc_config import cvc5_exec
@@ -232,13 +233,13 @@ class EFMCRunner:
 
         all_vars, init, trans, post = parse_sygus(filename, to_real_type=False)
         self.logger.info("SyGuS file parsing completed")
-        
+
         sts = TransitionSystem()
         sts.from_z3_cnts([all_vars, init, trans, post])
-        
+
         if sts.has_bv and g_verifier_args.signedness in ["signed", "unsigned"]:
             sts.set_signedness(g_verifier_args.signedness)
-            
+
         self.run_verifier(sts)
 
     def run_verifier(self, sts: TransitionSystem) -> None:
@@ -251,12 +252,12 @@ class EFMCRunner:
             "qi": self.run_qi,
             "houdini": self.run_houdini  # Add Houdini engine
         }
-        
+
         if g_verifier_args.engine not in engine_map:
             self.logger.error(f"Unsupported engine: {g_verifier_args.engine}")
             self.logger.info(f"Available engines: {list(engine_map.keys())}")
             sys.exit(1)
-            
+
         engine_map[g_verifier_args.engine](sts)
 
     def run_houdini(self, sts: TransitionSystem) -> None:
@@ -265,86 +266,88 @@ class EFMCRunner:
         result = houdini_prover.solve()
         self.print_verification_result(result)
 
+
 def parse_arguments():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description='EFMC - A Software Model Checker')
-    
+
     # Input and general options
     input_group = parser.add_argument_group('Input options')
     input_group.add_argument('--file', type=str, required=True,
-                      help='Input file to verify')
+                             help='Input file to verify')
     input_group.add_argument('--lang', type=str, choices=['chc', 'sygus', 'auto'],
-                      default='auto', help='Input language format')
-    input_group.add_argument('--engine', type=str, 
-                      choices=['ef', 'pdr', 'kind', 'qe', 'eld', 'qi', 'houdini'],
-                      default='ef', help='Verification engine to use')
-    input_group.add_argument('--log-level', type=str, 
-                      choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
-                      default='INFO', help='Set the logging level')
+                             default='auto', help='Input language format')
+    input_group.add_argument('--engine', type=str,
+                             choices=['ef', 'pdr', 'kind', 'qe', 'eld', 'qi', 'houdini'],
+                             default='ef', help='Verification engine to use')
+    input_group.add_argument('--log-level', type=str,
+                             choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+                             default='INFO', help='Set the logging level')
 
     # Template-based verification options
     template_group = parser.add_argument_group('Template-based verification options')
     template_group.add_argument('--template', type=str, default="auto",
-                      help='Template for invariant generation. For integer/real: interval, power_interval, zone, octagon, affine, power_affine, poly, power_poly. For bitvector: bv_interval, power_bv_interval, bv_zone, power_bv_zone, bv_octagon, power_bv_octagon, bv_poly, power_bv_poly')
+                                help='Template for invariant generation. For integer/real: interval, power_interval, zone, octagon, affine, power_affine, poly, power_poly. For bitvector: bv_interval, power_bv_interval, bv_zone, power_bv_zone, bv_octagon, power_bv_octagon, bv_poly, power_bv_poly')
     template_group.add_argument('--num-disjunctions', type=int, default=1,
-                      help='Number of disjunctions in template')
+                                help='Number of disjunctions in template')
     template_group.add_argument('--prop-strengthen', action='store_true',
-                      help='Enable property strengthening')
+                                help='Enable property strengthening')
     template_group.add_argument('--abs-refine', action='store_true',
-                      help='Enable abstraction refinement')
+                                help='Enable abstraction refinement')
     template_group.add_argument('--validate-invariant', action='store_true',
-                      help='Validate generated invariants')
+                                help='Validate generated invariants')
 
     # Solver options
     # currently, only affect the ef engine?
     solver_group = parser.add_argument_group('Solver options')
 
     # "z3api" means we use the z3py API to solve the constraints "in memory"
-    solver_group.add_argument('--efsmt-solver', dest='efsmt_solver', default='z3api', type=str, 
-                        help="Solver for the exists-forall SMT problem. Options include:\n"
-                             "1. Quantifier instantiation approach: [z3, cvc5, btor, yices2, mathsat, bitwuzla, z3api]\n"
-                             "2. Bit-blasting approach: [z3qbf, caqe, q3b, z3sat]\n"
-                             "3. CEGIS approach: [cegis] (implemented via pysmt, need to set pysmt_solver)")
-    
+    solver_group.add_argument('--efsmt-solver', dest='efsmt_solver', default='z3api', type=str,
+                              help="Solver for the exists-forall SMT problem. Options include:\n"
+                                   "1. Quantifier instantiation approach: [z3, cvc5, btor, yices2, mathsat, bitwuzla, z3api]\n"
+                                   "2. Bit-blasting approach: [z3qbf, caqe, q3b, z3sat]\n"
+                                   "3. CEGIS approach: [cegis] (implemented via pysmt, need to set pysmt_solver)")
+
     solver_group.add_argument('--pysmt-solver', dest='pysmt_solver', default="z3", type=str,
-                        help="Set the PySMT solver for the CEGIS solver's backend. Options include: [z3, cvc5, btor, yices2, mathsat, bitwuzla]")
+                              help="Set the PySMT solver for the CEGIS solver's backend. Options include: [z3, cvc5, btor, yices2, mathsat, bitwuzla]")
 
     # Currently, the timeout is not used for the engines inside efmc
     # It is better to control the timeout in some "upper-level" scripts.
     # solver_group.add_argument('timeout', type=int, default=5,
     #                      help='Timeout in seconds for the verification engine')
-    
+
     # Bitvector options
     bv_group = parser.add_argument_group('Bitvector options')
     bv_group.add_argument('--prevent-over-under-flows', type=int, default=0,
-                      help='Prevent over/underflows in bitvector operations')
+                          help='Prevent over/underflows in bitvector operations')
     bv_group.add_argument('--signedness', type=str, default='signed',
-                      choices=['signed', 'unsigned'],
-                      help='Signedness for bitvector operations')
-    
+                          choices=['signed', 'unsigned'],
+                          help='Signedness for bitvector operations')
+
     # Output options
     output_group = parser.add_argument_group('EFSMT constraint dumping options')
     output_group.add_argument('--dump-ef-smt2', action='store_true', default=False,
-                      help='Dump EF constraints in SMT2 format')
+                              help='Dump EF constraints in SMT2 format')
     output_group.add_argument('--dump-qbf', action='store_true', default=False,
-                      help='Dump constraints in QBF format')
-    output_group.add_argument('--dump-cnt-dir', dest='dump_cnt_dir', default="/tmp", type=str, help="The dir for storing the dumped constraints")
+                              help='Dump constraints in QBF format')
+    output_group.add_argument('--dump-cnt-dir', dest='dump_cnt_dir', default="/tmp", type=str,
+                              help="The dir for storing the dumped constraints")
 
     # K-induction options
     kind_group = parser.add_argument_group('K-induction options')
     kind_group.add_argument('--kind-k', type=int, default=1,
-                      help='K value for k-induction')
+                            help='K value for k-induction')
     kind_group.add_argument('--kind-incremental', dest='kind_incremental', default=False, action='store_true',
-                        help="Use incremental k-induction (default: False)")
+                            help="Use incremental k-induction (default: False)")
     kind_group.add_argument('--kind-aux-inv', action='store_true',
-                      help='Use auxiliary invariants in k-induction')
+                            help='Use auxiliary invariants in k-induction')
     kind_group.add_argument('--kind-aux-inv-alg', dest='kind_aux_inv_alg', default='default', type=str,
                             help="Select the approach for generating auxiliary invariants. Options include: [top, int, houdini]")
 
     # Quantifier instantiation-based verification options
     qi_group = parser.add_argument_group('Quantifier instantiation-based verification options')
     qi_group.add_argument('--qi-strategy', type=str, default='mbqi',
-                      help='Quantifier instantiation strategy (mbqi, ematching, combined, auto)')
+                          help='Quantifier instantiation strategy (mbqi, ematching, combined, auto)')
 
     # PDR engine options: Allow for parsing options to Z3's PDR engine (named Spacer)
     # FIXME: refer to the Z3 documentation for the options
@@ -353,25 +356,26 @@ def parse_arguments():
     # third-party, binary verifiers
     third_party_group = parser.add_argument_group('Third-party binary verifiers')
     third_party_group.add_argument('--use-eld', type=bool, default=False,
-                      help='Use Eldrica (for CHC)')
+                                   help='Use Eldrica (for CHC)')
     third_party_group.add_argument('--use-cvc5sy', type=bool, default=False,
-                      help='Use cvc4sy (for SyGuS)')
+                                   help='Use cvc4sy (for SyGuS)')
 
     return parser.parse_args()
+
 
 def main():
     """Main entry point for the CLI"""
     global g_verifier_args
     g_verifier_args = parse_arguments()
-    
+
     # Configure logging based on the specified log level
     logging.basicConfig(
         level=getattr(logging, g_verifier_args.log_level),
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
-    
+
     update_config_from_globals()
-    
+
     runner = EFMCRunner()
 
     if g_verifier_args.lang == "chc":
@@ -390,7 +394,5 @@ def main():
             sys.exit(1)
 
 
-
 if __name__ == "__main__":
     main()
-

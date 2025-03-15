@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 class EFBV2BoolAux:
     """
     """
+
     def __init__(self):
         self.universal_bools = []
         self.existential_bools = []

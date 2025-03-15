@@ -72,9 +72,10 @@ def pareto_optimize(fml: z3.ExprRef, minimize: List, maximize: List, timeout: in
     if s.check() == z3.sat:
         min_res = [obj.value() for obj in min_objectives]
         max_res = [obj.value() for obj in max_objectives]
-        return min_res, max_res 
+        return min_res, max_res
     else:
         return None, None
+
 
 def maxsmt(hard: z3.BoolRef, soft: List[z3.BoolRef], weight: List[int], timeout=0) -> int:
     """
@@ -94,5 +95,3 @@ def maxsmt(hard: z3.BoolRef, soft: List[z3.BoolRef], weight: List[int], timeout=
             if z3.is_false(m.eval(soft[i], True)):
                 cost += weight[i]
     return cost
-
-

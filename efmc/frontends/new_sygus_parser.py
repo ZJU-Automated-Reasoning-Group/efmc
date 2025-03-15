@@ -22,6 +22,7 @@ Number = Union[int, float]
 Atom = Union[Symbol, Number]
 SExpression = Union[Atom, List['SExpression']]
 
+
 def input_to_list(string: str) -> List[str]:
     """
     Parse a .sl file content into a list of S-Expressions.
@@ -46,6 +47,7 @@ def input_to_list(string: str) -> List[str]:
             result.append(s.strip())
             s = ""
     return result
+
 
 def tokenize(chars: str) -> List[str]:
     """
@@ -79,6 +81,7 @@ def tokenize(chars: str) -> List[str]:
 
     return tokens
 
+
 def parse_sexpression(program: str) -> SExpression:
     """
     Parse a string into an S-expression.
@@ -90,6 +93,7 @@ def parse_sexpression(program: str) -> SExpression:
         SExpression: The parsed S-expression.
     """
     return read_from_tokens(tokenize(program))
+
 
 def read_from_tokens(tokens: List[str]) -> Optional[SExpression]:
     """
@@ -118,6 +122,7 @@ def read_from_tokens(tokens: List[str]) -> Optional[SExpression]:
     else:
         return atom(token)
 
+
 def atom(token: str) -> Atom:
     """
     Convert a token to its atomic form: number or symbol.
@@ -139,6 +144,7 @@ def atom(token: str) -> Atom:
         except ValueError:
             return Symbol(token)
 
+
 def get_start(cmd: SExpression) -> str:
     """
     Extract the start symbol from the synth-fun command.
@@ -151,6 +157,7 @@ def get_start(cmd: SExpression) -> str:
     """
     assert cmd[0] == "synth-fun", "Expected 'synth-fun' command"
     return cmd[4][0]
+
 
 def get_nonterminals(cmd: SExpression) -> Tuple[Set[str], Dict[str, str]]:
     """
@@ -174,7 +181,9 @@ def get_nonterminals(cmd: SExpression) -> Tuple[Set[str], Dict[str, str]]:
 
     return nonterms, type_dict
 
-def get_terms_prods(cmd: SExpression) -> Tuple[Set[Union[str, Tuple]], Dict[str, List[Tuple[Union[str, Tuple], List[str]]]]]:
+
+def get_terms_prods(cmd: SExpression) -> Tuple[
+    Set[Union[str, Tuple]], Dict[str, List[Tuple[Union[str, Tuple], List[str]]]]]:
     """
     Extract terminals and production rules from the synth-fun command.
 
@@ -209,7 +218,9 @@ def get_terms_prods(cmd: SExpression) -> Tuple[Set[Union[str, Tuple]], Dict[str,
 
     return terminals, productions
 
-def get_grammar(lines: List[str]) -> Tuple[Set[str], Set[Union[str, Tuple]], Dict[str, List[Tuple[Union[str, Tuple], List[str]]]], str]:
+
+def get_grammar(lines: List[str]) -> Tuple[
+    Set[str], Set[Union[str, Tuple]], Dict[str, List[Tuple[Union[str, Tuple], List[str]]]], str]:
     """
     Parse multiple lines of S-expressions to extract grammar components.
 
@@ -229,10 +240,12 @@ def get_grammar(lines: List[str]) -> Tuple[Set[str], Set[Union[str, Tuple]], Dic
                 return nonterminals, terminals, productions, start_sym
     raise ValueError("No 'synth-fun' command found in the input.")
 
+
 # Predefined function names for different roles
 PRE_FUNC_NAMES = {"pre_fun", "PreF", "pre-f"}
 TRANS_FUNC_NAMES = {"trans_fun", "TransF", "trans-f"}
 POST_FUNC_NAMES = {"post_fun", "PostF", "post-f"}
+
 
 class SyGusInVParser:
     """
@@ -409,6 +422,7 @@ class SyGusInVParser:
 
         return z3_vars, init[0], trans[0], post[0]
 
+
 def demo_parser():
     """
     Demonstration of the SyGusInVParser with sample inputs.
@@ -443,6 +457,7 @@ def demo_parser():
 
     print("\nPost Constraints:")
     print(post)
+
 
 if __name__ == '__main__':
     demo_parser()

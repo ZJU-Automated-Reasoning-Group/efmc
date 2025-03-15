@@ -135,7 +135,6 @@ class BitVecZoneTemplate(Template):
         return big_and(cnts)
 
 
-
 class DisjunctiveBitVecZoneTemplate(Template):
 
     def __init__(self, sts: TransitionSystem, **kwargs):

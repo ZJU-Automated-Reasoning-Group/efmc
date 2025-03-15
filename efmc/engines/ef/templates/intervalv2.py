@@ -94,7 +94,6 @@ class IntervalTemplateV2(Template):
         return big_and(cnts)
 
 
-    
 class DisjunctiveIntervalTemplateV2(Template):
     """
     Disjunctive Interval domain
@@ -151,7 +150,7 @@ class DisjunctiveIntervalTemplateV2(Template):
         for dis_idx in range(self.num_disjunctions):
             dis_cnts = []
             dis_cnts_prime = []
-            
+
             for i in range(self.arity):
                 var = self.sts.variables[i]
                 var_prime = self.sts.prime_variables[i]
@@ -160,7 +159,7 @@ class DisjunctiveIntervalTemplateV2(Template):
 
                 dis_cnts.append(z3.And(var_l <= var, var_u >= var))
                 dis_cnts_prime.append(z3.And(var_l <= var_prime, var_u >= var_prime))
-            
+
             cnts_init_post.append(big_and(dis_cnts))
             cnts_trans.append(big_and(dis_cnts_prime))
 
@@ -170,7 +169,7 @@ class DisjunctiveIntervalTemplateV2(Template):
     def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
         """Build an invariant from a model (fixing the values of the template vars)"""
         dis_cnts = []
-        
+
         for dis_idx in range(self.num_disjunctions):
             cnts = []
             for i in range(self.arity):
@@ -182,5 +181,5 @@ class DisjunctiveIntervalTemplateV2(Template):
                 tvar_u = self.template_vars[dis_idx][i][1]
                 cnts.append(z3.And(model[tvar_l] <= var, model[tvar_u] >= var))
             dis_cnts.append(big_and(cnts))
-        
+
         return z3.Or(dis_cnts)

@@ -33,7 +33,7 @@ class TestBitVecZoneTemplate(TestCase):
         # ef_prover.set_solver("cvc5")
         # vc = ef_prover.generate_vc()
         # print(vc)
-        xx= ef_prover.solve()
+        xx = ef_prover.solve()
         # print(sts.to_chc_str())
 
 

@@ -114,7 +114,6 @@ class PolyTemplate(Template):
         return big_and(cnts)
 
 
-
 class DisjunctivePolyTemplate(Template):
     """
     Polyhedral domain

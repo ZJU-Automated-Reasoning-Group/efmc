@@ -187,10 +187,10 @@ class KInductionProver(object):
         for b in range(k):
             f_bmc = self.get_bmc(b)
             if self.verbose:
-                print(f"[BMC] Checking bound {b+1}...")
+                print(f"[BMC] Checking bound {b + 1}...")
             else:
                 logger.debug("   [BMC]    Checking bound %d..." % (b + 1))
-                
+
             s = z3.Solver()
             s.add(f_bmc)
             result = s.check()
@@ -210,16 +210,16 @@ class KInductionProver(object):
 
             f_kind = self.get_k_induction(b)
             if self.verbose:
-                print(f"[K-IND] Checking bound {b+1}...")
+                print(f"[K-IND] Checking bound {b + 1}...")
             else:
                 logger.debug("   [K-IND]  Checking bound %d..." % (b + 1))
-                
+
             if is_unsat(f_kind):
                 print("--> The system is proved safe at {}".format((b + 1)))
                 print("safe")
                 # Create an invariant from the k-induction proof
                 invariant = self.sts.post
                 return VerificationResult(True, invariant)
-                
+
         print("unknown")
         return VerificationResult(False, None, None, is_unknown=True)

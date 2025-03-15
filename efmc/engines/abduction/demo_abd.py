@@ -189,7 +189,7 @@ class VerificationTester:
         kind_prover = KInductionProver(test_case.system)
         kind_prover.use_aux_invariant = False
         kind_result = kind_prover.solve(k=self.k_bound)
-        
+
         # Check if the result is unknown
         if kind_result.is_unknown:
             result.kind_is_unknown = True
@@ -284,4 +284,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    

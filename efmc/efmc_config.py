@@ -3,13 +3,13 @@ from pathlib import Path
 
 class EFMCConfig:
     _instance = None
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(EFMCConfig, cls).__new__(cls)
             cls._instance._initialize()
         return cls._instance
-    
+
     def _initialize(self):
         # Should we try to find the executables automatically? (e.g., from the system path?)
         self.project_root_dir = str(Path(__file__).parent.parent)
@@ -21,12 +21,11 @@ class EFMCConfig:
         self.math_exec = self.project_root_dir + "/bin_solvers/bin/mathsat"
         self.caqe_exec = self.project_root_dir + "/bin_solvers/bin/caqe"
         self.q3b_exec = self.project_root_dir + "/bin_solvers/bin/q3b"
-        
+
         # These values can be modified by CLI tools
         self.bin_solver_timeout = 30
         self.verifier_args = None  # the configuration of the prover.py
         self.efsmt_args = None  # the configuration of the efsmt_solver.py   # Not used for now
-
 
     def check_available(self, solver_name: str) -> bool:
         """Check if a solver executable exists.
@@ -70,6 +69,7 @@ g_bin_solver_timeout = config.bin_solver_timeout
 g_verifier_args = config.verifier_args
 g_efsmt_args = config.efsmt_args
 
+
 # Add functions to update the config when CLI tools modify the globals
 def update_config_from_globals():
     """Update the singleton config from global variables
@@ -78,6 +78,7 @@ def update_config_from_globals():
     config.bin_solver_timeout = g_bin_solver_timeout
     config.verifier_args = g_verifier_args
     config.efsmt_args = g_efsmt_args
+
 
 def update_globals_from_config():
     """Update global variables from the singleton config
@@ -99,4 +100,3 @@ if __name__ == "__main__":
     print(config.math_exec)
     print(config.caqe_exec)
     print(config.q3b_exec)
-    

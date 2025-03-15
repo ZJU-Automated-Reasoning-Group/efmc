@@ -78,6 +78,7 @@ def get_expr_vars(exp):
         print(ex)
         return False
 
+
 def get_expr_vars_v2(exp):
     # For complex expressions with shared subexpressions, add a visited set to avoid processing the same subexpression multiple times
     try:
@@ -88,12 +89,12 @@ def get_expr_vars_v2(exp):
         while stack:
             e = stack.pop()
             e_id = z3.Z3_get_ast_id(e.ctx.ref(), e.as_ast())
-            
+
             if e_id in visited:
                 continue
-                
+
             visited.add(e_id)
-            
+
             if z3.is_app(e):
                 if e.num_args() == 0 and e.decl().kind() == z3.Z3_OP_UNINTERPRETED:
                     syms.add(e)
@@ -506,5 +507,5 @@ def extract_all(lst: List[Any]) -> List[Any]:
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()
-    

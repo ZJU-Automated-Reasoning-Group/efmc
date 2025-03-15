@@ -52,7 +52,6 @@ class PDRProver:
         s.add(z3.ForAll(self.sts.variables, z3.Implies(inv(self.sts.variables),
                                                        self.sts.post)))
 
-
         print("PDR starting!!!")
         # print(s.to_smt2())
         start = time.time()

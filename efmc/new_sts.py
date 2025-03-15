@@ -18,23 +18,23 @@ class NewTransitionSystem:
         self.init: z3.ExprRef = None  # Initial states
         self.trans: z3.ExprRef = None  # Transition relation
         self.post: z3.ExprRef = None  # Property to verify
-        
+
         # Type tracking
         self.var_types: Dict[str, str] = {}  # Variable name -> type
         self.type_vars: Dict[str, Set[str]] = defaultdict(set)  # Type -> variable names
-        
+
     def add_variable(self, name: str, sort: z3.SortRef, prime: bool = False) -> z3.ExprRef:
         """Add a variable with given sort (type)"""
         var = z3.Const(name, sort)
         var_type = str(sort)
-        
+
         if prime:
             self.prime_variables[name] = var
         else:
             self.variables[name] = var
             self.var_types[name] = var_type
             self.type_vars[var_type].add(name)
-            
+
         return var
 
     def add_invariant(self, inv: z3.ExprRef):
@@ -72,7 +72,7 @@ class NewTransitionSystem:
     def to_chc_constraints(self) -> z3.ExprRef:
         """Convert to CHC (Constrained Horn Clauses) constraints"""
         s = z3.SolverFor("HORN")
-        
+
         # Create separate invariant functions for different variable types
         inv_funcs = {}
         for type_name, var_names in self.type_vars.items():
@@ -85,22 +85,22 @@ class NewTransitionSystem:
         # Initial states imply invariants
         for type_name, inv_func in inv_funcs.items():
             vars_of_type = [self.variables[name] for name in self.type_vars[type_name]]
-            s.add(z3.ForAll(vars_of_type, 
-                          z3.Implies(self.init, inv_func(*vars_of_type))))
+            s.add(z3.ForAll(vars_of_type,
+                            z3.Implies(self.init, inv_func(*vars_of_type))))
 
         # Invariants and transition relation imply next state invariants
         for type_name, inv_func in inv_funcs.items():
             curr_vars = [self.variables[name] for name in self.type_vars[type_name]]
             next_vars = [self.prime_variables[name] for name in self.type_vars[type_name]]
             s.add(z3.ForAll(self.get_all_variables(),
-                          z3.Implies(z3.And(inv_func(*curr_vars), self.trans),
-                                   inv_func(*next_vars))))
+                            z3.Implies(z3.And(inv_func(*curr_vars), self.trans),
+                                       inv_func(*next_vars))))
 
         # Invariants imply post-condition
         for type_name, inv_func in inv_funcs.items():
             vars_of_type = [self.variables[name] for name in self.type_vars[type_name]]
             s.add(z3.ForAll(vars_of_type,
-                          z3.Implies(inv_func(*vars_of_type), self.post)))
+                            z3.Implies(inv_func(*vars_of_type), self.post)))
 
         return z3.And(s.assertions())
 

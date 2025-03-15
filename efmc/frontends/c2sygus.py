@@ -11,6 +11,7 @@ from typing import List, Dict, Tuple, Optional
 
 logger = logging.getLogger(__name__)
 
+
 class CToSyGuSConverter:
     def __init__(self):
         self.variables = []
@@ -77,7 +78,7 @@ class CToSyGuSConverter:
         if match:
             self.loop_condition = match.group(1)
             loop_body = match.group(2)
-            
+
             # Parse statements in loop body
             stmt_pattern = r'([^;]+);'
             for stmt_match in re.finditer(stmt_pattern, loop_body):
@@ -100,13 +101,13 @@ class CToSyGuSConverter:
         expr = re.sub(r'\|\|', 'or', expr)
         expr = re.sub(r'!([^=])', r'(not \1)', expr)
         expr = re.sub(r'!=', '(not =)', expr)
-        
+
         # Handle array accesses
         expr = re.sub(r'([a-zA-Z_][a-zA-Z0-9_]*)\[([^\]]+)\]', r'(select \1 \2)', expr)
-        
+
         # Handle function calls
         expr = re.sub(r'([a-zA-Z_][a-zA-Z0-9_]*)\(([^)]*)\)', r'(\1 \2)', expr)
-        
+
         return expr
 
     def translate_assignment(self, assignment: str) -> Tuple[str, str]:
@@ -114,10 +115,10 @@ class CToSyGuSConverter:
         parts = assignment.split('=', 1)
         if len(parts) != 2:
             raise ValueError(f"Invalid assignment: {assignment}")
-        
+
         lhs = parts[0].strip()
         rhs = parts[1].strip()
-        
+
         # Handle special cases like x++ or x+=1
         if '+=' in assignment:
             lhs, rhs = assignment.split('+=', 1)
@@ -133,10 +134,10 @@ class CToSyGuSConverter:
         elif '--' in lhs:
             lhs = lhs.replace('--', '').strip()
             rhs = f"{lhs} - 1"
-            
+
         # Translate the right-hand side to SMT-LIB
         rhs_smt = self.translate_c_expr_to_smt(rhs)
-        
+
         return lhs, rhs_smt
 
     def generate_declarations(self) -> str:
@@ -155,7 +156,7 @@ class CToSyGuSConverter:
         """Generate pre-condition from assumptions."""
         if not self.assumptions:
             return "true"
-        
+
         smt_assumptions = [self.translate_c_expr_to_smt(assume) for assume in self.assumptions]
         if len(smt_assumptions) == 1:
             return smt_assumptions[0]
@@ -164,26 +165,26 @@ class CToSyGuSConverter:
     def generate_transition_relation(self) -> str:
         """Generate transition relation from loop body."""
         transitions = []
-        
+
         # For each variable, add a constraint for its next value
         for var in self.variables:
             var_updated = False
-            
+
             # Check if this variable is updated in the loop
             for stmt in self.loop_body:
                 if re.match(rf'{var}\s*=', stmt) or re.match(rf'{var}\s*\+=', stmt) or \
-                   re.match(rf'{var}\s*-=', stmt) or re.match(rf'{var}\+\+', stmt) or \
-                   re.match(rf'{var}--', stmt):
+                        re.match(rf'{var}\s*-=', stmt) or re.match(rf'{var}\+\+', stmt) or \
+                        re.match(rf'{var}--', stmt):
                     lhs, rhs_smt = self.translate_assignment(stmt)
                     if lhs.strip() == var:
                         transitions.append(f"(= {var}! {rhs_smt})")
                         var_updated = True
                         break
-            
+
             # If variable is not updated, it stays the same
             if not var_updated:
                 transitions.append(f"(= {var}! {var})")
-        
+
         return '\n        '.join(transitions)
 
     def generate_loop_condition(self) -> str:
@@ -194,11 +195,11 @@ class CToSyGuSConverter:
         """Generate post-condition from assertion."""
         if not self.assertion:
             return "true"
-        
+
         # The post-condition is the negation of the loop condition AND the assertion
         loop_cond_smt = self.translate_c_expr_to_smt(self.loop_condition)
         assertion_smt = self.translate_c_expr_to_smt(self.assertion)
-        
+
         return f"(=> (not {loop_cond_smt}) {assertion_smt})"
 
     def generate_args_string(self) -> str:
@@ -226,13 +227,13 @@ class CToSyGuSConverter:
         self.loop_condition = ""
         self.loop_body = []
         self.assertion = ""
-        
+
         # Parse C program
         self.parse_variables(c_program)
         self.parse_assumptions(c_program)
         self.parse_loop(c_program)
         self.parse_assertion(c_program)
-        
+
         # Generate SyGuS components
         logic = self.determine_logic()
         declarations = self.generate_declarations()
@@ -243,7 +244,7 @@ class CToSyGuSConverter:
         loop_cond = self.generate_loop_condition()
         trans_rel = self.generate_transition_relation()
         post_cond = self.generate_post_condition()
-        
+
         # Fill in the template
         sygus_output = self.sygus_template.format(
             logic=logic,
@@ -256,7 +257,7 @@ class CToSyGuSConverter:
             trans_rel=trans_rel,
             post_cond=post_cond
         )
-        
+
         return sygus_output
 
 

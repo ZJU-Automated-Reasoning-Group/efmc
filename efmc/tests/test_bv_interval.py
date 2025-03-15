@@ -39,7 +39,7 @@ class TestBitVecIntervalTemplate(TestCase):
         result = ef_prover.solve()
         # The system should be safe, but the template might be too weak to prove it
         # So we accept either a safe result or an unknown result (not unsafe)
-        self.assertFalse(result.is_safe == False and result.counterexample is not None, 
+        self.assertFalse(result.is_safe == False and result.counterexample is not None,
                          "Expected the system to be safe or unknown, but got unsafe with counterexample")
 
 

@@ -9,7 +9,8 @@ from efmc.smttools.pysmt_solver import PySMTSolver
 logger = logging.getLogger(__name__)
 
 
-def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, maxloops=None, profiling=False , pysmt_solver="z3"):
+def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.ExprRef, maxloops=None,
+                       profiling=False, pysmt_solver="z3"):
     """
     A function to solve EFSMT using the CEGIS algorithm
     :param logic: The logic to use for solving

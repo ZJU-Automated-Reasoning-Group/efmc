@@ -47,7 +47,7 @@ class QuantifierInstantiationProver:
         self.qi_strategy = kwargs.get('qi_strategy', 'auto')
         self.verbose = kwargs.get('verbose', True)
         self.invariant = None
-        
+
     def _create_inv_function(self) -> z3.FuncDeclRef:
         """
         Create the uninterpreted 'inv' function with appropriate signature.
@@ -57,7 +57,7 @@ class QuantifierInstantiationProver:
         """
         # Build argument types based on variable types
         arg_sorts = []
-        
+
         if self.sts.has_int:
             arg_sorts = [z3.IntSort() for _ in range(len(self.sts.variables))]
         elif self.sts.has_real:
@@ -67,10 +67,10 @@ class QuantifierInstantiationProver:
             arg_sorts = [z3.BitVecSort(bv_size) for _ in range(len(self.sts.variables))]
         else:
             raise NotImplementedError("Unsupported variable types in transition system")
-            
+
         # Create the function
         return z3.Function('inv', *(arg_sorts + [z3.BoolSort()]))
-        
+
     def _configure_solver(self) -> z3.Solver:
         """
         Configure the solver based on the transition system and QI strategy.
@@ -87,7 +87,7 @@ class QuantifierInstantiationProver:
             s = z3.SolverFor("UFBV")
         else:
             raise NotImplementedError("Unsupported variable types in transition system")
-            
+
         # Configure QI strategy
         if self.qi_strategy == 'mbqi':
             s.set('auto_config', False)
@@ -102,13 +102,13 @@ class QuantifierInstantiationProver:
             s.set('smt.mbqi', True)
             s.set('smt.ematching', True)
         # For 'auto', use Z3's default configuration
-        
+
         # Set timeout if specified
         if self.timeout:
             s.set('timeout', self.timeout * 1000)  # Z3 timeout is in milliseconds
-            
+
         return s
-        
+
     def encode_verification_conditions(self, inv: z3.FuncDeclRef, solver: z3.Solver) -> None:
         """
         Encode the verification conditions using the inv function.
@@ -118,17 +118,17 @@ class QuantifierInstantiationProver:
             solver: The Z3 solver to add constraints to
         """
         # Encode initiation condition: init(X) => inv(X)
-        solver.add(z3.ForAll(self.sts.variables, 
-                            z3.Implies(self.sts.init, inv(*self.sts.variables))))
-        
+        solver.add(z3.ForAll(self.sts.variables,
+                             z3.Implies(self.sts.init, inv(*self.sts.variables))))
+
         # Encode consecution condition: inv(X) ∧ trans(X,X') => inv(X')
         solver.add(z3.ForAll(self.sts.all_variables,
-                            z3.Implies(z3.And(inv(*self.sts.variables), self.sts.trans),
-                                      inv(*self.sts.prime_variables))))
-        
+                             z3.Implies(z3.And(inv(*self.sts.variables), self.sts.trans),
+                                        inv(*self.sts.prime_variables))))
+
         # Encode safety condition: inv(X) => post(X)
         solver.add(z3.ForAll(self.sts.variables,
-                            z3.Implies(inv(*self.sts.variables), self.sts.post)))
+                             z3.Implies(inv(*self.sts.variables), self.sts.post)))
 
     def solve(self) -> VerificationResult:
         """
@@ -143,50 +143,50 @@ class QuantifierInstantiationProver:
             # Create invariant function and configure solver
             inv = self._create_inv_function()
             solver = self._configure_solver()
-            
+
             # Encode verification conditions
             self.encode_verification_conditions(inv, solver)
-            
+
             if self.verbose:
                 logger.info("QI starting with strategy: %s", self.qi_strategy)
-                
+
             # Solve the verification problem
             start_time = time.time()
             result = solver.check()
             solve_time = time.time() - start_time
-            
+
             if result == z3.sat:
                 # System is safe, extract invariant
                 model = solver.model()
                 self.invariant = model.eval(inv(*self.sts.variables))
-                
+
                 if self.verbose:
                     logger.info("QI succeeded in %.2f seconds", solve_time)
                     logger.info("Invariant: %s", self.invariant)
-                    
+
                 return VerificationResult(True, self.invariant)
-                
+
             elif result == z3.unsat:
                 if self.verbose:
                     logger.info("QI found property violation in %.2f seconds", solve_time)
-                    
+
                 return VerificationResult(False, None)
-                
+
             else:
                 if self.verbose:
                     logger.warning("QI returned unknown result after %.2f seconds", solve_time)
                     logger.warning("Reason: %s", solver.reason_unknown())
-                    
+
                 return VerificationResult(False, None, None, is_unknown=True)
-                
+
         except z3.Z3Exception as e:
             logger.error("Z3 error during QI solving: %s", str(e))
             return VerificationResult(False, None)
-            
+
         except Exception as e:
             logger.error("Unexpected error during QI solving: %s", str(e))
             return VerificationResult(False, None)
-            
+
     def get_invariant(self) -> Optional[z3.ExprRef]:
         """
         Get the inductive invariant found during verification.
@@ -195,7 +195,7 @@ class QuantifierInstantiationProver:
             The invariant expression if found, None otherwise
         """
         return self.invariant
-        
+
     def try_multiple_strategies(self) -> VerificationResult:
         """
         Try multiple QI strategies and return the best result.
@@ -205,19 +205,19 @@ class QuantifierInstantiationProver:
         """
         strategies = ['mbqi', 'ematching', 'combined']
         best_result = VerificationResult(False, None)
-        
+
         for strategy in strategies:
             logger.info("Trying QI strategy: %s", strategy)
             self.qi_strategy = strategy
             result = self.solve()
-            
+
             if result.is_safe:
                 return result
-                
+
             # Keep the best result (prefer unsafe over unknown)
             if not best_result.is_safe and result.counterexample is not None:
                 best_result = result
-                
+
         return best_result
 
     def set_strategy(self, strategy: str) -> None:
@@ -235,5 +235,3 @@ class QuantifierInstantiationProver:
         self.qi_strategy = strategy
         if self.verbose:
             logger.info("Set QI strategy to: %s", strategy)
-
-
