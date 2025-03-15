@@ -14,7 +14,7 @@ class EFMCConfig:
         # Should we try to find the executables automatically? (e.g., from the system path?)
         self.project_root_dir = str(Path(__file__).parent.parent)
         self.z3_exec = self.project_root_dir + "/bin_solvers/bin/z3"
-        self.cvc5_exec = self.project_root_dir + "/bin_solvers/bin/cvc5-Linux"
+        self.cvc5_exec = self.project_root_dir + "/bin_solvers/bin/cvc5"
         self.btor_exec = self.project_root_dir + "/bin_solvers/bin/boolector"
         self.bitwuzla_exec = self.project_root_dir + "/bin_solvers/bin/bitwuzla"
         self.yices_exec = self.project_root_dir + "/bin_solvers/bin/yices-smt2"

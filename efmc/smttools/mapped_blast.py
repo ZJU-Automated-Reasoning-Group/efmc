@@ -1,5 +1,8 @@
 # coding: utf-8
 """
+This module contains functions for translating SMT2 formulas to CNF and DIMACS format.
+
+It also keeps track of the mapping between bit-vector variables and their corresponding Boolean variables.
 """
 import sys
 from typing import List, Dict, Tuple
@@ -64,6 +67,9 @@ def bitblast(formula: z3.ExprRef):
 
 
 def to_dimacs(cnf, table, proj_last) -> Tuple[List[str], List[str]]:
+    """
+    Translate an SMT2 formula to a CNF.
+    """
     cnf_clauses = []
     projection_scope = len(table)
 
@@ -97,6 +103,9 @@ def to_dimacs(cnf, table, proj_last) -> Tuple[List[str], List[str]]:
 
 
 def to_dimacs_numeric(cnf, table, proj_last):
+    """
+    Translate an SMT2 formula to numeric clauses.
+    """
     cnf_clauses = []
     projection_scope = len(table)
 
@@ -120,6 +129,9 @@ def to_dimacs_numeric(cnf, table, proj_last):
 
 
 def map_bitvector(input_vars):
+    """
+    Map bit-vector variables to their corresponding Boolean variables.
+    """
     # print("input vars...")
     # print(input_vars)
     clauses = []
@@ -142,6 +154,9 @@ def map_bitvector(input_vars):
 
 
 def dimacs_visitor(exp, table):
+    """
+    Visit an SMT2 formula and return the DIMACS clauses.
+    """
     if is_literal(exp):
         name = exp.decl().name()
         if name in table:
@@ -198,6 +213,10 @@ def dimacs_visitor_numeric(exp, table):
 
 
 def collect_vars(exp, seen=None):
+    """
+    Collect all variables in an SMT2 formula.
+    TODO: this can be slow? 
+    """
     if seen is None:
         seen = {}
     if exp in seen:
@@ -219,6 +238,9 @@ def collect_vars(exp, seen=None):
 
 
 def translate_smt2formula_to_cnf(formula: z3.ExprRef) -> Tuple[Dict[str, list], Dict[str, int], List[str], List[str]]:
+    """
+    Translate an SMT2 formula to a CNF.
+    """
     projection_last = ''
     projection_last = projection_last and projection_last.lower() != "false"
     # print("Generating DIMACS with projection...")
@@ -230,8 +252,10 @@ def translate_smt2formula_to_cnf(formula: z3.ExprRef) -> Tuple[Dict[str, list], 
     return bv2bool, id_table, header, clauses
 
 
-def translate_smt2formula_to_numeric_clauses(formula: z3.ExprRef) -> Tuple[Dict[str, list], Dict[str, int],
-List[str], List[int]]:
+def translate_smt2formula_to_numeric_clauses(formula: z3.ExprRef) -> Tuple[Dict[str, list], Dict[str, int], List[str], List[int]]:
+    """
+    Translate an SMT2 formula to numeric clauses.
+    """
     projection_last = ''
     projection_last = projection_last and projection_last.lower() != "false"
     # print("Generating DIMACS with projection...")
@@ -241,6 +265,9 @@ List[str], List[int]]:
 
 
 def translate_smt2formula_to_cnf_file(formula: z3.ExprRef, output_file: str):
+    """
+    Translate an SMT2 formula to a CNF file.
+    """
     projection_last = ''
     projection_last = projection_last and projection_last.lower() != "false"
     blasted, id_table, bv2bool = bitblast(formula)

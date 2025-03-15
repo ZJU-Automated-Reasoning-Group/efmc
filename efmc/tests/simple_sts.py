@@ -31,6 +31,14 @@ get_int_sys9():
     # 'ticket' is the next available number
     # 'serving' is the currently served number
     # The property is that ticket is always >= serving
+get_bool_sys1():
+    # Original boolean test case with variables x and y
+get_bool_sys2():
+    # Binary counter that increments from 000 to 111
+get_bool_sys3():
+    # Mutual exclusion protocol with two processes
+get_bool_sys4():
+    # Fibonacci-like sequence with boolean variables
 """
 
 import z3
@@ -398,3 +406,88 @@ def create_simple_sts(use_real=True):
     sts.post = y >= 0
 
     return sts
+
+
+# Boolean transition systems from bp_pred_abs.py
+
+def get_bool_sys1():
+    """
+    Original boolean test case with variables x and y.
+    """
+    x, y, xp, yp = z3.Bools("x y x! y!")
+    init = z3.And(x, y)
+    trans = z3.And(z3.Implies(y, z3.And(xp == y, yp == y)),
+                   z3.Implies(z3.Not(y), z3.And(xp == z3.Not(y), yp == y)))
+    post = x
+    all_vars = [x, y, xp, yp]
+    return all_vars, init, trans, post
+
+
+def get_bool_sys2():
+    """
+    Binary counter that increments from 000 to 111 in binary.
+    """
+    a, b, c, ap, bp, cp = z3.Bools("a b c a! b! c!")
+    
+    # Counter that increments from 000 to 111 in binary
+    init = z3.And(z3.Not(a), z3.Not(b), z3.Not(c))
+    trans = z3.And(
+        ap == z3.Xor(a, z3.And(b, c)),
+        bp == z3.Xor(b, c),
+        cp == z3.Not(c)
+    )
+    post = z3.Implies(z3.And(a, b, c), z3.And(a, b, c))  # Trivially true
+    
+    all_vars = [a, b, c, ap, bp, cp]
+    return all_vars, init, trans, post
+
+
+def get_bool_sys3():
+    """
+    Mutual exclusion protocol with two processes.
+    """
+    p, q, p_crit, q_crit, pp, qp, p_critp, q_critp = z3.Bools("p q p_crit q_crit p! q! p_crit! q_crit!")
+    
+    # Simple mutual exclusion protocol
+    init = z3.And(z3.Not(p_crit), z3.Not(q_crit), z3.Not(p), z3.Not(q))
+
+    # Transition relation for a simple mutex protocol
+    trans = z3.And(
+        # Process p
+        z3.Implies(z3.And(z3.Not(p), z3.Not(p_crit)), z3.And(pp == True, p_critp == z3.Not(q_crit))),
+        z3.Implies(z3.And(p, z3.Not(p_crit)), z3.And(pp == False, p_critp == True)),
+        z3.Implies(p_crit, z3.And(pp == False, p_critp == False)),
+
+        # Process q
+        z3.Implies(z3.And(z3.Not(q), z3.Not(q_crit)), z3.And(qp == True, q_critp == z3.Not(p_crit))),
+        z3.Implies(z3.And(q, z3.Not(q_crit)), z3.And(qp == False, q_critp == True)),
+        z3.Implies(q_crit, z3.And(qp == False, q_critp == False))
+    )
+
+    # Mutual exclusion property
+    post = z3.Not(z3.And(p_crit, q_crit))
+    
+    all_vars = [p, q, p_crit, q_crit, pp, qp, p_critp, q_critp]
+    return all_vars, init, trans, post
+
+
+def get_bool_sys4():
+    """
+    Fibonacci-like sequence with boolean variables.
+    """
+    i, j, ip, jp = z3.Bools("i j i! j!")
+    
+    # Initialize i and j to false
+    init = z3.And(z3.Not(i), z3.Not(j))
+
+    # Transition: i' = j, j' = i XOR j
+    trans = z3.And(
+        ip == j,
+        jp == z3.Xor(i, j)
+    )
+
+    # Property: i and j are never both true simultaneously
+    post = z3.Not(z3.And(i, j))
+    
+    all_vars = [i, j, ip, jp]
+    return all_vars, init, trans, post

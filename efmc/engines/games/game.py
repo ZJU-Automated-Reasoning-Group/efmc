@@ -35,6 +35,7 @@ class Game:
                 new_init = And(new_init, Not(self.goal)).simplify()
 
         # Use specified interpolation procedure
+        # it seems that to use the interpolant API in pysmt, we need to install mathsat?
         interpolant = self.interpolate(new_init, self.goal)
 
         necessary_reach = self.instantiate(self.reach, interpolant).simplify()

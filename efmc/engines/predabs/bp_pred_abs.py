@@ -9,42 +9,7 @@ from typing import List
 import z3
 
 from efmc.utils import negate, is_valid, ctx_simplify, eval_predicates
-
-
-class BooleanProgram:
-    """
-    A transition system with only Boolean variables
-    E.g., "Boolean program"
-    """
-
-    def __init__(self):
-        self.all_variables = []  # self.variables + self.prime_variables
-        self.variables = []  # x, y
-        self.prime_variables = []  # x!, y!
-        self.trans = None  # formula about the relation of x, y, x!, y!
-        self.init = None  # formula about x, y
-        self.post = None  # formula about x, y
-        self.initialized = False
-
-    def __repr__(self):
-        print(self.all_variables)
-        print(self.init)
-        print(self.trans)
-        print(self.post)
-        return " "
-
-    def from_z3_cnts(self, ts: List):
-        self.all_variables, self.init, self.trans, self.post = ts[0], ts[1], ts[2], ts[3]
-        # print(self.all_variables)
-        for var in self.all_variables:
-            # print(str(var))
-            # FIXME: using name is not a good and general idea
-            if str(var).endswith('!'):
-                self.prime_variables.append(var)
-            else:
-                self.variables.append(var)
-        # print(self.variables, self.prime_variables)
-        self.initialized = True
+from efmc.sts import TransitionSystem
 
 
 def strongest_consequence(fml: z3.ExprRef, predicates: List[z3.ExprRef], k=None):
@@ -79,7 +44,7 @@ def fixpoint(old_inv: z3.ExprRef, inv: z3.ExprRef) -> bool:
 
 
 class PredicateAbstractionProver:
-    def __init__(self, system: BooleanProgram):
+    def __init__(self, system: TransitionSystem):
         self.sts = system
         self.preds = []
         """
@@ -126,7 +91,7 @@ class PredicateAbstractionProver:
 def run_test_case(name, init_formula, trans_formula, post_formula, predicates):
     """Helper function to run a test case with the given parameters"""
     print(f"\n=== Running test case: {name} ===")
-    sts = BooleanProgram()
+    sts = TransitionSystem()
     sts.from_z3_cnts([predicates + [p_var for p, p_var in var_map],
                       init_formula, trans_formula, post_formula])
 
@@ -146,7 +111,7 @@ if __name__ == '__main__':
     preds = [x, y]
 
     all_vars = [x, y, xp, yp]
-    sts = BooleanProgram()
+    sts = TransitionSystem()
     sts.from_z3_cnts([all_vars, init, trans, post])
 
     pp = PredicateAbstractionProver(sts)
