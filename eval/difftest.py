@@ -60,11 +60,11 @@ logger = logging.getLogger("difftest")
 class EngineConfig:
     """Configuration for a verification engine"""
     name: str
-    engine_class: Any
-    supported_types: List[str]  # 'bool', 'int', 'real', 'bv'
-    timeout: int = 300  # Default timeout in seconds
+    engine_class: type
+    supported_types: List[str]
+    k_value: int = None
+    timeout: int = None
     additional_params: Dict[str, Any] = None
-    k_value: int = None  # For K-Induction
 
 @dataclass
 class TestResult:
@@ -97,7 +97,8 @@ class DiffTester:
             "pdr": EngineConfig(
                 name="PDR",
                 engine_class=PDRProver,
-                supported_types=["bool", "int", "real", "bv"]
+                supported_types=["bool", "int", "real", "bv"],
+                timeout=60  # Default timeout of 60 seconds
             ),
             "kind": EngineConfig(
                 name="K-Induction",
@@ -205,6 +206,8 @@ class DiffTester:
             if engine_config.name == "K-Induction" and engine_config.k_value is not None:
                 # K-Induction requires a 'k' parameter
                 result = engine.solve(k=engine_config.k_value)
+            elif engine_config.name == "PDR" and engine_config.timeout is not None:
+                result = engine.solve(timeout=engine_config.timeout)
             else:
                 result = engine.solve()
         except Exception as e:
@@ -214,7 +217,7 @@ class DiffTester:
         execution_time = time.time() - start_time
         
         # If execution took longer than timeout, mark as unknown
-        if execution_time > engine_config.timeout:
+        if engine_config.timeout is not None and execution_time > engine_config.timeout:
             logger.warning(f"{engine_config.name} timed out after {execution_time:.2f} seconds")
             if result:
                 result.is_unknown = True
@@ -514,6 +517,9 @@ def main():
     # Save problematic systems
     parser.add_argument("--save-bugs", help="Directory to save problematic transition systems")
     
+    # Timeout
+    parser.add_argument("--timeout", type=int, help="Timeout in seconds for engines that support it", default=60)
+    
     args = parser.parse_args()
     
     # Initialize tester
@@ -522,6 +528,10 @@ def main():
     # Update K value for K-Induction if specified
     if "kind" in tester.engines and args.k_value:
         tester.engines["kind"].k_value = args.k_value
+    
+    # Update timeout for PDR if specified
+    if "pdr" in tester.engines and args.timeout:
+        tester.engines["pdr"].timeout = args.timeout
     
     # Load or generate test systems
     systems = []

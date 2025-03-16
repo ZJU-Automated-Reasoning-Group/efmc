@@ -19,13 +19,29 @@ logger = logging.getLogger(__name__)
 class PDRProver:
     def __init__(self, system: TransitionSystem):
         self.sts = system
+        self.verbose = False
 
-    def solve(self) -> VerificationResult:
-        """From transition system to CHC"""
+    def set_verbose(self, verbose: bool):
+        """Set verbose mode"""
+        self.verbose = verbose
+
+    def solve(self, timeout: int = 60) -> VerificationResult:
+        """From transition system to CHC
+        
+        Args:
+            timeout: Timeout in seconds (default: 60)
+            
+        Returns:
+            VerificationResult: The verification result
+        """
         assert self.sts.initialized
 
         # construct the "inv" uninterpreted function
         s = z3.SolverFor("HORN")
+        
+        # Set timeout in milliseconds
+        s.set("timeout", timeout * 1000)
+        
         inv_sig = "z3.Function(\'inv\', "
 
         if self.sts.has_int:
@@ -52,23 +68,40 @@ class PDRProver:
         s.add(z3.ForAll(self.sts.variables, z3.Implies(inv(self.sts.variables),
                                                        self.sts.post)))
 
-        print("PDR starting!!!")
-        # print(s.to_smt2())
+        if self.verbose:
+            print("PDR starting!!!")
+            # print(s.to_smt2())
+        
         start = time.time()
-        res = s.check()
-        if res == z3.sat:
-            print("PDR time: ", time.time() - start)
-            print("safe")
-            invariant = s.model().eval(inv(self.sts.variables))
-            print("Invariant: ", invariant)
-            return VerificationResult(True, invariant)
-        elif res == z3.unsat:
-            print("PDR time: ", time.time() - start)
-            print("unsafe")
-            # PDR doesn't provide a concrete counterexample, so we mark it as unknown
-            # rather than unsafe since we can't provide a concrete counterexample
-            return VerificationResult(False, None, None, is_unknown=True)
-        else:
-            print("PDR time: ", time.time() - start)
-            print("unknown")
+        try:
+            res = s.check()
+            elapsed_time = time.time() - start
+            
+            if self.verbose:
+                print(f"PDR time: {elapsed_time:.2f}s")
+            
+            if res == z3.sat:
+                if self.verbose:
+                    print("safe")
+                invariant = s.model().eval(inv(self.sts.variables))
+                if self.verbose:
+                    print("Invariant: ", invariant)
+                return VerificationResult(True, invariant)
+            elif res == z3.unsat:
+                if self.verbose:
+                    print("unsafe")
+                # PDR doesn't provide a concrete counterexample, so we mark it as unknown
+                # rather than unsafe since we can't provide a concrete counterexample
+                return VerificationResult(False, None, None, is_unknown=True)
+            else:
+                if self.verbose:
+                    print("unknown")
+                return VerificationResult(False, None, None, is_unknown=True)
+        except z3.Z3Exception as e:
+            elapsed_time = time.time() - start
+            if self.verbose:
+                print(f"PDR time: {elapsed_time:.2f}s")
+                print(f"Z3 exception: {e}")
+            
+            # If we get a timeout or other Z3 exception, return unknown
             return VerificationResult(False, None, None, is_unknown=True)
