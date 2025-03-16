@@ -25,11 +25,34 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class VerificationResult:
-    """Stores the result of the verification process."""
+    """
+    Stores the result of the verification process.
+    
+    Fields:
+        is_safe: True if the system is proven safe, False otherwise
+        is_unsafe: True if the system is proven unsafe (counterexample exists), False otherwise
+        is_unknown: True if the safety status could not be determined, False otherwise
+        invariant: The inductive invariant if the system is safe, None otherwise
+        counterexample: A counterexample if the system is unsafe, None otherwise
+        
+    Note: At most one of is_safe, is_unsafe, and is_unknown should be True.
+    """
     is_safe: bool
     invariant: Optional[z3.ExprRef]
     counterexample: Optional[z3.ModelRef] = None
     is_unknown: bool = False
+    is_unsafe: bool = False
+    
+    def __post_init__(self):
+        """Validate the verification result."""
+        # If we have a counterexample, the system should be unsafe
+        if self.counterexample is not None:
+            self.is_unsafe = True
+            
+        # Ensure consistency of the result
+        safety_flags = [self.is_safe, self.is_unsafe, self.is_unknown]
+        if sum(safety_flags) != 1:
+            logger.warning(f"Inconsistent verification result: {safety_flags}")
 
 
 class SolverTimeout(Exception):

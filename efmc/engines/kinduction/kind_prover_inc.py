@@ -121,7 +121,7 @@ class KInductionProverInc:
             if self.solver1.check() == z3.sat:
                 print(f"--> Bug found at step {k}")
                 model = self.solver1.model()
-                return VerificationResult(False, None, model)
+                return VerificationResult(False, None, model, is_unsafe=True)
             self.solver1.pop()
 
             # Inductive case
@@ -151,7 +151,9 @@ class KInductionProverInc:
             if k < max_k - 1:
                 self._add_transition_at_k(k)
 
-        return VerificationResult(False, None, None)
+        # Reached max bound without finding a proof or counterexample
+        print(f"Reached max bound {max_k} without conclusive result")
+        return VerificationResult(False, None, None, is_unknown=True)
 
 
 def main():

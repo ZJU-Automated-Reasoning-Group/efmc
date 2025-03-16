@@ -168,14 +168,14 @@ class AbductionProver:
         s.push()
         s.add(self.sts.init, z3.Not(inv))
         if s.check() == z3.sat:
-            return VerificationResult(False, None, s.model())
+            return VerificationResult(False, None, s.model(), is_unsafe=True)
         s.pop()
 
         # Check safety
         s.push()
         s.add(inv, z3.Not(self.sts.post))
         if s.check() == z3.sat:
-            return VerificationResult(False, None, s.model())
+            return VerificationResult(False, None, s.model(), is_unsafe=True)
         s.pop()
 
         return VerificationResult(True, inv)
@@ -247,12 +247,42 @@ class AbductionProver:
             if inv is not None:
                 logger.info("System verified safe")
                 return VerificationResult(True, inv)
-            logger.info("Could not verify system safety")
-            # Return the last counterexample if available
-            return VerificationResult(False, None, self.last_cti)
+            
+            logger.info("Could not find an inductive invariant")
+            # last_cti represents a counterexample to inductiveness (CTI) - a state that satisfies the current candidate invariant but whose successor state violates it. It does not necessarily mean there's a concrete counterexample that violates the post-condition.
+
+            # So, if we have a counterexample, we need to determine if it's a real counterexample to safety
+            if self.last_cti is not None:
+                # Check if the CTI state is reachable from an initial state
+                # This is a simplified check - a more thorough approach would involve
+                # checking if there's a path from init to the CTI state
+                pre_state_constraints = []
+                for v in self.sts.variables:
+                    if v in self.last_cti:
+                        pre_state_constraints.append(v == self.last_cti[v])
+                
+                pre_state = z3.And(*pre_state_constraints) if pre_state_constraints else z3.BoolVal(True)
+                
+                # Check if this state violates the post-condition
+                s = z3.Solver()
+                s.set("timeout", self.timeout)
+                s.add(pre_state, z3.Not(self.sts.post))
+                
+                if s.check() == z3.sat:
+                    logger.info("Found counterexample to safety")
+                    return VerificationResult(False, None, self.last_cti, is_unsafe=True)
+                else:
+                    logger.info("CTI found but it doesn't violate safety directly")
+                    logger.info("Could not determine system safety")
+                    return VerificationResult(False, None, self.last_cti, is_unknown=True)
+            
+            # Otherwise, we don't know if the system is safe or unsafe
+            logger.info("Could not determine system safety")
+            return VerificationResult(False, None, None, is_unknown=True)
+            
         except SolverTimeout:
             logger.error("Verification timed out")
-            return VerificationResult(False, None)
+            return VerificationResult(False, None, None, is_unknown=True)
         except Exception as e:
             logger.error(f"Verification error: {e}")
-            return VerificationResult(False, None)
+            return VerificationResult(False, None, None, is_unknown=True)

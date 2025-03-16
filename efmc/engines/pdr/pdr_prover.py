@@ -65,7 +65,9 @@ class PDRProver:
         elif res == z3.unsat:
             print("PDR time: ", time.time() - start)
             print("unsafe")
-            return VerificationResult(False, None)
+            # PDR doesn't provide a concrete counterexample, so we mark it as unknown
+            # rather than unsafe since we can't provide a concrete counterexample
+            return VerificationResult(False, None, None, is_unknown=True)
         else:
             print("PDR time: ", time.time() - start)
             print("unknown")

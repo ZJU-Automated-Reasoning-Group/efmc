@@ -25,6 +25,10 @@ from efmc.engines.pdr import PDRProver
 from efmc.engines.qe import QuantifierEliminationProver
 from efmc.engines.qi import QuantifierInstantiationProver
 from efmc.engines.houdini import HoudiniProver
+from efmc.engines.abduction.abduction_prover import AbductionProver
+from efmc.engines.bdd.bdd_prover import BDDProver
+from efmc.engines.predabs.predabs_prover import PredicateAbstractionProver
+from efmc.engines.symabs.symabs_prover import SymbolicAbstractionProver
 from efmc.utils.verification_utils import VerificationResult
 
 # Available templates
@@ -250,7 +254,11 @@ class EFMCRunner:
             "kind": self.run_k_induction,
             "qe": self.run_qe,
             "qi": self.run_qi,
-            "houdini": self.run_houdini  # Add Houdini engine
+            "houdini": self.run_houdini,
+            "abduction": self.run_abduction,
+            "bdd": self.run_bdd,
+            "predabs": self.run_predabs,
+            "symabs": self.run_symabs
         }
 
         if g_verifier_args.engine not in engine_map:
@@ -266,6 +274,72 @@ class EFMCRunner:
         result = houdini_prover.solve()
         self.print_verification_result(result)
 
+    def run_abduction(self, sts: TransitionSystem) -> None:
+        """Run abduction-based invariant inference"""
+        self.logger.info("Starting abduction-based verification...")
+        abduction_prover = AbductionProver(sts)
+        if hasattr(g_verifier_args, 'abduction_max_iterations'):
+            abduction_prover.max_iterations = g_verifier_args.abduction_max_iterations
+        if hasattr(g_verifier_args, 'abduction_timeout'):
+            abduction_prover.timeout = g_verifier_args.abduction_timeout
+        result = abduction_prover.solve()
+        self.print_verification_result(result)
+
+    def run_bdd(self, sts: TransitionSystem) -> None:
+        """Run BDD-based verification"""
+        self.logger.info("Starting BDD-based verification...")
+        use_forward = True
+        if hasattr(g_verifier_args, 'bdd_backward') and g_verifier_args.bdd_backward:
+            use_forward = False
+        max_iterations = 1000
+        if hasattr(g_verifier_args, 'bdd_max_iterations'):
+            max_iterations = g_verifier_args.bdd_max_iterations
+        
+        bdd_prover = BDDProver(sts, use_forward=use_forward, max_iterations=max_iterations)
+        result = bdd_prover.solve()
+        self.print_verification_result(result)
+
+    def run_predabs(self, sts: TransitionSystem) -> None:
+        """Run predicate abstraction-based verification"""
+        self.logger.info("Starting predicate abstraction-based verification...")
+        predabs_prover = PredicateAbstractionProver(sts)
+        
+        # Set predicates if provided
+        if hasattr(g_verifier_args, 'predabs_predicates') and g_verifier_args.predabs_predicates:
+            try:
+                # Parse predicates from strings if they are provided as strings
+                import z3
+                predicates = []
+                for pred_str in g_verifier_args.predabs_predicates:
+                    # Try to parse as SMT-LIB2 string
+                    try:
+                        pred = z3.parse_smt2_string(f"(assert {pred_str})")[0]
+                        predicates.append(pred)
+                    except Exception as e:
+                        self.logger.warning(f"Failed to parse predicate '{pred_str}': {e}")
+                
+                if predicates:
+                    predabs_prover.set_predicates(predicates)
+                else:
+                    self.logger.warning("No valid predicates provided, using default predicates")
+            except Exception as e:
+                self.logger.error(f"Error setting predicates: {e}")
+        
+        result = predabs_prover.solve()
+        self.print_verification_result(result)
+
+    def run_symabs(self, sts: TransitionSystem) -> None:
+        """Run symbolic abstraction-based verification"""
+        self.logger.info("Starting symbolic abstraction-based verification...")
+        symabs_prover = SymbolicAbstractionProver(sts)
+        
+        # Set domain if provided
+        if hasattr(g_verifier_args, 'symabs_domain') and g_verifier_args.symabs_domain:
+            symabs_prover.domain = g_verifier_args.symabs_domain
+        
+        result = symabs_prover.solve()
+        self.print_verification_result(result)
+
 
 def parse_arguments():
     """Parse command line arguments"""
@@ -278,7 +352,7 @@ def parse_arguments():
     input_group.add_argument('--lang', type=str, choices=['chc', 'sygus', 'auto'],
                              default='auto', help='Input language format')
     input_group.add_argument('--engine', type=str,
-                             choices=['ef', 'pdr', 'kind', 'qe', 'eld', 'qi', 'houdini'],
+                             choices=['ef', 'pdr', 'kind', 'qe', 'eld', 'qi', 'houdini', 'abduction', 'bdd', 'predabs', 'symabs'],
                              default='ef', help='Verification engine to use')
     input_group.add_argument('--log-level', type=str,
                              choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
@@ -313,8 +387,8 @@ def parse_arguments():
 
     # Currently, the timeout is not used for the engines inside efmc
     # It is better to control the timeout in some "upper-level" scripts.
-    # solver_group.add_argument('timeout', type=int, default=5,
-    #                      help='Timeout in seconds for the verification engine')
+    solver_group.add_argument('--timeout', type=int, default=3600,
+                             help='Timeout in seconds for external solvers and binary verifiers')
 
     # Bitvector options
     bv_group = parser.add_argument_group('Bitvector options')
@@ -348,6 +422,31 @@ def parse_arguments():
     qi_group = parser.add_argument_group('Quantifier instantiation-based verification options')
     qi_group.add_argument('--qi-strategy', type=str, default='mbqi',
                           help='Quantifier instantiation strategy (mbqi, ematching, combined, auto)')
+
+    # Abduction-based verification options
+    abduction_group = parser.add_argument_group('Abduction-based verification options')
+    abduction_group.add_argument('--abduction-timeout', type=int, default=10000,
+                                help='Timeout in milliseconds for abduction solver queries')
+    abduction_group.add_argument('--abduction-max-iterations', type=int, default=300,
+                                help='Maximum number of strengthening iterations for abduction')
+
+    # BDD-based verification options
+    bdd_group = parser.add_argument_group('BDD-based verification options')
+    bdd_group.add_argument('--bdd-backward', action='store_true',
+                          help='Use backward reachability analysis instead of forward')
+    bdd_group.add_argument('--bdd-max-iterations', type=int, default=1000,
+                          help='Maximum number of iterations for fixed-point computation')
+
+    # Predicate abstraction options
+    predabs_group = parser.add_argument_group('Predicate abstraction options')
+    predabs_group.add_argument('--predabs-predicates', type=str, nargs='+',
+                              help='List of predicates to use for predicate abstraction')
+
+    # Symbolic abstraction options
+    symabs_group = parser.add_argument_group('Symbolic abstraction options')
+    symabs_group.add_argument('--symabs-domain', type=str, default='interval',
+                             choices=['interval', 'bits', 'known_bits'],
+                             help='Abstract domain to use for symbolic abstraction')
 
     # PDR engine options: Allow for parsing options to Z3's PDR engine (named Spacer)
     # FIXME: refer to the Z3 documentation for the options

@@ -206,7 +206,7 @@ class KInductionProver(object):
                             if var_at_time in model:
                                 print(f"  {var} = {model[var_at_time]}")
                 print("unsafe")
-                return VerificationResult(False, None, model)
+                return VerificationResult(False, None, model, is_unsafe=True)
 
             f_kind = self.get_k_induction(b)
             if self.verbose:

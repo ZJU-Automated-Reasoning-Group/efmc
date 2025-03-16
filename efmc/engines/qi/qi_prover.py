@@ -170,7 +170,9 @@ class QuantifierInstantiationProver:
                 if self.verbose:
                     logger.info("QI found property violation in %.2f seconds", solve_time)
 
-                return VerificationResult(False, None)
+                # We don't have a specific counterexample, so we mark it as unknown
+                # rather than unsafe since we can't provide a concrete counterexample
+                return VerificationResult(False, None, None, is_unknown=True)
 
             else:
                 if self.verbose:
@@ -181,11 +183,11 @@ class QuantifierInstantiationProver:
 
         except z3.Z3Exception as e:
             logger.error("Z3 error during QI solving: %s", str(e))
-            return VerificationResult(False, None)
+            return VerificationResult(False, None, None, is_unknown=True)
 
         except Exception as e:
             logger.error("Unexpected error during QI solving: %s", str(e))
-            return VerificationResult(False, None)
+            return VerificationResult(False, None, None, is_unknown=True)
 
     def get_invariant(self) -> Optional[z3.ExprRef]:
         """
@@ -204,7 +206,7 @@ class QuantifierInstantiationProver:
             VerificationResult: Object containing verification result and related data
         """
         strategies = ['mbqi', 'ematching', 'combined']
-        best_result = VerificationResult(False, None)
+        best_result = VerificationResult(False, None, None, is_unknown=True)
 
         for strategy in strategies:
             logger.info("Trying QI strategy: %s", strategy)
@@ -215,8 +217,9 @@ class QuantifierInstantiationProver:
                 return result
 
             # Keep the best result (prefer unsafe over unknown)
-            if not best_result.is_safe and result.counterexample is not None:
+            if result.is_unsafe:
                 best_result = result
+                break  # If we found a counterexample, no need to try other strategies
 
         return best_result
 
