@@ -34,6 +34,7 @@ class VerificationResult:
         is_unknown: True if the safety status could not be determined, False otherwise
         invariant: The inductive invariant if the system is safe, None otherwise
         counterexample: A counterexample if the system is unsafe, None otherwise
+        timed_out: True if the verification process timed out, False otherwise
         
     Note: At most one of is_safe, is_unsafe, and is_unknown should be True.
     """
@@ -42,12 +43,17 @@ class VerificationResult:
     counterexample: Optional[z3.ModelRef] = None
     is_unknown: bool = False
     is_unsafe: bool = False
+    timed_out: bool = False
     
     def __post_init__(self):
         """Validate the verification result."""
         # If we have a counterexample, the system should be unsafe
         if self.counterexample is not None:
             self.is_unsafe = True
+            
+        # If the verification timed out, mark it as unknown
+        if self.timed_out:
+            self.is_unknown = True
             
         # Ensure consistency of the result
         safety_flags = [self.is_safe, self.is_unsafe, self.is_unknown]

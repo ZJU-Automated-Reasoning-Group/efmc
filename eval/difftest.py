@@ -518,6 +518,8 @@ def main():
     parser.add_argument("--save-bugs", help="Directory to save problematic transition systems")
     
     # Timeout
+    # FIXME, in this file, we run the engines via the Python API, so the timeout maynot work (even we set timeout Z3 and set a few checkpoints in the high-level engines.) Thus, we'd better not to use "too complex" systems
+    # or use engiens that are often too slow and hard to control the timout, e.g., PDR?
     parser.add_argument("--timeout", type=int, help="Timeout in seconds for engines that support it", default=60)
     
     args = parser.parse_args()

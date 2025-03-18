@@ -9,6 +9,7 @@ TODO:
    - Forward + backward?
 """
 import logging
+import time
 from functools import lru_cache
 
 import z3
@@ -28,12 +29,11 @@ class KInductionProver(object):
     This one is non-incremental
     """
 
-    def __init__(self, system: TransitionSystem, verbose=False, show_model=False):
+    def __init__(self, system: TransitionSystem, show_model=False):
         """Init"""
         self.sts = system
         self.use_aux_invariant = False  # use aux invariant generate by other tools
         self.aux_invariant = None
-        self.verbose = verbose
         self.show_model = show_model
 
         self.use_bv = system.has_bv
@@ -166,60 +166,74 @@ class KInductionProver(object):
 
         return z3.And(k_hypothesis, unrolling, not_post_k_plus_1, simple_path, aux_invs)
 
-    def solve(self, k: int) -> VerificationResult:
-        """Interleaves BMC and K-Ind to verify the property."""
+    def solve(self, k: int, timeout=None) -> VerificationResult:
+        """Interleaves BMC and K-Ind to verify the property.
+        
+        Args:
+            k: The maximum bound to check
+            timeout: The timeout in seconds (overrides the instance timeout if provided)
+            
+        Returns:
+            VerificationResult: The result of the verification
+        """
+        # Use the provided timeout if available, otherwise use the instance timeout 
+        start_time = time.time()
 
         if self.use_aux_invariant:
-            if self.verbose:
-                print("Generating auxiliary invariant...")
+            logger.info("Generating auxiliary invariant...")
             inv_gen = InvariantGenerator(self.sts)
             aux_inv = inv_gen.generate_via_ef()
-            if self.verbose:
-                print("Generated auxiliary invariant:", aux_inv)
+            logger.info("Generated auxiliary invariant: %s", aux_inv)
             if not z3.is_true(aux_inv):
                 self.aux_invariant = aux_inv
             else:
                 self.use_aux_invariant = False
-                if self.verbose:
-                    print("Invariant generator produced trivial invariant, disabling auxiliary invariants")
+                logger.info("Invariant generator produced trivial invariant, disabling auxiliary invariants")
 
-        print("Checking property %s..." % str(self.sts.post))
+        logger.info("Checking property %s...", str(self.sts.post))
         for b in range(k):
+            # BMC phase
             f_bmc = self.get_bmc(b)
-            if self.verbose:
-                print(f"[BMC] Checking bound {b + 1}...")
-            else:
-                logger.debug("   [BMC]    Checking bound %d..." % (b + 1))
+            logger.debug("   [BMC]    Checking bound %d...", b + 1)
 
             s = z3.Solver()
             s.add(f_bmc)
             result = s.check()
+            
             if result == z3.sat:
-                print("--> Bug found at step %d" % (b + 1))
+                logger.info("--> Bug found at step %d", b + 1)
                 model = s.model()
                 if self.show_model:
-                    print("Model (counterexample):")
+                    logger.info("Model (counterexample):")
                     for i in range(b + 2):  # Show states from 0 to b+1
-                        print(f"State {i}:")
+                        logger.info("State %d:", i)
                         for var in self.sts.variables:
                             var_at_time = self.at_time(var, i)
                             if var_at_time in model:
-                                print(f"  {var} = {model[var_at_time]}")
-                print("unsafe")
+                                logger.info("  %s = %s", var, model[var_at_time])
+                logger.info("unsafe")
                 return VerificationResult(False, None, model, is_unsafe=True)
-
+                
+            # K-induction phase
             f_kind = self.get_k_induction(b)
-            if self.verbose:
-                print(f"[K-IND] Checking bound {b + 1}...")
-            else:
-                logger.debug("   [K-IND]  Checking bound %d..." % (b + 1))
+            logger.debug("   [K-IND]  Checking bound %d...", b + 1)
 
-            if is_unsat(f_kind):
-                print("--> The system is proved safe at {}".format((b + 1)))
-                print("safe")
+            # Use another solver instance for k-induction
+            s_kind = z3.Solver()
+            s_kind.add(f_kind)
+            kind_result = s_kind.check()
+            
+            if is_unsat(f_kind):  # We can also use kind_result == z3.unsat
+                logger.info("--> The system is proved safe at %d", b + 1)
+                logger.info("safe")
                 # Create an invariant from the k-induction proof
                 invariant = self.sts.post
                 return VerificationResult(True, invariant)
 
-        print("unknown")
+            # Check for timeout after potentially long-running solver operations
+            if timeout is not None and time.time() - start_time > timeout:
+                logger.info("Timeout reached after %d seconds", timeout)
+                return VerificationResult(False, None, None, is_unknown=True, is_timeout=True)
+
+        logger.info("unknown")
         return VerificationResult(False, None, None, is_unknown=True)

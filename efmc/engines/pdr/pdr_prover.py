@@ -25,7 +25,7 @@ class PDRProver:
         """Set verbose mode"""
         self.verbose = verbose
 
-    def solve(self, timeout: int = 60) -> VerificationResult:
+    def solve(self, timeout=None) -> VerificationResult:
         """From transition system to CHC
         
         Args:
@@ -40,7 +40,8 @@ class PDRProver:
         s = z3.SolverFor("HORN")
         
         # Set timeout in milliseconds
-        s.set("timeout", timeout * 1000)
+        if timeout is not None:
+            s.set("timeout", timeout * 1000)  # does this work?
         
         inv_sig = "z3.Function(\'inv\', "
 

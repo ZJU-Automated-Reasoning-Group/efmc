@@ -140,6 +140,11 @@ class TransitionSystem(object):
         self.trans = ctx_simplify(self.trans)  # ctx_simplify can be slow
 
     def to_chc_constraints(self) -> z3.ExprRef:
+        """
+        FIXME: Other APIs will this function to serialize the transition system to CHC constraints.
+        
+        However, using Z3's sovle obect to dump may not be a good idea, since it may create the let expresion, for which our simplified CHC parser may not work. Besides, other third-party SMT solvers may not support some extensions of Z3.
+        """
         if self.has_array:
             raise NotImplementedError
 
@@ -165,6 +170,7 @@ class TransitionSystem(object):
                                                    inv(self.variables))))
         # Inductive
         s.add(z3.ForAll(self.all_variables, z3.Implies(z3.And(inv(self.variables), self.trans),
+                                                       
                                                        inv(self.prime_variables))))
         # Post
         s.add(z3.ForAll(self.variables, z3.Implies(inv(self.variables),
@@ -173,17 +179,17 @@ class TransitionSystem(object):
         return z3.And(s.assertions())
 
     def to_chc_str(self) -> str:
-        """Convert to CHC format"""
+        """Convert to CHC format
+        """
         assert self.initialized
-        sol = z3.Solver()
-        sol.add(self.to_chc_constraints())
-        return "(set-logic HORN)\n" + sol.to_smt2()
+        z3_expr = self.to_chc_constraints()
+        return "(set-logic HORN)\n" + z3_expr.sexpr() + "\n(check-sat)\n"
 
     def to_uf_quant_str(self) -> str:
-        """Convert to UF quantifiied format"""
+        """Convert to UF quantifiied format
+        """
         assert self.initialized
-        sol = z3.Solver()
-        sol.add(self.to_chc_constraints())
+        z3_expr = self.to_chc_constraints()
         if self.has_bv:
             logic = "UFBV"
         elif self.has_int:
@@ -192,7 +198,7 @@ class TransitionSystem(object):
             logic = "UFLRA"
         else:
             logic = "ALL"
-        return "(set-logic {})\n".format(logic) + sol.to_smt2()
+        return "(set-logic {})\n".format(logic) + z3_expr.sexpr() + "\n(check-sat)\n"
 
     def to_smt2(self) -> str:
         """Convert to SMT2 format"""

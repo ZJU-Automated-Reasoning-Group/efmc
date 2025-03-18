@@ -13,7 +13,7 @@ APIs of this file:
 - PySMTSolver.sequence_interpolant: Generate sequence interpolant 
 - PySMTSolver.efsmt: Solve exists-forall formula (used by the template-based invariant inference engine)
 """
-
+import time
 import logging
 from typing import List
 import z3
@@ -122,7 +122,7 @@ class PySMTSolver(z3.Solver):
                 return z3.sat
             return z3.unsat
 
-    def all_smt(self, keys: [z3.ExprRef], bound=5):
+    def all_smt(self, keys: List[z3.ExprRef], bound=5):
         """Sample k models"""
         z3fml = z3.And(self.assertions())
         _, pysmt_fml = PySMTSolver.convert(z3fml)
@@ -149,7 +149,7 @@ class PySMTSolver(z3.Solver):
         itp = binary_interpolant(pysmt_fml_a, pysmt_fml_b, solver_name=solver_name, logic=logic)
         return Solver(name='z3').converter.convert(itp)
 
-    def sequence_interpolant(self, formulas: [z3.ExprRef]):
+    def sequence_interpolant(self, formulas: List[z3.ExprRef]):
         """Sequence interpolant"""
         pysmt_formulas = []
         for fml in formulas:
@@ -161,22 +161,45 @@ class PySMTSolver(z3.Solver):
         for cnt in seq_itp:
             z3_seq_itp.append(Solver(name='z3').converter.convert(cnt))
         return z3_seq_itp
-
+    
+    # should allow the users to choose the solver for existential and universal quantifiers
     def efsmt(self, evars: List[z3.ExprRef], uvars: List[z3.ExprRef], z3fml: z3.ExprRef, logic=QF_BV, maxloops=None,
-              esolver_name="z3", fsolver_name="z3", verbose=False):
-        """Solves exists x. forall y. phi(x, y)"""
+              esolver_name="z3", fsolver_name="z3", verbose=False, timeout=None):
+        """Solves exists x. forall y. phi(x, y)
+        
+        Args:
+            evars: Existentially quantified variables
+            uvars: Universally quantified variables
+            z3fml: Z3 formula representing the constraint
+            logic: The logic to use (default: QF_BV)
+            maxloops: Maximum number of iterations (default: None, meaning no limit)
+            esolver_name: Name of the solver to use for existential solving (default: "z3")
+            fsolver_name: Name of the solver to use for universal solving (default: "z3")
+            verbose: Whether to print debugging information (default: False)
+            timeout: Maximum execution time in seconds (default: None, meaning no timeout)
+            
+        Returns:
+            "sat", "unsat", or "unknown"
+        """
+        start_time = time.time()
 
         _, phi = PySMTSolver.convert(z3fml)
         y = to_pysmt_vars(uvars)  # universally quantified
         y = set(y)
-        x = phi.get_free_variables() - y
+        # x = phi.get_free_variables() - y 
+        x = set(to_pysmt_vars(evars))  # should we use the previous line or this one
 
         with Solver(logic=logic, name=esolver_name) as esolver:
             esolver.add_assertion(Bool(True))
             loops = 0
             result = "unknown"
             while maxloops is None or loops <= maxloops:
-                # while True:
+                # Check timeout
+                if timeout is not None and time.time() - start_time > timeout:
+                    if verbose:
+                        print(f"Timeout reached after {time.time() - start_time:.2f} seconds")
+                    break
+                    
                 loops += 1
                 eres = esolver.solve()
                 if not eres:

@@ -19,7 +19,7 @@ from efmc.utils import is_entail
 from efmc.engines.ef.templates import *
 from efmc.engines.ef.efsmt.efsmt_solver import EFSMTSolver
 from efmc.utils.z3_expr_utils import extract_all, ctx_simplify
-from efmc.utils.verification_utils import VerificationResult
+from efmc.utils.verification_utils import VerificationResult, check_invariant
 
 logger = logging.getLogger(__name__)
 
@@ -184,42 +184,6 @@ class EFProver:
         else:
             raise NotImplementedError
 
-    def check_invariant(self, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRef):
-        """Check whether the generated invariant is correct"""
-        correct = True
-        # 1. Init
-        if not is_entail(self.sts.init, inv):
-            correct = False
-            print("Init wrong!")
-
-        # 2. Inductive
-        # For bit-level invariants, we need to be more careful with the inductive check
-        # Create a solver to check the inductive condition
-        s = z3.Solver()
-        s.add(self.sts.trans)  # Add the transition relation
-        s.add(inv)  # Add the invariant for the current state
-        s.add(z3.Not(inv_in_prime_variables))  # Add the negation of the invariant for the next state
-
-        # Check if the formula is satisfiable
-        if s.check() == z3.sat:
-            # If satisfiable, then the invariant is not inductive
-            correct = False
-            print("Inductive wrong!")
-
-        # 3. Post
-        # Sometiemes, we may want to ignore the post condition, e.g., purely invariant generation
-        if (not self.ignore_post_cond) and (not is_entail(inv, self.sts.post)):
-            correct = False
-            print("Post not good!")
-
-        if not correct:
-            print("Init: ", self.sts.init)
-            print("Trans: ", self.sts.trans)
-            print("Post: ", self.sts.post)
-            print("Inv: ", inv)
-        else:
-            print("Invariant check success!")
-
     def dump_constraint(self, g_verifier_args) -> bool:
         """Dumping the verification condition"""
         # global g_verifier_args
@@ -255,12 +219,11 @@ class EFProver:
         else:
             raise NotImplementedError
 
-    def solve(self) -> VerificationResult:
+    def solve(self, timeout=None) -> VerificationResult:
         """The interface for calling different engines"""
         print("Start solving: ")
         print("Used template: {}".format(str(self.ct.template_type)))
         print("Used logic: {}".format(str(self.logic)))
-        # return self.solve_with_cegis_efsmt()  # FIXME: seems very slow
         if self.solver == "z3api":
             # will call z3's Python API to solve the problem (no need to dump files)
             return self.solve_with_z3()
@@ -375,10 +338,6 @@ class EFProver:
         It will first use self.generate_quantifier_free_vc to generate the QF part
         """
         qf_vc = self.generate_quantifier_free_vc()
-        # Add additional cnts to restrict the template variables
-        # if self.ct.template_type != TemplateType.POLYHEDRON:
-        #    qf_vc = z3.And(qf_vc, self.ct.get_additional_cnts_for_template_vars())
-        # qf_vc = ctx_simplify(qf_vc) # can be slow
         logger.debug("Finish generating VC")
         return z3.ForAll(self.sts.all_variables, qf_vc)
 

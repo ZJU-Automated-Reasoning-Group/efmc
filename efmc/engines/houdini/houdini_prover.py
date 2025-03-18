@@ -9,10 +9,11 @@ Modified from https://github.com/sosy-lab/java-smt/blob/d05b4c8eeb3424be20cc1d95
 import logging
 from typing import List
 import z3
+import time  # Add import for time
 
 from efmc.sts import TransitionSystem
 from efmc.utils.z3_expr_utils import get_variables
-from efmc.utils.verification_utils import VerificationResult
+from efmc.utils.verification_utils import VerificationResult, check_invariant
 
 logger = logging.getLogger(__name__)
 
@@ -42,27 +43,36 @@ def prime(exp: z3.ExprRef):
 
 
 class HoudiniProver:
-    """Houdini-based invariant inference engine"""
+    """Houdini-based invariant inference engine
+    
+    This class implements the Houdini algorithm for finding maximal inductive invariants.
+    It supports timeouts to prevent the algorithm from running too long on complex problems.
+    """
 
     def __init__(self, system: TransitionSystem):
         """Initialize with a transition system"""
         self.sts = system
         self.logger = logging.getLogger(__name__)
 
-    def houdini(self, lemmas: List[z3.ExprRef]):
+    def houdini(self, lemmas: List[z3.ExprRef], timeout=None):
         """Find the maximal inductive subset for the given lemmas.
     
         Args:
             lemmas: List of candidate invariant expressions to check
+            timeout: Maximum execution time in seconds (None for no timeout)
     
         Returns:
             dict: Dictionary mapping indices to lemmas that form the maximal inductive subset
+                 Returns None if the algorithm times out
         """
         annotated = []
         annotated_primes = []
         indexed = {}
+        
+        start_time = time.time()  # Record start time for timeout checking
 
-        self.logger.info(f"Starting Houdini algorithm with {len(lemmas)} candidate lemmas")
+        self.logger.info(f"Starting Houdini algorithm with {len(lemmas)} candidate lemmas" + 
+                        (f" (timeout: {timeout}s)" if timeout else ""))
 
         # Create primed versions and selector variables
         for i in range(len(lemmas)):
@@ -80,8 +90,15 @@ class HoudiniProver:
 
         iteration = 0
         initial_count = len(indexed)
+        timed_out = False
 
         while prover.check() != z3.unsat:
+            # Check timeout after each iteration
+            if timeout and (time.time() - start_time > timeout):
+                self.logger.warning(f"Houdini timed out after {iteration} iterations ({timeout}s)")
+                timed_out = True
+                break
+                
             iteration += 1
             m = prover.model()
             removed_in_iteration = 0
@@ -96,16 +113,31 @@ class HoudiniProver:
             self.logger.info(
                 f"Iteration {iteration}: Removed {removed_in_iteration} lemmas, {len(indexed)}/{initial_count} remaining")
 
-        self.logger.info(
-            f"Houdini completed after {iteration} iterations with {len(indexed)}/{initial_count} lemmas remaining")
+        # Report on completion
+        if timed_out:
+            self.logger.warning(f"Houdini did not complete due to timeout after {iteration} iterations")
+            return None
+        else:
+            self.logger.info(
+                f"Houdini completed after {iteration} iterations with {len(indexed)}/{initial_count} lemmas remaining")
+        
+        elapsed_time = time.time() - start_time
+        self.logger.info(f"Houdini execution time: {elapsed_time:.2f}s")
+        
         return indexed
 
-    def solve(self) -> VerificationResult:
+    def solve(self, timeout=None) -> VerificationResult:
         """Main solving procedure.
         
+        Args:
+            timeout: Maximum execution time in seconds (None for no timeout)
+            
         Returns:
-            VerificationResult: Object containing verification result and related data
+            VerificationResult: Object containing verification result and related data.
+                               If timeout occurs, result will have timed_out=True and is_unknown=True.
         """
+        start_time = time.time()
+        
         # First check if post-condition itself is inductive
         if self.check_inductive(self.sts.post):
             self.logger.info("Post-condition is already inductive")
@@ -114,18 +146,25 @@ class HoudiniProver:
         # Generate candidate lemmas
         lemmas = self.generate_candidate_lemmas()
 
-        # Run Houdini algorithm
-        result = self.houdini(lemmas)
+        # Run Houdini algorithm with timeout
+        result = self.houdini(lemmas, timeout)
+
+        # Check if we timed out without finding a solution
+        if result is None or (timeout and (time.time() - start_time > timeout)):
+            self.logger.warning(f"Solver timed out after {time.time() - start_time:.2f}s")
+            return VerificationResult(False, None, is_unknown=True, timed_out=True)
 
         if result:
             # Construct final invariant from remaining lemmas
             inv = z3.And(*result.values())
-            if self.verify_invariant(inv):
+            # Use the primed version of the invariant for checking
+            inv_primed = z3.substitute(inv, list(zip(self.sts.variables, self.sts.prime_variables)))
+            if check_invariant(self.sts, inv, inv_primed):
                 self.logger.info("Found inductive invariant")
                 return VerificationResult(True, inv)
 
         self.logger.info("Could not find inductive invariant")
-        return VerificationResult(False, None)
+        return VerificationResult(False, None, is_unknown=True)
 
     def generate_candidate_lemmas(self):
         """Generate candidate lemmas for invariant inference"""
@@ -156,7 +195,14 @@ class HoudiniProver:
         return lemmas
 
     def check_inductive(self, formula: z3.ExprRef) -> bool:
-        """Check if a formula is inductive"""
+        """Check if a formula is inductive
+        
+        Args:
+            formula: The formula to check for inductiveness
+            
+        Returns:
+            bool: True if formula is inductive, False otherwise
+        """
         s = z3.Solver()
         primed = z3.substitute(formula, list(zip(self.sts.variables, self.sts.prime_variables)))
 
@@ -164,7 +210,11 @@ class HoudiniProver:
         s.push()
         s.add(self.sts.init)
         s.add(z3.Not(formula))
-        if s.check() == z3.sat:
+        result = s.check()
+        if result == z3.unknown:
+            self.logger.warning("Z3 solver returned unknown during initiation check")
+            return False
+        if result == z3.sat:
             return False
         s.pop()
 
@@ -173,39 +223,11 @@ class HoudiniProver:
         s.add(formula)
         s.add(self.sts.trans)
         s.add(z3.Not(primed))
-        if s.check() == z3.sat:
+        result = s.check()
+        if result == z3.unknown:
+            self.logger.warning("Z3 solver returned unknown during consecution check")
             return False
-        s.pop()
-
-        return True
-
-    def verify_invariant(self, inv: z3.ExprRef) -> bool:
-        """Verify that an invariant proves the safety property"""
-        s = z3.Solver()
-
-        # Check initiation
-        s.push()
-        s.add(self.sts.init)
-        s.add(z3.Not(inv))
-        if s.check() == z3.sat:
-            return False
-        s.pop()
-
-        # Check inductiveness
-        s.push()
-        primed = z3.substitute(inv, list(zip(self.sts.variables, self.sts.prime_variables)))
-        s.add(inv)
-        s.add(self.sts.trans)
-        s.add(z3.Not(primed))
-        if s.check() == z3.sat:
-            return False
-        s.pop()
-
-        # Check safety
-        s.push()
-        s.add(inv)
-        s.add(z3.Not(self.sts.post))
-        if s.check() == z3.sat:
+        if result == z3.sat:
             return False
         s.pop()
 
@@ -227,8 +249,16 @@ def demo_houdini():
     sts.initialized = True
 
     prover = HoudiniProver(sts)
-    result = prover.solve()
-    print(f"Verification result: {result}")
+    result = prover.solve(timeout=10)  # Set a 10 second timeout
+    
+    if result.timed_out:
+        print(f"Verification timed out")
+    elif result.is_safe:
+        print(f"System is SAFE. Found invariant: {result.invariant}")
+    elif result.is_unsafe:
+        print(f"System is UNSAFE. Found counterexample.")
+    else:
+        print(f"Verification result is UNKNOWN")
 
 
 def demo_houdini_complex():
@@ -250,9 +280,27 @@ def demo_houdini_complex():
     # Add some invariants as hints
     sts.invariants = [y >= 0]
 
-    prover = HoudiniProver(sts)
-    result = prover.solve()
-    print(f"Verification result: {result}")
+    # Try with different timeouts
+    timeouts = [0.1, 1, 20]  # 0.1s (should timeout), 1s, 20s
+    
+    for t in timeouts:
+        print(f"\nRunning with timeout of {t} seconds:")
+        prover = HoudiniProver(sts)
+        start_time = time.time()
+        result = prover.solve(timeout=t)
+        elapsed = time.time() - start_time
+        
+        if result.timed_out:
+            print(f"Verification timed out after {elapsed:.2f}s")
+        elif result.is_safe:
+            print(f"System is SAFE. Found invariant: {result.invariant}")
+            print(f"Verification completed in {elapsed:.2f}s")
+        elif result.is_unsafe:
+            print(f"System is UNSAFE. Found counterexample.")
+            print(f"Verification completed in {elapsed:.2f}s")
+        else:
+            print(f"Verification result is UNKNOWN")
+            print(f"Verification completed in {elapsed:.2f}s")
 
 
 if __name__ == "__main__":

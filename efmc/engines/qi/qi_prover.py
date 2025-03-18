@@ -130,7 +130,7 @@ class QuantifierInstantiationProver:
         solver.add(z3.ForAll(self.sts.variables,
                              z3.Implies(inv(*self.sts.variables), self.sts.post)))
 
-    def solve(self) -> VerificationResult:
+    def solve(self, timeout=None) -> VerificationResult:
         """
         Verify the transition system using quantifier instantiation.
         
@@ -143,6 +143,10 @@ class QuantifierInstantiationProver:
             # Create invariant function and configure solver
             inv = self._create_inv_function()
             solver = self._configure_solver()
+
+            # Set timeout if specified
+            if timeout is not None:
+                solver.set("timeout", timeout * 1000)  # Z3 timeout is in milliseconds
 
             # Encode verification conditions
             self.encode_verification_conditions(inv, solver)
@@ -178,6 +182,10 @@ class QuantifierInstantiationProver:
                 if self.verbose:
                     logger.warning("QI returned unknown result after %.2f seconds", solve_time)
                     logger.warning("Reason: %s", solver.reason_unknown())
+                
+                if timeout is not None and time.time() - start_time >= timeout:
+                    logger.info("Timeout reached after %d seconds", timeout)
+                    return VerificationResult(False, None, None, is_timeout=True, is_unknown=True)
 
                 return VerificationResult(False, None, None, is_unknown=True)
 
