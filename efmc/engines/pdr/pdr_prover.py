@@ -7,6 +7,7 @@ TODO: use other PDR engines
 
 import logging
 import time
+from typing import Optional
 
 import z3
 
@@ -25,7 +26,7 @@ class PDRProver:
         """Set verbose mode"""
         self.verbose = verbose
 
-    def solve(self, timeout=None) -> VerificationResult:
+    def solve(self, timeout: Optional[int] = None) -> VerificationResult:
         """From transition system to CHC
         
         Args:

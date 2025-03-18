@@ -14,6 +14,7 @@ Optimizations:
 """
 import logging
 import time
+from typing import Optional
 from functools import lru_cache
 
 import z3
@@ -189,7 +190,7 @@ class KInductionProverInc:
         
         # We don't add to solver_kind directly as we'll use push/pop with complete formulas
 
-    def solve(self, k: int, timeout=None) -> VerificationResult:
+    def solve(self, k: int, timeout: Optional[int] = None) -> VerificationResult:
         """
         Performs k-induction proof using incremental solving.
         

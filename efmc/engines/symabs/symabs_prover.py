@@ -2,7 +2,7 @@
 This is an "old-school" version of symbolic abstraction domain.
 """
 import logging
-
+from typing import Optional
 import z3
 
 from efmc.sts import TransitionSystem
@@ -85,7 +85,7 @@ class SymbolicAbstractionProver(object):
         # Predicates for predicate abstraction
         self.preds = []
 
-    def solve(self) -> VerificationResult:
+    def solve(self, timeout: Optional[int] = None) -> VerificationResult:
         """External interface for verification"""
         preds_prime = []
         for pred in self.preds:

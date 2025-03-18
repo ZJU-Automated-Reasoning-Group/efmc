@@ -4,7 +4,7 @@ Verifying Boolean Programs using "Predicate abstraction"
  Given a set of Boolean variables P and a transition system S,
  it finds the strongest inductive invariant expressible as the Boolean combination of P.
 """
-from typing import List
+from typing import List, Optional       
 
 import z3
 
@@ -61,7 +61,7 @@ class PredicateAbstractionProver:
         """The element in the domain is the Boolean combinations of a set of predicates"""
         self.preds = predicates
 
-    def solve(self):
+    def solve(self, timeout: Optional[int] = None):
         preds_prime = []
         for pred in self.preds:
             preds_prime.append(z3.substitute(pred, self.var_map))

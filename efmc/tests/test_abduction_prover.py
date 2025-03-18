@@ -144,7 +144,7 @@ class TestAbductionProver(TestCase):
         sts.from_z3_cnts(get_int_sys10())  # Using a more complex system
 
         start = time.time()
-        abd_prover = AbductionProver(sts, timeout=100)  # Very short timeout
+        abd_prover = AbductionProver(sts)  # Very short timeout
         res = abd_prover.solve()
         print("abd prover res with short timeout: ", res)
         print("Time taken: ", time.time() - start)

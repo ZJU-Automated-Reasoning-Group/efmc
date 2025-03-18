@@ -7,7 +7,7 @@ based on the paper by Flanagan and Leino: "Houdini, an Annotation Assistant for 
 Modified from https://github.com/sosy-lab/java-smt/blob/d05b4c8eeb3424be20cc1d9553eaffae81898857/src/org/sosy_lab/java_smt/example/HoudiniApp.java
 """
 import logging
-from typing import List
+from typing import List, Optional
 import z3
 import time  # Add import for time
 
@@ -126,7 +126,7 @@ class HoudiniProver:
         
         return indexed
 
-    def solve(self, timeout=None) -> VerificationResult:
+    def solve(self, timeout: Optional[int] = None) -> VerificationResult:
         """Main solving procedure.
         
         Args:

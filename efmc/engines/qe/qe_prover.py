@@ -39,7 +39,7 @@ class QuantifierEliminationProver:
             self.var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
             self.var_map_rev.append((self.sts.prime_variables[i], self.sts.variables[i]))
 
-    def solve(self) -> VerificationResult:
+    def solve(self, timeout: Optional[int] = None) -> VerificationResult:
         """
         Verify the system using quantifier elimination.
         

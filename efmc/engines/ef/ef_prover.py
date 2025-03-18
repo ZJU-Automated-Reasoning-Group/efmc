@@ -219,7 +219,7 @@ class EFProver:
         else:
             raise NotImplementedError
 
-    def solve(self, timeout=None) -> VerificationResult:
+    def solve(self, timeout: Optional[int] = None) -> VerificationResult:
         """The interface for calling different engines"""
         print("Start solving: ")
         print("Used template: {}".format(str(self.ct.template_type)))

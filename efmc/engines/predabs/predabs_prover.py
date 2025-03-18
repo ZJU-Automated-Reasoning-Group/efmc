@@ -97,7 +97,7 @@ class PredicateAbstractionProver(object):
         """The element in the domain is the Boolean combinations of a set of predicates"""
         self.preds = predicates
 
-    def solve(self) -> VerificationResult:
+    def solve(self, timeout: Optional[int] = None) -> VerificationResult:
         """External interface for verifying"""
         preds_prime = []
         for pred in self.preds:

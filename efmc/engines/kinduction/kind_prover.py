@@ -16,6 +16,7 @@ import z3
 
 from efmc.engines.kinduction.aux_invariant_generator import InvariantGenerator
 # from typing import List
+from typing import Optional
 from efmc.sts import TransitionSystem
 from efmc.utils.z3_solver_utils import is_unsat
 from efmc.engines.abduction.abduction_prover import VerificationResult
@@ -166,7 +167,7 @@ class KInductionProver(object):
 
         return z3.And(k_hypothesis, unrolling, not_post_k_plus_1, simple_path, aux_invs)
 
-    def solve(self, k: int, timeout=None) -> VerificationResult:
+    def solve(self, k: int, timeout: Optional[int] = None) -> VerificationResult:
         """Interleaves BMC and K-Ind to verify the property.
         
         Args:

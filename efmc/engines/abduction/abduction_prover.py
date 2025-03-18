@@ -22,13 +22,14 @@ The main algorithm:
 
 import logging
 from typing import Tuple, Optional, List, Sequence
+import time
 
 import z3
 
 from efmc.engines.abduction.abductor.abductor import qe_abduce
 from efmc.sts import TransitionSystem
 from efmc.utils.verification_utils import VerificationResult, SolverTimeout, check_entailment, \
-    are_expressions_equivalent
+    are_expressions_equivalent, check_invariant
 
 logger = logging.getLogger(__name__)
 
@@ -38,17 +39,15 @@ class AbductionProver:
     Implements invariant generation using abductive inference.
     """
 
-    def __init__(self, system: TransitionSystem, timeout: int = 10000, max_iterations: int = 300):
+    def __init__(self, system: TransitionSystem, max_iterations: int = 300):
         """
         Initialize the AbductionProver.
 
         Args:
             system: The transition system to verify
-            timeout: Solver timeout in milliseconds
             max_iterations: Maximum number of strengthening iterations
         """
         self.sts = system
-        self.timeout = timeout
         self.max_iterations = max_iterations
 
         # Create mappings between current and next-state variables
@@ -72,20 +71,13 @@ class AbductionProver:
             Tuple containing:
             - Boolean indicating if inv is inductive
             - If not inductive, a counterexample model; otherwise None
-
-        Raises:
-            SolverTimeout: If the solver times out
         """
         inv_prime = z3.substitute(inv, self.var_map)
 
         s = z3.Solver()
-        s.set("timeout", self.timeout)
         s.add(inv, self.sts.trans, z3.Not(inv_prime))
-
         result = s.check()
-        if result == z3.unknown:
-            raise SolverTimeout("Solver timed out during inductiveness check")
-
+            
         return result == z3.unsat, s.model() if result == z3.sat else None
 
     def strengthen_from_cti(self, inv: z3.ExprRef, cti: z3.ModelRef) -> z3.ExprRef:
@@ -127,11 +119,12 @@ class AbductionProver:
             # Perform abduction to find strengthening condition
             strengthening = qe_abduce(pre_cond, post_cond)
             if strengthening is None:
-                logger.debug("Abduction failed. Falling back to CTI exclusion.")
-                strengthening = z3.Not(pre_state)
+                logger.debug("Abduction failed. Using more targeted approach.")
+                # Instead of just excluding the entire pre-state, let's try to generalize
+                return self.generalize_strengthening(inv, pre_state, cti)
         except Exception as e:
-            logger.warning(f"Abduction error: {e}. Falling back to CTI exclusion.")
-            strengthening = z3.Not(pre_state)
+            logger.warning(f"Abduction error: {e}. Using targeted exclusion.")
+            return self.generalize_strengthening(inv, pre_state, cti)
 
         # Simplify the strengthened invariant
         new_inv = z3.simplify(z3.And(inv, strengthening))
@@ -141,19 +134,187 @@ class AbductionProver:
         s = z3.Solver()
         s.add(new_inv, pre_state)
         if s.check() == z3.sat:
-            logger.warning("Strengthened invariant does not exclude CTI. Using direct exclusion.")
-            new_inv = z3.simplify(z3.And(inv, z3.Not(pre_state)))
+            logger.warning("Strengthened invariant does not exclude CTI. Using generalized exclusion.")
+            return self.generalize_strengthening(inv, pre_state, cti)
+
+        # Check if we've created a False invariant
+        if z3.is_false(new_inv):
+            logger.warning("Abduction resulted in False invariant. Using generalized exclusion.")
+            return self.generalize_strengthening(inv, pre_state, cti)
 
         return new_inv
+
+    def generalize_strengthening(self, inv: z3.ExprRef, pre_state: z3.ExprRef, cti: z3.ModelRef) -> z3.ExprRef:
+        """
+        Apply a more targeted strengthening approach based on generalizing from the CTI.
+        
+        Args:
+            inv: Current candidate invariant
+            pre_state: Concrete pre-state from the CTI
+            cti: Counterexample model
+            
+        Returns:
+            Strengthened invariant formula
+        """
+        # Try to find more general constraints from the counterexample
+        general_constraints = []
+        relevant_vars = self.identify_relevant_variables(inv, cti)
+        
+        # Create more general constraints based on the CTI values
+        for v in relevant_vars:
+            if v in cti:
+                val = cti[v]
+                if z3.is_int_value(val) or z3.is_rational_value(val):
+                    # Convert to Python value for comparison
+                    val_int = val.as_long() if z3.is_int_value(val) else val.numerator_as_long() / val.denominator_as_long()
+                    
+                    # For numeric values, create inequality constraints that exclude the CTI
+                    if val_int > 0:
+                        general_constraints.append(v <= val_int - 1)  # Exclude values >= the CTI value
+                    elif val_int < 0:
+                        general_constraints.append(v >= val_int + 1)  # Exclude values <= the CTI value
+                    else:  # val_int == 0
+                        # Try both constraints and pick the one that works best
+                        for constraint in [v > 0, v < 0]:
+                            test_inv = z3.simplify(z3.And(inv, constraint))
+                            if not z3.is_false(test_inv):
+                                general_constraints.append(constraint)
+                                break
+                
+                # For boolean values
+                elif z3.is_bool(val):
+                    if z3.is_true(val):
+                        general_constraints.append(z3.Not(v))
+                    else:
+                        general_constraints.append(v)
+                        
+        # If we found generalized constraints, try using them
+        if general_constraints:
+            # Try combining them with OR to be less restrictive
+            generalized = z3.Or(*general_constraints)
+            new_inv = z3.simplify(z3.And(inv, generalized))
+            
+            # Check if the constraint excludes the CTI and is not False
+            s = z3.Solver()
+            s.add(new_inv, pre_state)
+            if s.check() == z3.unsat and not z3.is_false(new_inv):
+                return new_inv
+                
+            # Try with AND if OR didn't work
+            generalized = z3.And(*general_constraints)
+            new_inv = z3.simplify(z3.And(inv, generalized))
+            
+            # Check again
+            s = z3.Solver()
+            s.add(new_inv, pre_state)
+            if s.check() == z3.unsat and not z3.is_false(new_inv):
+                return new_inv
+        
+        # Fall back to targeted exclusion
+        # Instead of just negating the entire state, identify the key variables
+        key_vars = self.identify_key_variables(inv, cti)
+        if key_vars:
+            exclusion_constraints = []
+            for v in key_vars:
+                if v in cti:
+                    exclusion_constraints.append(v != cti[v])
+            
+            if exclusion_constraints:
+                new_inv = z3.simplify(z3.And(inv, z3.Or(*exclusion_constraints)))
+                if not z3.is_false(new_inv):
+                    return new_inv
+        
+        # Last resort: just negate a minimal subset of the pre-state
+        minimal_constraints = []
+        for v in self.sts.variables:
+            if v in cti:
+                # Try negating just this variable's constraint
+                test_constraint = v != cti[v]
+                test_inv = z3.simplify(z3.And(inv, test_constraint))
+                
+                # If this works and doesn't result in False, use it
+                if not z3.is_false(test_inv):
+                    s = z3.Solver()
+                    s.add(test_inv, pre_state)
+                    if s.check() == z3.unsat:
+                        return test_inv
+                
+                minimal_constraints.append(test_constraint)
+        
+        # If we get here, just combine the minimal constraints with OR
+        if minimal_constraints:
+            new_inv = z3.simplify(z3.And(inv, z3.Or(*minimal_constraints)))
+            if not z3.is_false(new_inv):
+                return new_inv
+        
+        # Ultimate fallback: just use the original invariant if all else fails
+        # This will force the algorithm to try a different approach
+        logger.warning("Could not find suitable strengthening. Returning original invariant.")
+        return inv
+        
+    def identify_relevant_variables(self, inv: z3.ExprRef, cti: z3.ModelRef) -> List[z3.ExprRef]:
+        """
+        Identify variables that appear in the invariant and are relevant to strengthening.
+        
+        Args:
+            inv: Current invariant
+            cti: Counterexample model
+            
+        Returns:
+            List of variables that are relevant for strengthening
+        """
+        # Extract all variables mentioned in the invariant
+        inv_str = str(inv)
+        relevant_vars = []
+        
+        for v in self.sts.variables:
+            if str(v) in inv_str:
+                relevant_vars.append(v)
+                
+        return relevant_vars
+        
+    def identify_key_variables(self, inv: z3.ExprRef, cti: z3.ModelRef) -> List[z3.ExprRef]:
+        """
+        Identify key variables that are most important for strengthening based on the structure
+        of the invariant and the counterexample.
+        
+        Args:
+            inv: Current invariant
+            cti: Counterexample model
+            
+        Returns:
+            List of key variables for strengthening
+        """
+        # Start with all variables in the invariant
+        all_vars = self.identify_relevant_variables(inv, cti)
+        if not all_vars:
+            return self.sts.variables  # If no relevant vars, use all variables
+            
+        # Try to identify variables that appear in inequalities or other important constraints
+        key_vars = []
+        inv_str = str(inv)
+        
+        # Variables appearing in comparisons are likely more important
+        comparison_ops = ['<', '>', '<=', '>=', '!=']
+        for v in all_vars:
+            for op in comparison_ops:
+                if f"{v} {op}" in inv_str or f"{op} {v}" in inv_str:
+                    key_vars.append(v)
+                    break
+                    
+        # If we didn't find any key variables with comparisons, return all relevant variables
+        return key_vars if key_vars else all_vars
 
     def verify_safety(self, inv: z3.ExprRef) -> VerificationResult:
         """
         Verify that the invariant proves the safety property.
 
-        Checks three conditions:
+        Checks two conditions:
         1. init → inv        (Initiation)
-        2. inv ∧ T → inv'    (Inductiveness)
-        3. inv → post        (Safety)
+        2. inv → post        (Safety)
+
+        Note: This does NOT check inductiveness (inv ∧ T → inv').
+        Use check_inductiveness() separately for that.
 
         Args:
             inv: The invariant to verify
@@ -162,15 +323,13 @@ class AbductionProver:
             VerificationResult containing the verification outcome and relevant data
         """
         s = z3.Solver()
-        s.set("timeout", self.timeout)
-
         # Check initiation
         s.push()
         s.add(self.sts.init, z3.Not(inv))
         if s.check() == z3.sat:
             return VerificationResult(False, None, s.model(), is_unsafe=True)
         s.pop()
-
+        
         # Check safety
         s.push()
         s.add(inv, z3.Not(self.sts.post))
@@ -180,9 +339,13 @@ class AbductionProver:
 
         return VerificationResult(True, inv)
 
-    def invgen(self) -> Optional[z3.ExprRef]:
+    def invgen(self, overall_timeout: Optional[int] = None) -> Optional[z3.ExprRef]:
         """
         Generate an inductive invariant using abduction-based refinement.
+
+        Args:
+            overall_timeout: Optional timeout for the entire algorithm in seconds.
+                             If None, runs until max_iterations is reached.
 
         Returns:
             An inductive invariant if found, None otherwise
@@ -190,60 +353,172 @@ class AbductionProver:
         Raises:
             SolverTimeout: If the solver times out during verification
         """
+        start_time = time.time()
         inv = self.sts.post
-        iteration = 0
-        last_inv = None
-
+        past_invariants = set()  # Track previous invariants to detect cycles
+        
         logger.info("Starting invariant generation...")
-        while iteration < self.max_iterations:
+        for iteration in range(self.max_iterations):
+            # Check overall timeout
+            if overall_timeout is not None and time.time() - start_time > overall_timeout:
+                logger.warning(f"Exceeded overall timeout ({overall_timeout} seconds)")
+                raise SolverTimeout("Overall algorithm timeout")
+            
             logger.debug(f"Iteration {iteration}: Checking current invariant")
-
-            # Verify safety properties
-            result = self.verify_safety(inv)
-            if not result.is_safe:
-                logger.info("Safety check failed")
+            
+            # First, simplify the invariant to its most compact form
+            inv = z3.simplify(inv)
+            
+            # If the invariant has been reduced to False, we can't proceed
+            if z3.is_false(inv):
+                logger.warning("Invariant reduced to False, cannot proceed")
                 return None
-
-            # Check inductiveness
+                
+            # Check if the invariant appears in our set of past invariants
+            inv_str = str(inv)
+            if inv_str in past_invariants:
+                logger.warning("Detected cycle in invariant generation")
+                return None
+                
+            past_invariants.add(inv_str)
+            
+            # Step 1: Check initiation (init => inv)
+            s = z3.Solver()
+            s.add(self.sts.init, z3.Not(inv))
+            if s.check() == z3.sat:
+                # Found a counterexample to initiation
+                cex = s.model()
+                logger.debug(f"Counterexample to initiation: {cex}")
+                
+                # Extract state constraints from the counterexample
+                state_constraints = []
+                for v in self.sts.variables:
+                    if v in cex:
+                        state_constraints.append(v == cex[v])
+                
+                state = z3.And(*state_constraints) if state_constraints else z3.BoolVal(True)
+                
+                # We need a more targeted approach to strengthen the invariant
+                # Instead of negating the entire state, let's try to identify what part of the invariant
+                # is violated by this initial state
+                
+                # One approach is to attempt to separate the invariant into conjuncts
+                # and only strengthen those parts that are violated
+                s_check = z3.Solver()
+                s_check.add(self.sts.init, state)
+                
+                # If the invariant is a conjunction, we can strengthen each conjunct individually
+                if inv.decl().kind() == z3.Z3_OP_AND:
+                    new_conjuncts = []
+                    for conjunct in inv.children():
+                        s_check.push()
+                        s_check.add(z3.Not(conjunct))
+                        if s_check.check() == z3.sat:
+                            # This conjunct is violated, we need to weaken it
+                            # For now, we'll just exclude this specific state for this conjunct
+                            new_conjuncts.append(z3.Or(conjunct, z3.Not(state)))
+                        else:
+                            # This conjunct is valid for the initial state
+                            new_conjuncts.append(conjunct)
+                        s_check.pop()
+                    
+                    # Create a new invariant with the strengthened conjuncts
+                    if new_conjuncts:
+                        inv = z3.And(*new_conjuncts)
+                    else:
+                        # If we couldn't strengthen any specific conjunct, fall back to the standard approach
+                        # But ensure we don't just negate the entire state to False
+                        old_inv = inv
+                        inv = z3.simplify(z3.And(inv, z3.Not(state)))
+                        if z3.is_false(inv):
+                            logger.warning("Strengthening resulted in False invariant, trying different approach")
+                            inv = old_inv  # Revert to previous invariant
+                            return None  # We can't make progress
+                else:
+                    # If the invariant is not a conjunction, we'll try a different approach
+                    # Try to generalize from the counterexample
+                    general_constraints = []
+                    for v in self.sts.variables:
+                        if v in cex:
+                            # Check if v appears in the invariant
+                            if str(v) in str(inv):
+                                # Create a constraint based on the counterexample value
+                                val = cex[v]
+                                if z3.is_int_value(val) or z3.is_rational_value(val):
+                                    # For numeric values, create inequality constraints
+                                    if z3.is_true(z3.simplify(val > 0)):
+                                        general_constraints.append(v > 0)
+                                    elif z3.is_true(z3.simplify(val < 0)):
+                                        general_constraints.append(v < 0)
+                                    elif z3.is_true(z3.simplify(val == 0)):
+                                        general_constraints.append(v != 0)
+                    
+                    # Add these generalized constraints if we found any
+                    if general_constraints:
+                        inv = z3.simplify(z3.And(inv, z3.Or(*general_constraints)))
+                    else:
+                        # Fall back to the standard approach, but be careful not to reduce to False
+                        old_inv = inv
+                        inv = z3.simplify(z3.And(inv, z3.Not(state)))
+                        if z3.is_false(inv):
+                            logger.warning("Strengthening resulted in False invariant, trying different approach")
+                            inv = old_inv  # Revert to previous invariant
+                            return None  # We can't make progress
+                
+                logger.debug(f"Strengthened invariant after initiation check: {inv}")
+                continue
+            
+            # Step 2: Check if inv => post
+            # For most implementations, this should be true since we start with post as our invariant,
+            # but it's still good to check in case we weakened the invariant in some way
+            if not check_entailment(inv, self.sts.post):
+                logger.warning("Current invariant does not imply the post-condition")
+                return None
+            
+            # Step 3: Check inductiveness (inv && trans => inv')
             inductive, cti = self.check_inductiveness(inv)
             if inductive:
-                logger.info("Found inductive invariant")
+                logger.info(f"Found inductive invariant after {iteration} iterations")
+                
+                # Optionally verify the invariant (for debugging/checking purposes)
+                inv_prime = z3.substitute(inv, self.var_map)
+                is_valid = check_invariant(self.sts, inv, inv_prime)
+                if not is_valid:
+                    logger.warning("Final verification of invariant failed")
+                    return None
+                
                 return inv
-
+            
             if cti is None:
                 logger.warning("Failed to generate CTI despite non-inductiveness")
                 return None
-
-            # Strengthen the invariant
+            
+            # Step 4: Strengthen the invariant
             logger.debug(f"Strengthening using CTI: {cti}")
             new_inv = self.strengthen_from_cti(inv, cti)
-
-            # Check progress
+            
+            # Ensure we've made progress
             if are_expressions_equivalent(new_inv, inv):
-                logger.warning("Failed to make progress in strengthening")
+                logger.warning("No progress in strengthening")
                 return None
-
-            # Check if we're oscillating between two invariants
-            if last_inv is not None and are_expressions_equivalent(new_inv, last_inv):
-                logger.warning("Detected oscillation between invariants")
-                return None
-
-            last_inv = inv
+            
             inv = new_inv
-            iteration += 1
-
+        
         logger.warning(f"Exceeded maximum iterations ({self.max_iterations})")
         return None
 
-    def solve(self) -> VerificationResult:
+    def solve(self, timeout: Optional[int] = None) -> VerificationResult:
         """
         Verify the system using abductive invariant generation.
+
+        Args:
+            timeout: Optional timeout for the entire algorithm in seconds.
 
         Returns:
             VerificationResult containing the verification outcome and relevant data
         """
         try:
-            inv = self.invgen()
+            inv = self.invgen(overall_timeout=timeout)
             if inv is not None:
                 logger.info("System verified safe")
                 return VerificationResult(True, inv)
@@ -252,6 +527,7 @@ class AbductionProver:
             # last_cti represents a counterexample to inductiveness (CTI) - a state that satisfies the current candidate invariant but whose successor state violates it. It does not necessarily mean there's a concrete counterexample that violates the post-condition.
 
             # So, if we have a counterexample, we need to determine if it's a real counterexample to safety
+            # Or, we may directly return unknown.
             if self.last_cti is not None:
                 # Check if the CTI state is reachable from an initial state
                 # This is a simplified check - a more thorough approach would involve
@@ -265,7 +541,6 @@ class AbductionProver:
                 
                 # Check if this state violates the post-condition
                 s = z3.Solver()
-                s.set("timeout", self.timeout)
                 s.add(pre_state, z3.Not(self.sts.post))
                 
                 if s.check() == z3.sat:
@@ -279,10 +554,9 @@ class AbductionProver:
             # Otherwise, we don't know if the system is safe or unsafe
             logger.info("Could not determine system safety")
             return VerificationResult(False, None, None, is_unknown=True)
-            
         except SolverTimeout:
-            logger.error("Verification timed out")
-            return VerificationResult(False, None, None, is_unknown=True)
+            logger.warning("Verification timed out")
+            return VerificationResult(False, None, None, is_unknown=True, timed_out=True)
         except Exception as e:
             logger.error(f"Verification error: {e}")
             return VerificationResult(False, None, None, is_unknown=True)

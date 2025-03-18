@@ -130,7 +130,7 @@ class QuantifierInstantiationProver:
         solver.add(z3.ForAll(self.sts.variables,
                              z3.Implies(inv(*self.sts.variables), self.sts.post)))
 
-    def solve(self, timeout=None) -> VerificationResult:
+    def solve(self, timeout: Optional[int] = None) -> VerificationResult:
         """
         Verify the transition system using quantifier instantiation.
         
