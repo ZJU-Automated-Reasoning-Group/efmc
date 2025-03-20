@@ -1,5 +1,16 @@
 # coding: utf-8
+"""
+Template-based abstract domains for program verification.
+
+This module provides various abstract domains for template-based program analysis,
+including numeric (interval, zone, octagon, affine, polyhedron) and
+bit-vector templates, as well as disjunctive variants.
+"""
+
+# Base classes
 from .abstract_template import TemplateType, Template
+
+# Numeric templates
 from .interval import IntervalTemplate, DisjunctiveIntervalTemplate
 from .intervalv2 import IntervalTemplateV2
 from .zone import ZoneTemplate
@@ -7,6 +18,7 @@ from .octagon import OctagonTemplate
 from .affine import AffineTemplate, DisjunctiveAffineTemplate
 from .polyhedron import PolyTemplate, DisjunctivePolyTemplate
 
+# Bit-vector templates
 from .bv_interval import BitVecIntervalTemplate, DisjunctiveBitVecIntervalTemplate
 from .bv_zone import BitVecZoneTemplate, DisjunctiveBitVecZoneTemplate
 from .bv_octagon import BitVecOctagonTemplate, DisjunctiveBitVecOctagonTemplate
@@ -15,28 +27,5 @@ from .bv_polyhedron import BitVecPolyhedronTemplate, DisjunctiveBitVecPolyhedron
 from .bv_bitwise import KnownBitsTemplate, BitPredAbsTemplate
 from .bv_enhanced_pattern import EnhancedBitPatternTemplate
 
-TemplateType = TemplateType
-IntervalTemplate = IntervalTemplate
-IntervalTemplateV2 = IntervalTemplateV2
-DisjunctiveIntervalTemplate = DisjunctiveIntervalTemplate
-ZoneTemplate = ZoneTemplate
-OctagonTemplate = OctagonTemplate
-AffineTemplate = AffineTemplate
-DisjunctiveAffineTemplate = DisjunctiveAffineTemplate
-PolyTemplate = PolyTemplate
-DisjunctivePolyTemplate = DisjunctivePolyTemplate
-
-BitVecIntervalTemplate = BitVecIntervalTemplate
-DisjunctiveBitVecIntervalTemplate = DisjunctiveBitVecIntervalTemplate
-BitVecZoneTemplate = BitVecZoneTemplate
-DisjunctiveBitVecZoneTemplate = DisjunctiveBitVecZoneTemplate
-BitVecOctagonTemplate = BitVecOctagonTemplate
-DisjunctiveBitVecOctagonTemplate = DisjunctiveBitVecOctagonTemplate
-BitVecAffineTemplate = BitVecAffineTemplate
-DisjunctiveBitVecAffineTemplate = DisjunctiveBitVecAffineTemplate
-BitVecPolyhedronTemplate = BitVecPolyhedronTemplate
-DisjunctiveBitVecPolyhedronTemplate = DisjunctiveBitVecPolyhedronTemplate
-
-KnownBitsTemplate = KnownBitsTemplate
-BitPredAbsTemplate = BitPredAbsTemplate
-EnhancedBitPatternTemplate = EnhancedBitPatternTemplate
+# No need to redefine the classes with the same name - they're already available
+# in the namespace after the imports above
