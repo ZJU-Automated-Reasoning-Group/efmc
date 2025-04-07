@@ -420,9 +420,6 @@ class FormulaInfo:
         return "BV" in self.logic
 
     def get_logic(self):
-        """
-        TODO: how about string, array, and FP?
-        """
         try:
             if not self.has_quantifier:
                 if self.apply_probe("is-propositional"):

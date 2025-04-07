@@ -1,5 +1,9 @@
 .coverage
 .vscode
+paper
+*.time 
+*.out
+*.res
 *egg-info*
 rebase.sh
 docs/build
