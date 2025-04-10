@@ -10,7 +10,7 @@ def prove_terminates(filename):
   splitfile = tempfile.NamedTemporaryFile(mode='w', suffix='.c', delete=False)
   (id_map, has_nested, nondet) = splitter.split(filename, splitfile)
   nids = len(id_map)
-  varnames = ' '.join(id_map[k] for k in xrange(nids))
+  varnames = ' '.join(id_map[k] for k in range(nids))
 
   splitfile.close()
 
@@ -18,7 +18,7 @@ def prove_terminates(filename):
     skeleton = "../../tests/termination/nested.c"
     nprogs = 3
     nargs = nids*2
-    varnames += ' ' + ' '.join("%s\\'" % id_map[k] for k in xrange(nids))
+    varnames += ' ' + ' '.join("%s\\'" % id_map[k] for k in range(nids))
   else:
     skeleton = "../../tests/termination/ranking.c"
     nprogs = 2

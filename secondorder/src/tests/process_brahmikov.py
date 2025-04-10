@@ -2,7 +2,7 @@
 
 import re
 import os
-import cPickle
+import pickle
 import slice_log
 
 benchmark_dir = "logs"
@@ -81,12 +81,12 @@ def process_dir(d):
 
 def process_all_dirs():
   for logdir in os.listdir(benchmark_dir):
-    print logdir
+    print(logdir)
 
     results = process_dir(os.path.join(benchmark_dir, logdir))
     processed = os.path.join(processed_dir, logdir + '.stats')
     f = open(processed, 'wb')
-    cPickle.dump(results, f)
+    pickle.dump(results, f)
     f.close()
 
 if __name__ == '__main__':
@@ -96,8 +96,8 @@ if __name__ == '__main__':
   processed_f = os.path.basename(sys.argv[1]) + '.stats'
   processed = os.path.join(processed_dir, processed_f)
 
-  print processed
+  print(processed)
 
   f = open(processed, 'wb')
-  cPickle.dump(results, f)
+  pickle.dump(results, f)
   f.close()

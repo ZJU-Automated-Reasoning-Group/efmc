@@ -15,8 +15,8 @@ wordoverrides = {4:4, 24: 8}
 numbenchmarks = 29
 
 def runbenchmarks(restrict_width, flags, outdir):
-  for i in xrange(1, numbenchmarks+1):
-    print i
+  for i in range(1, numbenchmarks+1):
+    print(i)
 
     if i in benchmarks11:
       args = 1
@@ -51,7 +51,7 @@ def runbenchmarks(restrict_width, flags, outdir):
     except:
       pass
 
-    print cmd
+    print(cmd)
     os.system(cmd)
 
 if __name__ == '__main__':

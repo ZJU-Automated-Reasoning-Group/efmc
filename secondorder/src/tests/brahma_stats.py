@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import cPickle
+import pickle
 
 # Each data point is (#iterations, runtime, #lines)
 pldi_brahma = [ 
@@ -91,7 +91,7 @@ icse_pldi_map = dict([
 
 brahma_stats = {}
 
-for i in xrange(len(pldi_brahma)):
+for i in range(len(pldi_brahma)):
   stats = pldi_brahma[i]
   timers = {'_': stats[1]}
   counters = {'iterations': stats[0], 'insts': stats[2]}
@@ -104,13 +104,13 @@ for i in xrange(len(pldi_brahma)):
   brahma_stats['%d' % (i+1)] = (counters, timers)
 
 brahmaf = open('processed/brahma.stats', 'wb')
-cPickle.dump(brahma_stats, brahmaf, -1)
+pickle.dump(brahma_stats, brahmaf, -1)
 brahmaf.close()
 
 icse_stats = {}
 icse_semibiased_stats = {}
 
-for i in xrange(len(icse_brahma)):
+for i in range(len(icse_brahma)):
   stats = icse_brahma[i]
   timers = {'_': stats[0]}
   counters = {'insts': stats[4]}
@@ -128,9 +128,9 @@ for i in xrange(len(icse_brahma)):
   icse_semibiased_stats['%d' % icse_pldi_map[i+1]] = (counters, timers)
 
 icsef = open('processed/icse.stats', 'wb')
-cPickle.dump(icse_stats, icsef, -1)
+pickle.dump(icse_stats, icsef, -1)
 icsef.close()
 
 semibiasedf = open('processed/icse_semibiased.stats', 'wb')
-cPickle.dump(icse_semibiased_stats, semibiasedf, -1)
+pickle.dump(icse_semibiased_stats, semibiasedf, -1)
 semibiasedf.close()

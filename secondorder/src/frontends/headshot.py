@@ -10,8 +10,8 @@ def prove_terminates(filename):
   splitfile = tempfile.NamedTemporaryFile(mode='w', suffix='.c', delete=False)
   (id_map, has_nested, nondet) = splitter.split(filename, splitfile)
   nids = len(id_map)
-  varnames = (' '.join(id_map[k] for k in xrange(nids)) + ' ' +
-              ' '.join("0" for i in xrange(nids)))
+  varnames = (' '.join(id_map[k] for k in range(nids)) + ' ' +
+              ' '.join("0" for i in range(nids)))
 
   splitfile.close()
 

@@ -6,7 +6,7 @@ import prog
 def slice_prog(prog, idx):
   ret = set([idx])
 
-  for i in xrange(idx, -1, -1):
+  for i in range(idx, -1, -1):
     if i not in ret:
       continue
 
@@ -19,7 +19,7 @@ def slice_prog(prog, idx):
     elif op in ternops:
       nargs = 3
 
-    params = [prog.params[i*3 + j] for j in xrange(nargs)]
+    params = [prog.params[i*3 + j] for j in range(nargs)]
 
     for p in params:
       if prog.is_temp(p):

@@ -2,7 +2,7 @@
 
 import time
 import args
-import cPickle
+import pickle
 
 args.argparser.add_argument("--stats", default=None, type=str,
     help="file to serialize statistics to")
@@ -19,9 +19,9 @@ def inc(key):
 
 def add(key, v):
   if key in counters:
-    counters[k] += v
+    counters[key] += v
   else:
-    counter[key] = v
+    counters[key] = v
 
 def set(key, v):
   counters[key] = v
@@ -47,22 +47,22 @@ def summary():
     if args.args.stats is not None:
       f = open(args.args.stats, 'wb')
       stats = (counters, timers)
-      cPickle.dump(stats, f, protocol=-1)
+      pickle.dump(stats, f, protocol=-1)
       f.close()
   except:
     pass
 
-  print "Perf counters:"
-  print counters
+  print("Perf counters:")
+  print(counters)
 
-  print "Perf timers:"
+  print("Perf timers:")
 
   runtime = 0
 
-  for (key, times) in timers.iteritems():
+  for (key, times) in timers.items():
     total = sum(end - start for (start, end) in times if end is not None)
     total += sum(time.time() - start for (start, end) in times if end is None)
-    print "%s: %.02fs" % (key, total)
+    print("%s: %.02fs" % (key, total))
 
     if key == "_":
       runtime = total
@@ -73,5 +73,5 @@ def summary():
     res = "SAT"
 
   if args.args.paramils:
-    print "Result for ParamILS: %s, %f, %d, 0, %d" % (
-       res, runtime, counters['iterations'], args.args.seed)
+    print("Result for ParamILS: %s, %f, %d, 0, %d" % (
+       res, runtime, counters['iterations'], args.args.seed))

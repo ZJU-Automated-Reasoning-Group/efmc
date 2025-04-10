@@ -82,7 +82,7 @@ int check(solution_t *sol, word_t args[NARGS]) {
   }
 """)
 
-        for i in xrange(len(avars)):
+        for i in range(len(avars)):
           fout.write("  eargs[%d] = x%d;\n" % (i, avars[i]))
 
         idx = nefuncs
@@ -113,10 +113,10 @@ int check(solution_t *sol, word_t args[NARGS]) {
 }
 """)
 
-  print "%d evars" % nevars
-  print "%d functions" % nefuncs
-  print "%d universals" % len(avars)
-  print "%d clauses" % nclauses
+  print("%d evars" % nevars)
+  print("%d functions" % nefuncs)
+  print("%d universals" % len(avars))
+  print("%d clauses" % nclauses)
 
 if __name__ == '__main__':
   fin = open(sys.argv[1])

@@ -240,7 +240,7 @@ class Checker(object):
     try:
       if "cbmc" in strategies:
         if args.args.verbose > 1:
-          print " ".join(self.cbmcargs)
+          print(" ".join(self.cbmcargs))
 
         cbmcfile = tempfile.NamedTemporaryFile(delete=not args.args.keeptemps)
         cbmcproc = subprocess.Popen(self.cbmcargs, stdout=cbmcfile,
@@ -256,7 +256,7 @@ class Checker(object):
           outfile = tempfile.NamedTemporaryFile(delete=not args.args.keeptemps)
 
           if args.args.verbose > 1:
-            print bin.name
+            print(bin.name)
 
           proc = subprocess.Popen([bin.name], stdout=outfile,
               preexec_fn=os.setpgrp)
@@ -281,13 +281,14 @@ class Checker(object):
         perf.inc(checker)
 
         if args.args.verbose > 0:
-          print "Fastest checker: %s" % checker
+          print("Fastest checker: %s" % checker)
 
     retfile.seek(0)
 
     return (os.WEXITSTATUS(retcode), retfile)
 
-  def cachable(self, (width, key)):
+  def cachable(self, param):
+    width, key = param
     if args.args.fastverif:
       return key == "genetic-synth"
     else:
@@ -310,7 +311,7 @@ class Checker(object):
 
       perf.start("gcc")
       if args.args.verbose > 1:
-        print " ".join(gcc)
+        print(" ".join(gcc))
         subprocess.call(gcc)
       else:
         with open(os.devnull, "w") as fnull:

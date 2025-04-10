@@ -156,7 +156,7 @@ def split_func(fd, ofile):
   (fd, nondet) = replace_nondet(fd)
   fd_body = fd.body
 
-  for i in xrange(nondet):
+  for i in range(nondet):
     id = c_ast.ID('nondet_%d' % i)
 
     decl = c_ast.Decl(id.name,

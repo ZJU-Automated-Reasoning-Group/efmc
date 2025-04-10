@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import cPickle
+import pickle
 import scipy.stats
 import os
 
@@ -8,7 +8,7 @@ threshold = 0.05
 
 def load(filename):
   f = open(filename, 'rb')
-  benchmarks = cPickle.load(f)
+  benchmarks = pickle.load(f)
   f.close()
 
   name = os.path.basename(filename)
@@ -57,26 +57,26 @@ def print_stats(n1, n2, stats):
   m1 = '%s%s' % (n1, ' ' * (maxlen-len(n1)))
   m2 = '%s%s' % (n2, ' ' * (maxlen-len(n2)))
 
-  print ""
-  print " %s | Total time | Median time | Uniquely solved" % (" " * maxlen)
-  print "-%s----------------------------------------------" % ("-" * maxlen)
-  print " %s | %9.2fs | %10.2fs | %15d" % (m1, total1, med1, only1)
-  print " %s | %9.2fs | %10.2fs | %15d" % (m2, total2, med2, only2)
-  print " diff%s | %9.2fs | %10.2fs |" % (' ' * (maxlen-4),
-      totalspeedup, medspeedup)
-  print ""
-  print "Both solved %d cases" % cnt
-  print ""
+  print("")
+  print(" %s | Total time | Median time | Uniquely solved" % (" " * maxlen))
+  print("-%s----------------------------------------------" % ("-" * maxlen))
+  print(" %s | %9.2fs | %10.2fs | %15d" % (m1, total1, med1, only1))
+  print(" %s | %9.2fs | %10.2fs | %15d" % (m2, total2, med2, only2))
+  print(" diff%s | %9.2fs | %10.2fs |" % (' ' * (maxlen-4),
+      totalspeedup, medspeedup))
+  print("")
+  print("Both solved %d cases" % cnt)
+  print("")
 
   if pval <= threshold:
     if med1 < med2:
-      print ("%s is SIGNIFICANTLY faster " % n1),
+      print("%s is SIGNIFICANTLY faster " % n1),
     else:
-      print ("%s is SIGNIFICANTLY faster " % n2),
+      print("%s is SIGNIFICANTLY faster " % n2),
   else:
-    print "No signficant speed difference ",
+    print("No signficant speed difference "),
 
-  print "(p=%.3f, U=%.3f)" % (pval, uval)
+  print("(p=%.3f, U=%.3f)" % (pval, uval))
 
 if __name__ == '__main__':
   import sys

@@ -1,14 +1,14 @@
 #!/usr/bin/python
 
-import cPickle
+import pickle
 
 def make_graph(kalashnikov, brahmikov, pldi, icse, icse_semibiased):
-  print "\\begin{tabular}{l||rrc|rrrc|rr|rr}"
-  print "Problem & \multicolumn{3}{c}{\\sc PLDI Brahma} & \multicolumn{4}{|c}{ICSE Brahma} & \multicolumn{2}{|c}{\sc Brahmikov} & \multicolumn{2}{|c}{\\sc Kalashnikov} \\\\"
-  print "        & Runtime & \#Lines & Aut. & Random & Semibiased & \#Lines & Aut. & Runtime & \#Lines & Runtime & \#Lines \\\\"
+  print("\\begin{tabular}{l||rrc|rrrc|rr|rr}")
+  print("Problem & \multicolumn{3}{c}{\\sc PLDI Brahma} & \multicolumn{4}{|c}{ICSE Brahma} & \multicolumn{2}{|c}{\sc Brahmikov} & \multicolumn{2}{|c}{\\sc Kalashnikov} \\\\")
+  print("        & Runtime & \#Lines & Aut. & Random & Semibiased & \#Lines & Aut. & Runtime & \#Lines & Runtime & \#Lines \\\\")
 
-  print "\\hline"
-  print "\\hline"
+  print("\\hline")
+  print("\\hline")
 
   keys = set(kalashnikov.keys() + pldi.keys() + icse.keys())
   ns = sorted(int(k) for k in keys)
@@ -149,13 +149,13 @@ def make_graph(kalashnikov, brahmikov, pldi, icse, icse_semibiased):
 
     line = line[:-1]
 
-    print "%s\\\\" % line
+    print("%s\\\\" % line)
 
-  print "\\end{tabular}"
+  print("\\end{tabular}")
 
 def load(fname):
   f = open(fname, 'rb')
-  ret = cPickle.load(f)
+  ret = pickle.load(f)
   f.close()
 
   return ret

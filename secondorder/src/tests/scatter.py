@@ -1,17 +1,17 @@
 #!/usr/bin/python
 
 import matplotlib.pyplot as plt
-import cPickle
+import pickle
 
 timeout = 3600
 
 def load(fname1, fname2):
   f1 = open(fname1, 'rb')
-  stats1 = cPickle.load(f1)
+  stats1 = pickle.load(f1)
   f1.close()
 
   f2 = open(fname2, 'rb')
-  stats2 = cPickle.load(f2)
+  stats2 = pickle.load(f2)
   f2.close()
 
   common_keys = [k for k in stats1 if k in stats2]

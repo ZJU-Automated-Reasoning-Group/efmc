@@ -35,7 +35,7 @@ def slice(log):
   live = set([ret])
   sliced = []
 
-  for i in xrange(len(prog), 0, -1):
+  for i in range(len(prog), 0, -1):
     j = i-1
 
     if j in live:
@@ -46,7 +46,7 @@ def slice(log):
           idx = int(v[1:])
           live.add(idx)
 
-  for i in xrange(len(prog)):
+  for i in range(len(prog)):
     if i in live:
       sliced.append(prog[i][1])
 
@@ -61,4 +61,4 @@ if __name__ == '__main__':
   sliced = slice(f)
   f.close()
 
-  print '\n'.join(sliced)
+  print('\n'.join(sliced))

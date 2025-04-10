@@ -171,7 +171,7 @@ class Prog(object):
     # List comprehension trickery to generate a list like:
     # [(op0, param0, param1, param2, 0), (op1, param3, param4, param5, 1), ... ]
     insts = zip(ops, params[::3], params[1::3], params[2::3],
-        xrange(0, len(ops)))
+        range(0, len(ops)))
     strinsts = []
 
     sliced = self.slice(ops, params, consts)
@@ -213,9 +213,9 @@ class Prog(object):
   def slice(self, ops, params, consts):
     return range(len(ops))
 
-    ret = set([len(ops) - i - 1 for i in xrange(args.args.res)])
+    ret = set([len(ops) - i - 1 for i in range(args.args.res)])
 
-    for i in xrange(len(ops) - 1, -1, -1):
+    for i in range(len(ops) - 1, -1, -1):
       if i not in ret:
         continue
 
@@ -228,7 +228,7 @@ class Prog(object):
       elif op in ternops:
         nargs = 3 
 
-      ps = [params[i*3 + j] for j in xrange(nargs)]
+      ps = [params[i*3 + j] for j in range(nargs)]
 
       for p in ps:
         if p >= args.args.args + len(consts):
@@ -238,7 +238,7 @@ class Prog(object):
     return ret
 
   def const_used(self, i, j):
-    for k in xrange(len(self.ops[i])):
+    for k in range(len(self.ops[i])):
       op = self.ops[i][k]
 
       if op in unops:
@@ -248,7 +248,7 @@ class Prog(object):
       elif op in ternops:
         nargs = 3
 
-      for l in xrange(nargs):
+      for l in range(nargs):
         if self.params[i][k*3 + l] == j:
           return True
 
@@ -261,7 +261,7 @@ class Prog(object):
     else:
       ret = ''
 
-    for i in xrange(len(self.ops)):
+    for i in range(len(self.ops)):
       ret += "Program %d:\n" % i
       ret += self.prog2str(self.ops[i], self.params[i], self.consts[i])
       ret += "\n"

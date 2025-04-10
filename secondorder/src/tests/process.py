@@ -1,8 +1,8 @@
-#!/usr/bin/python
+  #!/usr/bin/python
 
 import re
 import os
-import cPickle
+import pickle
 
 benchmark_dir = "logs"
 processed_dir = "processed"
@@ -82,12 +82,12 @@ def process_dir(d):
 
 def process_all_dirs():
   for logdir in os.listdir(benchmark_dir):
-    print logdir
+    print(logdir)
 
     results = process_dir(os.path.join(benchmark_dir, logdir))
     processed = os.path.join(processed_dir, logdir + '.stats')
     f = open(processed, 'wb')
-    cPickle.dump(results, f)
+    pickle.dump(results, f)
     f.close()
 
 if __name__ == '__main__':

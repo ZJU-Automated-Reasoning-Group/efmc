@@ -262,7 +262,7 @@ class Preprocessor(object):
     def group_lines(self,input):
         lex = self.lexer.clone()
         lines = [x.rstrip() for x in input.splitlines()]
-        for i in xrange(len(lines)):
+        for i in range(len(lines)):
             j = i+1
             while lines[i].endswith('\\') and (j < len(lines)):
                 lines[i] = lines[i][:-1]+lines[j]

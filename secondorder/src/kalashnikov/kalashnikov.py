@@ -313,24 +313,24 @@ def kalashnikov(checker):
       if args.args.exhaustive:
         print ("Correct sequences: " + BOLD + RED + "%d" + ENDC) %(
             len(correct))
-        print UP*2 + "\r"
+        print(UP*2 + "\r")
 
-      print UP*8 + "\r"
+      print(UP*8 + "\r")
       sys.stdout.flush()
 
     if args.args.verbose > 0:
-      print correct
+      print(correct)
 
     n += 1
 
     if args.args.verbose > 1:
-      print "Test vectors: %s" % str(tests)
+      print("Test vectors: %s" % str(tests))
 
     prog = synth(tests, exclusions+correct, wordlen, codelen, nconsts)
 
     if prog == None:
       if args.args.verbose > 0:
-        print "No sequence possible!"
+        print("No sequence possible!")
 
       if args.args.consts < 0 and nconsts < codelen:
         nconsts += 1
@@ -343,19 +343,19 @@ def kalashnikov(checker):
       exclusions = []
 
       if args.args.verbose > 0:
-        print "Increasing constants to %d\n" % nconsts
-        print "Increasing sequence length to %d\n" % codelen
+        print("Increasing constants to %d\n" % nconsts)
+        print("Increasing sequence length to %d\n" % codelen)
 
       continue
 
     if args.args.verbose > 0:
-      print str(prog)
+      print(str(prog))
 
     test = verif(prog, checker, wordlen, codelen)
 
     if test is None:
       if args.args.verbose > 0:
-        print "Correct for wordlen=%d" % wordlen
+        print("Correct for wordlen=%d" % wordlen)
 
       if wordlen == targetwordlen:
         correct.append(prog)
@@ -364,19 +364,19 @@ def kalashnikov(checker):
       test = verif(prog, checker, targetwordlen, codelen)
       if test is None:
         if args.args.verbose > 0:
-          print "Also correct for wordlen=%d!" % targetwordlen
+          print("Also correct for wordlen=%d!" % targetwordlen)
 
         correct.append(prog)
         continue
 
       if args.args.verbose > 0:
-        print "Trying to generalize..."
+        print("Trying to generalize...")
 
       newprog = generalize(prog, checker, wordlen, targetwordlen, tests, codelen)
 
       if newprog:
         if args.args.verbose > 1:
-          print "Generalized!"
+          print("Generalized!")
 
         correct.append(newprog)
 
@@ -384,11 +384,11 @@ def kalashnikov(checker):
         continue
 
       if args.args.verbose > 0:
-        print "Couldn't generalize :-("
+        print("Couldn't generalize :-(")
 
       if len(exclusions) < args.args.exclude:
         if args.args.verbose > 0:
-          print "Excluding current sequence"
+          print("Excluding current sequence")
 
         perf.inc("exclusions")
         exclusions.append(prog)
@@ -403,10 +403,10 @@ def kalashnikov(checker):
         tests = list(set(tests))
 
         if args.args.verbose > 0:
-          print "Increasing wordlen to %d" % wordlen
+          print("Increasing wordlen to %d" % wordlen)
     else:
       if args.args.verbose > 0:
-        print "Fails for %s\n" % str(test)
+        print("Fails for %s\n" % str(test))
 
       tests.append(test)
 
@@ -414,16 +414,16 @@ def kalashnikov(checker):
   endtime = time.time()
   elapsed = endtime-starttime
 
-  print "\n"*6
-  print "Finished in %0.2fs\n" % elapsed
+  print("\n"*6)
+  print("Finished in %0.2fs\n" % elapsed)
   
   for prog in correct:
-    print str(prog)
-    print ""
+    print(str(prog))
+    print("")
 
 def expand(x, narrow, wide):
   if args.args and args.args.verbose > 1:
-    print "Expanding 0x%x from %d to %d bits" % (x, narrow, wide)
+    print("Expanding 0x%x from %d to %d bits" % (x, narrow, wide))
 
   ret = [x, 0]
 
@@ -498,7 +498,7 @@ def expand(x, narrow, wide):
   ret.append(y)
 
   if args.args and args.args.verbose > 1:
-    print "Expanded to %s" % str(ret)
+    print("Expanded to %s" % str(ret))
 
   return sorted(list(set(ret)), reverse=True)
 
@@ -544,14 +544,14 @@ def heuristic_generalize(prog, checker, width, targetwidth, codelen):
       const_lists.append(l)
 
     newevars = []
-    for i in xrange(len(prog.evars)):
+    for i in range(len(prog.evars)):
       newevars.append(newconsts[n])
       n += 1
 
     newprog = Prog(prog.ops, prog.params, const_lists, newevars)
 
     if args.args.verbose > 1:
-      print "Trying %s" % (str(newprog))
+      print("Trying %s" % (str(newprog)))
 
     if verif(newprog, checker, targetwidth, codelen) is None:
       return newprog
@@ -569,7 +569,7 @@ def gentests(wordlen, codelen):
 
   # See if we can exhaust the state space...
   if (1 << (wordlen*numargs)) <= numtests:
-    slices = [range(1 << wordlen) for i in xrange(numargs)]
+    slices = [range(1 << wordlen) for i in range(numargs)]
     return list(itertools.product(*slices))
 
   # This is fairly arbitrary...  Above 2^30, we're too big to fit
@@ -577,14 +577,14 @@ def gentests(wordlen, codelen):
   # vectors & rely on the fact that our state space is large enough
   # that we're unlikely to generate the same vector twice.
   if wordlen < 30:
-    vecs = xrange(2**wordlen)
-    slices = [random.sample(vecs, numslice) for i in xrange(numargs)]
+    vecs = range(2**wordlen)
+    slices = [random.sample(vecs, numslice) for i in range(numargs)]
   else:
     slices = []
 
-    for i in xrange(numargs):
+    for i in range(numargs):
       thisslice = [random.randint(0, (2**wordlen) - 1)
-                    for j in xrange(numslice)]
+                    for j in range(numslice)]
       thisslice = [(x & ((1 << k) - 1)) | i for x in thisslice]
 
       slices.append(thisslice)
@@ -601,7 +601,7 @@ if __name__ == '__main__':
   if args.args.seed is None:
     args.args.seed = random.randint(0, 100000)
 
-  print "Using seed: %d" % args.args.seed
+  print("Using seed: %d" % args.args.seed)
 
   random.seed(args.args.seed)
 
@@ -609,7 +609,7 @@ if __name__ == '__main__':
     kalashnikov(args.args.checker)
   except TimeoutError:
     perf.inc("timeout")
-    print "\n"*7 + "Timeout"
+    print("\n"*7 + "Timeout")
 
   if args.args.verbose > 0:
     perf.summary()
