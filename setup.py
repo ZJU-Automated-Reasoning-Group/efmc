@@ -30,7 +30,7 @@ REQUIRED = [
     'tqdm~=4.65.0',
     'meson>=0.64',
     'pytest~=7.3.2',
-    'coverage~=7.6.12'
+    'coverage~=6.0.0'
 ]
 
 # The rest you shouldn't have to touch too much :)

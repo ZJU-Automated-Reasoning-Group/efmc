@@ -17,17 +17,17 @@ SOLVER_URLS = {
     'mac_arm64': {
         'cvc5': "https://github.com/cvc5/cvc5/releases/download/cvc5-1.0.3/cvc5-macOS-arm64",
         'z3': "https://github.com/Z3Prover/z3/releases/download/z3-4.10.2/z3-4.10.2-arm64-osx-11.0.zip",
-        'mathsat': "https://mathsat.fbk.eu/download.php?file=mathsat-5.6.9-osx.tar.gz"
+        # 'mathsat': "https://mathsat.fbk.eu/download.php?file=mathsat-5.6.9-osx.tar.gz"  # MathSAT URL for Mac ARM64
     },
     'mac_x64': {
         'cvc5': "https://github.com/cvc5/cvc5/releases/download/cvc5-1.0.3/cvc5-macOS",
         'z3': "https://github.com/Z3Prover/z3/releases/download/z3-4.10.2/z3-4.10.2-x64-osx-10.16.zip",
-        'mathsat': "https://mathsat.fbk.eu/download.php?file=mathsat-5.6.9-osx.tar.gz"
+        # 'mathsat': "https://mathsat.fbk.eu/download.php?file=mathsat-5.6.9-osx.tar.gz"  # MathSAT URL for Mac x64
     },
     'linux': {
         'cvc5': "https://github.com/cvc5/cvc5/releases/download/cvc5-1.0.3/cvc5-Linux",
         'z3': "https://github.com/Z3Prover/z3/releases/download/z3-4.10.2/z3-4.10.2-x64-glibc-2.31.zip",
-        'mathsat': "https://mathsat.fbk.eu/download.php?file=mathsat-5.6.9-linux-x86_64.tar.gz"
+        # 'mathsat': "https://mathsat.fbk.eu/download.php?file=mathsat-5.6.9-linux-x86_64.tar.gz"  # MathSAT URL for Linux
     }
 }
 
@@ -45,6 +45,7 @@ def get_binary_path(solver_name, archive_name):
         match = re.search(r'mathsat-(\d+\.\d+\.\d+)-(.*?)(\.tar\.gz|\.zip)', archive_name)
         if match:
             version, platform, _ = match.groups()
+            # Return path to the MathSAT binary within the extracted directory
             return f'mathsat-{version}-{platform}/bin/mathsat'
     return None
 
@@ -96,6 +97,7 @@ def extract_archive(filename):
                         zip_ref.extract(file)
                         pbar.update(1)
         elif filename.endswith('.tar.gz'):
+            # MathSAT is distributed as .tar.gz archive
             with tarfile.open(filename, 'r:gz') as tar_ref:
                 total = len(tar_ref.getmembers())
                 with tqdm(total=total, desc=f"Extracting {filename}") as pbar:
@@ -122,6 +124,7 @@ def find_binary(solver_name, archive_name):
 
 def get_extracted_dir(solver_name, archive_name):
     if solver_name == 'mathsat':
+        # Extract MathSAT version and platform to construct the directory name
         match = re.search(r'mathsat-(\d+\.\d+\.\d+)-(.*?)(\.tar\.gz|\.zip)', archive_name)
         if match:
             version, platform, _ = match.groups()
