@@ -190,12 +190,12 @@ class KInductionProverInc:
         
         # We don't add to solver_kind directly as we'll use push/pop with complete formulas
 
-    def solve(self, k: int, timeout: Optional[int] = None) -> VerificationResult:
+    def solve(self, k: int = 10, timeout: Optional[int] = None) -> VerificationResult:
         """
         Performs k-induction proof using incremental solving.
         
         Args:
-            k: Maximum bound to check
+            k: Maximum bound to check (default: 10)
             timeout: The timeout in seconds
             
         Returns:

@@ -29,8 +29,8 @@ REQUIRED = [
     'python-sat==0.1.8.dev1',
     'tqdm~=4.65.0',
     'meson>=0.64',
-    'pytest~=7.3.2',
-    'pytest-cov~=5.0.0',
+    'pytest==7.3.2',
+    'pytest-cov==5.0.0',
     'requests==2.32.3'
 ]
 

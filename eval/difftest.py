@@ -203,9 +203,10 @@ class DiffTester:
                 engine = engine_config.engine_class(system)
             
             # Run the engine with timeout
-            if engine_config.name == "K-Induction" and engine_config.k_value is not None:
-                # K-Induction requires a 'k' parameter
-                result = engine.solve(k=engine_config.k_value)
+            if engine_config.name == "K-Induction":
+                # K-Induction requires a 'k' parameter, default to 10 if not specified
+                k_value = engine_config.k_value if engine_config.k_value is not None else 10
+                result = engine.solve(k=k_value)
             elif engine_config.name == "PDR" and engine_config.timeout is not None:
                 result = engine.solve(timeout=engine_config.timeout)
             else:

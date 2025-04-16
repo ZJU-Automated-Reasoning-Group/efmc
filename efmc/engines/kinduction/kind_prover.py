@@ -167,11 +167,11 @@ class KInductionProver(object):
 
         return z3.And(k_hypothesis, unrolling, not_post_k_plus_1, simple_path, aux_invs)
 
-    def solve(self, k: int, timeout: Optional[int] = None) -> VerificationResult:
+    def solve(self, k: int = 10, timeout: Optional[int] = None) -> VerificationResult:
         """Interleaves BMC and K-Ind to verify the property.
         
         Args:
-            k: The maximum bound to check
+            k: The maximum bound to check (default: 10)
             timeout: The timeout in seconds (overrides the instance timeout if provided)
             
         Returns:

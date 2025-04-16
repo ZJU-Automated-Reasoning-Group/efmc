@@ -53,29 +53,29 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-# Build pytest arguments
-PYTEST_ARGS="-x"  # Exit on first failure
+# Build pytest arguments as an array
+PYTEST_ARGS=(-x)  # Exit on first failure
 
 # Add verbosity
 if [ "$VERBOSE" -eq 1 ]; then
-    PYTEST_ARGS="$PYTEST_ARGS -vv"
+    PYTEST_ARGS+=(-vv)
 else
-    PYTEST_ARGS="$PYTEST_ARGS -v"
+    PYTEST_ARGS+=(-v)
 fi
 
 # Handle slow tests
 if [ "$RUN_SLOW" -eq 0 ]; then
-    PYTEST_ARGS="$PYTEST_ARGS -m 'not slow'"
+    PYTEST_ARGS+=(-m "not slow")
 fi
 
 # Add parallel execution
 if [ "$PARALLEL" -eq 1 ]; then
-    PYTEST_ARGS="$PYTEST_ARGS -n auto"
+    PYTEST_ARGS+=(-n auto)
 fi
 
 # Add coverage
 if [ "$COVERAGE" -eq 1 ]; then
-    PYTEST_ARGS="$PYTEST_ARGS --cov=efmc --cov-report=html:$COVERAGE_DIR"
+    PYTEST_ARGS+=(--cov=efmc --cov-report=html:$COVERAGE_DIR)
 fi
 
 # Set test target
@@ -84,7 +84,7 @@ TEST_TARGET="${SPECIFIC_TEST:-$TEST_DIR}"
 echo -e "${YELLOW}Running tests with configuration:${NC}"
 echo -e "  Python command: ${BLUE}$PYTHON_CMD${NC}"
 echo -e "  Test target:    ${BLUE}$TEST_TARGET${NC}"
-echo -e "  Pytest args:    ${BLUE}$PYTEST_ARGS${NC}"
+echo -e "  Pytest args:    ${BLUE}${PYTEST_ARGS[@]}${NC}"
 echo "----------------------------------------"
 
 # Run pre-test checks
@@ -107,7 +107,7 @@ fi
 # Run the tests
 echo -e "${YELLOW}Running tests...${NC}"
 set +e  # Don't exit on error
-$PYTHON_CMD -m pytest $PYTEST_ARGS "$TEST_TARGET"
+$PYTHON_CMD -m pytest "${PYTEST_ARGS[@]}" "$TEST_TARGET"
 TEST_RESULT=$?
 set -e  # Exit on error
 

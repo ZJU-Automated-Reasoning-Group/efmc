@@ -102,19 +102,19 @@ def test_edge_cases(bv_vars):
 
     # Compare with constants
     formula = z3.ULT(x, const)
-    assert get_signedness(x) == Signedness.UNSIGNED
+    assert get_signedness(formula) == Signedness.UNSIGNED
 
     # Single variable (should be unknown)
     formula = x
     assert get_signedness(formula) == Signedness.UNKNOWN
 
-    # Deeply nested operations
-    deep_formula = (
-            (z3.ULT(x, const) & z3.BitVecVal(1, 32)) *
-            z3.BitVecVal(2, 32) +
-            z3.BitVecVal(3, 32)
-    )
-    assert get_signedness(x) == Signedness.UNSIGNED
+    # Deeply nested operations - fixing the type mismatch
+    # Use z3.Or for Boolean operations instead of | operator
+    bv_expression = (x & z3.BitVecVal(1, 32)) * z3.BitVecVal(2, 32) + z3.BitVecVal(3, 32)
+    bool_expression = z3.ULT(bv_expression, const)  # Convert to boolean expression
+    deep_formula = z3.Or(z3.ULT(x, const), bool_expression)
+    
+    assert get_signedness(deep_formula) == Signedness.UNSIGNED
 
 
 if __name__ == "__main__":
