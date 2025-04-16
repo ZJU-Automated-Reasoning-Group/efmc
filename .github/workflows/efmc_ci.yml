@@ -81,7 +81,9 @@ jobs:
         cd ../..
     
     - name: Run tests
-      run: bash unit_tests.sh --coverage
+      run: |
+        source venv/bin/activate
+        bash unit_tests.sh --coverage
       
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3

@@ -75,7 +75,7 @@ fi
 
 # Add coverage
 if [ "$COVERAGE" -eq 1 ]; then
-    PYTEST_ARGS+=(--cov=efmc --cov-report=html:$COVERAGE_DIR)
+    PYTEST_ARGS+=(--cov=efmc --cov-report=html:$COVERAGE_DIR --cov-report=xml:coverage.xml)
 fi
 
 # Set test target
@@ -94,9 +94,12 @@ if ! command -v pytest &> /dev/null; then
     exit 1
 fi
 
-if [ "$COVERAGE" -eq 1 ] && ! command -v pytest-cov &> /dev/null; then
-    echo -e "${RED}pytest-cov not found. Please install it with: pip install pytest-cov${NC}"
-    exit 1
+if [ "$COVERAGE" -eq 1 ]; then
+    # Check if pytest-cov is installed by trying to import it
+    if ! $PYTHON_CMD -c "import pytest_cov" &> /dev/null; then
+        echo -e "${RED}pytest-cov not found. Please install it with: pip install pytest-cov${NC}"
+        exit 1
+    fi
 fi
 
 # Clean up previous coverage reports
