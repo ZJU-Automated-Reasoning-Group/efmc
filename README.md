@@ -162,6 +162,8 @@ To extend the applicability, we need more frontends:
 Solving the quantified formulas that characterize inductive invariants
 directly (via different quantifier instantiation strategeis)
 
+## Documentation
+We release the doc in  https://zju-automated-reasoning-group.github.io/efmc/.
 
 ## Contributing
 
@@ -181,6 +183,7 @@ We welcome contributions to EFMC! Here's how you can contribute:
 
 5. **Testing**: Help us test EFMC on different benchmarks and platforms.
 
+## Contributors
 
 Primary contributors to this project:
 
