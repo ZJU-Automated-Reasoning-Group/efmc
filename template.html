@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Template-based Invariant Generation &#8212; EFMC Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="More Third-Party Tools" href="third-party.html" />
+    <link rel="prev" title="Program Synthesis" href="synthesis.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="third-party.html" title="More Third-Party Tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="synthesis.html" title="Program Synthesis"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Template-based Invariant Generation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="template-based-invariant-generation">
+<h1>Template-based Invariant Generation<a class="headerlink" href="#template-based-invariant-generation" title="Permalink to this heading">¶</a></h1>
+<p>Invariants are assertions about program variables that hold true throughout the execution of a program. They are used in program verification to describe sets of reachable program states and are an essential tool for reasoning about program correctness. In this section, we demonstrate how to compute invariants that prove certain error locations in a program to be unreachable using constraint-based techniques.</p>
+<p>These methods directly encode the sufficiency of invariants (encoding the entire program body) as a constraint and solve the constraint in the following way:</p>
+<ul class="simple">
+<li><p>First, a template assertion that represents the invariant is fixed in a pre-selected language. The template assertion involves program variables X and a set of parameters.</p></li>
+<li><p>Next, the constraints on these parameters are defined in a way that corresponds to the definition of the invariant. This means that every solution to the constraint system produces a sound inductive invariant.</p></li>
+<li><p>Finally, the values of the parameters are obtained by solving the resulting constraint system.</p></li>
+</ul>
+<p>The key verification conditions are:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\forall x. pre(x) \Rightarrow Inv(x)\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\forall x. Inv(x) \land G(x) \land T(X, X') \Rightarrow Inv(X')\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\forall x . Inv(x) \land G(x) \Rightarrow Post(x)\)</span></p></li>
+</ul>
+<section id="linear-arithmetic">
+<h2>Linear Arithmetic<a class="headerlink" href="#linear-arithmetic" title="Permalink to this heading">¶</a></h2>
+<p>In xx, Farkas’ Lemma is used to eliminate universal quantifiers and propose a sound and complete constraint-solving framework for generating linear invariants. The result is a set of existentially quantified nonlinear constraints involving template parameters and parameters introduced by Farkas’ Lemma. Finally, the problem is simplified to the satisfiability problem of quantifier-free nonlinear arithmetic formulas.</p>
+<section id="linear-invariants">
+<h3>Linear Invariants<a class="headerlink" href="#linear-invariants" title="Permalink to this heading">¶</a></h3>
+<p>Consider the following simple program:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="p">}</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">10</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="nonlinear-invariants">
+<h3>Nonlinear Invariants<a class="headerlink" href="#nonlinear-invariants" title="Permalink to this heading">¶</a></h3>
+</section>
+</section>
+<section id="nonlinear-arithmetic">
+<h2>Nonlinear Arithmetic<a class="headerlink" href="#nonlinear-arithmetic" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Template-based Invariant Generation</a><ul>
+<li><a class="reference internal" href="#linear-arithmetic">Linear Arithmetic</a><ul>
+<li><a class="reference internal" href="#linear-invariants">Linear Invariants</a></li>
+<li><a class="reference internal" href="#nonlinear-invariants">Nonlinear Invariants</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nonlinear-arithmetic">Nonlinear Arithmetic</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="synthesis.html"
+                          title="previous chapter">Program Synthesis</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="third-party.html"
+                          title="next chapter">More Third-Party Tools</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/template.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="third-party.html" title="More Third-Party Tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="synthesis.html" title="Program Synthesis"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Template-based Invariant Generation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, rainoftime.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
+    </div>
+  </body>
+</html>

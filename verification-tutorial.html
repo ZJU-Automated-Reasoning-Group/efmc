@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Playing wiht Program Verification with EFMC &#8212; EFMC Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Houdini" href="houdini.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="houdini.html" title="Houdini"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Playing wiht Program Verification with EFMC</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="playing-wiht-program-verification-with-efmc">
+<h1>Playing wiht Program Verification with EFMC<a class="headerlink" href="#playing-wiht-program-verification-with-efmc" title="Permalink to this heading">¶</a></h1>
+<p>This tutorial provides a step-by-step guide to program verification using EFMC.</p>
+<section id="setup-and-installation">
+<h2>1. Setup and Installation<a class="headerlink" href="#setup-and-installation" title="Permalink to this heading">¶</a></h2>
+<p>First, ensure you have EFMC installed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create and activate a virtual environment (recommended)</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">venv</span>
+<span class="n">source</span> <span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>  <span class="c1"># On Unix/macOS</span>
+<span class="c1"># or</span>
+<span class="o">.</span>\<span class="n">venv</span>\<span class="n">Scripts</span>\<span class="n">activate</span>  <span class="c1"># On Windows</span>
+
+<span class="c1"># Install EFMC</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span>
+</pre></div>
+</div>
+</section>
+<section id="understanding-input-formats">
+<h2>2. Understanding Input Formats<a class="headerlink" href="#understanding-input-formats" title="Permalink to this heading">¶</a></h2>
+<p>EFMC supports two main input formats:</p>
+<ol class="arabic simple">
+<li><p>CHC (Constrained Horn Clauses)</p></li>
+<li><p>SyGuS (Syntax-Guided Synthesis)</p></li>
+</ol>
+<section id="example-chc-file">
+<h3>Example CHC File<a class="headerlink" href="#example-chc-file" title="Permalink to this heading">¶</a></h3>
+<p>Here’s a simple example (<code class="docutils literal notranslate"><span class="pre">fib04_32u.smt2</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>(set-logic HORN)
+(declare-fun inv ((_ BitVec 32) (_ BitVec 32) ) Bool)
+(assert (forall ((x (_ BitVec 32)) (y (_ BitVec 32)))
+       (=&gt; ( = x ( bvadd (_ bv1 32) ( bvnot (_ bv50 32) ) ) ) (inv x y))))
+(assert (forall ((x (_ BitVec 32)) (y (_ BitVec 32)) (x! (_ BitVec 32)) (y! (_ BitVec 32)))
+       (=&gt; (and (inv x y) ( or ( and ( bvult x (_ bv0 32) ) ( = x! ( bvadd x y ) ) ( = y! ( bvadd y (_ bv1 32) ) ) ) ( and ( bvuge x (_ bv0 32) ) ( = x! x ) ( = y! y ) ) )) (inv x! y!))))
+(assert (forall ((x (_ BitVec 32)) (y (_ BitVec 32)))
+       (=&gt; (inv x y) ( =&gt; ( not ( bvult x (_ bv0 32) ) ) ( bvuge y (_ bv0 32) ) ))))
+(check-sat)
+</pre></div>
+</div>
+<p>This example represents:</p>
+<ul class="simple">
+<li><p>Program with two variables: <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code></p></li>
+<li><p>Initial condition: <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">-50</span></code></p></li>
+<li><p>Property to verify: When <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">≥</span> <span class="pre">0</span></code>, then <code class="docutils literal notranslate"><span class="pre">y</span> <span class="pre">≥</span> <span class="pre">0</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="basic-verification">
+<h2>3. Basic Verification<a class="headerlink" href="#basic-verification" title="Permalink to this heading">¶</a></h2>
+<section id="running-verification">
+<h3>Running Verification<a class="headerlink" href="#running-verification" title="Permalink to this heading">¶</a></h3>
+<p>You can verify programs using different engines:</p>
+<ol class="arabic">
+<li><p>Template-based Verification:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">efmc</span> <span class="o">--</span><span class="n">engine</span> <span class="n">ef</span> <span class="o">--</span><span class="n">template</span> <span class="n">bv_interval</span> <span class="o">--</span><span class="n">lang</span> <span class="n">chc</span> <span class="o">--</span><span class="n">file</span> <span class="n">your_file</span><span class="o">.</span><span class="n">smt2</span>
+</pre></div>
+</div>
+</li>
+<li><p>PDR (Property-Directed Reachability):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">efmc</span> <span class="o">--</span><span class="n">engine</span> <span class="n">pdr</span> <span class="o">--</span><span class="n">lang</span> <span class="n">chc</span> <span class="o">--</span><span class="n">file</span> <span class="n">your_file</span><span class="o">.</span><span class="n">smt2</span>
+</pre></div>
+</div>
+</li>
+<li><p>K-Induction:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">efmc</span> <span class="o">--</span><span class="n">engine</span> <span class="n">kind</span> <span class="o">--</span><span class="n">lang</span> <span class="n">chc</span> <span class="o">--</span><span class="n">file</span> <span class="n">your_file</span><span class="o">.</span><span class="n">smt2</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="understanding-results">
+<h3>Understanding Results<a class="headerlink" href="#understanding-results" title="Permalink to this heading">¶</a></h3>
+<p>The verifier outputs one of these results:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">safe</span></code>: Property is verified (program is safe)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unsafe</span></code>: A bug is found</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unknown</span></code>: Verifier cannot determine the result</p></li>
+</ul>
+</section>
+</section>
+<section id="advanced-verification-techniques">
+<h2>4. Advanced Verification Techniques<a class="headerlink" href="#advanced-verification-techniques" title="Permalink to this heading">¶</a></h2>
+<section id="k-induction">
+<h3>K-Induction<a class="headerlink" href="#k-induction" title="Permalink to this heading">¶</a></h3>
+<p>K-induction extends basic inductive verification by considering <code class="docutils literal notranslate"><span class="pre">k</span></code> consecutive states:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>efmc<span class="w"> </span>--engine<span class="w"> </span>kind<span class="w"> </span>--k<span class="w"> </span><span class="m">3</span><span class="w"> </span>--lang<span class="w"> </span>chc<span class="w"> </span>--file<span class="w"> </span>your_file.smt2
+</pre></div>
+</div>
+</section>
+<section id="template-based-verification">
+<h3>Template-Based Verification<a class="headerlink" href="#template-based-verification" title="Permalink to this heading">¶</a></h3>
+<p>Supports different templates:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bv_interval</span></code>: Bit-vector intervals</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">octagon</span></code>: Octagonal constraints</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">polyhedra</span></code>: Polyhedral constraints</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">efmc</span> <span class="o">--</span><span class="n">engine</span> <span class="n">ef</span> <span class="o">--</span><span class="n">template</span> <span class="n">polyhedra</span> <span class="o">--</span><span class="n">lang</span> <span class="n">chc</span> <span class="o">--</span><span class="n">file</span> <span class="n">your_file</span><span class="o">.</span><span class="n">smt2</span>
+</pre></div>
+</div>
+</section>
+<section id="property-directed-reachability-pdr">
+<h3>Property-Directed Reachability (PDR)<a class="headerlink" href="#property-directed-reachability-pdr" title="Permalink to this heading">¶</a></h3>
+<p>Uses Z3’s Spacer engine for incremental invariant building:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">efmc</span> <span class="o">--</span><span class="n">engine</span> <span class="n">pdr</span> <span class="o">--</span><span class="n">lang</span> <span class="n">chc</span> <span class="o">--</span><span class="n">file</span> <span class="n">your_file</span><span class="o">.</span><span class="n">smt2</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="best-practices">
+<h2>5. Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this heading">¶</a></h2>
+<section id="input-format-guidelines">
+<h3>Input Format Guidelines<a class="headerlink" href="#input-format-guidelines" title="Permalink to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Use clear variable naming</p></li>
+<li><p>Specify precise pre and post-conditions</p></li>
+</ol>
+</section>
+</section>
+<section id="example-workflow">
+<h2>6. Example Workflow<a class="headerlink" href="#example-workflow" title="Permalink to this heading">¶</a></h2>
+<p>Try different engines:</p>
+<blockquote>
+<div><p># Try PDR
+efmc –engine pdr –lang chc –file your_file.smt2</p>
+<p># Try k-induction
+efmc –engine kind –k 2 –lang chc –file your_file.smt2</p>
+<p># Try template-based approach
+efmc –engine ef –template bv_interval –lang chc –file your_file.smt2</p>
+</div></blockquote>
+</section>
+<section id="references">
+<h2>7. References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Clarke, E. M., Grumberg, O., &amp; Peled, D. A. (1999). Model checking. MIT press.</p></li>
+<li><p>Bradley, A. R., &amp; Manna, Z. (2007). The Calculus of Computation: Decision Procedures with Applications to Verification.</p></li>
+<li><p>Sheeran, M., Singh, S., &amp; Stålmarck, G. (2000). Checking safety properties using induction and a SAT-solver.</p></li>
+</ol>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Playing wiht Program Verification with EFMC</a><ul>
+<li><a class="reference internal" href="#setup-and-installation">1. Setup and Installation</a></li>
+<li><a class="reference internal" href="#understanding-input-formats">2. Understanding Input Formats</a><ul>
+<li><a class="reference internal" href="#example-chc-file">Example CHC File</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#basic-verification">3. Basic Verification</a><ul>
+<li><a class="reference internal" href="#running-verification">Running Verification</a></li>
+<li><a class="reference internal" href="#understanding-results">Understanding Results</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#advanced-verification-techniques">4. Advanced Verification Techniques</a><ul>
+<li><a class="reference internal" href="#k-induction">K-Induction</a></li>
+<li><a class="reference internal" href="#template-based-verification">Template-Based Verification</a></li>
+<li><a class="reference internal" href="#property-directed-reachability-pdr">Property-Directed Reachability (PDR)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#best-practices">5. Best Practices</a><ul>
+<li><a class="reference internal" href="#input-format-guidelines">Input Format Guidelines</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#example-workflow">6. Example Workflow</a></li>
+<li><a class="reference internal" href="#references">7. References</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="houdini.html"
+                          title="previous chapter">Houdini</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/verification-tutorial.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="houdini.html" title="Houdini"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Playing wiht Program Verification with EFMC</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, rainoftime.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Abstraction Interpretation &#8212; EFMC Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Linear Teamporal Logic" href="ltl.html" />
+    <link rel="prev" title="Program Verification" href="verification.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ltl.html" title="Linear Teamporal Logic"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="verification.html" title="Program Verification"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Abstraction Interpretation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="abstraction-interpretation">
+<h1>Abstraction Interpretation<a class="headerlink" href="#abstraction-interpretation" title="Permalink to this heading">¶</a></h1>
+<p>Abstraction interpretation is a formal framework for static analysis of programs.
+It is based on the idea of abstracting the concrete semantics of a program to
+a simpler, more tractable abstract semantics. This abstraction is then used to reason about the program’s behavior. The key idea is to over-approximate the set of possible
+behaviors of the program, so that the analysis is sound but not necessarily
+complete.</p>
+<section id="chaotic-iteration">
+<h2>Chaotic Iteration<a class="headerlink" href="#chaotic-iteration" title="Permalink to this heading">¶</a></h2>
+<p>The basic idea of abstraction interpretation is to iteratively apply an abstract
+transformer to an abstract state until a fixpoint is reached. The abstract
+transformer is a function that maps an abstract state to another abstract state.
+The fixpoint is reached when the abstract state does not change anymore.
+This process is often called chaotic iteration, and it is guaranteed to converge to a fixpoint</p>
+</section>
+</section>
+<section id="widening">
+<h1>Widening<a class="headerlink" href="#widening" title="Permalink to this heading">¶</a></h1>
+<p>Widening is a technique used in abstract interpretation to ensure the convergence of the iterative analysis process. When the abstract state space is infinite or very large, the analysis might not reach a fixpoint in a reasonable amount of time. Widening accelerates the convergence by forcing the iteration to jump to a broader abstract state, effectively over-approximating the union of the states encountered during the iteration. This guarantees that the analysis will terminate, although it may result in a less precise fixpoint.</p>
+<p>Lookahead widening is a technique used in abstract interpretation to improve the precision of the analysis. It works by looking ahead at the next few iterations of the analysis and using that information to make a more informed decision about the current abstract state.</p>
+<section id="systematic-abstraction">
+<h2>Systematic Abstraction<a class="headerlink" href="#systematic-abstraction" title="Permalink to this heading">¶</a></h2>
+</section>
+</section>
+<section id="making-abstraction-interpretation-complete">
+<h1>Making Abstraction Interpretation Complete<a class="headerlink" href="#making-abstraction-interpretation-complete" title="Permalink to this heading">¶</a></h1>
+<section id="abstract-interpretation-tools">
+<h2>Abstract Interpretation Tools<a class="headerlink" href="#abstract-interpretation-tools" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Astree: developed by the French Space Agency (CNES) for the verification of critical embedded software.</p></li>
+<li><p>FramaC</p></li>
+<li><p>PolySpace: by MathWorks for the verification of embedded software.</p></li>
+<li><p>CodeSonar: by GrammaTech</p></li>
+<li><p>TVLA: by University of Wisconsin-Madison, Tel Aviv University, etc.</p></li>
+<li><p>IKOS: by NASA</p></li>
+<li><p>Crab</p></li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<div role="list" class="citation-list">
+<div class="citation" id="cc77" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>CC77<span class="fn-bracket">]</span></span>
+<ol class="upperalpha simple" start="16">
+<li><p>Cousot and R. Cousot. Abstract interpretation: A unified lattice model for static analysis of programs by construction or approximation of fixpoints. POPL’97.</p></li>
+</ol>
+</div>
+<div class="citation" id="cc92" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>CC92<span class="fn-bracket">]</span></span>
+<ol class="upperalpha simple" start="16">
+<li><p>Cousot and R. Cousot. Abstract interpretation frameworks. Journal of Logic and Computation, 2(4):511-547, 1992.</p></li>
+</ol>
+</div>
+<div class="citation" id="reps94" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Reps94<span class="fn-bracket">]</span></span>
+<ol class="upperalpha simple" start="20">
+<li><p>Reps. Solving demand versions of interprocedural analysis problems.</p></li>
+</ol>
+</div>
+<div class="citation" id="reps97" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Reps97<span class="fn-bracket">]</span></span>
+<ol class="upperalpha simple" start="20">
+<li><p>Reps, S. Horwitz, and M. Sagiv. Precise interprocedural dataflow analysis via graph reachability, POPL’95.</p></li>
+</ol>
+</div>
+<div class="citation" id="reps98" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Reps98<span class="fn-bracket">]</span></span>
+<ol class="upperalpha simple" start="20">
+<li><p>Reps, S. Horwitz, M. Sagiv, and G. Rosay. Speeding up slicing. FSE’??</p></li>
+</ol>
+</div>
+<div class="citation" id="xx" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>xx<span class="fn-bracket">]</span></span>
+<ol class="upperalpha simple">
+<li><p>Adje, S. Gaubert, and E. Goubault. Coupling Policy Iteration with Semidefinite Relaxation to Compute Accurate Numerical Invariants in Static</p></li>
+</ol>
+</div>
+</div>
+<p>Analysis. ESOP’10.
+.. [xx] A. Costan, S. Gaubert, E. Goubault, M. Martel, and S. Putot. A Policy Iteration Algorithm for Computing Fixed Points in Static Analysis of
+Programs. CAV’05.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Abstraction Interpretation</a><ul>
+<li><a class="reference internal" href="#chaotic-iteration">Chaotic Iteration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#widening">Widening</a><ul>
+<li><a class="reference internal" href="#systematic-abstraction">Systematic Abstraction</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#making-abstraction-interpretation-complete">Making Abstraction Interpretation Complete</a><ul>
+<li><a class="reference internal" href="#abstract-interpretation-tools">Abstract Interpretation Tools</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="verification.html"
+                          title="previous chapter">Program Verification</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="ltl.html"
+                          title="next chapter">Linear Teamporal Logic</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/absint.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ltl.html" title="Linear Teamporal Logic"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="verification.html" title="Program Verification"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Abstraction Interpretation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, rainoftime.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
+    </div>
+  </body>
+</html>

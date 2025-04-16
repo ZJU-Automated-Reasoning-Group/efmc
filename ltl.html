@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Linear Teamporal Logic &#8212; EFMC Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Abuduction" href="abduction.html" />
+    <link rel="prev" title="Abstraction Interpretation" href="absint.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="abduction.html" title="Abuduction"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="absint.html" title="Abstraction Interpretation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Linear Teamporal Logic</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="linear-teamporal-logic">
+<h1>Linear Teamporal Logic<a class="headerlink" href="#linear-teamporal-logic" title="Permalink to this heading">¶</a></h1>
+<p>Linear Temporal Logic (LTL) is a formalism for expressing properties of reactive systems. It is a modal logic, i.e., it uses modal operators to express the temporal relationships between propositions. LTL is used in formal verification of software and hardware systems, and is supported by model checkers such as SPIN and NuSMV.</p>
+<p>LTL is a linear-time temporal logic, which means that it describes the behavior of a system as a sequence of states, and the temporal operators in LTL operate on this sequence. The basic temporal operators in LTL are:</p>
+<ul class="simple">
+<li><p><strong>X</strong> (Next): The operator X p is true in a state s if p is true in the next state s’.</p></li>
+<li><p><strong>G</strong> (Globally): The operator G p is true in a state s if p is true in all states reachable from s.</p></li>
+<li><p><strong>F</strong> (Finally): The operator F p is true in a state s if p is true in some state reachable from s.</p></li>
+<li><p><strong>U</strong> (Until): The operator p U q is true in a state s if there is a state s’ reachable from s such that q is true in s’, and for all states s’’ reachable from s’ until s’, p is true.</p></li>
+</ul>
+<p>LTL formulas are built using propositional logic operators (AND, OR, NOT) and the temporal operators. For example, the formula G (p -&gt; F q) expresses that q is eventually true after p becomes true in all states.</p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="absint.html"
+                          title="previous chapter">Abstraction Interpretation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="abduction.html"
+                          title="next chapter">Abuduction</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/ltl.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="abduction.html" title="Abuduction"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="absint.html" title="Abstraction Interpretation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Linear Teamporal Logic</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, rainoftime.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
+    </div>
+  </body>
+</html>

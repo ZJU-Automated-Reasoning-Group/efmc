@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Program Verification &#8212; EFMC Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Abstraction Interpretation" href="absint.html" />
+    <link rel="prev" title="Welcome to EFMC’s documentation" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="absint.html" title="Abstraction Interpretation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to EFMC’s documentation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Program Verification</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="program-verification">
+<h1>Program Verification<a class="headerlink" href="#program-verification" title="Permalink to this heading">¶</a></h1>
+<p>Program verification is the process of checking whether a program satisfies a given specification. The specification can be a set of properties that the program must satisfy, such as correctness, safety, or liveness. Verification can be done using various techniques, such as model checking, static analysis, and theorem proving.</p>
+<section id="correctness">
+<h2>Correctness<a class="headerlink" href="#correctness" title="Permalink to this heading">¶</a></h2>
+<p>Consider the following program that computes the factorial of a number
+.. code-block:: python</p>
+<blockquote>
+<div><dl class="simple">
+<dt>def factorial(n):</dt><dd><dl class="simple">
+<dt>if n == 0:</dt><dd><p>return 1</p>
+</dd>
+<dt>else:</dt><dd><p>return n * factorial(n-1)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<p>The program computes the factorial of a non-negative integer <cite>n</cite>. The correctness of this program can be verified by proving that it satisfies the specification: for all non-negative integers <cite>n</cite>, the program returns <cite>n!</cite>, where <cite>n!</cite> is the factorial of <cite>n</cite>.</p>
+<p>To verify the correctness of the program, we can use mathematical induction. The proof consists of two parts:
+1. Base case: Show that the program is correct for the base case <cite>n = 0</cite>.</p>
+<blockquote>
+<div><p>When <cite>n = 0</cite>, the program returns <cite>1</cite>, which is <cite>0!</cite>. Therefore, the base case holds.</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>Inductive step: Assume that the program is correct for <cite>n = k</cite>, i.e., assume that <cite>factorial(k)</cite> returns <cite>k!</cite>. Show that the program is correct for <cite>n = k + 1</cite>.</p>
+<p>When <cite>n = k + 1</cite>, the program returns <cite>(k + 1) * factorial(k)</cite>. By the inductive hypothesis, <cite>factorial(k)</cite> returns <cite>k!</cite>. Therefore, the program returns <cite>(k + 1) * k!</cite>, which is <cite>(k + 1)!</cite>. Hence, the inductive step holds.</p>
+</li>
+</ol>
+<p>Since both the base case and the inductive step have been proven, by mathematical induction, the program is correct for all non-negative integers <cite>n</cite>.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Program Verification</a><ul>
+<li><a class="reference internal" href="#correctness">Correctness</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">Welcome to EFMC’s documentation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="absint.html"
+                          title="next chapter">Abstraction Interpretation</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/verification.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="absint.html" title="Abstraction Interpretation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to EFMC’s documentation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Program Verification</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, rainoftime.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
+    </div>
+  </body>
+</html>
