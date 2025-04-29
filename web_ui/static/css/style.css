@@ -1,0 +1,91 @@
+/* Custom styles for EFMC & EFSMT Web UI */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+.jumbotron {
+    border-radius: 0.3rem;
+}
+
+.feature-icon {
+    color: #0d6efd;
+}
+
+.feature-item {
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    font-weight: 500;
+}
+
+.result-container {
+    font-size: 0.9rem;
+}
+
+.result-container pre {
+    margin-bottom: 1rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Custom colors for different verification engines */
+.engine-ef {
+    border-left: 4px solid #0d6efd;
+}
+
+.engine-pdr {
+    border-left: 4px solid #198754;
+}
+
+.engine-kind {
+    border-left: 4px solid #dc3545;
+}
+
+.engine-houdini {
+    border-left: 4px solid #fd7e14;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .feature-item {
+        margin-bottom: 1.5rem;
+    }
+    
+    .code-editor {
+        height: 300px !important;
+    }
+}
+
+/* Animation for loading */
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
+} 

@@ -1,0 +1,38 @@
+{
+    "basic_engines": [
+      {
+        "engine": "kind",
+        "lang": "chc"
+      },
+      {
+        "engine": "pdr",
+        "lang": "chc"
+      }
+    ],
+    "ef_templates": [
+      {
+        "engine": "ef",
+        "template": "bv_interval",
+        "lang": "chc"
+      },
+      {
+        "engine": "ef",
+        "template": "bv_octagon",
+        "lang": "chc"
+      },
+      {
+        "engine": "ef",
+        "template": "polyhedra",
+        "lang": "chc"
+      }
+    ],
+    "advanced_configs": [
+      {
+        "engine": "ef",
+        "template": "bv_interval",
+        "aux_inv": false,
+        "lang": "chc",
+        "additional_opts": ["--prop-strengthen"]
+      }
+    ]
+  }

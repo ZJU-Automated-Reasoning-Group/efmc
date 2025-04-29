@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}EFSMT Web UI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .code-editor {
+        border: 1px solid #ccc;
+        height: 400px;
+    }
+    .CodeMirror {
+        height: 100%;
+        font-size: 14px;
+    }
+    .result-container {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 15px;
+        max-height: 400px;
+        overflow-y: auto;
+        font-family: monospace;
+        white-space: pre-wrap;
+    }
+    .spinner-border {
+        display: none;
+    }
+    .running .spinner-border {
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>EFSMT - Exists-Forall SMT Solver</h1>
+        <p class="lead">Use this interface to solve exists-forall SMT problems.</p>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="efsmtTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="editor-tab" data-bs-toggle="tab" data-bs-target="#editor" type="button" role="tab" aria-controls="editor" aria-selected="true">Code Editor</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab" aria-controls="upload" aria-selected="false">File Upload</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="examples-tab" data-bs-toggle="tab" data-bs-target="#examples" type="button" role="tab" aria-controls="examples" aria-selected="false">Examples</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="efsmtTabsContent">
+                    <div class="tab-pane fade show active" id="editor" role="tabpanel" aria-labelledby="editor-tab">
+                        <div class="code-editor" id="codeEditor"></div>
+                    </div>
+                    <div class="tab-pane fade" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+                        <div class="mb-3">
+                            <label for="fileUpload" class="form-label">Upload SMT file</label>
+                            <input class="form-control" type="file" id="fileUpload" accept=".smt2,.sl,.chc,.sygus">
+                            <div class="form-text">Supported file types: .smt2, .sl, .chc, .sygus</div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="examples" role="tabpanel" aria-labelledby="examples-tab">
+                        <div class="mb-3">
+                            <label for="exampleSelect" class="form-label">Select an example</label>
+                            <select class="form-select" id="exampleSelect">
+                                <option value="">Loading examples...</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-secondary" id="loadExampleBtn">Load Example</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Solver Options</h5>
+            </div>
+            <div class="card-body">
+                <form id="efsmtForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="solverSelect" class="form-label">Solver</label>
+                                <select class="form-select" id="solverSelect" name="solver">
+                                    <option value="z3">Z3</option>
+                                    <option value="z3api">Z3 API</option>
+                                    <option value="cvc5">CVC5</option>
+                                    <option value="btor">Boolector</option>
+                                    <option value="yices2">Yices2</option>
+                                    <option value="mathsat">MathSAT</option>
+                                    <option value="bitwuzla">Bitwuzla</option>
+                                </select>
+                                <div class="form-text">Choose the SMT solver to use for EFSMT</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="timeoutInput" class="form-label">Timeout (seconds)</label>
+                                <input type="number" class="form-control" id="timeoutInput" name="timeout" min="1" value="60">
+                                <div class="form-text">Set maximum execution time</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-success" id="runBtn">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Solve
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Results</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>Usage:</strong> EFSMT requires a solver parameter. The command format is: <code>efsmt [solver] --file [file]</code>
+                </div>
+                <div class="result-container" id="resultContainer">
+                    <div class="text-center text-muted">
+                        <em>Results will appear here after running the solver</em>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize CodeMirror
+        const codeEditor = CodeMirror(document.getElementById('codeEditor'), {
+            mode: 'javascript',
+            theme: 'monokai',
+            lineNumbers: true,
+            matchBrackets: true,
+            indentUnit: 4,
+            value: ';; Enter your exists-forall SMT code here\n(set-logic BV)\n\n(declare-const x (_ BitVec 8))\n(declare-const y (_ BitVec 8))\n\n(assert (exists ((a (_ BitVec 8))) \n  (forall ((b (_ BitVec 8)))\n    (=> (bvult b a) (bvult (bvadd b y) (bvadd a x))))))\n\n(check-sat)\n(get-model)\n'
+        });
+
+        // Load examples
+        fetch('/api/examples')
+            .then(response => response.json())
+            .then(examples => {
+                const exampleSelect = document.getElementById('exampleSelect');
+                exampleSelect.innerHTML = '';
+                
+                if (examples.length === 0) {
+                    exampleSelect.innerHTML = '<option value="">No examples found</option>';
+                    return;
+                }
+                
+                exampleSelect.innerHTML = '<option value="">Select an example</option>';
+                examples.forEach(example => {
+                    const option = document.createElement('option');
+                    option.value = example.path;
+                    option.textContent = example.name;
+                    exampleSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading examples:', error);
+                document.getElementById('exampleSelect').innerHTML = '<option value="">Error loading examples</option>';
+            });
+
+        // Load example button
+        document.getElementById('loadExampleBtn').addEventListener('click', function() {
+            const examplePath = document.getElementById('exampleSelect').value;
+            if (!examplePath) return;
+            
+            fetch(`/api/example/${examplePath}`)
+                .then(response => response.text())
+                .then(content => {
+                    codeEditor.setValue(content);
+                    // Switch to editor tab
+                    document.getElementById('editor-tab').click();
+                })
+                .catch(error => {
+                    console.error('Error loading example:', error);
+                    alert('Error loading example');
+                });
+        });
+
+        // File upload handling
+        document.getElementById('fileUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                codeEditor.setValue(e.target.result);
+                // Switch to editor tab
+                document.getElementById('editor-tab').click();
+            };
+            reader.readAsText(file);
+        });
+
+        // Run button
+        document.getElementById('runBtn').addEventListener('click', function() {
+            const runBtn = this;
+            runBtn.classList.add('running');
+            runBtn.disabled = true;
+            
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.innerHTML = '<div class="text-center"><em>Running solver...</em></div>';
+            
+            const formData = new FormData();
+            
+            // Get solver and timeout values
+            const solver = document.getElementById('solverSelect').value;
+            const timeout = document.getElementById('timeoutInput').value;
+            
+            formData.append('solver', solver);
+            formData.append('timeout', timeout);
+            
+            // Check if we're using file upload or code editor
+            const activeTab = document.querySelector('.tab-pane.active').id;
+            if (activeTab === 'upload') {
+                const fileInput = document.getElementById('fileUpload');
+                if (fileInput.files.length > 0) {
+                    formData.append('file', fileInput.files[0]);
+                } else {
+                    resultContainer.innerHTML = '<div class="text-danger">Please select a file to upload</div>';
+                    runBtn.classList.remove('running');
+                    runBtn.disabled = false;
+                    return;
+                }
+            } else {
+                // Using code editor
+                formData.append('code', codeEditor.getValue());
+            }
+            
+            // Send request to server
+            fetch('/api/run_efsmt', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultContainer.innerHTML = `<div class="text-danger">${data.error}</div>`;
+                } else {
+                    let result = '';
+                    if (data.stdout) {
+                        result += `<h6>Standard Output:</h6><pre>${data.stdout}</pre>`;
+                    }
+                    if (data.stderr) {
+                        result += `<h6>Standard Error:</h6><pre>${data.stderr}</pre>`;
+                    }
+                    result += `<h6>Exit Code: ${data.exit_code}</h6>`;
+                    resultContainer.innerHTML = result;
+                }
+            })
+            .catch(error => {
+                resultContainer.innerHTML = `<div class="text-danger">Error: ${error.message}</div>`;
+            })
+            .finally(() => {
+                runBtn.classList.remove('running');
+                runBtn.disabled = false;
+            });
+        });
+    });
+</script>
+{% endblock %} 
