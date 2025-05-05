@@ -215,6 +215,8 @@ class Checker(object):
     self.scratchfile.flush()
     perf.start("checker")
     procs = []
+    bins = {}  # 用于存储所有二进制文件路径
+    retfile = None
 
     strategy = None
 
@@ -247,45 +249,60 @@ class Checker(object):
             preexec_fn=os.setpgrp)
         procs.append((cbmcproc, cbmcfile, "cbmc"))
 
-      bins = {}
-
       for s in ("explicit", "genetic", "anneal"):
         if s in strategies:
-          bin = self.compile(s)
-          bins[s] = bin
+          bin_path = self.compile(s)
+          bins[s] = bin_path  # 存储二进制文件路径
           outfile = tempfile.NamedTemporaryFile(delete=not args.args.keeptemps)
 
           if args.args.verbose > 1:
-            print(bin.name)
+            print(bin_path)
 
-          proc = subprocess.Popen([bin.name], stdout=outfile,
-              preexec_fn=os.setpgrp)
-          procs.append((proc, outfile, s))
+          # 确保文件存在且可执行
+          if os.path.exists(bin_path) and os.access(bin_path, os.X_OK):
+            proc = subprocess.Popen([bin_path], stdout=outfile,
+                preexec_fn=os.setpgrp)
+            procs.append((proc, outfile, s))
+          else:
+            raise OSError(f"Binary file {bin_path} does not exist or is not executable")
 
       (finished, retcode) = os.wait()
+      
+      # 找到完成进程的输出文件
+      for (proc, outfile, checker) in procs:
+        if proc.pid == finished:
+          retfile = outfile
+          perf.inc(checker)
+          if args.args.verbose > 0:
+            print(f"Fastest checker: {checker}")
+          break
+
+      if retfile is None:
+        raise RuntimeError("No checker completed successfully")
+
+      retfile.seek(0)
+      return (os.WEXITSTATUS(retcode), retfile)
+
     finally:
       perf.end("checker")
 
-      for (proc, _, _) in procs:
+      # 关闭所有打开的文件，除了返回的文件
+      for (proc, outfile, _) in procs:
         try:
           os.killpg(proc.pid, signal.SIGKILL)
           proc.wait()
         except:
           pass
+        if outfile != retfile:
+          outfile.close()
 
-    retfile = None
-
-    for (proc, outfile, checker) in procs:
-      if proc.pid == finished:
-        retfile = outfile
-        perf.inc(checker)
-
-        if args.args.verbose > 0:
-          print("Fastest checker: %s" % checker)
-
-    retfile.seek(0)
-
-    return (os.WEXITSTATUS(retcode), retfile)
+      # 清理临时文件（如果不需要保留）
+      if not args.args.keeptemps:
+        for path in bins.values():
+          try:
+            os.unlink(path)
+          except:
+            pass
 
   def cachable(self, param):
     width, key = param
@@ -298,26 +315,49 @@ class Checker(object):
     global compiled
 
     if self.verif:
-      key = (self.width, name + "-verif")
+        key = (self.width, name + "-verif")
     else:
-      key = (self.width, name + "-synth")
+        key = (self.width, name + "-synth")
 
     if not self.cachable(key) or key not in compiled:
-      bin = tempfile.NamedTemporaryFile(delete=not args.args.keeptemps,
-                                         dir=args.args.ofiledir)
-      gcc = self.gccargs[name] + ["-o", bin.name, "-lm"]
-      compiled[key] = bin
-      bin.close()
+        # Create temporary file in the specified directory
+        path = os.path.join(args.args.ofiledir, f"checker_{name}_{os.getpid()}")
+        
+        gcc = self.gccargs[name] + ["-o", path, "-lm"]
+        
+        perf.start("gcc")
+        try:
+            if args.args.verbose > 0:  # Changed from >1 to >0 to show more info
+                print("Compiling checker:", " ".join(gcc))
+            
+            # Always show compiler output if verbose
+            result = subprocess.call(gcc, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-      perf.start("gcc")
-      if args.args.verbose > 1:
-        print(" ".join(gcc))
-        subprocess.call(gcc)
-      else:
-        with open(os.devnull, "w") as fnull:
-          subprocess.call(gcc, stdout=fnull, stderr=fnull)
-      perf.end("gcc")
-
-      return bin
+            if result != 0:
+                raise RuntimeError(f"Compilation failed with exit code {result}")
+                
+            # Verify the file was created
+            if not os.path.exists(path):
+                raise RuntimeError(f"Compiled file {path} was not created")
+                
+            os.chmod(path, 0o755)
+            
+            # Register cleanup if not keeping temps
+            if not args.args.keeptemps:
+                import atexit
+                atexit.register(lambda: os.unlink(path) if os.path.exists(path) else None)
+            
+            compiled[key] = path
+            return path
+        except Exception as e:
+            # Clean up if anything failed
+            try:
+                if os.path.exists(path):
+                    os.unlink(path)
+            except:
+                pass
+            raise RuntimeError(f"Failed to compile {name} checker: {str(e)}")
+        finally:
+            perf.end("gcc")
     else:
-      return compiled[key]
+        return compiled[key]

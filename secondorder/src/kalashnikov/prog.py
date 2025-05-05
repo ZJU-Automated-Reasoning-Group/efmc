@@ -108,6 +108,9 @@ class Prog(object):
     self.evars = []
 
     for l in output:
+      if isinstance(l, bytes):
+        l = l.decode('utf-8')
+        
       mops = opsre.search(l)
       mparams = parmsre.search(l)
       mconsts = constsre.search(l)

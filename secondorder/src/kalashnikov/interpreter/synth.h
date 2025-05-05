@@ -2,6 +2,7 @@
 #define SYNTH_H
 
 #include <assert.h>
+#include <stdint.h>
 
 //#define HEAP
 
@@ -87,7 +88,7 @@
 #define OPLEN 5
 
 #ifndef SEARCH
-  typedef unsigned __CPROVER_bitvector[WIDTH] word_t;
+  typedef uint32_t word_t;
   typedef __CPROVER_bitvector[WIDTH] sword_t;
   //typedef __CPROVER_floatbv[WIDTH][MWIDTH] fword_t;
   typedef float fword_t;
