@@ -320,37 +320,70 @@ class Checker(object):
         key = (self.width, name + "-synth")
 
     if not self.cachable(key) or key not in compiled:
-        # Create temporary file in the specified directory
-        path = os.path.join(args.args.ofiledir, f"checker_{name}_{os.getpid()}")
+        # 创建临时文件，确保使用参数指定的目录
+        ofiledir = args.args.ofiledir
+        if not os.path.exists(ofiledir):
+            try:
+                os.makedirs(ofiledir, exist_ok=True)
+                if args.args.verbose > 0:
+                    print(f"Created directory: {ofiledir}")
+            except Exception as e:
+                print(f"Warning: Could not create directory {ofiledir}: {str(e)}")
+                ofiledir = "/tmp"  # 回退到 /tmp
+                
+        # 不再尝试修改 /tmp 目录的权限
+        # 生成唯一文件名
+        path = os.path.join(ofiledir, f"checker_{name}_{os.getpid()}")
         
         gcc = self.gccargs[name] + ["-o", path, "-lm"]
         
         perf.start("gcc")
         try:
-            if args.args.verbose > 0:  # Changed from >1 to >0 to show more info
-                print("Compiling checker:", " ".join(gcc))
+            if args.args.verbose > 0:
+                print(f"Compiling checker: {name}")
+                print(f"Output path: {path}")
+                print(f"Command: {' '.join(gcc)}")
             
-            # Always show compiler output if verbose
-            result = subprocess.call(gcc, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
+            # 显示编译输出，便于调试
+            process = subprocess.Popen(gcc, 
+                                      stdout=subprocess.PIPE, 
+                                      stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
+            result = process.returncode
+            
             if result != 0:
+                print(f"Compilation failed with exit code {result}")
+                print(f"Standard output: {stdout.decode('utf-8', errors='replace')}")
+                print(f"Standard error: {stderr.decode('utf-8', errors='replace')}")
                 raise RuntimeError(f"Compilation failed with exit code {result}")
                 
-            # Verify the file was created
+            # 验证文件是否创建成功
             if not os.path.exists(path):
+                print(f"Error: Compiled file {path} was not created")
                 raise RuntimeError(f"Compiled file {path} was not created")
-                
-            os.chmod(path, 0o755)
             
-            # Register cleanup if not keeping temps
+            # 明确设置文件权限 - 只修改新创建的文件，不修改目录
+            try:
+                os.chmod(path, 0o755)
+            except Exception as e:
+                print(f"Warning: Could not set permissions on {path}: {str(e)}")
+                # 即使无法修改权限，也继续执行，因为文件可能已经可执行
+            
+            if args.args.verbose > 0:
+                print(f"Successfully compiled: {path}")
+                print(f"File exists: {os.path.exists(path)}")
+                print(f"Executable: {os.access(path, os.X_OK)}")
+            
+            # 注册清理函数
             if not args.args.keeptemps:
                 import atexit
-                atexit.register(lambda: os.unlink(path) if os.path.exists(path) else None)
+                atexit.register(lambda p=path: os.unlink(p) if os.path.exists(p) else None)
             
             compiled[key] = path
             return path
         except Exception as e:
-            # Clean up if anything failed
+            # 出错时清理
+            print(f"Exception during compilation: {str(e)}")
             try:
                 if os.path.exists(path):
                     os.unlink(path)
@@ -360,4 +393,11 @@ class Checker(object):
         finally:
             perf.end("gcc")
     else:
-        return compiled[key]
+        # 使用缓存版本时，验证文件仍然存在
+        path = compiled[key]
+        if not os.path.exists(path) or not os.access(path, os.X_OK):
+            # 缓存的文件不存在或不可执行，删除缓存记录
+            del compiled[key]
+            # 重新编译
+            return self.compile(name)
+        return path
