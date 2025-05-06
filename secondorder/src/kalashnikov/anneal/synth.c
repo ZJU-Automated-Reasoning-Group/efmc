@@ -131,16 +131,16 @@ void mutate(solution_t *solution) {
 }
 
 
-int numtests;
+int numtestss;
 int correct;
 
 int fitness(solution_t *solution) {
   correct = 0;
-  numtests = 0;
+  numtestss = 0;
 
   tests(solution);
 
-  if (correct == (numtests * MAXFIT)) {
+  if (correct == (numtestss * MAXFIT)) {
     printf("Found a program with fitness=%d\n", correct);
     save(solution);
     print_solution(solution);
@@ -152,7 +152,7 @@ int fitness(solution_t *solution) {
 
 
 void test(solution_t *solution, word_t args[NARGS]) {
-  numtests++;
+  numtestss++;
 
   execok = 1;
 
@@ -182,7 +182,7 @@ int main(void) {
     generation++;
 
     if (PRINT_GEN && (generation % PRINT_GEN == 0)) {
-      printf("Best fitness: %d, target=%d\n", best_fitness, numtests * MAXFIT);
+      printf("Best fitness: %d, target=%d\n", best_fitness, numtestss * MAXFIT);
     }
 
     if (generation % ((int) (TEMP_STEP / temperature)) == 0) {
@@ -202,7 +202,7 @@ int main(void) {
 
     if (new_fitness > best_fitness) {
       generation = 0;
-      printf("New best fitness: %d, target=%d\n", new_fitness, numtests);
+      printf("New best fitness: %d, target=%d\n", new_fitness, numtestss);
       best_fitness = new_fitness;
       memcpy(&best_solution, &solution, sizeof(solution_t));
     }
