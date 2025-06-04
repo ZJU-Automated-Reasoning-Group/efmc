@@ -25,7 +25,13 @@ from .bv_octagon import BitVecOctagonTemplate, DisjunctiveBitVecOctagonTemplate
 from .bv_affine import BitVecAffineTemplate, DisjunctiveBitVecAffineTemplate
 from .bv_polyhedron import BitVecPolyhedronTemplate, DisjunctiveBitVecPolyhedronTemplate
 from .bv_bitwise import KnownBitsTemplate, BitPredAbsTemplate
-from .bv_enhanced_pattern import EnhancedBitPatternTemplate
+
+# Bit-vector ranking function templates for termination verification
+from .bv_ranking import (
+    BitVecLinearRankingTemplate,
+    BitVecLexicographicRankingTemplate,
+    BitVecConditionalRankingTemplate
+)
 
 # No need to redefine the classes with the same name - they're already available
 # in the namespace after the imports above

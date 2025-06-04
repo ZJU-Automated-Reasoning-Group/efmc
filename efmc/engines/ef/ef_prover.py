@@ -118,8 +118,6 @@ class EFProver:
                 self.ct = KnownBitsTemplate(self.sts)
             elif template_name == "bitpredabs":
                 self.ct = BitPredAbsTemplate(self.sts)
-            elif template_name == "bv_enhanced_pattern":
-                self.ct = EnhancedBitPatternTemplate(self.sts, **kwargs)
             else:
                 raise NotImplementedError
         else:
