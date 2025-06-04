@@ -33,5 +33,12 @@ from .bv_ranking import (
     BitVecConditionalRankingTemplate
 )
 
+# Bit-vector recurrence set templates for non-termination verification
+from .bv_recurrence import (
+    BitVecLinearRecurrenceTemplate,
+    BitVecIntervalRecurrenceTemplate,
+    BitVecDisjunctiveRecurrenceTemplate
+)
+
 # No need to redefine the classes with the same name - they're already available
 # in the namespace after the imports above
