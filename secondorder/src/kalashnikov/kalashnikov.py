@@ -68,7 +68,7 @@ args.argparser.add_argument("--exhaustive", "-E", default=False,
 args.argparser.add_argument("--tests", "-t", default=16, type=int,
     help="number of test vectors to generate")
 
-args.argparser.add_argument("--verbose", "-v", action='count',
+args.argparser.add_argument("--verbose", "-v", default=0, action='count',
     help="increase verbosity")
 
 args.argparser.add_argument("--timeout", "-T", default=1800, type=int,
@@ -99,59 +99,51 @@ def synth(tests, exclusions, width, codelen, nconsts):
 
   testfile = open("/tmp/testvectors", "w")
 
-
-  # Write the test inputs...
   bmc.write(r"""
 #include "synth.h"
 
 void tests(solution_t *solution) {
   word_t input[NARGS];
-""")
+""".encode('utf-8'))
 
-  testfile.write("%d\n" % len(tests))
+  testfile.write(f"{len(tests)}\n")
 
-  #random.shuffle(tests)
   for x in tests:
-    for i in xrange(len(x)):
-      bmc.write("  input[%d] = %d;\n" % (i, x[i]))
+    for i in range(len(x)):
+      bmc.write(f"  input[{i}] = {x[i]};\n".encode('utf-8'))
 
-    bmc.write("  test(solution, input);\n\n")
-
+    bmc.write("  test(solution, input);\n\n".encode('utf-8'))
     testfile.write(" ".join(str(d) for d in x) + "\n")
 
   testfile.close()
 
   # Now we're going to list each of the programs we
   # already know are wrong...
-
   for soln in exclusions:
     ops = soln.ops
     parms = soln.params
     consts = soln.consts
     evars = soln.evars
 
-    bmc.write("  assume(!(")
+    bmc.write("  assume(!(".encode('utf-8'))
 
-    for i in xrange(len(ops)):
+    for i in range(len(ops)):
       if i != 0:
-        bmc.write(" && ")
+        bmc.write(" && ".encode('utf-8'))
 
-      bmc.write("solution->prog.ops[%d] == %d " % (i, ops[i]))
-      bmc.write("&& solution->prog.params[%d] == %d && solution->prog.params[%d] == %d && solution->prog.params[%d] == %d" %
-          (3*i, parms[3*i], 3*i+1, parms[3*i+1], 3*i+1, parms[3*i+2]))
+      bmc.write(f"solution->prog.ops[{i}] == {ops[i]} ".encode('utf-8'))
+      bmc.write(f"&& solution->prog.params[{3*i}] == {parms[3*i]} && solution->prog.params[{3*i+1}] == {parms[3*i+1]} && solution->prog.params[{3*i+2}] == {parms[3*i+2]}".encode('utf-8'))
 
-    for i in xrange(len(consts)):
-      bmc.write("&& solution->prog.consts[%d] == %d" %
-          (i, consts[i]))
+    for i in range(len(consts)):
+      bmc.write(f"&& solution->prog.consts[{i}] == {consts[i]}".encode('utf-8'))
 
-    for i in xrange(len(evars)):
-      bmc.write("&& solution->evars[%d] == %d" %
-          (i, evars[i]))
+    for i in range(len(evars)):
+      bmc.write(f"&& solution->evars[{i}] == {evars[i]}".encode('utf-8'))
 
-    bmc.write("));\n")
+    bmc.write("));\n".encode('utf-8'))
 
-  bmc.write("}\n")
-
+  bmc.write("}\n".encode('utf-8'))
+  
   try:
     (retcode, output) = bmc.run()
   finally:
@@ -175,76 +167,81 @@ def verif(prog, checker, width, codelen):
 
   sz = max(len(o) for o in prog.ops)
   bmc = Checker(sz, width, len(prog.consts[0]), verif=True)
-  solfile = open("/tmp/solution", "w")
+  solfile = open("/tmp/solution", "wb")
 
-  solfile.write(" ".join("0x%x" % (x & 0xffffffff) for x in prog.evars) + "\n")
+  solfile.write((" ".join("0x%x" % (x & 0xffffffff) for x in prog.evars) + "\n").encode('utf-8'))
 
-  for i in xrange(args.args.progs):
+  for i in range(args.args.progs):
     nops = len(prog.ops[i])
-    solfile.write("%d\n" % nops)
+    solfile.write(("%d\n" % nops).encode('utf-8'))
 
-    for j in xrange(nops):
-      solfile.write("%d %d %d %d\n" % (prog.ops[i][j],
+    for j in range(nops):
+      solfile.write(("%d %d %d %d\n" % (prog.ops[i][j],
                                        prog.params[i][3*j],
                                        prog.params[i][3*j + 1],
-                                       prog.params[i][3*j + 2]))
+                                       prog.params[i][3*j + 2])).encode('utf-8'))
 
     nconsts = len(prog.consts[i])
 
-    for j in xrange(nconsts):
-      solfile.write("0x%x\n" % (prog.consts[i][j] & 0xffffffff))
+    for j in range(nconsts):
+      solfile.write(("0x%x\n" % (prog.consts[i][j] & 0xffffffff)).encode('utf-8'))
 
   solfile.close()
 
-  cfile = open("/tmp/exec.c", "w")
+  cfile = open("/tmp/exec.c", "wb")
   cfile.write(r"""
 #include "synth.h"
 
 volatile int execok;
 
 void exec(prog_t *prog, word_t args[NARGS], word_t res[NRES]) {
-""")
+""".encode('utf-8'))
 
-  for i in xrange(args.args.progs):
-    cfile.write(r"""
+  for i in range(args.args.progs):
+    cfile.write((r"""
   if (prog == &solution.progs[%d]) {
-  """ % i)
+  """ % i).encode('utf-8'))
 
-    for j in xrange(sz):
-      cfile.write("  res[%d] = 0;\n" % j)
+    for j in range(sz):
+      cfile.write(("  res[%d] = 0;\n" % j).encode('utf-8'))
 
-    cfile.write(prog.prog2str(prog.ops[i], prog.params[i], prog.consts[i], executable=True))
-    cfile.write("\n  }\n")
-  cfile.write("}")
+    cfile.write(prog.prog2str(prog.ops[i], prog.params[i], prog.consts[i], executable=True).encode('utf-8'))
+    cfile.write("\n  }\n".encode('utf-8'))
+  cfile.write("}".encode('utf-8'))
   cfile.close()
-
 
   bmc.write(r"""
 #include "synth.h"
 
 solution_t solution = {
   {
-""")
+""".encode('utf-8'))
 
-  for i in xrange(args.args.progs):
-    bmc.write(r"""
+  for i in range(args.args.progs):
+    bmc.write((
+      r"""
   {
     %d,
     { %s },
     { %s },
     { %s },
   },
-""" % (len(prog.ops[i]),
-       ", ".join(str(o) for o in prog.ops[i]),
-       ", ".join(str(p) for p in prog.params[i]),
-       ", ".join(str(c) for c in prog.consts[i])))
+""" % (
+        len(prog.ops[i]),
+        ", ".join(str(o) for o in prog.ops[i]),
+        ", ".join(str(p) for p in prog.params[i]),
+        ", ".join(str(c) for c in prog.consts[i])
+      )
+    ).encode('utf-8'))
 
-  bmc.write(r"""
+  bmc.write((
+    r"""
   },
 
   { %s }
 };
-""" % (", ".join(str(e) for e in prog.evars)))
+""" % (", ".join(str(e) for e in prog.evars))
+  ).encode('utf-8'))
 
   try:
     (retcode, output) = bmc.run()
@@ -256,6 +253,8 @@ solution_t solution = {
   if retcode == 10:
     # We got a counterexample -- extract a new test case from it
     for l in output:
+      if isinstance(l, bytes):
+        l = l.decode('utf-8')
       mx = cexre.search(l)
 
       if mx:
@@ -299,20 +298,16 @@ def kalashnikov(checker):
       endtime = time.time()
       elapsed = endtime-starttime
 
-      print ("Iteration: " + BOLD + RED + "%d" + ENDC) % n
-      print ("Code sequence length: " + BOLD + RED + "%d/%d" + ENDC) % (codelen,
-          args.args.seqlim)
-      print ("Word width: " + BOLD + RED + "%d/%d" + ENDC) % (wordlen,
-          targetwordlen)
-      print ("Excluded sequences: " + BOLD + RED + "%d/%d" + ENDC) % (
-          len(exclusions), args.args.exclude)
-      print ("Test vectors: " + BOLD + RED + "%d" + ENDC) % len(tests)
-      print ("Constants: " + BOLD + RED + "%d" + ENDC) % nconsts
-      print ("Elapsed time: " + BOLD + RED + "%.02fs" + ENDC) % elapsed
+      print(f"Iteration: {BOLD}{RED}{n}{ENDC}")
+      print(f"Code sequence length: {BOLD}{RED}{codelen}/{args.args.seqlim}{ENDC}")
+      print(f"Word width: {BOLD}{RED}{wordlen}/{targetwordlen}{ENDC}")
+      print(f"Excluded sequences: {BOLD}{RED}{len(exclusions)}/{args.args.exclude}{ENDC}")
+      print(f"Test vectors: {BOLD}{RED}{len(tests)}{ENDC}")
+      print(f"Constants: {BOLD}{RED}{nconsts}{ENDC}")
+      print(f"Elapsed time: {BOLD}{RED}{elapsed:.02f}s{ENDC}")
 
       if args.args.exhaustive:
-        print ("Correct sequences: " + BOLD + RED + "%d" + ENDC) %(
-            len(correct))
+        print(f"Correct sequences: {BOLD}{RED}{len(correct)}{ENDC}")
         print(UP*2 + "\r")
 
       print(UP*8 + "\r")
@@ -517,8 +512,8 @@ def heuristic_generalize(prog, checker, width, targetwidth, codelen):
 
   expansions = []
 
-  for i in xrange(len(prog.consts)):
-    for j in xrange(len(prog.consts[i])):
+  for i in range(len(prog.consts)):
+    for j in range(len(prog.consts[i])):
       if prog.const_used(i, j):
         expanded = expand(prog.consts[i][j], width, targetwidth)
       else:
@@ -526,7 +521,7 @@ def heuristic_generalize(prog, checker, width, targetwidth, codelen):
 
       expansions.append(expanded)
 
-  for i in xrange(len(prog.evars)):
+  for i in range(len(prog.evars)):
     expanded = expand(prog.evars[i], width, targetwidth)
     expansions.append(expanded)
 
@@ -534,10 +529,10 @@ def heuristic_generalize(prog, checker, width, targetwidth, codelen):
     const_lists = []
     n = 0 
 
-    for i in xrange(len(prog.consts)):
+    for i in range(len(prog.consts)):
       l = []
 
-      for j in xrange(len(prog.consts[i])):
+      for j in range(len(prog.consts[i])):
         l.append(newconsts[n])
         n += 1
 
