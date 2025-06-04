@@ -17,6 +17,7 @@ Welcome to EFMC's documentation
    third-party
    nonlinear
    houdini
+   ranking_functions
    verification-tutorial
 
 
