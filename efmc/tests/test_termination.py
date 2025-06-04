@@ -62,7 +62,6 @@ def test_basic_functionality():
             assert ranking_func is not None, "Should build ranking function"
     
     print("  ✓ Basic functionality verified")
-    return True
 
 
 def test_termination_proving():
@@ -90,7 +89,7 @@ def test_termination_proving():
             print(f"  ⚠ {name} (may be expected)")
             passed += 1  # Don't fail for complex cases
     
-    return passed == len(test_cases)
+    assert passed == len(test_cases), f"Expected all {len(test_cases)} test cases to complete"
 
 
 def create_overflow_system():
@@ -142,7 +141,7 @@ def test_ranking_templates():
         except Exception as e:
             print(f"  ⚠ {name} (exception: {str(e)[:50]}...)")
     
-    return len(successful) >= 1  # At least linear should work
+    assert len(successful) >= 1, "At least linear template should work"
 
 
 def test_non_termination_and_edge_cases():
@@ -185,8 +184,6 @@ def test_non_termination_and_edge_cases():
     prover.set_ranking_template("bv_linear_ranking")
     result = prover.prove_termination(timeout=1)
     print("  ✓ Timeout handled gracefully")
-    
-    return True
 
 
 def test_error_handling():
@@ -198,18 +195,16 @@ def test_error_handling():
     # Test missing template
     try:
         prover.prove_termination()
-        return False
+        assert False, "Should have failed without template"
     except ValueError:
         print("  ✓ Caught missing template error")
     
     # Test invalid template
     try:
         prover.set_ranking_template("invalid_template")
-        return False
+        assert False, "Should have failed with invalid template"
     except NotImplementedError:
         print("  ✓ Caught invalid template error")
-    
-    return True
 
 
 def test_convenience_functions():
@@ -219,17 +214,13 @@ def test_convenience_functions():
     
     # Test prove_termination_with_ranking_functions
     success, ranking_func, template_used = prove_termination_with_ranking_functions(sts, timeout=10)
-    if not success:
-        return False
+    assert success, "Convenience function should succeed"
     print(f"  ✓ Convenience function succeeded with {template_used}")
     
     # Test analyze_termination
     results = analyze_termination(sts, timeout=10)
-    if not results["termination_proven"]:
-        return False
+    assert results["termination_proven"], "Analysis should prove termination"
     print(f"  ✓ Analysis succeeded with {results['ranking_template_used']}")
-    
-    return True
 
 
 def test_validation():
@@ -244,8 +235,6 @@ def test_validation():
         print("  ✓ Validation succeeded")
     else:
         print("  ⚠ Validation may be strict (not necessarily failure)")
-    
-    return True
 
 
 def main():
@@ -263,8 +252,15 @@ def main():
         test_validation,
     ]
     
-    passed = sum(1 for test in tests if test())
+    passed = 0
     total = len(tests)
+    
+    for test in tests:
+        try:
+            test()
+            passed += 1
+        except Exception as e:
+            print(f"  ✗ Test {test.__name__} failed: {e}")
     
     print("=" * 50)
     print(f"Tests completed: {passed}/{total} passed")

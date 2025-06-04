@@ -1,5 +1,5 @@
 """
-Regression script for running different SMT solvers on all benchmarks in the given directory.
+Running different SMT solvers for Exists-Forall Problems
 """
 import logging
 import argparse

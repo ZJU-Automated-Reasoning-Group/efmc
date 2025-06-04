@@ -1,6 +1,5 @@
 """
-TODO: by LLM, to be checked.
-Regression script for running all verifiers on all benchmarks in the given directory.
+Running all verifiers (efmc and other third-party verifiers)
 
 Example configuration file (benchmark_config.ini):
 [SOLVERS]

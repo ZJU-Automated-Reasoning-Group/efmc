@@ -1,5 +1,5 @@
 """
-Regression script for running different configurations of efmc on all benchmarks in the given directory.
+Running different configurations of efmc
 """
 import logging
 import argparse
