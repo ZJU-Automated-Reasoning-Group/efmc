@@ -1,5 +1,5 @@
 """
-Generating aux invariants for k-induction (not used for now)
+FIXME: Generating aux invariants for k-induction (not implemented)
 - Template-based invariant generation
 - Houdini
 """

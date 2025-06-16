@@ -286,7 +286,7 @@ class EFProver:
                                                                self.sts.post)))
 
         # Add additional cnts to restrict the template variables (only for int/real)
-        # FIXME: this seems to be some "technicla debt" (not sure why we do this)
+        # FIXME: this seems to be some "technical debt" (not sure why we do this)
         #  Indeed, for most domains, get_additional_cnts_for_template_vars() returns true.
         if self.ct.template_type == TemplateType.INTERVAL or \
                 self.ct.template_type == TemplateType.DISJUNCTIVE_INTERVAL or \
