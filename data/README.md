@@ -22,3 +22,10 @@ Contains integer arithmetic benchmark files:
 - `multi-phase/` - Multi-phase verification benchmarks for integers
 - `sygus-inv/` - SyGuS invariant synthesis benchmarks
 
+
+
+## More Benchmarks
+
+- https://github.com/sosy-lab/sv-benchmarks/tree/master/clauses
+
+We can find much longer CHC instances (e.g., clauses/ALIA/sdv, where is from Microsfot's device driver verification instances.)

@@ -7,24 +7,17 @@ Here are a few topics for further exploration:
 - New Features
 - Optimizations
 
-## 0. Dataset
+## 1. Dataset
 
 First, we need to collect more benchmarks with known oracles (safe or unsafe.), espcially for bit-vector semantics.
-
 If safe, it is better to provide the inductive invariant.
 If unsafe, it is better to provide the counterexample.
 
-## 1. Bugs and Issues
-
-### The OMT Solving Engine of Z3
-
-Some versions of Z3's `Optimize()` have bugs that affect the correctness of `symabs_prover.py`, which relies on `symabs/symbolic_abstraction.py` and uses OMT of Z3.
-
-We should consider allowing the choice of self-compiled or pre-built Python packages for Z3. Hopefully, the new versions are stable.
+Second, we need a regression system for tracking the correctness and performance of new features.
 
 ## 2. New Features
 
-### 2.0 Frontend
+### Frontend
 
 Currently, we have limited support for frontends and types of transition systems. The capabilities of different engines vary significantly (ALIA, BV, String, Algebraic Datatypes, Container, etc.).
 
@@ -45,7 +38,7 @@ Related work:
 
 - The CoSA model checker supports many kinds of inputs (it relies on pySMT and is not maintained anymore) [CoSA](https://github.com/cristian-mattarei/CoSA)
 
-### 2.1 Template-based (Constraint-based) Invariant Inference
+### Template-based (Constraint-based) Invariant Inference
 
 This is the original goal of the project.
 
@@ -70,11 +63,11 @@ We have two choices:
 
 Currently, the encoding is not very flexible. For example, we may use the template-based approach for generating ranking functions (to prove termination).
 
-### 2.2 Different Variants of BMC and K-Induction
+### Different Variants of BMC and K-Induction
 
 - An incremental k-induction implementation (by LLM, to be validated)
 
-### 2.3 Abduction-based Invariant Inference
+### Abduction-based Invariant Inference
 
 - Dillig's abduction algorithm
 - Other abduction algorithms

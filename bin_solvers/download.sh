@@ -63,7 +63,7 @@ eval "cd $current_dir"
 
 
 # download eld
-wget https://github.com/uuverifiers/eldarica/releases/download/v2.0.9/eldarica-bin-2.0.9.zip
+wget https://github.com/uuverifiers/eldarica/releases/download/v2.2/eldarica-bin-2.2.zip
 
 
 # extract all zip/gz files
