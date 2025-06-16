@@ -14,8 +14,8 @@ Welcome to EFMC's documentation
    predabs
    synthesis
    template
+   polyhorn
    third-party
-   nonlinear
    houdini
    ranking_functions
    verification-tutorial

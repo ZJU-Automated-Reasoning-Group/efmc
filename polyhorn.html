@@ -1,0 +1,392 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>PolyHorn Engine &#8212; EFMC Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="More Third-Party Tools" href="third-party.html" />
+    <link rel="prev" title="Template-based Invariant Generation" href="template.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="third-party.html" title="More Third-Party Tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="template.html" title="Template-based Invariant Generation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PolyHorn Engine</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="polyhorn-engine">
+<h1>PolyHorn Engine<a class="headerlink" href="#polyhorn-engine" title="Permalink to this heading">¶</a></h1>
+<p>The PolyHorn engine is a specialized verification component within EFMC that handles polynomial constraint systems using advanced mathematical theorems. It provides a powerful framework for solving satisfiability problems involving polynomial inequalities and universally quantified formulas.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
+<p>PolyHorn implements three fundamental mathematical theorems for polynomial constraint solving:</p>
+<ul class="simple">
+<li><p><strong>Farkas’ Lemma</strong>: For linear polynomial constraints</p></li>
+<li><p><strong>Handelman’s Theorem</strong>: For polynomial constraints with linear left-hand sides</p></li>
+<li><p><strong>Putinar’s Theorem</strong>: For general polynomial constraints using sum-of-squares decomposition</p></li>
+</ul>
+<p>The engine automatically selects the most appropriate theorem based on the structure of the input constraints, or allows manual selection through configuration.</p>
+</section>
+<section id="theoretical-background">
+<h2>Theoretical Background<a class="headerlink" href="#theoretical-background" title="Permalink to this heading">¶</a></h2>
+<section id="farkas-lemma">
+<h3>Farkas’ Lemma<a class="headerlink" href="#farkas-lemma" title="Permalink to this heading">¶</a></h3>
+<p>Farkas’ Lemma provides a fundamental result in linear programming theory. For a system of linear inequalities <span class="math notranslate nohighlight">\(Ax \geq 0\)</span>, the lemma states that either the system has a solution, or there exists a vector <span class="math notranslate nohighlight">\(y \geq 0\)</span> such that <span class="math notranslate nohighlight">\(A^T y = 0\)</span> and <span class="math notranslate nohighlight">\(y \neq 0\)</span>.</p>
+<p>In the context of PolyHorn, Farkas’ Lemma is used to handle constraint systems of the form:</p>
+<div class="math notranslate nohighlight">
+\[\forall x. (f_1(x) \geq 0 \land \ldots \land f_n(x) \geq 0) \Rightarrow g(x) \geq 0\]</div>
+<p>where all <span class="math notranslate nohighlight">\(f_i\)</span> and <span class="math notranslate nohighlight">\(g\)</span> are linear polynomials.</p>
+</section>
+<section id="handelman-s-theorem">
+<h3>Handelman’s Theorem<a class="headerlink" href="#handelman-s-theorem" title="Permalink to this heading">¶</a></h3>
+<p>Handelman’s Theorem extends Farkas’ Lemma to handle polynomial constraints where the left-hand side consists of linear constraints but the right-hand side can be polynomial. It states that if a polynomial is positive on a basic closed semialgebraic set defined by linear inequalities, then it can be represented as a positive combination of products of the defining linear forms.</p>
+</section>
+<section id="putinar-s-theorem">
+<h3>Putinar’s Theorem<a class="headerlink" href="#putinar-s-theorem" title="Permalink to this heading">¶</a></h3>
+<p>Putinar’s Theorem provides the most general framework using sum-of-squares (SOS) decomposition. It handles arbitrary polynomial constraint systems by representing positive polynomials as sums of squares plus combinations of constraint polynomials multiplied by sums of squares.</p>
+<p>For a constraint system defined by polynomial inequalities <span class="math notranslate nohighlight">\(g_1(x) \geq 0, \ldots, g_m(x) \geq 0\)</span>, if a polynomial <span class="math notranslate nohighlight">\(f(x)\)</span> is positive on the feasible region, then:</p>
+<div class="math notranslate nohighlight">
+\[f(x) = \sigma_0(x) + \sum_{i=1}^m \sigma_i(x) \cdot g_i(x)\]</div>
+<p>where each <span class="math notranslate nohighlight">\(\sigma_i(x)\)</span> is a sum of squares.</p>
+</section>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
+<section id="basic-api-usage">
+<h3>Basic API Usage<a class="headerlink" href="#basic-api-usage" title="Permalink to this heading">¶</a></h3>
+<p>The PolyHorn engine can be used through its main API function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">efmc.engines.polyhorn.main</span><span class="w"> </span><span class="kn">import</span> <span class="n">execute</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pysmt.shortcuts</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pysmt.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">REAL</span>
+
+<span class="c1"># Create symbols</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">REAL</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">Symbol</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">REAL</span><span class="p">)</span>
+
+<span class="c1"># Create a solver and add constraints</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">Solver</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;z3&quot;</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_assertion</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">Real</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_assertion</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="n">Real</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_assertion</span><span class="p">(</span><span class="n">ForAll</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span>
+                           <span class="n">Implies</span><span class="p">(</span><span class="n">And</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">Real</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="n">Real</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span>
+                                  <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="n">Real</span><span class="p">(</span><span class="mi">2</span><span class="p">))))</span>
+
+<span class="c1"># Configure the engine</span>
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;theorem_name&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>  <span class="c1"># or &quot;farkas&quot;, &quot;handelman&quot;, &quot;putinar&quot;</span>
+    <span class="s2">&quot;solver_name&quot;</span><span class="p">:</span> <span class="s2">&quot;z3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;degree_of_sat&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;degree_of_nonstrict_unsat&quot;</span><span class="p">:</span> <span class="mi">2</span>
+<span class="p">}</span>
+
+<span class="c1"># Execute</span>
+<span class="n">result</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model: </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration-options">
+<h3>Configuration Options<a class="headerlink" href="#configuration-options" title="Permalink to this heading">¶</a></h3>
+<p>The PolyHorn engine supports various configuration parameters:</p>
+<p><strong>Core Settings:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">theorem_name</span></code>: Choice of theorem (“farkas”, “handelman”, “putinar”, or “auto”)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">solver_name</span></code>: Backend SMT solver (“z3”, “cvc4”, etc.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">integer_arithmetic</span></code>: Whether to use integer arithmetic (default: False)</p></li>
+</ul>
+<p><strong>Degree Control:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">degree_of_sat</span></code>: Maximum degree for satisfiability constraints</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">degree_of_nonstrict_unsat</span></code>: Maximum degree for non-strict unsatisfiability constraints</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">degree_of_strict_unsat</span></code>: Maximum degree for strict unsatisfiability constraints</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_d_of_strict</span></code>: Degree of variables generated for strict cases in Putinar’s theorem</p></li>
+</ul>
+<p><strong>Heuristics:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SAT_heuristic</span></code>: Enable satisfiability-based heuristics</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">unsat_core_heuristic</span></code>: Enable unsatisfiable core-based optimization</p></li>
+</ul>
+</section>
+<section id="input-formats">
+<h3>Input Formats<a class="headerlink" href="#input-formats" title="Permalink to this heading">¶</a></h3>
+<p>PolyHorn accepts input in two main formats:</p>
+<p><strong>SMT2 Format:</strong></p>
+<div class="highlight-smt2 notranslate"><div class="highlight"><pre><span></span>(declare-const x Real)
+(declare-const y Real)
+(assert (forall ((l Real))
+        (=&gt; (and (= x l) (&gt;= x 1) (&lt;= x 3))
+            (and (&lt;= x 10) (= l 2) (&gt; x 0)))))
+(check-sat)
+(get-model)
+</pre></div>
+</div>
+<p><strong>PySMT Solver Objects:</strong></p>
+<p>The engine can directly work with PySMT solver objects, automatically converting them to the internal representation.</p>
+</section>
+</section>
+<section id="implementation-details">
+<h2>Implementation Details<a class="headerlink" href="#implementation-details" title="Permalink to this heading">¶</a></h2>
+<section id="core-components">
+<h3>Core Components<a class="headerlink" href="#core-components" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt><strong>Parser (Parser.py)</strong></dt><dd><p>Handles parsing of both SMT2 format and a custom readable format. Supports complex polynomial expressions and constraint systems.</p>
+</dd>
+<dt><strong>PositiveModel (PositiveModel.py)</strong></dt><dd><p>The main orchestrator class that manages constraint generation, theorem selection, and solver interaction.</p>
+</dd>
+<dt><strong>Theorem Implementations:</strong></dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Farkas.py</span></code>: Implements Farkas’ Lemma for linear constraints</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Handelman.py</span></code>: Implements Handelman’s Theorem with monomial generation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Putinar.py</span></code>: Implements Putinar’s Theorem with sum-of-squares decomposition</p></li>
+</ul>
+</dd>
+<dt><strong>Polynomial Representation:</strong></dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Polynomial.py</span></code>: Core polynomial data structure</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Coefficient.py</span></code>: Handles polynomial coefficients with unknown variables</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Constraint.py</span></code>: Represents polynomial constraints and inequalities</p></li>
+</ul>
+</dd>
+<dt><strong>Solver Integration (Solver.py)</strong></dt><dd><p>Provides utilities for constraint generation, SMT format conversion, and variable management.</p>
+</dd>
+</dl>
+</section>
+<section id="automatic-theorem-selection">
+<h3>Automatic Theorem Selection<a class="headerlink" href="#automatic-theorem-selection" title="Permalink to this heading">¶</a></h3>
+<p>When <code class="docutils literal notranslate"><span class="pre">theorem_name</span></code> is set to “auto”, PolyHorn automatically selects the most appropriate theorem:</p>
+<ol class="arabic simple">
+<li><p><strong>Farkas’ Lemma</strong>: If both left-hand side and right-hand side constraints are linear</p></li>
+<li><p><strong>Handelman’s Theorem</strong>: If left-hand side is linear but right-hand side is polynomial</p></li>
+<li><p><strong>Putinar’s Theorem</strong>: For general polynomial constraint systems</p></li>
+</ol>
+<p>This selection optimizes both performance and completeness based on the constraint structure.</p>
+</section>
+</section>
+<section id="advanced-features">
+<h2>Advanced Features<a class="headerlink" href="#advanced-features" title="Permalink to this heading">¶</a></h2>
+<section id="sum-of-squares-optimization">
+<h3>Sum-of-Squares Optimization<a class="headerlink" href="#sum-of-squares-optimization" title="Permalink to this heading">¶</a></h3>
+<p>For Putinar’s theorem, PolyHorn generates sum-of-squares templates using semidefinite programming techniques. The implementation creates lower triangular matrices and computes their products to ensure positive semidefiniteness.</p>
+</section>
+<section id="degree-management">
+<h3>Degree Management<a class="headerlink" href="#degree-management" title="Permalink to this heading">¶</a></h3>
+<p>The engine provides fine-grained control over polynomial degrees in different contexts:</p>
+<ul class="simple">
+<li><p>Satisfiability constraints can use different degree bounds than unsatisfiability constraints</p></li>
+<li><p>Strict and non-strict inequalities are handled with separate degree parameters</p></li>
+<li><p>Automatic degree escalation for improved completeness</p></li>
+</ul>
+</section>
+<section id="core-iteration-heuristic">
+<h3>Core Iteration Heuristic<a class="headerlink" href="#core-iteration-heuristic" title="Permalink to this heading">¶</a></h3>
+<p>PolyHorn implements an unsatisfiable core-based optimization that iteratively removes unnecessary constraints to simplify the solving process while maintaining correctness.</p>
+</section>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<section id="linear-constraint-system">
+<h3>Linear Constraint System<a class="headerlink" href="#linear-constraint-system" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># System: x &gt;= 0, y &gt;= 0 ⊢ x + y &gt;= 0</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">Solver</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;z3&quot;</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_assertion</span><span class="p">(</span><span class="n">ForAll</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span>
+                           <span class="n">Implies</span><span class="p">(</span><span class="n">And</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">Real</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="n">Real</span><span class="p">(</span><span class="mi">0</span><span class="p">)),</span>
+                                  <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="n">Real</span><span class="p">(</span><span class="mi">0</span><span class="p">))))</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;theorem_name&quot;</span><span class="p">:</span> <span class="s2">&quot;farkas&quot;</span><span class="p">,</span> <span class="s2">&quot;solver_name&quot;</span><span class="p">:</span> <span class="s2">&quot;z3&quot;</span><span class="p">}</span>
+<span class="n">result</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="polynomial-constraint-system">
+<h3>Polynomial Constraint System<a class="headerlink" href="#polynomial-constraint-system" title="Permalink to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># System with quadratic constraints</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">Solver</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;z3&quot;</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">add_assertion</span><span class="p">(</span><span class="n">ForAll</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span>
+                           <span class="n">Implies</span><span class="p">(</span><span class="n">And</span><span class="p">(</span><span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="o">*</span><span class="n">y</span> <span class="o">&lt;=</span> <span class="n">Real</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span>
+                                  <span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">Real</span><span class="p">(</span><span class="mi">1</span><span class="p">))))</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;theorem_name&quot;</span><span class="p">:</span> <span class="s2">&quot;putinar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;solver_name&quot;</span><span class="p">:</span> <span class="s2">&quot;z3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;degree_of_sat&quot;</span><span class="p">:</span> <span class="mi">4</span>
+<span class="p">}</span>
+<span class="n">result</span><span class="p">,</span> <span class="n">model</span> <span class="o">=</span> <span class="n">execute</span><span class="p">(</span><span class="n">solver</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="performance-considerations">
+<h2>Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permalink to this heading">¶</a></h2>
+<p><strong>Degree Selection</strong>: Higher degrees provide more completeness but significantly increase computational cost. Start with low degrees (0-2) and increase as needed.</p>
+<p><strong>Theorem Choice</strong>: Farkas’ Lemma is fastest for linear systems, while Putinar’s theorem is most general but computationally expensive.</p>
+<p><strong>Solver Backend</strong>: Z3 generally provides the best performance for the generated constraint systems.</p>
+<p><strong>Memory Usage</strong>: Sum-of-squares decomposition can generate large constraint systems. Monitor memory usage for high-degree problems.</p>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Decidability</strong>: While theoretically complete for real arithmetic, practical decidability depends on degree bounds</p></li>
+<li><p><strong>Integer Arithmetic</strong>: Limited support for integer constraints compared to real arithmetic</p></li>
+<li><p><strong>Scalability</strong>: Performance degrades significantly with increasing polynomial degrees and variable counts</p></li>
+<li><p><strong>Numerical Stability</strong>: High-degree polynomials may suffer from numerical precision issues</p></li>
+</ul>
+</section>
+<section id="integration-with-efmc">
+<h2>Integration with EFMC<a class="headerlink" href="#integration-with-efmc" title="Permalink to this heading">¶</a></h2>
+<p>PolyHorn integrates seamlessly with the broader EFMC verification framework:</p>
+<ul class="simple">
+<li><p><strong>CHC Support</strong>: Handles Constrained Horn Clauses with polynomial constraints</p></li>
+<li><p><strong>Template Integration</strong>: Works with EFMC’s template-based verification engines</p></li>
+<li><p><strong>Multi-Engine Workflows</strong>: Can be combined with other EFMC engines for hybrid verification approaches</p></li>
+</ul>
+<p>The engine is particularly effective for verification problems involving:</p>
+<ul class="simple">
+<li><p>Polynomial loop invariants</p></li>
+<li><p>Nonlinear arithmetic properties</p></li>
+<li><p>Optimization and control system verification</p></li>
+<li><p>Hybrid system analysis</p></li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Farkas, J. (1902). Theorie der einfachen Ungleichungen</p></li>
+<li><p>Handelman, D. (1988). Representing polynomials by positive linear functions on compact convex polyhedra</p></li>
+<li><p>Putinar, M. (1993). Positive polynomials on compact semi-algebraic sets</p></li>
+<li><p>Parrilo, P. A. (2003). Semidefinite programming relaxations for semialgebraic problems</p></li>
+<li><p>Lasserre, J. B. (2001). Global optimization with polynomials and the problem of moments</p></li>
+</ol>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">PolyHorn Engine</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#theoretical-background">Theoretical Background</a><ul>
+<li><a class="reference internal" href="#farkas-lemma">Farkas’ Lemma</a></li>
+<li><a class="reference internal" href="#handelman-s-theorem">Handelman’s Theorem</a></li>
+<li><a class="reference internal" href="#putinar-s-theorem">Putinar’s Theorem</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#basic-api-usage">Basic API Usage</a></li>
+<li><a class="reference internal" href="#configuration-options">Configuration Options</a></li>
+<li><a class="reference internal" href="#input-formats">Input Formats</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation-details">Implementation Details</a><ul>
+<li><a class="reference internal" href="#core-components">Core Components</a></li>
+<li><a class="reference internal" href="#automatic-theorem-selection">Automatic Theorem Selection</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#advanced-features">Advanced Features</a><ul>
+<li><a class="reference internal" href="#sum-of-squares-optimization">Sum-of-Squares Optimization</a></li>
+<li><a class="reference internal" href="#degree-management">Degree Management</a></li>
+<li><a class="reference internal" href="#core-iteration-heuristic">Core Iteration Heuristic</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples">Examples</a><ul>
+<li><a class="reference internal" href="#linear-constraint-system">Linear Constraint System</a></li>
+<li><a class="reference internal" href="#polynomial-constraint-system">Polynomial Constraint System</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#performance-considerations">Performance Considerations</a></li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+<li><a class="reference internal" href="#integration-with-efmc">Integration with EFMC</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="template.html"
+                          title="previous chapter">Template-based Invariant Generation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="third-party.html"
+                          title="next chapter">More Third-Party Tools</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/polyhorn.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="third-party.html" title="More Third-Party Tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="template.html" title="Template-based Invariant Generation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">PolyHorn Engine</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, rainoftime.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
+    </div>
+  </body>
+</html>
