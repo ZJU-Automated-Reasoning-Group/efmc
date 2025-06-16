@@ -534,7 +534,7 @@ class BDDProver:
                 return VerificationResult(True, invariant)
             else:
                 print("Unsafe")
-                return VerificationResult(False, None)
+                return VerificationResult(False, None, is_unsafe=True)
 
         except Exception as e:
             print(f"BDD verification failed: {e}")

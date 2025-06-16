@@ -251,7 +251,7 @@ class EFProver:
                     return VerificationResult(True, invariant)
                 return VerificationResult(True, None)
             else:
-                return VerificationResult(False, None)
+                return VerificationResult(False, None, is_unknown=True)
 
     def generate_vc(self) -> z3.ExprRef:
         """ Generate VC (Version 1)
@@ -364,4 +364,4 @@ class EFProver:
             return VerificationResult(True, invariant)
         else:
             print("unknown")
-            return VerificationResult(False, None)
+            return VerificationResult(False, None, is_unknown=True)

@@ -10,7 +10,7 @@ import signal
 import sys
 from pathlib import Path
 import logging
-import subprocess
+# import subprocess
 from threading import Timer
 from typing import List
 import psutil
@@ -46,38 +46,6 @@ TEMPLATES = {
         "bv_poly", "power_bv_poly"
     ]
 }
-
-
-def terminate(process, is_timeout):
-    """Terminate a process and set the timeout flag"""
-    try:
-        # Try to terminate gracefully first
-        if process.poll() is None:  # Check if process is still running
-            process.terminate()
-            # Give it a moment to terminate
-            try:
-                process.wait(timeout=3)
-            except subprocess.TimeoutExpired:
-                # Force kill if it doesn't terminate
-                process.kill()
-    except Exception:
-        # Ensure process is killed even if errors occur
-        try:
-            process.kill()
-        except Exception:
-            pass
-    is_timeout[0] = True
-
-
-def solve_with_bin_verifier(cmd: List[str], timeout=3600) -> str:
-    """ cmd should be a complete cmd"""
-    is_timeout = [False]
-
-    p = subprocess.Popen(cmd, stderr=subprocess.STDOUT)
-    timer = Timer(timeout, terminate, args=[p, is_timeout])
-    timer.start()
-    p.wait()
-    timer.cancel()
 
 
 class EFMCRunner:
@@ -123,9 +91,6 @@ class EFMCRunner:
             elif "bv" not in g_verifier_args.template:
                 self.logger.error(f"Unsupported template: {g_verifier_args.template}")
                 self.logger.info(f"Available templates: {TEMPLATES['bitvector']}")
-                sys.exit(1)
-            else:
-                self.logger.error(f"Unsupported template: {g_verifier_args.template}")
                 sys.exit(1)
 
             ef_prover = EFProver(
@@ -208,12 +173,6 @@ class EFMCRunner:
 
     def verify_chc(self, filename: str) -> None:
         """Verify CHC format file"""
-        if g_verifier_args.use_eld:
-            eld_path = str(Path(__file__).parent.parent.parent / "bin_solvers/bin/eld")
-            cmd = [eld_path, filename]
-            solve_with_bin_verifier(cmd, g_verifier_args.timeout)
-            return
-
         all_vars, init, trans, post = parse_chc(filename, to_real_type=False)
         self.logger.info("CHC file parsing completed")
 
@@ -227,13 +186,6 @@ class EFMCRunner:
 
     def verify_sygus(self, filename: str) -> None:
         """Verify SyGuS format file"""
-
-        # it is not a good idea to use the "engine" option
-        if g_verifier_args.use_cvc5sy:
-            from efmc.efmc_config import cvc5_exec
-            cmd = [cvc5_exec, filename]
-            solve_with_bin_verifier(cmd, g_verifier_args.timeout)
-            return
 
         all_vars, init, trans, post = parse_sygus(filename, to_real_type=False)
         self.logger.info("SyGuS file parsing completed")
@@ -352,7 +304,7 @@ def parse_arguments():
     input_group.add_argument('--lang', type=str, choices=['chc', 'sygus', 'auto'],
                              default='auto', help='Input language format')
     input_group.add_argument('--engine', type=str,
-                             choices=['ef', 'pdr', 'kind', 'qe', 'eld', 'qi', 'houdini', 'abduction', 'bdd', 'predabs', 'symabs'],
+                             choices=['ef', 'pdr', 'kind', 'qe', 'qi', 'houdini', 'abduction', 'bdd', 'predabs', 'symabs'],
                              default='ef', help='Verification engine to use')
     input_group.add_argument('--log-level', type=str,
                              choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
@@ -451,14 +403,6 @@ def parse_arguments():
     # PDR engine options: Allow for parsing options to Z3's PDR engine (named Spacer)
     # FIXME: refer to the Z3 documentation for the options
     # pdr_group = parser.add_argument_group('PDR engine options')
-
-    # third-party, binary verifiers
-    third_party_group = parser.add_argument_group('Third-party binary verifiers')
-    third_party_group.add_argument('--use-eld', type=bool, default=False,
-                                   help='Use Eldrica (for CHC)')
-    third_party_group.add_argument('--use-cvc5sy', type=bool, default=False,
-                                   help='Use cvc4sy (for SyGuS)')
-
     return parser.parse_args()
 
 

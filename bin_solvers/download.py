@@ -32,8 +32,11 @@ SOLVER_URLS = {
 }
 
 def get_z3_path(name):
-    match = re.search(r"(z3-[^.]+\.\d+)", name)
-    return f'{match.group(1)}/bin/z3' if match else None
+    # Extract directory name by removing .zip extension
+    if name.endswith('.zip'):
+        dir_name = name[:-4]  # Remove .zip
+        return f'{dir_name}/bin/z3'
+    return None
 
 BINARY_PATHS = {
     'cvc5': lambda name: name,

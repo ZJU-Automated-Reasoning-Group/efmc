@@ -63,7 +63,7 @@ class QuantifierEliminationProver:
             # Check timeout
             if self.timeout and time.time() - start > self.timeout:
                 print(f"Timeout reached after {time.time() - start:.2f} seconds")
-                return VerificationResult(False, None)
+                return VerificationResult(False, None, is_unknown=True, timed_out=True)
 
             qfml = z3.Exists(self.sts.variables, z3.And(inv, self.sts.trans))
 
@@ -93,9 +93,9 @@ class QuantifierEliminationProver:
             return VerificationResult(True, inv)
         else:
             if self.verbose:
-                print(">>> UNSAFE\n")
-                print(f"QE UNSAFE time: {time.time() - start:.2f} seconds")
-            return VerificationResult(False, None)
+                print(">>> UNKNOWN (invariant too weak)\n")
+                print(f"QE UNKNOWN time: {time.time() - start:.2f} seconds")
+            return VerificationResult(False, None, is_unknown=True)
 
 
 if __name__ == '__main__':
