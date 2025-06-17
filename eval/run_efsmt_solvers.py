@@ -1,5 +1,5 @@
 """
-Running different SMT solvers for Exists-Forall Problems
+Running different SMT solvers for Exists-Forall Problems (not used for now)
 """
 import logging
 import argparse

@@ -10,14 +10,11 @@ import subprocess
 import sys
 import time
 from typing import List, Dict
-import signal
+from eval.eval_utils import kill_process_group, classify_result, detect_inconsistencies
 
 
 def setup_logging(log_level=logging.INFO):
-    logging.basicConfig(
-        level=log_level,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
+    logging.basicConfig(level=log_level, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     return logging.getLogger('efmc_verifier')
 
 
@@ -36,8 +33,7 @@ class VerifierConfig:
             cmd.extend(["--template", self.template])
         if self.aux_inv:
             cmd.append("--kind-aux-inv")
-        cmd.extend(["--lang", self.lang])
-        cmd.extend(self.additional_opts)
+        cmd.extend(["--lang", self.lang, *self.additional_opts])
         return cmd
 
     @property
@@ -57,59 +53,9 @@ def load_config(config_file: str) -> Dict[str, List[VerifierConfig]]:
         data = json.load(f)
     
     return {
-        name: [
-            VerifierConfig(
-                engine=c.get("engine"),
-                template=c.get("template"),
-                aux_inv=c.get("aux_inv", False),
-                lang=c.get("lang", "chc"),
-                additional_opts=c.get("additional_opts", [])
-            ) for c in cfg
-        ] for name, cfg in data.items()
+        name: [VerifierConfig(**c) for c in cfg]
+        for name, cfg in data.items()
     }
-
-
-def kill_process_group(process, pgid, logger):
-    """Kill process group with graceful termination followed by force kill"""
-    try:
-        os.killpg(pgid, signal.SIGTERM)
-        for _ in range(5):
-            if process.poll() is not None:
-                break
-            time.sleep(0.1)
-        if process.poll() is None:
-            os.killpg(pgid, signal.SIGKILL)
-        process.wait(timeout=1)
-    except (subprocess.TimeoutExpired, ProcessLookupError, PermissionError) as e:
-        logger.warning(f"Error killing process group {pgid}: {e}")
-        try:
-            process.kill()
-            process.wait(timeout=1)
-        except Exception as e2:
-            logger.error(f"Failed to kill process: {e2}")
-
-
-def normalize_retcode(config, stdout, retcode):
-    """Normalize return codes based on engine-specific output patterns"""
-    if not stdout:
-        return retcode
-    
-    stdout_lower = stdout.lower()
-    if config.engine == "ef":
-        if "safe" in stdout_lower:
-            return 0
-        elif "timeout" in stdout_lower:
-            return -1
-        else:
-            return 1
-    elif config.engine == "kind":
-        if "unsafe" in stdout_lower or "safe" in stdout_lower:
-            return 0
-        elif "timeout" in stdout_lower:
-            return -1
-        else:
-            return 1
-    return retcode
 
 
 def run_verifier(verifier_path: str, config: VerifierConfig, input_file: str, timeout: int) -> tuple:
@@ -117,10 +63,8 @@ def run_verifier(verifier_path: str, config: VerifierConfig, input_file: str, ti
     cmd = [verifier_path] + config.get_command_args() + ["--file", input_file]
     
     try:
-        process = subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, 
-            text=True, preexec_fn=os.setsid
-        )
+        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, 
+                                 text=True, preexec_fn=os.setsid)
         pgid = os.getpgid(process.pid)
         
         try:
@@ -132,96 +76,95 @@ def run_verifier(verifier_path: str, config: VerifierConfig, input_file: str, ti
             retcode = -1
         
         elapsed = time.time() - start_time
-        retcode = normalize_retcode(config, stdout, retcode)
-        return (input_file, config.config_id, retcode, stdout, stderr, elapsed)
+        result = classify_result(config, retcode, stdout)
+        return (input_file, config.config_id, result, stdout, stderr, elapsed)
         
     except Exception as e:
         elapsed = time.time() - start_time
         logging.getLogger('efmc_verifier').error(f"Error running verifier: {e}")
-        return input_file, config.config_id, 1, "", str(e), elapsed
+        return input_file, config.config_id, "unknown", "", str(e), elapsed
 
 
 def print_result(result):
-    """Print individual result"""
-    file, engine, retcode, stdout, stderr, elapsed = result
-    print(f"\nFile: {os.path.basename(file)}")
-    print(f"Engine: {engine}")
-    print(f"Return code: {retcode}")
-    print(f"Elapsed time: {elapsed:.2f}s")
+    file, engine, result_class, stdout, stderr, elapsed = result
+    print(f"\nFile: {os.path.basename(file)}, Engine: {engine}, Result: {result_class}, Time: {elapsed:.2f}s")
     if stdout:
-        print("Output:")
-        print(stdout)
+        print(f"Output: {stdout}")
     if stderr:
-        print("Errors:")
-        print(stderr)
+        print(f"Errors: {stderr}")
     sys.stdout.flush()
 
 
 def summarize_results(results: List[tuple]):
     config_results = {}
     
-    for file, config_id, retcode, stdout, stderr, elapsed in results:
+    # Collect statistics
+    for file, config_id, result_class, stdout, stderr, elapsed in results:
         if config_id not in config_results:
             config_results[config_id] = {
-                'total': 0, 'success': 0, 'timeout': 0, 'failed': 0,
-                'total_time': 0.0, 'max_time': 0.0, 'files_timeout': []
+                'total': 0, 'safe': 0, 'unsafe': 0, 'timeout': 0, 'unknown': 0,
+                'total_time': 0.0, 'max_time': 0.0
             }
         
         stats = config_results[config_id]
         stats['total'] += 1
         stats['total_time'] += elapsed
         stats['max_time'] = max(stats['max_time'], elapsed)
-        
-        if retcode == 0:
-            stats['success'] += 1
-        elif retcode == -1:
-            stats['timeout'] += 1
-            stats['files_timeout'].append(os.path.basename(file))
-        else:
-            stats['failed'] += 1
+        stats[result_class] += 1
     
-    """
-    print("\n=== Summary of Results ===")
-    for config_id, stats in config_results.items():
-        total = stats['total']
-        print(f"\nConfiguration: {config_id}")
-        print(f"Total files: {total}")
-        print(f"Success: {stats['success']} ({stats['success']*100/total:.1f}%)")
-        print(f"Timeout: {stats['timeout']} ({stats['timeout']*100/total:.1f}%)")
-        print(f"Failed: {stats['failed']} ({stats['failed']*100/total:.1f}%)")
-        print(f"Total time: {stats['total_time']:.2f}s")
-        print(f"Avg time: {stats['total_time']/total:.2f}s")
-        print(f"Max time: {stats['max_time']:.2f}s")
-        
-        if stats['files_timeout']: # TODO: this info is useful for debugging
-            print("Timeout files:")
-            for f in sorted(stats['files_timeout']):
-                print(f"  - {f}")
-    """
-
     # Print comparison table
     print("\n=== Configuration Comparison Table ===")
     if config_results:
-        # Header
-        print(f"{'Configuration':<25} {'Total':<6} {'Success':<8} {'Timeout':<8} {'Failed':<7} {'Success%':<10} {'Avg Time':<10} {'Max Time':<10}")
-        print("-" * 95)
+        print(f"{'Configuration':<25} {'Total':<6} {'Safe':<6} {'Unsafe':<7} {'Solved':<7} {'Timeout':<8} {'Unknown':<8} {'Success%':<10} {'Avg Time':<10} {'Max Time':<10}")
+        print("-" * 110)
         
-        # Sort configurations by success rate (descending)
+        # Sort by solved rate (safe + unsafe)
         sorted_configs = sorted(config_results.items(), 
-                              key=lambda x: x[1]['success'] / x[1]['total'], 
+                              key=lambda x: (x[1]['safe'] + x[1]['unsafe']) / x[1]['total'], 
                               reverse=True)
         
         for config_id, stats in sorted_configs:
             total = stats['total']
-            success_rate = stats['success'] * 100 / total
+            total_solved = stats['safe'] + stats['unsafe']  # All definitive results
+            success_rate = total_solved * 100 / total
             avg_time = stats['total_time'] / total
             
-            print(f"{config_id:<25} {total:<6} {stats['success']:<8} {stats['timeout']:<8} {stats['failed']:<7} "
-                  f"{success_rate:<9.1f}% {avg_time:<9.2f}s {stats['max_time']:<9.2f}s")
+            print(f"{config_id:<25} {total:<6} {stats['safe']:<6} {stats['unsafe']:<7} {total_solved:<7} "
+                  f"{stats['timeout']:<8} {stats['unknown']:<8} {success_rate:<9.1f}% "
+                  f"{avg_time:<9.2f}s {stats['max_time']:<9.2f}s")
+    
+    # Print inconsistency report
+    inconsistencies = detect_inconsistencies(results)
+    if inconsistencies:
+        print(f"\n=== INCONSISTENT RESULTS DETECTED ({len(inconsistencies)} files) ===")
+        print("WARNING: Conflicting verification results detected!\n")
+        
+        for filename, file_data in sorted(inconsistencies.items()):
+            print(f"File: {filename}")
+            
+            # Group by result type
+            by_result = {}
+            for data in file_data:
+                result = data['result']
+                by_result.setdefault(result, []).append(data)
+            
+            # Show conflicting definitive results
+            for result_type, configs in by_result.items():
+                if result_type in ['safe', 'unsafe']:
+                    config_names = [c['config'] for c in configs]
+                    print(f"  {result_type.upper()}: {', '.join(config_names)}")
+            
+            print("  All results:")
+            for data in sorted(file_data, key=lambda x: x['config']):
+                print(f"    {data['config']}: {data['result']} ({data['elapsed']:.2f}s)")
+            print()
+        
+        print(f"Total inconsistent files: {len(inconsistencies)}\n")
+    else:
+        print("\n=== NO INCONSISTENCIES DETECTED ===")
 
 
 def run_all_configs(configs, benchmark_files, args, parallel=False):
-    """Run all configurations on all benchmark files"""
     results = []
     
     if parallel:
@@ -272,9 +215,10 @@ def main():
             "default": [
                 VerifierConfig("ef", template="bv_interval", aux_inv=False, lang="chc"),
                 VerifierConfig("kind", aux_inv=False, lang="chc"),
-                #VerifierConfig("ef", template="bv_zono", aux_inv=False, lang="chc"),
                 VerifierConfig("ef", template="bv_octagon", aux_inv=False, lang="chc"),
-                #VerifierConfig("pdr", lang="chc"),
+                VerifierConfig("ef", template="knownbits", aux_inv=False, lang="chc"),
+                VerifierConfig("ef", template="knownbits", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"]),
+                #VerifierConfig("ef", template="bitpredabs", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"]),
                 VerifierConfig("ef", template="bv_interval", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"])
             ]
         }
@@ -297,14 +241,18 @@ def main():
     
     logger.info(f"Found {len(benchmark_files)} benchmark files")
     
-    # Run all configurations
+    # Run all configurations and summarize
     results = run_all_configs(configs, benchmark_files, args, args.parallel)
     
-    # Print final summary
     print("\n" + "="*80)
     print("FINAL SUMMARY")
     print("="*80)
     logger.info(f"Completed {len(results)} verification tasks")
+    
+    inconsistencies = detect_inconsistencies(results)
+    if inconsistencies:
+        logger.warning(f"DETECTED {len(inconsistencies)} FILES WITH INCONSISTENT RESULTS!")
+    
     summarize_results(results)
 
 

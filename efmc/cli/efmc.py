@@ -43,7 +43,8 @@ TEMPLATES = {
         "bv_interval", "power_bv_interval",
         "bv_zone", "power_bv_zone",
         "bv_octagon", "power_bv_octagon",
-        "bv_poly", "power_bv_poly"
+        "bv_poly", "power_bv_poly",
+        "knownbits", "bitpredabs"
     ]
 }
 
@@ -88,7 +89,7 @@ class EFMCRunner:
         if sts.has_bv:
             if g_verifier_args.template == "auto":
                 g_verifier_args.template = "bv_interval"
-            elif "bv" not in g_verifier_args.template:
+            elif g_verifier_args.template not in TEMPLATES['bitvector']:
                 self.logger.error(f"Unsupported template: {g_verifier_args.template}")
                 self.logger.info(f"Available templates: {TEMPLATES['bitvector']}")
                 sys.exit(1)
