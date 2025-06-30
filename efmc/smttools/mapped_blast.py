@@ -3,6 +3,8 @@
 This module contains functions for translating SMT2 formulas to CNF and DIMACS format.
 
 It also keeps track of the mapping between bit-vector variables and their corresponding Boolean variables.
+
+TODO: it seems that this file can be slow. We need to profile and optimize it.
 """
 import sys
 from typing import List, Dict, Tuple

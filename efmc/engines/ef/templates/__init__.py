@@ -40,5 +40,12 @@ from .bv_recurrence import (
     BitVecDisjunctiveRecurrenceTemplate
 )
 
+# Hybrid bit-vector templates for combining multiple domains
+from .bv_hybrid import (
+    ConjunctiveBitVecTemplate,
+    HierarchicalBitVecTemplate,
+    ReducedProductBitVecTemplate
+)
+
 # No need to redefine the classes with the same name - they're already available
 # in the namespace after the imports above
