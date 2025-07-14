@@ -42,9 +42,7 @@ from .bv_recurrence import (
 
 # Hybrid bit-vector templates for combining multiple domains
 from .bv_hybrid import (
-    ConjunctiveBitVecTemplate,
-    HierarchicalBitVecTemplate,
-    ReducedProductBitVecTemplate
+    ConjunctiveBitVecTemplate
 )
 
 # No need to redefine the classes with the same name - they're already available
