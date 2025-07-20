@@ -9,354 +9,255 @@ NOTE:
 
 import logging
 import time
-# from enum import Enum
-from typing import List, Dict, Any, Optional, Union, Tuple
+from typing import Optional
 
 import z3
 
 from efmc.sts import TransitionSystem
-from efmc.utils import is_entail
 from efmc.engines.ef.templates import *
 from efmc.engines.ef.efsmt.efsmt_solver import EFSMTSolver
-from efmc.utils.z3_expr_utils import extract_all, ctx_simplify
-from efmc.utils.verification_utils import VerificationResult, check_invariant
+from efmc.utils.z3_expr_utils import extract_all
+from efmc.utils.verification_utils import VerificationResult
 
 logger = logging.getLogger(__name__)
 
 
 class EFProver:
-    """
-    Template-based invariant inference using exists-forall SMT solving.
-    
-    This class implements a template-based approach to invariant inference,
-    where the invariant is assumed to have a specific form (template) with
-    unknown parameters. The verification problem is then reduced to finding
-    values for these parameters such that the resulting formula is an inductive
-    invariant.
-    """
+    """Template-based invariant inference using exists-forall SMT solving."""
 
     def __init__(self, sts: TransitionSystem, **kwargs):
-        self.sts = sts  # the transition system
-        self.ct = None  # template type
-        self.ignore_post_cond = False  # ignoring the post condition (useful in "purely" invariant generation mode)
-        self.logic = "ALL"  # the logic, e.g., BV, LIA, ...
-        self.inductive_invaraint = None  # the generated invariant (e.g., to be used by other engines)
+        self.sts = sts
+        self.ct = None
+        self.logic = "ALL"
+        self.inductive_invaraint = None
+        
+        # Configuration options
+        self.ignore_post_cond = False
         self.print_vc = False
-
-        self.seed = kwargs.get("seed", 1)  # random seed
-        # Use "template = P and template" as the actual invariant template (a simple strengthening strategy)
+        self.seed = kwargs.get("seed", 1)
         self.prop_strengthening = kwargs.get("prop_strengthen", False)
-
-        # abstraction refinement?
         self.abs_refine = kwargs.get("abs_refine", False)
-
-        # The SMT solver for dealing with the EFSMT queries
         self.solver = kwargs.get("solver", "z3api")
-
-        # Use SMT solvers to validate the correctness of the invariant
-        self.validate_invariant = kwargs.get("validate_invariant",
-                                             False)
-
-        # Prevent over/underflow in the template exprs, e.g., x - y, x + y
+        self.validate_invariant = kwargs.get("validate_invariant", False)
         self.no_overflow = kwargs.get("no_overflow", False)
         self.no_underflow = kwargs.get("no_underflow", False)
-
-        # We have a backend solving engine based on the pySMT library (a CEGIS-style algorithm that uses SMT oracle in pySMT)
-        # Since pySMT allows for choosing different SMT backends, we add the following option.
         self.pysmt_solver = kwargs.get("pysmt_solver", "z3")
 
-        print("prevent over/under flow? ", self.no_overflow, self.no_underflow)
+        print(f"Prevent over/under flow: {self.no_overflow}, {self.no_underflow}")
 
     def set_solver(self, solver_name: str):
         self.solver = solver_name
 
     def set_template(self, template_name: str, num_disjunctions=2, **kwargs):
         """Set self.ct (the template to use)"""
-        if self.sts.has_bv:
-            # the following domains are for bit-vector programs
-            if template_name == "bv_interval":
-                self.ct = BitVecIntervalTemplate(self.sts)
-            elif template_name == "power_bv_interval":
-                self.ct = DisjunctiveBitVecIntervalTemplate(self.sts,
-                                                            num_disjunctions=num_disjunctions)
-            elif template_name == "bv_zone":
-                if len(self.sts.variables) < 2:
-                    self.ct = BitVecIntervalTemplate(self.sts)
-                else:
-                    self.ct = BitVecZoneTemplate(self.sts,
-                                                 no_overflow=self.no_overflow,
-                                                 no_underflow=self.no_underflow)
-            elif template_name == "power_bv_zone":
-                self.ct = DisjunctiveBitVecZoneTemplate(self.sts,
-                                                        num_disjunctions=num_disjunctions,
-                                                        no_overflow=self.no_overflow,
-                                                        no_underflow=self.no_underflow)
-            elif template_name == "bv_octagon":
-                if len(self.sts.variables) < 2:
-                    self.ct = BitVecIntervalTemplate(self.sts)
-                else:
-                    self.ct = BitVecOctagonTemplate(self.sts,
-                                                    no_overflow=self.no_overflow,
-                                                    no_underflow=self.no_underflow)
-            elif template_name == "power_bv_octagon":
-                self.ct = DisjunctiveBitVecOctagonTemplate(self.sts,
-                                                           num_disjunctions=num_disjunctions,
-                                                           no_overflow=self.no_overflow,
-                                                           no_underflow=self.no_underflow)
-            elif template_name == "bv_affine":
-                self.ct = BitVecAffineTemplate(self.sts)
-            elif template_name == "power_bv_affine":
-                self.ct = DisjunctiveBitVecAffineTemplate(self.sts,
-                                                          nnum_disjunctions=num_disjunctions)
-            elif template_name == "bv_poly":
-                self.ct = BitVecPolyhedronTemplate(self.sts)
-            elif template_name == "power_bv_poly":
-                self.ct = DisjunctiveBitVecPolyhedronTemplate(self.sts,
-                                                              num_disjunctions=num_disjunctions)
-            # TBD
-            elif template_name == "knownbits":
-                self.ct = KnownBitsTemplate(self.sts)
-            elif template_name == "bitpredabs":
-                self.ct = BitPredAbsTemplate(self.sts)
-            else:
-                raise NotImplementedError
-        else:
-            # The following templates are for integer or real programs
-            if template_name == "interval":
-                self.ct = IntervalTemplate(self.sts)
-                # the following one uses a < x < b, c < y < d
-                # need to confirm whether it is weaker...
-                # self.ct = IntervalTemplateV2(self.sts)
-            elif template_name == "power_interval":  # bounded, disjunctive interval
-                self.ct = DisjunctiveIntervalTemplate(self.sts, num_disjunctions=num_disjunctions)
-            elif template_name == "zone":
-                if len(self.sts.variables) < 2:
-                    self.ct = IntervalTemplate(self.sts)
-                else:
-                    self.ct = ZoneTemplate(self.sts)
-            # FIXME: add disjunctive zone
-            elif template_name == "octagon":
-                if len(self.sts.variables) < 2:
-                    self.ct = IntervalTemplate(self.sts)
-                else:
-                    self.ct = OctagonTemplate(self.sts)
-            # FIXME: add disjunctive octagon
-            elif template_name == "affine":
-                self.ct = AffineTemplate(self.sts)
-            elif template_name == "power_affine":
-                self.ct = DisjunctiveAffineTemplate(self.sts, num_disjunctions=num_disjunctions)
-            elif template_name == "poly":
-                self.ct = PolyTemplate(self.sts)
-            elif template_name == "power_poly":  # bounded, disjunctive polyhedral
-                self.ct = DisjunctivePolyTemplate(self.sts, num_disjunctions=num_disjunctions)
-            else:
-                raise NotImplementedError
-
+        self.ct = self._create_template(template_name, num_disjunctions)
         self.setup_logic()
 
-    def setup_logic(self):
-        """Setup self.logic according to the types of the template and the transition system.
-        Other strategies
-        - Use the get_logic API to analyze the constructed verification condition (See it relies on several Probes of z3).
-        - Use some APIs in pySMT?
-        """
+    def _create_template(self, template_name: str, num_disjunctions: int):
+        """Factory method to create templates based on name and system type"""
+        template_map = self._get_template_map(num_disjunctions)
+        
+        if template_name not in template_map:
+            raise NotImplementedError(f"Template '{template_name}' not implemented")
+        
+        return template_map[template_name]()
+
+    def _get_template_map(self, num_disjunctions: int):
+        """Get template mapping based on whether system has bit-vectors"""
+        common_kwargs = {
+            'no_overflow': self.no_overflow,
+            'no_underflow': self.no_underflow,
+            'num_disjunctions': num_disjunctions
+        }
+        
         if self.sts.has_bv:
-            self.logic = "BV"  # of UFBV?
+            return self._get_bv_template_map(common_kwargs)
+        else:
+            return self._get_int_template_map(common_kwargs)
+
+    def _get_bv_template_map(self, kwargs):
+        """Bit-vector template mapping"""
+        return {
+            "bv_interval": lambda: BitVecIntervalTemplate(self.sts),
+            "power_bv_interval": lambda: DisjunctiveBitVecIntervalTemplate(self.sts, **kwargs),
+            "bv_zone": lambda: self._get_zone_or_interval_template(BitVecZoneTemplate, BitVecIntervalTemplate, kwargs),
+            "power_bv_zone": lambda: DisjunctiveBitVecZoneTemplate(self.sts, **kwargs),
+            "bv_octagon": lambda: self._get_zone_or_interval_template(BitVecOctagonTemplate, BitVecIntervalTemplate, kwargs),
+            "power_bv_octagon": lambda: DisjunctiveBitVecOctagonTemplate(self.sts, **kwargs),
+            "bv_affine": lambda: BitVecAffineTemplate(self.sts),
+            "power_bv_affine": lambda: DisjunctiveBitVecAffineTemplate(self.sts, **kwargs),
+            "bv_poly": lambda: BitVecPolyhedronTemplate(self.sts),
+            "power_bv_poly": lambda: DisjunctiveBitVecPolyhedronTemplate(self.sts, **kwargs),
+            "knownbits": lambda: KnownBitsTemplate(self.sts),
+            "bitpredabs": lambda: BitPredAbsTemplate(self.sts)
+        }
+
+    def _get_int_template_map(self, kwargs):
+        """Integer/real template mapping"""
+        return {
+            "interval": lambda: IntervalTemplate(self.sts),
+            "power_interval": lambda: DisjunctiveIntervalTemplate(self.sts, **kwargs),
+            "zone": lambda: self._get_zone_or_interval_template(ZoneTemplate, IntervalTemplate, kwargs),
+            "octagon": lambda: self._get_zone_or_interval_template(OctagonTemplate, IntervalTemplate, kwargs),
+            "affine": lambda: AffineTemplate(self.sts),
+            "power_affine": lambda: DisjunctiveAffineTemplate(self.sts, **kwargs),
+            "poly": lambda: PolyTemplate(self.sts),
+            "power_poly": lambda: DisjunctivePolyTemplate(self.sts, **kwargs)
+        }
+
+    def _get_zone_or_interval_template(self, zone_class, interval_class, kwargs):
+        """Return zone template if multiple variables, otherwise interval template"""
+        if len(self.sts.variables) < 2:
+            return interval_class(self.sts)
+        return zone_class(self.sts, **{k: v for k, v in kwargs.items() if k in ['no_overflow', 'no_underflow']})
+
+    def setup_logic(self):
+        """Setup self.logic based on template and transition system types"""
+        if self.sts.has_bv:
+            self.logic = "BV"
         elif self.sts.has_real:
-            template = self.ct.template_type
-            if template == TemplateType.ZONE or template == TemplateType.INTERVAL \
-                    or template == TemplateType.DISJUNCTIVE_INTERVAL:
-                # FIXME: currently, our encoding seems to be non-linear...
-                #   See the coe in efmc/templates/interval.val
-                self.logic = "UFLRA"  # or LRA?
-            else:
-                self.logic = "UFNRA"  # or NRA?
+            self.logic = "UFLRA" if self._is_linear_template() else "UFNRA"
         elif self.sts.has_int:
-            template = self.ct.template_type
-            if template == TemplateType.ZONE or template == TemplateType.INTERVAL:
-                self.logic = "UFLIA"  # or UFLIA?
-            else:
-                self.logic = "UFNIA"  # or UFNIA?
+            self.logic = "UFLIA" if self._is_linear_template() else "UFNIA"
         elif self.sts.has_bool:
-            self.logic == "UF"
+            self.logic = "UF"
         else:
             raise NotImplementedError
+
+    def _is_linear_template(self):
+        """Check if template is linear (zone, interval, or disjunctive interval)"""
+        linear_types = {TemplateType.ZONE, TemplateType.INTERVAL, TemplateType.DISJUNCTIVE_INTERVAL}
+        return self.ct.template_type in linear_types
 
     def dump_constraint(self, g_verifier_args) -> bool:
         """Dumping the verification condition"""
-        # global g_verifier_args
         assert g_verifier_args.dump_ef_smt2 or g_verifier_args.dump_qbf
         assert g_verifier_args.dump_ef_smt2 != g_verifier_args.dump_qbf
+        
         qf_vc = self.generate_quantifier_free_vc()
         ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver)
-        forall_vars = self.sts.all_variables
-        # exists_vars = []
-
+        
         exists_vars = extract_all(self.ct.template_vars)
-        ef_solver.init(exist_vars=exists_vars, forall_vars=forall_vars, phi=qf_vc)
+        ef_solver.init(exist_vars=exists_vars, forall_vars=self.sts.all_variables, phi=qf_vc)
 
-        # TODO: allowing for controlling the output dir
-        # g_verifier_args.dump_cnt_dir
+        # Generate filename
         import os
-        # file_name = g_verifier_args.file  # the input instance
-        # print(g_verifier_args.dump_cnt_dir, os.path.basename(g_verifier_args.file))
-        file_name = "{0}/{1}".format(g_verifier_args.dump_cnt_dir, os.path.basename(g_verifier_args.file))
-        file_name += "+{}".format(str(g_verifier_args.template))
-        file_name += "+d{}".format(str(g_verifier_args.num_disjunctions))
-        file_name += "+strength_{}".format(str(g_verifier_args.prop_strengthen))
-        file_name += "+ouflow_{}".format(str(g_verifier_args.prevent_over_under_flows))
+        file_name = f"{g_verifier_args.dump_cnt_dir}/{os.path.basename(g_verifier_args.file)}"
+        file_name += f"+{g_verifier_args.template}+d{g_verifier_args.num_disjunctions}"
+        file_name += f"+strength_{g_verifier_args.prop_strengthen}"
+        file_name += f"+ouflow_{g_verifier_args.prevent_over_under_flows}"
 
         if g_verifier_args.dump_ef_smt2:
             file_name += ".smt2"
-            print("Dumping SMT constraint to {}".format(file_name))
+            print(f"Dumping SMT constraint to {file_name}")
             ef_solver.dump_ef_smt_file(smt2_file_name=file_name)
         elif g_verifier_args.dump_qbf:
             file_name += ".qdimacs"
-            print("Dumping QBF constraint to {}".format(file_name))
+            print(f"Dumping QBF constraint to {file_name}")
             ef_solver.dump_qbf_file(qdimacs_file_name=file_name)
-        else:
-            raise NotImplementedError
 
     def solve(self, timeout: Optional[int] = None) -> VerificationResult:
         """The interface for calling different engines"""
-        print("Start solving: ")
-        print("Used template: {}".format(str(self.ct.template_type)))
-        print("Used logic: {}".format(str(self.logic)))
+        print("Start solving:")
+        print(f"Used template: {self.ct.template_type}")
+        print(f"Used logic: {self.logic}")
+        
         if self.solver == "z3api":
-            # will call z3's Python API to solve the problem (no need to dump files)
             return self.solve_with_z3()
         else:
-            # Call third-party solvers via EFSMTSolver
-            #   1. Dump to SMT-LIB2 file and call a binary solver (e.g., cvc5, z3..)
-            #   2. Translate to various Boolean formats and use corresponding solvers
-            #   3. Use PySMT-based implementation of the CEGIS-based solver
-            qf_vc = self.generate_quantifier_free_vc()
-            print("EFSMT starting!!!")
-            ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver, pysmt_solver=self.pysmt_solver)
-            forall_vars = self.sts.all_variables
-            exists_vars = extract_all(self.ct.template_vars)  # self.ct.template_vars can be a nested list
-            # print(self.ct.template_vars)
-            # print(exists_vars)
-            # exit(0)
-            # print("qf part of vc: ", qf_vc)
-            # print("exists vars: ", exists_vars)
-            # print("forall vars: ", forall_vars)
-            ef_solver.init(exist_vars=exists_vars, forall_vars=forall_vars, phi=qf_vc)
-            res = ef_solver.solve()
-            if res == "sat":
-                # Try to extract the model and build an invariant
-                model = ef_solver.get_model()
-                if model:
-                    invariant = self.ct.build_invariant(model)
-                    return VerificationResult(True, invariant)
-                return VerificationResult(True, None)
-            else:
-                return VerificationResult(False, None, is_unknown=True)
+            return self._solve_with_external_solver()
 
-    def generate_vc(self) -> z3.ExprRef:
-        """ Generate VC (Version 1)
-        Another strategy is to generate the quantifier free body first and then add the
-        quantifier once (to self.sts.all_variables), which is implemented in generate_vc2
-        """
-        s = z3.Solver()
-        if self.prop_strengthening:
-            # Since we use "template = P and template" as the invariant template,
-            # we need to adjunct the logic for generating the constraints
-            var_map = []  # x' to x, y' to y
-            for i in range(len(self.sts.variables)):
-                var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
-            post_in_prime = z3.substitute(self.sts.post, var_map)  # post cond that uses x', y', ..
-
-            s.add(z3.ForAll(self.sts.variables, z3.Implies(self.sts.init,
-                                                           z3.And(self.sts.post, self.ct.template_cnt_init_and_post))))
-            s.add(z3.ForAll(self.sts.all_variables,
-                            z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post, self.sts.trans),
-                                       z3.And(post_in_prime, self.ct.template_cnt_trans))))
-            if not self.ignore_post_cond:
-                s.add(z3.ForAll(self.sts.variables,
-                                z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post),
-                                           self.sts.post)))
+    def _solve_with_external_solver(self) -> VerificationResult:
+        """Solve using external EFSMT solver"""
+        qf_vc = self.generate_quantifier_free_vc()
+        print("EFSMT starting!!!")
+        
+        ef_solver = EFSMTSolver(logic=self.logic, solver=self.solver, pysmt_solver=self.pysmt_solver)
+        exists_vars = extract_all(self.ct.template_vars)
+        ef_solver.init(exist_vars=exists_vars, forall_vars=self.sts.all_variables, phi=qf_vc)
+        
+        res = ef_solver.solve()
+        if res == "sat":
+            model = ef_solver.get_model()
+            invariant = self.ct.build_invariant(model) if model else None
+            return VerificationResult(True, invariant)
         else:
-            s.add(z3.ForAll(self.sts.variables, z3.Implies(self.sts.init, self.ct.template_cnt_init_and_post)))
-            s.add(z3.ForAll(self.sts.all_variables,
-                            z3.Implies(z3.And(self.ct.template_cnt_init_and_post, self.sts.trans),
-                                       self.ct.template_cnt_trans)))
-            if not self.ignore_post_cond:
-                s.add(z3.ForAll(self.sts.variables, z3.Implies(self.ct.template_cnt_init_and_post,
-                                                               self.sts.post)))
-
-        # Add additional cnts to restrict the template variables (only for int/real)
-        # FIXME: this seems to be some "technical debt" (not sure why we do this)
-        #  Indeed, for most domains, get_additional_cnts_for_template_vars() returns true.
-        if self.ct.template_type == TemplateType.INTERVAL or \
-                self.ct.template_type == TemplateType.DISJUNCTIVE_INTERVAL or \
-                self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.OCTAGON:
-            s.add(self.ct.get_additional_cnts_for_template_vars())
-
-        return z3.And(s.assertions())
+            return VerificationResult(False, None, is_unknown=True)
 
     def generate_quantifier_free_vc(self) -> z3.ExprRef:
-        """Generate the "QF-part" of the VC (quantifiers will be added later
-         by the generate_vc2 function)"""
-        s = z3.Solver()
+        """Generate the quantifier-free part of the verification condition"""
+        constraints = []
+        
         if self.prop_strengthening:
-            # use "template = P and template" as the invariant template!!
-            var_map = []  # x' to x, y' to y
-            for i in range(len(self.sts.variables)):
-                var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
-            post_in_prime = z3.substitute(self.sts.post, var_map)  # post cond that uses x', y', ..
-
-            s.add(z3.Implies(self.sts.init,
-                             z3.And(self.sts.post, self.ct.template_cnt_init_and_post)))
-            s.add(z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post, self.sts.trans),
-                             z3.And(post_in_prime, self.ct.template_cnt_trans)))
-            if not self.ignore_post_cond:
-                s.add(z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post),
-                                 self.sts.post))
+            constraints.extend(self._generate_strengthened_constraints())
         else:
-            s.add(z3.Implies(self.sts.init, self.ct.template_cnt_init_and_post))
+            constraints.extend(self._generate_standard_constraints())
+        
+        # Add template variable restrictions for specific template types
+        if self._needs_additional_template_constraints():
+            constraints.append(self.ct.get_additional_cnts_for_template_vars())
 
-            s.add(z3.Implies(z3.And(self.ct.template_cnt_init_and_post, self.sts.trans),
-                             self.ct.template_cnt_trans))
+        return z3.And(constraints)
 
-            if not self.ignore_post_cond:
-                s.add(z3.Implies(self.ct.template_cnt_init_and_post,
-                                 self.sts.post))
+    def _generate_strengthened_constraints(self):
+        """Generate constraints for property strengthening mode"""
+        var_map = list(zip(self.sts.variables, self.sts.prime_variables))
+        post_in_prime = z3.substitute(self.sts.post, var_map)
 
-        # Add additional cnts to restrict the template variables
-        if self.ct.template_type == TemplateType.INTERVAL or \
-                self.ct.template_type == TemplateType.DISJUNCTIVE_INTERVAL or \
-                self.ct.template_type == TemplateType.ZONE or self.ct.template_type == TemplateType.OCTAGON:
-            s.add(self.ct.get_additional_cnts_for_template_vars())
+        constraints = [
+            z3.Implies(self.sts.init, z3.And(self.sts.post, self.ct.template_cnt_init_and_post)),
+            z3.Implies(
+                z3.And(self.sts.post, self.ct.template_cnt_init_and_post, self.sts.trans),
+                z3.And(post_in_prime, self.ct.template_cnt_trans)
+            )
+        ]
+        
+        if not self.ignore_post_cond:
+            constraints.append(
+                z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post), self.sts.post)
+            )
+        
+        return constraints
 
-        return z3.And(s.assertions())
+    def _generate_standard_constraints(self):
+        """Generate standard verification constraints"""
+        constraints = [
+            z3.Implies(self.sts.init, self.ct.template_cnt_init_and_post),
+            z3.Implies(
+                z3.And(self.ct.template_cnt_init_and_post, self.sts.trans),
+                self.ct.template_cnt_trans
+            )
+        ]
+        
+        if not self.ignore_post_cond:
+            constraints.append(z3.Implies(self.ct.template_cnt_init_and_post, self.sts.post))
+        
+        return constraints
 
-    def generate_vc2(self) -> z3.ExprRef:
-        """Generate VC in the form of ForAll([allvars], And(Init,Trans,Post))
-        It will first use self.generate_quantifier_free_vc to generate the QF part
-        """
-        qf_vc = self.generate_quantifier_free_vc()
-        logger.debug("Finish generating VC")
-        return z3.ForAll(self.sts.all_variables, qf_vc)
+    def _needs_additional_template_constraints(self):
+        """Check if template needs additional constraints"""
+        constraint_types = {
+            TemplateType.INTERVAL, TemplateType.DISJUNCTIVE_INTERVAL,
+            TemplateType.ZONE, TemplateType.OCTAGON
+        }
+        return self.ct.template_type in constraint_types
 
     def solve_with_z3(self) -> VerificationResult:
-        """This is the main entrance for the verification"""
+        """Solve using Z3 Python API"""
         s = z3.SolverFor(self.logic)
-        vc = self.generate_vc2()
-        # TODO: use the interface in efsmt/efsmt_solver.py
-        #     e.g., pass the following y and phi to EFSMTSolver
-        #       y = self.sts.all_variables
-        #       phi = self.generate_quantifier_free_vc()
-        #     One possible problem is: to build the invariant, we need a model, which
-        #     may not be very easy to be parsed if we use a bin solver
+        qf_vc = self.generate_quantifier_free_vc()
+        vc = z3.ForAll(self.sts.all_variables, qf_vc)
+        
         if self.print_vc:
             print(vc)
-        s.add(vc)  # sometimes can be much faster!
+        
+        s.add(vc)
         print("EFSMT starting (via z3py API)!!!")
+        
         start = time.time()
-        # print(s.to_smt2())
         check_res = s.check()
-        print("EFSMT time: ", time.time() - start)
+        print(f"EFSMT time: {time.time() - start}")
+        
         if check_res == z3.sat:
             print("sat")
             model = s.model()
