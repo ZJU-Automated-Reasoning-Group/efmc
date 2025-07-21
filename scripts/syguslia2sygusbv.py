@@ -1,5 +1,5 @@
 """
-SyGuS(LIA) to SyGuS(BV) converter - supports both signed and unsigned bitvectors
+SyGuS(LIA) to SyGuS(BV) converter
 """
 import os
 import sys

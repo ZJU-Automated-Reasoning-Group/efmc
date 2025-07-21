@@ -1,5 +1,5 @@
 """
-SyGuS(BV) to CHC(BV) converter - simplified version using shared utilities
+SyGuS(BV) to CHC(BV) converter
 """
 import sys
 import argparse

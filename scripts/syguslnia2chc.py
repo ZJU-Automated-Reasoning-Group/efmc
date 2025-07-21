@@ -1,5 +1,5 @@
 """
-SyGuS(LNIA) to CHC(LIA) converter - simplified version using shared utilities
+SyGuS(LNIA) to CHC(LIA) converter
 """
 import sys
 import argparse

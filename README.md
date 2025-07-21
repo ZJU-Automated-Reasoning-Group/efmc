@@ -195,3 +195,4 @@ Primary contributors to this project:
 - rainoftime / cutelimination
 - JasonJ2021
 - WindOctober
+- Zahrinas
