@@ -109,3 +109,47 @@ class NewTransitionSystem:
         solver = z3.Solver()
         solver.add(self.to_chc_constraints())
         return "(set-logic HORN)\n" + solver.to_smt2()
+
+
+def demo():
+    # Create transition system
+    ts = NewTransitionSystem()
+    
+    # Add variables: x (int) and y (bool)
+    x = ts.add_variable("x", z3.IntSort())
+    x_prime = ts.add_variable("x", z3.IntSort(), prime=True)
+    y = ts.add_variable("y", z3.BoolSort())
+    y_prime = ts.add_variable("y", z3.BoolSort(), prime=True)
+    
+    # Initial: x = 0, y = True
+    ts.set_init(z3.And(x == 0, y == True))
+    
+    # Transition: x' = x + 1, y' = !y
+    ts.set_trans(z3.And(x_prime == x + 1, y_prime == z3.Not(y)))
+    
+    # Property: x >= 0 (safety property)
+    ts.set_post(x >= 0)
+    
+    # Convert to CHC and solve with PDR
+    chc_constraints = ts.to_chc_constraints()
+    solver = z3.SolverFor("HORN")
+    solver.add(chc_constraints)
+
+    print(chc_constraints)
+    
+    result = solver.check()
+    print(f"PDR result: {result}")
+    
+    if result == z3.sat:
+        print("Property holds!")
+    elif result == z3.unsat:
+        print("Property violated!")
+    else:
+        print("Unknown result")
+    
+    return result
+
+
+
+if __name__ == "__main__":
+    demo()
