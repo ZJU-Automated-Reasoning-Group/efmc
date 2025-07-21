@@ -51,11 +51,7 @@ class VerifierConfig:
 def load_config(config_file: str) -> Dict[str, List[VerifierConfig]]:
     with open(config_file) as f:
         data = json.load(f)
-    
-    return {
-        name: [VerifierConfig(**c) for c in cfg]
-        for name, cfg in data.items()
-    }
+    return {name: [VerifierConfig(**c) for c in cfg] for name, cfg in data.items()}
 
 
 def run_verifier(verifier_path: str, config: VerifierConfig, input_file: str, timeout: int) -> tuple:
@@ -96,15 +92,11 @@ def print_result(result):
 
 
 def summarize_results(results: List[tuple]):
-    config_results = {}
-    
     # Collect statistics
+    config_results = {}
     for file, config_id, result_class, stdout, stderr, elapsed in results:
         if config_id not in config_results:
-            config_results[config_id] = {
-                'total': 0, 'safe': 0, 'unsafe': 0, 'timeout': 0, 'unknown': 0,
-                'total_time': 0.0, 'max_time': 0.0
-            }
+            config_results[config_id] = {'total': 0, 'safe': 0, 'unsafe': 0, 'timeout': 0, 'unknown': 0, 'total_time': 0.0, 'max_time': 0.0}
         
         stats = config_results[config_id]
         stats['total'] += 1
@@ -118,18 +110,15 @@ def summarize_results(results: List[tuple]):
         print(f"{'Configuration':<25} {'Total':<6} {'Safe':<6} {'Unsafe':<7} {'Solved':<7} {'Timeout':<8} {'Unknown':<8} {'Success%':<10} {'Avg Time':<10} {'Max Time':<10}")
         print("-" * 110)
         
-        # Sort by solved rate (safe + unsafe)
-        sorted_configs = sorted(config_results.items(), 
-                              key=lambda x: (x[1]['safe'] + x[1]['unsafe']) / x[1]['total'], 
-                              reverse=True)
+        # Sort by solved rate
+        sorted_configs = sorted(config_results.items(), key=lambda x: (x[1]['safe'] + x[1]['unsafe']) / x[1]['total'], reverse=True)
         
         for config_id, stats in sorted_configs:
-            total = stats['total']
-            total_solved = stats['safe'] + stats['unsafe']  # All definitive results
-            success_rate = total_solved * 100 / total
-            avg_time = stats['total_time'] / total
+            total_solved = stats['safe'] + stats['unsafe']
+            success_rate = total_solved * 100 / stats['total']
+            avg_time = stats['total_time'] / stats['total']
             
-            print(f"{config_id:<25} {total:<6} {stats['safe']:<6} {stats['unsafe']:<7} {total_solved:<7} "
+            print(f"{config_id:<25} {stats['total']:<6} {stats['safe']:<6} {stats['unsafe']:<7} {total_solved:<7} "
                   f"{stats['timeout']:<8} {stats['unknown']:<8} {success_rate:<9.1f}% "
                   f"{avg_time:<9.2f}s {stats['max_time']:<9.2f}s")
     
@@ -145,14 +134,12 @@ def summarize_results(results: List[tuple]):
             # Group by result type
             by_result = {}
             for data in file_data:
-                result = data['result']
-                by_result.setdefault(result, []).append(data)
+                by_result.setdefault(data['result'], []).append(data)
             
             # Show conflicting definitive results
             for result_type, configs in by_result.items():
                 if result_type in ['safe', 'unsafe']:
-                    config_names = [c['config'] for c in configs]
-                    print(f"  {result_type.upper()}: {', '.join(config_names)}")
+                    print(f"  {result_type.upper()}: {', '.join(c['config'] for c in configs)}")
             
             print("  All results:")
             for data in sorted(file_data, key=lambda x: x['config']):
@@ -171,9 +158,7 @@ def run_all_configs(configs, benchmark_files, args, parallel=False):
         with concurrent.futures.ProcessPoolExecutor() as executor:
             futures = [
                 executor.submit(run_verifier, args.verifier, config, benchmark, args.timeout)
-                for config_list in configs.values()
-                for config in config_list
-                for benchmark in benchmark_files
+                for config_list in configs.values() for config in config_list for benchmark in benchmark_files
             ]
             
             for future in concurrent.futures.as_completed(futures):
@@ -198,9 +183,7 @@ def main():
     parser.add_argument("--config", help="Configuration file in JSON format")
     parser.add_argument("--parallel", action="store_true", help="Run configurations in parallel")
     parser.add_argument("--verifier", default="efmc", help="Path to the verifier executable")
-    parser.add_argument("--log-level", default="INFO", 
-                        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-                        help="Set the logging level")
+    parser.add_argument("--log-level", default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Set the logging level")
     args = parser.parse_args()
     
     logger = setup_logging(getattr(logging, args.log_level))
@@ -211,17 +194,15 @@ def main():
         configs = load_config(args.config)
         logger.info(f"Loaded custom configuration from {args.config}")
     else:
-        configs = {
-            "default": [
-                VerifierConfig("ef", template="bv_interval", aux_inv=False, lang="chc"),
-                VerifierConfig("kind", aux_inv=False, lang="chc"),
-                VerifierConfig("ef", template="bv_octagon", aux_inv=False, lang="chc"),
-                VerifierConfig("ef", template="knownbits", aux_inv=False, lang="chc"),
-                VerifierConfig("ef", template="knownbits", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"]),
-                #VerifierConfig("ef", template="bitpredabs", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"]),
-                VerifierConfig("ef", template="bv_interval", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"])
-            ]
-        }
+        configs = {"default": [
+            VerifierConfig("ef", template="bv_interval", aux_inv=False, lang="chc"),
+            VerifierConfig("kind", aux_inv=False, lang="chc"),
+            VerifierConfig("kind", aux_inv=True, lang="chc"),
+            VerifierConfig("ef", template="bv_octagon", aux_inv=False, lang="chc"),
+            VerifierConfig("ef", template="knownbits", aux_inv=False, lang="chc"),
+            VerifierConfig("ef", template="knownbits", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"]),
+            VerifierConfig("ef", template="bv_interval", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"])
+        ]}
         logger.info("Using default configurations")
     
     # Get benchmark files
@@ -229,11 +210,7 @@ def main():
         logger.error(f"Benchmark directory does not exist: {args.bench_dir}")
         sys.exit(1)
         
-    benchmark_files = [
-        os.path.join(args.bench_dir, f)
-        for f in os.listdir(args.bench_dir)
-        if f.endswith((".sl", ".smt2"))
-    ]
+    benchmark_files = [os.path.join(args.bench_dir, f) for f in os.listdir(args.bench_dir) if f.endswith((".sl", ".smt2"))]
     
     if not benchmark_files:
         logger.warning(f"No .sl or .smt2 files found in {args.bench_dir}")
