@@ -1,94 +1,64 @@
 """
-Encode the verification problem as a quantified formula and use
-SMT solvers that support quantifiers
-- E-matching
-- MBQI (model-based quantifier instantiation)
-- Enumerative instantiation in CVC5
-
-Configuration z3y
-- MBQI: auto_config=false smt.ematching=false
-- E-matching: auto_config=false smt.mbqi=false
-- M+E is enabled by default
-
-Configuration CVC5
-- E-matching
-- CEGQI
-- ...
-
-Currently, only Z3 is supported.
+Quantifier Instantiation (QI) based verification using SMT solvers with quantifier support.
+Supports Z3 API, SMT-LIB2 dumping, and external solvers like CVC5.
 """
 
 import logging
 import time
-from typing import Optional, Dict, Any, Tuple
+import tempfile
+import subprocess
+import os
+import uuid
+from typing import Optional, List
 
 import z3
 
 from efmc.sts import TransitionSystem
 from efmc.utils.verification_utils import VerificationResult
+from efmc.efmc_config import config
 
 logger = logging.getLogger(__name__)
 
 
 class QuantifierInstantiationProver:
     def __init__(self, system: TransitionSystem, **kwargs):
-        """
-        Initialize the Quantifier Instantiation prover.
-        
-        Args:
-            system: The transition system to verify
-            **kwargs: Additional configuration options
-                - timeout: Maximum solving time in seconds
-                - qi_strategy: QI strategy to use ('mbqi', 'ematching', 'combined', or 'auto')
-                - verbose: Whether to print detailed information
-        """
         self.sts = system
         self.timeout = kwargs.get('timeout', None)
         self.qi_strategy = kwargs.get('qi_strategy', 'auto')
-        self.verbose = kwargs.get('verbose', True)
+        self.solver_name = kwargs.get('solver', 'z3api')
+        self.verbose = kwargs.get('verbose', False)
+        self.dump_file = kwargs.get('dump_file', None)
         self.invariant = None
 
-    def _create_inv_function(self) -> z3.FuncDeclRef:
-        """
-        Create the uninterpreted 'inv' function with appropriate signature.
-        
-        Returns:
-            The inv function declaration
-        """
-        # Build argument types based on variable types
-        arg_sorts = []
-
+    def _get_logic(self) -> str:
+        """Get appropriate SMT logic based on variable types."""
         if self.sts.has_int:
-            arg_sorts = [z3.IntSort() for _ in range(len(self.sts.variables))]
+            return "UFLIA"
         elif self.sts.has_real:
-            arg_sorts = [z3.RealSort() for _ in range(len(self.sts.variables))]
+            return "AUFLIRA"
+        elif self.sts.has_bv:
+            return "UFBV"
+        else:
+            raise NotImplementedError("Unsupported variable types")
+
+    def _create_inv_function(self) -> z3.FuncDeclRef:
+        """Create invariant function with appropriate signature."""
+        if self.sts.has_int:
+            arg_sorts = [z3.IntSort() for _ in self.sts.variables]
+        elif self.sts.has_real:
+            arg_sorts = [z3.RealSort() for _ in self.sts.variables]
         elif self.sts.has_bv:
             bv_size = self.sts.variables[0].sort().size()
-            arg_sorts = [z3.BitVecSort(bv_size) for _ in range(len(self.sts.variables))]
+            arg_sorts = [z3.BitVecSort(bv_size) for _ in self.sts.variables]
         else:
-            raise NotImplementedError("Unsupported variable types in transition system")
+            raise NotImplementedError("Unsupported variable types")
 
-        # Create the function
         return z3.Function('inv', *(arg_sorts + [z3.BoolSort()]))
 
-    def _configure_solver(self) -> z3.Solver:
-        """
-        Configure the solver based on the transition system and QI strategy.
+    def _configure_z3_solver(self) -> z3.Solver:
+        """Configure Z3 solver with QI strategy."""
+        s = z3.SolverFor(self._get_logic())
         
-        Returns:
-            Configured Z3 solver
-        """
-        # Select appropriate logic
-        if self.sts.has_int:
-            s = z3.SolverFor("UFLIA")
-        elif self.sts.has_real:
-            s = z3.SolverFor("AUFLIRA")
-        elif self.sts.has_bv:
-            s = z3.SolverFor("UFBV")
-        else:
-            raise NotImplementedError("Unsupported variable types in transition system")
-
-        # Configure QI strategy
         if self.qi_strategy == 'mbqi':
             s.set('auto_config', False)
             s.set('smt.ematching', False)
@@ -101,148 +71,181 @@ class QuantifierInstantiationProver:
             s.set('auto_config', False)
             s.set('smt.mbqi', True)
             s.set('smt.ematching', True)
-        # For 'auto', use Z3's default configuration
 
-        # Set timeout if specified
         if self.timeout:
-            s.set('timeout', self.timeout * 1000)  # Z3 timeout is in milliseconds
+            s.set('timeout', self.timeout * 1000)
 
         return s
 
-    def encode_verification_conditions(self, inv: z3.FuncDeclRef, solver: z3.Solver) -> None:
-        """
-        Encode the verification conditions using the inv function.
+    def _build_verification_conditions(self, inv: z3.FuncDeclRef) -> List[z3.ExprRef]:
+        """Build verification conditions: initiation, consecution, and safety."""
+        return [
+            # Initiation: init(X) => inv(X)
+            z3.ForAll(self.sts.variables, z3.Implies(self.sts.init, inv(*self.sts.variables))),
+            # Consecution: inv(X) ∧ trans(X,X') => inv(X')
+            z3.ForAll(self.sts.all_variables, 
+                     z3.Implies(z3.And(inv(*self.sts.variables), self.sts.trans),
+                               inv(*self.sts.prime_variables))),
+            # Safety: inv(X) => post(X)
+            z3.ForAll(self.sts.variables, z3.Implies(inv(*self.sts.variables), self.sts.post))
+        ]
+
+    def _generate_smtlib2(self, verification_conditions: List[z3.ExprRef]) -> str:
+        """Generate SMT-LIB2 format string."""
+        logic = self._get_logic()
+        smt2_content = f"(set-logic {logic})\n"
         
-        Args:
-            inv: The invariant function
-            solver: The Z3 solver to add constraints to
-        """
-        # Encode initiation condition: init(X) => inv(X)
-        solver.add(z3.ForAll(self.sts.variables,
-                             z3.Implies(self.sts.init, inv(*self.sts.variables))))
+        # Declare variables
+        for var in self.sts.all_variables:
+            smt2_content += f"(declare-const {var.sexpr()} {var.sort().sexpr()})\n"
+        
+        # Declare inv function
+        inv = self._create_inv_function()
+        inv_decl = f"(declare-fun inv ("
+        inv_decl += " ".join(arg.sexpr() for arg in inv.domain())
+        inv_decl += f") {inv.range().sexpr()})\n"
+        smt2_content += inv_decl
+        
+        # Add verification conditions
+        for vc in verification_conditions:
+            smt2_content += f"(assert {vc.sexpr()})\n"
+        
+        smt2_content += "(check-sat)\n"
+        if logic != "UFBV":  # Some solvers don't support get-model for UFBV
+            smt2_content += "(get-model)\n"
+        
+        return smt2_content
 
-        # Encode consecution condition: inv(X) ∧ trans(X,X') => inv(X')
-        solver.add(z3.ForAll(self.sts.all_variables,
-                             z3.Implies(z3.And(inv(*self.sts.variables), self.sts.trans),
-                                        inv(*self.sts.prime_variables))))
+    def _call_external_solver(self, smt2_content: str) -> str:
+        """Call external solver with SMT-LIB2 content."""
+        solver_configs = {
+            'z3': [config.z3_exec],
+            'cvc5': [config.cvc5_exec, '-q', '--produce-models'],
+            'yices': [config.yices_exec],
+            'mathsat': [config.math_exec],
+            'bitwuzla': [config.bitwuzla_exec],
+            'boolector': [config.btor_exec]
+        }
+        
+        if self.solver_name not in solver_configs:
+            raise ValueError(f"Unsupported external solver: {self.solver_name}")
+        
+        if not config.check_available(self.solver_name):
+            raise FileNotFoundError(f"Solver {self.solver_name} not found")
 
-        # Encode safety condition: inv(X) => post(X)
-        solver.add(z3.ForAll(self.sts.variables,
-                             z3.Implies(inv(*self.sts.variables), self.sts.post)))
+        # Create temporary file
+        tmp_file = f"/tmp/qi_prover_{uuid.uuid1()}.smt2"
+        try:
+            with open(tmp_file, 'w') as f:
+                f.write(smt2_content)
+            
+            # Run solver
+            cmd = solver_configs[self.solver_name] + [tmp_file]
+            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            
+            if self.timeout:
+                try:
+                    stdout, stderr = process.communicate(timeout=self.timeout)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    return "timeout"
+            else:
+                stdout, stderr = process.communicate()
+            
+            output = stdout.decode('utf-8').strip()
+            if stderr:
+                logger.warning(f"Solver stderr: {stderr.decode('utf-8')}")
+            
+            return output
+            
+        finally:
+            if os.path.exists(tmp_file):
+                os.remove(tmp_file)
 
     def solve(self, timeout: Optional[int] = None) -> VerificationResult:
-        """
-        Verify the transition system using quantifier instantiation.
-        
-        Returns:
-            VerificationResult: Object containing verification result and related data
-        """
-        assert self.sts.initialized, "Transition system must be initialized before solving"
+        """Verify using QI with specified solver."""
+        if timeout is not None:
+            self.timeout = timeout
 
         try:
-            # Create invariant function and configure solver
             inv = self._create_inv_function()
-            solver = self._configure_solver()
-
-            # Set timeout if specified
-            if timeout is not None:
-                solver.set("timeout", timeout * 1000)  # Z3 timeout is in milliseconds
-
-            # Encode verification conditions
-            self.encode_verification_conditions(inv, solver)
-
+            verification_conditions = self._build_verification_conditions(inv)
+            
             if self.verbose:
-                logger.info("QI starting with strategy: %s", self.qi_strategy)
+                logger.info(f"QI starting with strategy: {self.qi_strategy}, solver: {self.solver_name}")
 
-            # Solve the verification problem
             start_time = time.time()
-            result = solver.check()
-            solve_time = time.time() - start_time
 
-            if result == z3.sat:
-                # System is safe, extract invariant
-                model = solver.model()
-                self.invariant = model.eval(inv(*self.sts.variables))
-
-                if self.verbose:
-                    logger.info("QI succeeded in %.2f seconds", solve_time)
-                    logger.info("Invariant: %s", self.invariant)
-
-                return VerificationResult(True, self.invariant)
-
-            elif result == z3.unsat:
-                if self.verbose:
-                    logger.info("QI found property violation in %.2f seconds", solve_time)
-
-                # We don't have a specific counterexample, so we mark it as unknown
-                # rather than unsafe since we can't provide a concrete counterexample
-                return VerificationResult(False, None, None, is_unknown=True)
-
-            else:
-                if self.verbose:
-                    logger.warning("QI returned unknown result after %.2f seconds", solve_time)
-                    logger.warning("Reason: %s", solver.reason_unknown())
+            if self.solver_name == 'z3api':
+                # Use Z3 Python API
+                solver = self._configure_z3_solver()
+                for vc in verification_conditions:
+                    solver.add(vc)
                 
-                if timeout is not None and time.time() - start_time >= timeout:
-                    logger.info("Timeout reached after %d seconds", timeout)
+                result = solver.check()
+                
+                if result == z3.sat:
+                    model = solver.model()
+                    self.invariant = model.eval(inv(*self.sts.variables))
+                    if self.verbose:
+                        logger.info(f"QI succeeded in {time.time() - start_time:.2f}s")
+                    return VerificationResult(True, self.invariant)
+                elif result == z3.unsat:
+                    return VerificationResult(False, None, None, is_unknown=True)
+                else:
+                    return VerificationResult(False, None, None, is_unknown=True)
+            
+            else:
+                # Use external solver via SMT-LIB2
+                smt2_content = self._generate_smtlib2(verification_conditions)
+                
+                # Dump to file if requested
+                if self.dump_file:
+                    with open(self.dump_file, 'w') as f:
+                        f.write(smt2_content)
+                    logger.info(f"SMT-LIB2 dumped to {self.dump_file}")
+                    return VerificationResult(False, None, None, is_unknown=True)  # Just dump, don't solve
+                
+                # Call external solver
+                output = self._call_external_solver(smt2_content)
+                
+                if "timeout" in output:
                     return VerificationResult(False, None, None, is_timeout=True, is_unknown=True)
-
-                return VerificationResult(False, None, None, is_unknown=True)
-
-        except z3.Z3Exception as e:
-            logger.error("Z3 error during QI solving: %s", str(e))
-            return VerificationResult(False, None, None, is_unknown=True)
+                elif "unsat" in output:
+                    return VerificationResult(False, None, None, is_unknown=True)
+                elif "sat" in output:
+                    if self.verbose:
+                        logger.info(f"External QI succeeded in {time.time() - start_time:.2f}s")
+                    # For external solvers, we can't easily extract the invariant
+                    return VerificationResult(True, None)
+                else:
+                    return VerificationResult(False, None, None, is_unknown=True)
 
         except Exception as e:
-            logger.error("Unexpected error during QI solving: %s", str(e))
+            logger.error(f"QI solving error: {e}")
             return VerificationResult(False, None, None, is_unknown=True)
 
-    def get_invariant(self) -> Optional[z3.ExprRef]:
-        """
-        Get the inductive invariant found during verification.
-        
-        Returns:
-            The invariant expression if found, None otherwise
-        """
-        return self.invariant
-
     def try_multiple_strategies(self) -> VerificationResult:
-        """
-        Try multiple QI strategies and return the best result.
-        
-        Returns:
-            VerificationResult: Object containing verification result and related data
-        """
+        """Try multiple QI strategies."""
         strategies = ['mbqi', 'ematching', 'combined']
-        best_result = VerificationResult(False, None, None, is_unknown=True)
-
+        
         for strategy in strategies:
-            logger.info("Trying QI strategy: %s", strategy)
+            if self.verbose:
+                logger.info(f"Trying QI strategy: {strategy}")
             self.qi_strategy = strategy
             result = self.solve()
-
             if result.is_safe:
                 return result
-
-            # Keep the best result (prefer unsafe over unknown)
-            if result.is_unsafe:
-                best_result = result
-                break  # If we found a counterexample, no need to try other strategies
-
-        return best_result
+        
+        return VerificationResult(False, None, None, is_unknown=True)
 
     def set_strategy(self, strategy: str) -> None:
-        """
-        Set the QI strategy to use.
-        
-        Args:
-            strategy: QI strategy ('mbqi', 'ematching', 'combined', or 'auto')
-        Raises:
-            ValueError: If strategy is not supported
-        """
+        """Set QI strategy."""
         valid_strategies = ['mbqi', 'ematching', 'combined', 'auto']
         if strategy not in valid_strategies:
-            raise ValueError(f"Unsupported QI strategy: {strategy}. Supported: {valid_strategies}")
+            raise ValueError(f"Invalid strategy: {strategy}")
         self.qi_strategy = strategy
-        if self.verbose:
-            logger.info("Set QI strategy to: %s", strategy)
+
+    def get_invariant(self) -> Optional[z3.ExprRef]:
+        """Get found invariant."""
+        return self.invariant

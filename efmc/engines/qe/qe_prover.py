@@ -3,7 +3,7 @@ Use quantifier elimination to compute the strongest inductive invariant?
 - The abstract transformer is strongest
 - The invariant is also?
 
-  TODO: this can be very slow and may not terminate
+TODO: this can be very slow and may not terminate （How to over-approximate qe)
 """
 
 import logging
