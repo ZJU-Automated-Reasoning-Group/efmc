@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict
-from efmc.llm.logger import Logger
+from efmc.llmtools.logger import Logger
 
 
 class LLMToolInput(ABC):

@@ -5,7 +5,6 @@ import time
 from typing import List, Dict
 
 
-
 def kill_process_group(process, pgid, logger):
     """Kill process group with graceful termination followed by force kill"""
     try:

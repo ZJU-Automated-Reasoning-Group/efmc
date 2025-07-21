@@ -63,9 +63,6 @@ We have two choices:
 
 Currently, the encoding is not very flexible. For example, we may use the template-based approach for generating ranking functions (to prove termination).
 
-### Different Variants of BMC and K-Induction
-
-- An incremental k-induction implementation (by LLM, to be validated)
 
 ### Abduction-based Invariant Inference
 

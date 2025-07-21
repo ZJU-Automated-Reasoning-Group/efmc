@@ -114,7 +114,7 @@ setup(
             'efmc=efmc.cli.efmc:main',
             'efsmt=efmc.cli.efsmt:main',  
             'efsmt_par=efmc.cli.efsmt_par:main',
-            'efmc-term=efmc.cli.efmc-term:main',
+            'efmc-term=efmc.cli.efmc_term:main',
             # Added EFSMT CLI entry point
         ],
     },

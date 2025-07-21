@@ -13,7 +13,7 @@ from functools import partial
 import threading
 
 import json
-from efmc.llm.logger import Logger
+from efmc.llmtools.logger import Logger
 
 
 class LLM:

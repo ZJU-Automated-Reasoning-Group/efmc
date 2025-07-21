@@ -8,8 +8,8 @@ import re
 from typing import List, Dict, Any, Optional, Tuple
 import z3
 
-from efmc.llm.llm_tool import LLMTool, LLMToolInput, LLMToolOutput
-from efmc.llm.llm_utils import LLM
+from efmc.llmtools.llm_tool import LLMTool, LLMToolInput, LLMToolOutput
+from efmc.llmtools.llm_utils import LLM
 from efmc.sts import TransitionSystem
 from .template_dsl import TemplateInvariant, TemplateParser
 
