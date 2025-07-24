@@ -1,286 +1,339 @@
 """
-FIXME: by LLM, to check
 C to SyGuS converter for verification.
 
-This module converts simple C programs with loops and assertions into SyGuS format
+Converts simple C programs with loops and assertions into SyGuS format
 for verification using EFMC's verification engines.
 """
 import re
 import logging
 from typing import List, Dict, Tuple, Optional
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
 
+@dataclass
+class Variable:
+    """Represents a variable in the C program."""
+    name: str
+    c_type: str
+    initial_value: Optional[str] = None
+
+    @property
+    def smt_type(self) -> str:
+        """Get SMT-LIB type for this variable."""
+        return {'bool': 'Bool', 'float': 'Real', 'double': 'Real'}.get(self.c_type, 'Int')
+
+
 class CToSyGuSConverter:
+    """Converts C programs to SyGuS invariant synthesis format."""
+    
     def __init__(self):
-        self.variables = []
-        self.variable_types = {}
-        self.assumptions = []
-        self.loop_condition = ""
-        self.loop_body = []
-        self.assertion = ""
-        self.sygus_template = """
-(set-logic {logic})
+        self.variables: List[Variable] = []
+        self.variable_map: Dict[str, Variable] = {}
+        self.assumptions: List[str] = []
+        self.loop_condition: str = ""
+        self.loop_body: List[str] = []
+        self.assertion: str = ""
+        self.errors: List[str] = []
 
-;; Variable declarations
-{declarations}
+    def reset(self):
+        """Reset converter state for new conversion."""
+        for attr in ['variables', 'assumptions', 'loop_body', 'errors']:
+            getattr(self, attr).clear()
+        self.variable_map.clear()
+        self.loop_condition = self.assertion = ""
 
-;; Invariant function declaration
-(synth-inv inv ({inv_args}))
+    def parse_variables(self, c_code: str) -> None:
+        """Parse variable declarations from C code."""
+        pattern = r'(int|bool|char|float|double)\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\s*=\s*[^,;]+)?(?:\s*,\s*[a-zA-Z_][a-zA-Z0-9_]*(?:\s*=\s*[^,;]+)?)*)\s*;'
+        
+        for match in re.finditer(pattern, c_code):
+            var_type = match.group(1)
+            var_decl = match.group(2)
+            
+            for var_part in var_decl.split(','):
+                var_part = var_part.strip()
+                if '=' in var_part:
+                    var_name, initial_value = var_part.split('=', 1)
+                    var_name, initial_value = var_name.strip(), initial_value.strip()
+                else:
+                    var_name, initial_value = var_part.strip(), None
+                
+                if var_name and var_name not in self.variable_map:
+                    variable = Variable(var_name, var_type, initial_value)
+                    self.variables.append(variable)
+                    self.variable_map[var_name] = variable
+                    
+                    if initial_value:
+                        if initial_value.startswith('-'):
+                            self.assumptions.append(f"(= {var_name} (- {initial_value[1:]}))")
+                        else:
+                            self.assumptions.append(f"(= {var_name} {initial_value})")
 
-;; Pre-condition (from assumptions)
-(define-fun pre ({args}) Bool
-    {pre_cond}
-)
+    def parse_assumptions(self, c_code: str) -> None:
+        """Parse assume statements from C code."""
+        patterns = [r'assume\s*\(\s*(.+?)\s*\)\s*;', r'__assume\s*\(\s*(.+?)\s*\)\s*;', r'ASSUME\s*\(\s*(.+?)\s*\)\s*;']
+        
+        for pattern in patterns:
+            for match in re.finditer(pattern, c_code):
+                try:
+                    self.assumptions.append(self.translate_c_expr_to_smt(match.group(1).strip()))
+                except Exception as e:
+                    self.errors.append(f"Failed to parse assumption '{match.group(1)}': {e}")
 
-;; Transition relation (loop body)
-(define-fun trans ({args} {args_prime}) Bool
-    (and
-        {loop_cond}
-        {trans_rel}
-    )
-)
+    def parse_loop(self, c_code: str) -> None:
+        """Parse while loop from C code."""
+        # Try complex pattern first, then simple pattern
+        patterns = [
+            r'while\s*\(\s*(.+?)\s*\)\s*\{((?:[^{}]++|\{(?:[^{}]++|\{[^{}]*\})*\})*)\}',
+            r'while\s*\(\s*(.+?)\s*\)\s*([^;]+;)'
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, c_code, re.DOTALL)
+            if match:
+                self.loop_condition = match.group(1).strip()
+                loop_body = match.group(2).strip()
+                
+                if pattern == patterns[0]:  # Complex pattern
+                    self.parse_loop_body(loop_body)
+                else:  # Simple pattern
+                    self.loop_body.append(loop_body)
+                break
 
-;; Post-condition (from assertions)
-(define-fun post ({args}) Bool
-    {post_cond}
-)
+    def parse_loop_body(self, body: str) -> None:
+        """Parse statements in loop body."""
+        # Remove comments and split into statements
+        body = re.sub(r'//.*$|/\*.*?\*/', '', body, flags=re.MULTILINE | re.DOTALL)
+        
+        statements = []
+        current_stmt = ""
+        brace_count = 0
+        
+        for char in body:
+            current_stmt += char
+            if char == '{':
+                brace_count += 1
+            elif char == '}':
+                brace_count -= 1
+            elif char == ';' and brace_count == 0:
+                stmt = current_stmt.strip().rstrip(';').strip()
+                if stmt:
+                    statements.append(stmt)
+                current_stmt = ""
+        
+        # Handle remaining statement
+        if current_stmt.strip():
+            stmt = current_stmt.strip().rstrip(';').strip()
+            if stmt:
+                statements.append(stmt)
+        
+        # Validate and add statements
+        assignment_patterns = [
+            r'^[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*.+$',  # x = expr
+            r'^[a-zA-Z_][a-zA-Z0-9_]*\s*\+=\s*.+$', # x += expr
+            r'^[a-zA-Z_][a-zA-Z0-9_]*\s*-=\s*.+$',  # x -= expr
+            r'^[a-zA-Z_][a-zA-Z0-9_]*\s*\*=\s*.+$', # x *= expr
+            r'^[a-zA-Z_][a-zA-Z0-9_]*\s*/=\s*.+$',  # x /= expr
+            r'^[a-zA-Z_][a-zA-Z0-9_]*\+\+$|^[a-zA-Z_][a-zA-Z0-9_]*--$',  # x++, x--
+            r'^\+\+[a-zA-Z_][a-zA-Z0-9_]*$|^--[a-zA-Z_][a-zA-Z0-9_]*$'   # ++x, --x
+        ]
+        
+        for stmt in statements:
+            if stmt and not stmt.startswith(('//','/*')) and any(re.match(p, stmt.strip()) for p in assignment_patterns):
+                self.loop_body.append(stmt)
+            elif stmt:
+                self.errors.append(f"Unsupported statement: {stmt}")
 
-;; Invariant constraints
-(inv-constraint inv pre trans post)
+    def parse_assertion(self, c_code: str) -> None:
+        """Parse assertion from C code."""
+        patterns = [r'assert\s*\(\s*(.+?)\s*\)\s*;', r'__assert\s*\(\s*(.+?)\s*\)\s*;', r'ASSERT\s*\(\s*(.+?)\s*\)\s*;']
+        
+        for pattern in patterns:
+            match = re.search(pattern, c_code)
+            if match:
+                try:
+                    self.assertion = self.translate_c_expr_to_smt(match.group(1).strip())
+                    return
+                except Exception as e:
+                    self.errors.append(f"Failed to parse assertion '{match.group(1)}': {e}")
+
+    def translate_c_expr_to_smt(self, expr: str) -> str:
+        """Translate C expressions to SMT-LIB format."""
+        if not expr.strip():
+            return "true"
+        
+        expr = ' '.join(expr.split())  # Normalize whitespace
+        
+        # Handle negative numbers first
+        expr = re.sub(r'([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*==\s*-(\d+)', r'(= \1 (- \2))', expr)
+        expr = re.sub(r'([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*!=\s*-(\d+)', r'(not (= \1 (- \2)))', expr)
+        expr = re.sub(r'([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*(<=|>=|<|>)\s*-(\d+)', r'(\2 \1 (- \3))', expr)
+        
+        # Standard operator translations
+        translations = [
+            # Comparison operators
+            (r'([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*==\s*([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))', r'(= \1 \2)'),
+            (r'([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*!=\s*([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))', r'(not (= \1 \2))'),
+            (r'([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*(<=|>=|<|>)\s*([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))', r'(\2 \1 \3)'),
+            
+            # Logical operators
+            (r'([a-zA-Z_][a-zA-Z0-9_]*|\([^)]+\))\s*&&\s*([a-zA-Z_][a-zA-Z0-9_]*|\([^)]+\))', r'(and \1 \2)'),
+            (r'([a-zA-Z_][a-zA-Z0-9_]*|\([^)]+\))\s*\|\|\s*([a-zA-Z_][a-zA-Z0-9_]*|\([^)]+\))', r'(or \1 \2)'),
+            (r'!\s*([a-zA-Z_][a-zA-Z0-9_]*|\([^)]+\))', r'(not \1)'),
+            
+            # Arithmetic operators
+            (r'([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*\+\s*([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*\+\s*([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))', r'(+ \1 \2 \3)'),
+            (r'([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*\+\s*([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))', r'(+ \1 \2)'),
+            (r'([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*-\s*([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))', r'(- \1 \2)'),
+            (r'([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*\*\s*([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))', r'(* \1 \2)'),
+            (r'([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*/\s*([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))', r'(div \1 \2)'),
+            (r'([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))\s*%\s*([a-zA-Z_][a-zA-Z0-9_]*|\d+|\([^)]+\))', r'(mod \1 \2)'),
+        ]
+        
+        for pattern, replacement in translations:
+            expr = re.sub(pattern, replacement, expr)
+        
+        return expr.replace('true', 'true').replace('false', 'false')
+
+    def translate_assignment(self, assignment: str) -> Tuple[str, str]:
+        """Translate C assignment to SMT-LIB equality."""
+        assignment = assignment.strip()
+        
+        # Handle different assignment operators
+        if '+=' in assignment:
+            lhs, rhs = assignment.split('+=', 1)
+            return lhs.strip(), f"(+ {lhs.strip()} {self.translate_c_expr_to_smt(rhs.strip())})"
+        elif '-=' in assignment:
+            lhs, rhs = assignment.split('-=', 1)
+            return lhs.strip(), f"(- {lhs.strip()} {self.translate_c_expr_to_smt(rhs.strip())})"
+        elif '*=' in assignment:
+            lhs, rhs = assignment.split('*=', 1)
+            return lhs.strip(), f"(* {lhs.strip()} {self.translate_c_expr_to_smt(rhs.strip())})"
+        elif '/=' in assignment:
+            lhs, rhs = assignment.split('/=', 1)
+            return lhs.strip(), f"(div {lhs.strip()} {self.translate_c_expr_to_smt(rhs.strip())})"
+        elif '++' in assignment:
+            lhs = assignment.replace('++', '').strip()
+            return lhs, f"(+ {lhs} 1)"
+        elif '--' in assignment:
+            lhs = assignment.replace('--', '').strip()
+            return lhs, f"(- {lhs} 1)"
+        elif '=' in assignment:
+            lhs, rhs = assignment.split('=', 1)
+            lhs, rhs = lhs.strip(), rhs.strip()
+            return lhs, self.translate_c_expr_to_smt(rhs)
+        else:
+            raise ValueError(f"Unrecognized assignment: {assignment}")
+
+    def generate_sygus_output(self) -> str:
+        """Generate the complete SyGuS output."""
+        if not self.variables:
+            raise ValueError("No variables found")
+
+        # Determine logic based on variable types
+        has_real = any(var.smt_type == 'Real' for var in self.variables)
+        has_int = any(var.smt_type == 'Int' for var in self.variables)
+        logic = "LIRA" if has_real and has_int else "LRA" if has_real else "LIA"
+        
+        # Build function arguments
+        args = ' '.join(f"({var.name} {var.smt_type})" for var in self.variables)
+        trans_args = args + ' ' + ' '.join(f"({var.name}! {var.smt_type})" for var in self.variables)
+
+        # Generate conditions
+        pre_cond = "true" if not self.assumptions else ("(and " + " ".join(self.assumptions) + ")" if len(self.assumptions) > 1 else self.assumptions[0])
+        
+        # Generate transition relation
+        transitions = []
+        updated_vars = set()
+        
+        for stmt in self.loop_body:
+            try:
+                lhs, rhs_smt = self.translate_assignment(stmt)
+                if lhs in self.variable_map:
+                    transitions.append(f"(= {lhs}! {rhs_smt})")
+                    updated_vars.add(lhs)
+            except Exception as e:
+                self.errors.append(f"Failed to translate '{stmt}': {e}")
+
+        # Add unchanged variables
+        for var in self.variables:
+            if var.name not in updated_vars:
+                transitions.append(f"(= {var.name}! {var.name})")
+
+        trans_cond = ' '.join(transitions)
+        if self.loop_condition:
+            loop_cond_smt = self.translate_c_expr_to_smt(self.loop_condition)
+            trans_cond = f"(and {loop_cond_smt} {trans_cond})"
+
+        # Generate post condition
+        if self.assertion and self.loop_condition:
+            loop_cond_smt = self.translate_c_expr_to_smt(self.loop_condition)
+            post_cond = f"(=> (not {loop_cond_smt}) {self.assertion})"
+        else:
+            post_cond = self.assertion or "true"
+
+        return f"""(set-logic {logic})
+
+(synth-inv inv_fun ({args}))
+
+(define-fun pre_fun ({args}) Bool
+    {pre_cond})
+
+(define-fun trans_fun ({trans_args}) Bool
+    {trans_cond})
+
+(define-fun post_fun ({args}) Bool
+    {post_cond})
+
+(inv-constraint inv_fun pre_fun trans_fun post_fun)
 
 (check-synth)
 """
 
-    def parse_variables(self, c_code: str) -> None:
-        """Parse variable declarations from C code."""
-        # Match variable declarations like "int x;" or "int x = 5;"
-        var_pattern = r'(int|bool|char)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*(?:=\s*([^;]+))?;'
-        for match in re.finditer(var_pattern, c_code):
-            var_type, var_name, initial_value = match.groups()
-            self.variables.append(var_name)
-            self.variable_types[var_name] = var_type
-            if initial_value:
-                self.assumptions.append(f"{var_name} == {initial_value}")
-
-    def parse_assumptions(self, c_code: str) -> None:
-        """Parse assume statements from C code."""
-        assume_pattern = r'assume\s*\(\s*(.+?)\s*\)\s*;'
-        for match in re.finditer(assume_pattern, c_code):
-            self.assumptions.append(match.group(1))
-
-    def parse_loop(self, c_code: str) -> None:
-        """Parse while loop from C code."""
-        # Match while loop pattern
-        loop_pattern = r'while\s*\(\s*(.+?)\s*\)\s*{([\s\S]*?)}'
-        match = re.search(loop_pattern, c_code)
-        if match:
-            self.loop_condition = match.group(1)
-            loop_body = match.group(2)
-
-            # Parse statements in loop body
-            stmt_pattern = r'([^;]+);'
-            for stmt_match in re.finditer(stmt_pattern, loop_body):
-                stmt = stmt_match.group(1).strip()
-                if stmt and not stmt.startswith('//'):
-                    self.loop_body.append(stmt)
-
-    def parse_assertion(self, c_code: str) -> None:
-        """Parse assertion from C code."""
-        assert_pattern = r'assert\s*\(\s*(.+?)\s*\)\s*;'
-        match = re.search(assert_pattern, c_code)
-        if match:
-            self.assertion = match.group(1)
-
-    def translate_c_expr_to_smt(self, expr: str) -> str:
-        """Translate C expressions to SMT-LIB format."""
-        # Replace C operators with SMT-LIB operators
-        expr = re.sub(r'==', '=', expr)
-        expr = re.sub(r'&&', 'and', expr)
-        expr = re.sub(r'\|\|', 'or', expr)
-        expr = re.sub(r'!([^=])', r'(not \1)', expr)
-        expr = re.sub(r'!=', '(not =)', expr)
-
-        # Handle array accesses
-        expr = re.sub(r'([a-zA-Z_][a-zA-Z0-9_]*)\[([^\]]+)\]', r'(select \1 \2)', expr)
-
-        # Handle function calls
-        expr = re.sub(r'([a-zA-Z_][a-zA-Z0-9_]*)\(([^)]*)\)', r'(\1 \2)', expr)
-
-        return expr
-
-    def translate_assignment(self, assignment: str) -> Tuple[str, str]:
-        """Translate C assignment to SMT-LIB equality."""
-        parts = assignment.split('=', 1)
-        if len(parts) != 2:
-            raise ValueError(f"Invalid assignment: {assignment}")
-
-        lhs = parts[0].strip()
-        rhs = parts[1].strip()
-
-        # Handle special cases like x++ or x+=1
-        if '+=' in assignment:
-            lhs, rhs = assignment.split('+=', 1)
-            lhs = lhs.strip()
-            rhs = f"{lhs} + ({rhs.strip()})"
-        elif '-=' in assignment:
-            lhs, rhs = assignment.split('-=', 1)
-            lhs = lhs.strip()
-            rhs = f"{lhs} - ({rhs.strip()})"
-        elif '++' in lhs:
-            lhs = lhs.replace('++', '').strip()
-            rhs = f"{lhs} + 1"
-        elif '--' in lhs:
-            lhs = lhs.replace('--', '').strip()
-            rhs = f"{lhs} - 1"
-
-        # Translate the right-hand side to SMT-LIB
-        rhs_smt = self.translate_c_expr_to_smt(rhs)
-
-        return lhs, rhs_smt
-
-    def generate_declarations(self) -> str:
-        """Generate SMT-LIB variable declarations."""
-        declarations = []
-        for var in self.variables:
-            c_type = self.variable_types.get(var, 'int')
-            smt_type = 'Int'
-            if c_type == 'bool':
-                smt_type = 'Bool'
-            declarations.append(f"(declare-var {var} {smt_type})")
-            declarations.append(f"(declare-var {var}! {smt_type})")
-        return '\n'.join(declarations)
-
-    def generate_pre_condition(self) -> str:
-        """Generate pre-condition from assumptions."""
-        if not self.assumptions:
-            return "true"
-
-        smt_assumptions = [self.translate_c_expr_to_smt(assume) for assume in self.assumptions]
-        if len(smt_assumptions) == 1:
-            return smt_assumptions[0]
-        return f"(and {' '.join(smt_assumptions)})"
-
-    def generate_transition_relation(self) -> str:
-        """Generate transition relation from loop body."""
-        transitions = []
-
-        # For each variable, add a constraint for its next value
-        for var in self.variables:
-            var_updated = False
-
-            # Check if this variable is updated in the loop
-            for stmt in self.loop_body:
-                if re.match(rf'{var}\s*=', stmt) or re.match(rf'{var}\s*\+=', stmt) or \
-                        re.match(rf'{var}\s*-=', stmt) or re.match(rf'{var}\+\+', stmt) or \
-                        re.match(rf'{var}--', stmt):
-                    lhs, rhs_smt = self.translate_assignment(stmt)
-                    if lhs.strip() == var:
-                        transitions.append(f"(= {var}! {rhs_smt})")
-                        var_updated = True
-                        break
-
-            # If variable is not updated, it stays the same
-            if not var_updated:
-                transitions.append(f"(= {var}! {var})")
-
-        return '\n        '.join(transitions)
-
-    def generate_loop_condition(self) -> str:
-        """Generate loop condition in SMT-LIB format."""
-        return self.translate_c_expr_to_smt(self.loop_condition)
-
-    def generate_post_condition(self) -> str:
-        """Generate post-condition from assertion."""
-        if not self.assertion:
-            return "true"
-
-        # The post-condition is the negation of the loop condition AND the assertion
-        loop_cond_smt = self.translate_c_expr_to_smt(self.loop_condition)
-        assertion_smt = self.translate_c_expr_to_smt(self.assertion)
-
-        return f"(=> (not {loop_cond_smt}) {assertion_smt})"
-
-    def generate_args_string(self) -> str:
-        """Generate argument string for function definitions."""
-        return ' '.join([f"({var} {self.get_smt_type(var)})" for var in self.variables])
-
-    def get_smt_type(self, var: str) -> str:
-        """Get SMT-LIB type for a variable."""
-        c_type = self.variable_types.get(var, 'int')
-        if c_type == 'bool':
-            return 'Bool'
-        return 'Int'
-
-    def determine_logic(self) -> str:
-        """Determine the appropriate logic based on variables and operations."""
-        # For now, we'll use LIA (Linear Integer Arithmetic) as default
-        return "LIA"
-
     def convert(self, c_program: str) -> str:
         """Convert C program to SyGuS format."""
-        # Reset state
-        self.variables = []
-        self.variable_types = {}
-        self.assumptions = []
-        self.loop_condition = ""
-        self.loop_body = []
-        self.assertion = ""
-
-        # Parse C program
+        self.reset()
+        
+        # Parse all components
         self.parse_variables(c_program)
         self.parse_assumptions(c_program)
         self.parse_loop(c_program)
         self.parse_assertion(c_program)
-
-        # Generate SyGuS components
-        logic = self.determine_logic()
-        declarations = self.generate_declarations()
-        inv_args = ' '.join([f"({var} {self.get_smt_type(var)})" for var in self.variables])
-        args = self.generate_args_string()
-        args_prime = ' '.join([f"({var}! {self.get_smt_type(var)})" for var in self.variables])
-        pre_cond = self.generate_pre_condition()
-        loop_cond = self.generate_loop_condition()
-        trans_rel = self.generate_transition_relation()
-        post_cond = self.generate_post_condition()
-
-        # Fill in the template
-        sygus_output = self.sygus_template.format(
-            logic=logic,
-            declarations=declarations,
-            inv_args=inv_args,
-            args=args,
-            args_prime=args_prime,
-            pre_cond=pre_cond,
-            loop_cond=loop_cond,
-            trans_rel=trans_rel,
-            post_cond=post_cond
-        )
-
-        return sygus_output
+        
+        if self.errors:
+            raise ValueError("Conversion failed:\n" + "\n".join(self.errors))
+        
+        if not self.variables:
+            raise ValueError("No variables found")
+        
+        return self.generate_sygus_output()
 
 
-# Example usage
 def main():
+    """Example usage."""
     c_program = """
-    int x;
-    int y;
-
+    int x, y;
+    
     assume(x == -50);
     assume(y == 1);
-
-    while(x < 3){
+    
+    while(x < 3) {
         x = x + y;
         y = y + 2;
     }
-
+    
     assert(y > 0);
     """
 
     converter = CToSyGuSConverter()
-    sygus_output = converter.convert(c_program)
-    print(sygus_output)
+    try:
+        result = converter.convert(c_program)
+        print("Conversion successful!")
+        print(result)
+    except Exception as e:
+        print(f"Conversion failed: {e}")
 
 
 if __name__ == "__main__":

@@ -32,6 +32,7 @@ We need to improve the frontend to enhance applicability:
 - MCMT(?)
 - Lustre
 - Simulink
+- Floating points
 - ...?
 
 Related work:
