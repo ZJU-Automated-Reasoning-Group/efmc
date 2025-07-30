@@ -213,7 +213,7 @@ def parse_arguments():
     parser.add_argument('--file', type=str, required=True,
                         help='Input SMT2 file to solve')
     parser.add_argument('--logic', type=str, default='BV',
-                        choices=['BV', 'UFBV', 'LIA', 'LRA', 'NIA', 'NRA'],
+                        choices=['BV', 'UFBV', 'LIA', 'LRA', 'NIA', 'NRA', 'FP'],
                         help='Logic to use for solving')
 
     # Solver options

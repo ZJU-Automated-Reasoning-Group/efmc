@@ -45,6 +45,9 @@ TEMPLATES = {
         "bv_octagon", "power_bv_octagon",
         "bv_poly", "power_bv_poly",
         "knownbits", "bitpredabs"
+    ],
+    'floating_point': [
+        "fp_interval", "fp_poly"
     ]
 }
 
@@ -86,52 +89,40 @@ class EFMCRunner:
 
     def run_ef_prover(self, sts: TransitionSystem) -> None:
         """Run template-based invariant generation using EF prover"""
+        # Determine template and available templates based on variable types
         if sts.has_bv:
-            if g_verifier_args.template == "auto":
-                g_verifier_args.template = "bv_interval"
-            elif g_verifier_args.template not in TEMPLATES['bitvector']:
-                self.logger.error(f"Unsupported template: {g_verifier_args.template}")
-                self.logger.info(f"Available templates: {TEMPLATES['bitvector']}")
-                sys.exit(1)
-
-            ef_prover = EFProver(
-                sts,
-                prop_strengthen=g_verifier_args.prop_strengthen,
-                abs_refine=g_verifier_args.abs_refine,
-                validate_invariant=g_verifier_args.validate_invariant,
-                no_overflow=g_verifier_args.prevent_over_under_flows > 0,
-                no_underflow=g_verifier_args.prevent_over_under_flows > 0,
-                pysmt_solver=g_verifier_args.pysmt_solver
-            )
-
-            if g_verifier_args.template in TEMPLATES['bitvector']:
-                ef_prover.set_template(g_verifier_args.template,
-                                       num_disjunctions=g_verifier_args.num_disjunctions)
-                ef_prover.set_solver(g_verifier_args.efsmt_solver)
-            else:
-                self.logger.error(f"Unsupported template: {g_verifier_args.template}")
-                self.logger.info(f"Available templates: {TEMPLATES['bitvector']}")
-                sys.exit(1)
+            available_templates = TEMPLATES['bitvector']
+            default_template = "bv_interval"
+        elif sts.has_fp:
+            available_templates = TEMPLATES['floating_point'] 
+            default_template = "fp_interval"
         else:
-            ef_prover = EFProver(
-                sts,
-                prop_strengthen=g_verifier_args.prop_strengthen,
-                abs_refine=g_verifier_args.abs_refine,
-                validate_invariant=g_verifier_args.validate_invariant,
-                pysmt_solver=g_verifier_args.pysmt_solver
-            )
+            available_templates = TEMPLATES['int_real']
+            default_template = "interval"
 
-            if g_verifier_args.template == "auto":
-                ef_prover.set_template("interval")
-                ef_prover.set_solver(g_verifier_args.efsmt_solver)
-            elif g_verifier_args.template in TEMPLATES['int_real']:
-                ef_prover.set_template(g_verifier_args.template,
-                                       num_disjunctions=g_verifier_args.num_disjunctions)
-                ef_prover.set_solver(g_verifier_args.efsmt_solver)
-            else:
-                self.logger.error(f"Unsupported template: {g_verifier_args.template}")
-                self.logger.info(f"Available templates: {TEMPLATES['int_real']}")
-                sys.exit(1)
+        # Handle auto template selection
+        if g_verifier_args.template == "auto":
+            g_verifier_args.template = default_template
+        elif g_verifier_args.template not in available_templates:
+            self.logger.error(f"Unsupported template: {g_verifier_args.template}")
+            self.logger.info(f"Available templates: {available_templates}")
+            sys.exit(1)
+
+        # Create EF prover with appropriate configuration
+        ef_prover = EFProver(
+            sts,
+            prop_strengthen=g_verifier_args.prop_strengthen,
+            abs_refine=g_verifier_args.abs_refine,
+            validate_invariant=g_verifier_args.validate_invariant,
+            no_overflow=g_verifier_args.prevent_over_under_flows > 0 if sts.has_bv else False,
+            no_underflow=g_verifier_args.prevent_over_under_flows > 0 if sts.has_bv else False,
+            pysmt_solver=g_verifier_args.pysmt_solver
+        )
+
+        # Set template and solver
+        ef_prover.set_template(g_verifier_args.template,
+                               num_disjunctions=g_verifier_args.num_disjunctions)
+        ef_prover.set_solver(g_verifier_args.efsmt_solver)
 
         if g_verifier_args.dump_ef_smt2 or g_verifier_args.dump_qbf:
             ef_prover.dump_constraint(g_verifier_args)
@@ -314,7 +305,7 @@ def parse_arguments():
     # Template-based verification options
     template_group = parser.add_argument_group('Template-based verification options')
     template_group.add_argument('--template', type=str, default="auto",
-                                help='Template for invariant generation. For integer/real: interval, power_interval, zone, octagon, affine, power_affine, poly, power_poly. For bitvector: bv_interval, power_bv_interval, bv_zone, power_bv_zone, bv_octagon, power_bv_octagon, bv_poly, power_bv_poly')
+                                help='Template for invariant generation. For integer/real: interval, power_interval, zone, octagon, affine, power_affine, poly, power_poly. For bitvector: bv_interval, power_bv_interval, bv_zone, power_bv_zone, bv_octagon, power_bv_octagon, bv_poly, power_bv_poly. For floating-point: fp_interval, fp_poly')
     template_group.add_argument('--num-disjunctions', type=int, default=1,
                                 help='Number of disjunctions in template')
     template_group.add_argument('--prop-strengthen', action='store_true',

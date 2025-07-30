@@ -63,7 +63,7 @@ class EFProver:
         return template_map[template_name]()
 
     def _get_template_map(self, num_disjunctions: int):
-        """Get template mapping based on whether system has bit-vectors"""
+        """Get template mapping based on system variable types"""
         common_kwargs = {
             'no_overflow': self.no_overflow,
             'no_underflow': self.no_underflow,
@@ -72,6 +72,8 @@ class EFProver:
         
         if self.sts.has_bv:
             return self._get_bv_template_map(common_kwargs)
+        elif self.sts.has_fp:
+            return self._get_fp_template_map(common_kwargs)
         else:
             return self._get_int_template_map(common_kwargs)
 
@@ -105,6 +107,13 @@ class EFProver:
             "power_poly": lambda: DisjunctivePolyTemplate(self.sts, **kwargs)
         }
 
+    def _get_fp_template_map(self, kwargs):
+        """Floating-point template mapping"""
+        return {
+            "fp_interval": lambda: FPIntervalTemplate(self.sts),
+            "fp_poly": lambda: FPPolyhedronTemplate(self.sts, num_constraints=kwargs.get('num_disjunctions', 2))
+        }
+
     def _get_zone_or_interval_template(self, zone_class, interval_class, kwargs):
         """Return zone template if multiple variables, otherwise interval template"""
         if len(self.sts.variables) < 2:
@@ -115,6 +124,8 @@ class EFProver:
         """Setup self.logic based on template and transition system types"""
         if self.sts.has_bv:
             self.logic = "BV"
+        elif self.sts.has_fp:
+            self.logic = "FP"
         elif self.sts.has_real:
             self.logic = "UFLRA" if self._is_linear_template() else "UFNRA"
         elif self.sts.has_int:
@@ -238,7 +249,7 @@ class EFProver:
         """Check if template needs additional constraints"""
         constraint_types = {
             TemplateType.INTERVAL, TemplateType.DISJUNCTIVE_INTERVAL,
-            TemplateType.ZONE, TemplateType.OCTAGON
+            TemplateType.ZONE, TemplateType.OCTAGON, TemplateType.FLOAT
         }
         return self.ct.template_type in constraint_types
 

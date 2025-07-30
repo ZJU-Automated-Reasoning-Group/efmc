@@ -41,6 +41,10 @@ class TemplateType(Enum):
     ARRAY = auto()
     STRING = auto()
     FLOAT = auto()
+    
+    # Floating-point specific domains
+    FP_INTERVAL = auto()
+    FP_POLYHEDRON = auto()
 
     # Bit-vector domains
     BV_INTERVAL = auto()
@@ -71,6 +75,11 @@ class TemplateType(Enum):
     def is_interval(cls, template_type: 'TemplateType') -> bool:
         """Check if the template type is an interval."""
         return template_type.name.startswith('INTERVAL')
+    
+    @classmethod
+    def is_floating_point(cls, template_type: 'TemplateType') -> bool:
+        """Check if the template type is floating-point specific."""
+        return template_type.name.startswith('FP_')
 
 
 class Template(ABC):

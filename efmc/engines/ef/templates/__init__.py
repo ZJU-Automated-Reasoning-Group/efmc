@@ -45,5 +45,9 @@ from .bv_hybrid import (
     ConjunctiveBitVecTemplate
 )
 
+# Floating-point templates for QF_FP support
+from .fp_interval import FPIntervalTemplate
+from .fp_polyhedron import FPPolyhedronTemplate
+
 # No need to redefine the classes with the same name - they're already available
 # in the namespace after the imports above
