@@ -3,16 +3,16 @@
 The uniformed interface for solving Exists-ForAll problems over bit-vectors.
 
 Solver options:
-- "z3": Use Z3 SMT solver
-- "cvc5": Use CVC5 SMT solver
-- "btor": Use Boolector SMT solver
-- "bitwuzla": Use Bitwuzla SMT solver
-- "yices": Use Yices SMT solver
-- "mathsat": Use MathSAT SMT solver
-- "q3b": Use Q3B solver
-- "caqe": Use CAQE QBF solver
-- "cegis": Use CEGIS-based approach
-- "sat": Use SAT-based approach
+- "z3": Use Z3 SMT solver (call the binary solver)
+- "cvc5": Use CVC5 SMT solver (call the binary solver)
+- "btor": Use Boolector SMT solver (call the binary solver)
+- "bitwuzla": Use Bitwuzla SMT solver (call the binary solver)
+- "yices": Use Yices SMT solver (call the binary solver)
+- "mathsat": Use MathSAT SMT solver (call the binary solver)
+- "q3b": Use Q3B solver (call the binary solver)
+- "caqe": Use CAQE QBF solver (call the binary solver)
+- "cegis": Use CEGIS-based approach (implemented via pysmt)
+- "sat": Use SAT-based approach (call the binary solver)
 - ...?
 
 Approaches:

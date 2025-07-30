@@ -258,6 +258,8 @@ class EFProver:
         s = z3.SolverFor(self.logic)
         qf_vc = self.generate_quantifier_free_vc()
         vc = z3.ForAll(self.sts.all_variables, qf_vc)
+
+        # print(f"VC: {vc}")
         
         if self.print_vc:
             print(vc)

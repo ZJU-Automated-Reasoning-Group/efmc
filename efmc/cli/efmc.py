@@ -325,7 +325,8 @@ def parse_arguments():
                                    "1. Quantifier instantiation approach: [z3, cvc5, btor, yices2, mathsat, bitwuzla, z3api]\n"
                                    "2. Bit-blasting approach: [z3qbf, caqe, q3b, z3sat]\n"
                                    "3. CEGIS approach: [cegis] (implemented via pysmt, need to set pysmt_solver)")
-
+    
+    # We implement the CEGIS solver using pysmt's API, so we need to set the PySMT solver. However, pysmt may have limited support for some theories such as QF_FP and QF_SLIA.
     solver_group.add_argument('--pysmt-solver', dest='pysmt_solver', default="z3", type=str,
                               help="Set the PySMT solver for the CEGIS solver's backend. Options include: [z3, cvc5, btor, yices2, mathsat, bitwuzla]")
 
@@ -334,7 +335,7 @@ def parse_arguments():
     solver_group.add_argument('--timeout', type=int, default=3600,
                              help='Timeout in seconds for external solvers and binary verifiers')
 
-    # Bitvector options
+    # Bitvector options (for controling the bit-vector expressions in the template)
     bv_group = parser.add_argument_group('Bitvector options')
     bv_group.add_argument('--prevent-over-under-flows', type=int, default=0,
                           help='Prevent over/underflows in bitvector operations')

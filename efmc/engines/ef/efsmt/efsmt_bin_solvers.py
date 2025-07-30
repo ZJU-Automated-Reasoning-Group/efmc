@@ -1,5 +1,5 @@
 """
-For calling SMT and QBF solvers
+For calling SMT (that support quantified formulas) and QBF solvers
 
 The available APIs:
 - solve_with_bin_qbf: solve QBF via bin QBF solvers
