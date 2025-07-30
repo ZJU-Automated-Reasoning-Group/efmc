@@ -1,4 +1,4 @@
-(set-logic HORN)
+;(set-logic HORN)
 
 ; Declare floating-point variables
 (declare-fun x () (_ FloatingPoint 8 24))
@@ -33,4 +33,4 @@
 (assert (forall ((x (_ FloatingPoint 8 24)))
   (=> (inv x) post)))
 
-(check-sat) 
+(check-sat)

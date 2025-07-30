@@ -1,9 +1,4 @@
-"""
-Transition System Tools
-
-This module provides utility functions for working with transition systems,
-including simulation capabilities.
-"""
+"""Transition System Tools - Simulation utilities for transition systems."""
 
 from typing import List, Dict, Any, Optional
 import z3
@@ -13,17 +8,7 @@ from .sts import TransitionSystem
 def simulate_transition_system(ts: TransitionSystem, steps: int = 10, 
                              random_seed: Optional[int] = None, 
                              concrete_init: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
-    """Simulate transition system execution.
-    
-    Args:
-        ts: The transition system to simulate
-        steps: Number of simulation steps
-        random_seed: Optional seed for random choices
-        concrete_init: Optional initial state dictionary {var_name: value}
-        
-    Returns:
-        List of states as dictionaries mapping variable names to values
-    """
+    """Simulate transition system execution."""
     assert ts.initialized
     
     if random_seed is not None:
@@ -31,21 +16,17 @@ def simulate_transition_system(ts: TransitionSystem, steps: int = 10,
         random.seed(random_seed)
 
     solver = z3.Solver()
-    
-    # Initialize state
     state = _get_initial_state(ts, solver, concrete_init)
     trace = [state.copy()]
 
-    # Simulate steps
     for _ in range(steps):
         next_state = _get_next_state(ts, solver, state)
         if next_state is None:
-            break  # No valid next state
+            break
             
         state = next_state
         trace.append(state.copy())
         
-        # Check post-condition violation
         if _check_post_violation(ts, solver, state):
             print(f"Post-condition violated at step {len(trace) - 1}")
 
@@ -54,9 +35,8 @@ def simulate_transition_system(ts: TransitionSystem, steps: int = 10,
 
 def _get_initial_state(ts: TransitionSystem, solver: z3.Solver, 
                       concrete_init: Optional[Dict[str, Any]]) -> Dict[str, Any]:
-    """Get initial state, either from concrete_init or by solving init condition."""
+    """Get initial state from concrete_init or solve init condition."""
     if concrete_init:
-        # Verify provided initial state
         state_constraints = [var == concrete_init[str(var)] 
                            for var in ts.variables if str(var) in concrete_init]
         solver.push()
@@ -66,23 +46,22 @@ def _get_initial_state(ts: TransitionSystem, solver: z3.Solver,
             raise ValueError("Provided initial state does not satisfy init condition")
         solver.pop()
         return concrete_init.copy()
-    else:
-        # Generate initial state from init condition
-        solver.push()
-        solver.add(ts.init)
-        if solver.check() != z3.sat:
-            solver.pop()
-            raise ValueError("Init condition is unsatisfiable")
-        
-        model = solver.model()
-        state = {str(var): model.eval(var, model_completion=True) for var in ts.variables}
+    
+    solver.push()
+    solver.add(ts.init)
+    if solver.check() != z3.sat:
         solver.pop()
-        return state
+        raise ValueError("Init condition is unsatisfiable")
+    
+    model = solver.model()
+    state = {str(var): model.eval(var, model_completion=True) for var in ts.variables}
+    solver.pop()
+    return state
 
 
 def _get_next_state(ts: TransitionSystem, solver: z3.Solver, 
                    current_state: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """Get next state from current state using transition relation."""
+    """Get next state using transition relation."""
     state_constraints = [var == current_state[str(var)] 
                         for var in ts.variables if str(var) in current_state]
     
@@ -101,9 +80,8 @@ def _get_next_state(ts: TransitionSystem, solver: z3.Solver,
         var_name = str(var)
         for prime_var in ts.prime_variables:
             prime_name = str(prime_var)
-            if (prime_name.endswith("!") and prime_name[:-1] == var_name) or \
-               (prime_name.endswith("'") and prime_name[:-1] == var_name) or \
-               (prime_name.endswith("_p") and prime_name[:-2] == var_name):
+            if any(prime_name.endswith(suffix) and prime_name[:-len(suffix)] == var_name 
+                   for suffix in ["!", "'", "_p"]):
                 next_state[var_name] = model.eval(prime_var, model_completion=True)
                 break
     
@@ -122,3 +100,9 @@ def _check_post_violation(ts: TransitionSystem, solver: z3.Solver,
     result = solver.check() == z3.sat
     solver.pop()
     return result 
+
+def compile_transition_system(ts: TransitionSystem) -> str:
+    """Compile transition system to C code with a loop, pre- and post-conditions."""
+    raise NotImplementedError("Not implemented")    
+ 
+  

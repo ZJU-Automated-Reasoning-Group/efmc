@@ -154,8 +154,7 @@ class TransitionSystem(object):
         
         # Add CHC constraints
         s.add(z3.ForAll(self.variables, z3.Implies(self.init, inv(self.variables))))
-        s.add(z3.ForAll(self.all_variables, z3.Implies(z3.And(inv(self.variables), self.trans), 
-                                                       inv(self.prime_variables))))
+        s.add(z3.ForAll(self.all_variables, z3.Implies(z3.And(inv(self.variables), self.trans), inv(self.prime_variables))))
         s.add(z3.ForAll(self.variables, z3.Implies(inv(self.variables), self.post)))
 
         return z3.And(s.assertions())
@@ -175,19 +174,4 @@ class TransitionSystem(object):
     
     def to_z3_cnts(self) -> List:
         return self.all_variables, self.init, self.trans, self.post
-
-    def simulate(self, steps: int = 10, random_seed: Optional[int] = None, 
-                 concrete_init: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
-        """Simulate transition system execution.
-        
-        Args:
-            steps: Number of simulation steps
-            random_seed: Optional seed for random choices
-            concrete_init: Optional initial state dictionary {var_name: value}
-            
-        Returns:
-            List of states as dictionaries mapping variable names to values
-        """
-        raise NotImplementedError("Simulation is not implemented yet")
-        #from .sts_tools import simulate_transition_system
-        #return simulate_transition_system(self, steps, #random_seed, concrete_init)
+    
