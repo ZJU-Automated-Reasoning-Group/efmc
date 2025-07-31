@@ -19,6 +19,10 @@ Welcome to EFMC's documentation
    houdini
    ranking_functions
    verification-tutorial
+   bdd
+   qi
+   qe
+   pdr
 
 
 Indices and tables

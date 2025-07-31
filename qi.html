@@ -1,0 +1,228 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Quantifier Instantiation (QI) &#8212; EFMC Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quantifier Elimination (QE)" href="qe.html" />
+    <link rel="prev" title="BDD-based Symbolic Model Checking" href="bdd.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="qe.html" title="Quantifier Elimination (QE)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="bdd.html" title="BDD-based Symbolic Model Checking"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Quantifier Instantiation (QI)</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="quantifier-instantiation-qi">
+<h1>Quantifier Instantiation (QI)<a class="headerlink" href="#quantifier-instantiation-qi" title="Permalink to this heading">¶</a></h1>
+<p>The Quantifier Instantiation (QI) module provides verification capabilities using SMT solvers with quantifier support. It supports multiple strategies including Model-Based Quantifier Instantiation (MBQI) and E-matching, and can work with various SMT solvers.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
+<p>Quantifier Instantiation is a technique for handling quantified formulas in SMT solving. The QI prover in EFMC formulates verification problems as quantified formulas and uses advanced SMT solving techniques to find inductive invariants.</p>
+</section>
+<section id="algorithm">
+<h2>Algorithm<a class="headerlink" href="#algorithm" title="Permalink to this heading">¶</a></h2>
+<p>The QI prover works by:</p>
+<ol class="arabic simple">
+<li><p><strong>Problem Formulation</strong>: Convert the verification problem into quantified formulas:
+- Initiation: ∀x. init(x) → inv(x)
+- Consecution: ∀x,x’. inv(x) ∧ trans(x,x’) → inv(x’)
+- Safety: ∀x. inv(x) → post(x)</p></li>
+<li><p><strong>Solver Configuration</strong>: Configure the SMT solver with appropriate quantifier instantiation strategies:
+- <strong>MBQI (Model-Based Quantifier Instantiation)</strong>: Uses concrete models to guide instantiation
+- <strong>E-matching</strong>: Pattern-based instantiation using triggers
+- <strong>Combined</strong>: Uses both MBQI and E-matching together</p></li>
+<li><p><strong>Solving</strong>: Use the configured solver to find a satisfying assignment for the invariant function</p></li>
+</ol>
+</section>
+<section id="supported-strategies">
+<h2>Supported Strategies<a class="headerlink" href="#supported-strategies" title="Permalink to this heading">¶</a></h2>
+<p><strong>MBQI (Model-Based Quantifier Instantiation):</strong>
+- Uses concrete models from the solver to guide quantifier instantiation</p>
+<p><strong>E-matching:</strong>
+- Pattern-based instantiation using triggers</p>
+<p><strong>Combined:</strong></p>
+</section>
+<section id="supported-solvers">
+<h2>Supported Solvers<a class="headerlink" href="#supported-solvers" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Z3 API</strong>: Direct integration with Z3’s Python API</p></li>
+<li><p><strong>SMT-LIB2</strong>: Dumps problems to SMT-LIB2 format for external solvers</p></li>
+</ul>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
+<p>The QI prover can be used as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">efmc.engines.qi</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantifierInstantiationProver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">efmc.sts</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransitionSystem</span>
+
+<span class="c1"># Create transition system</span>
+<span class="n">sts</span> <span class="o">=</span> <span class="n">TransitionSystem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="c1"># Create QI prover with MBQI strategy</span>
+<span class="n">prover</span> <span class="o">=</span> <span class="n">QuantifierInstantiationProver</span><span class="p">(</span>
+    <span class="n">sts</span><span class="p">,</span>
+    <span class="n">qi_strategy</span><span class="o">=</span><span class="s1">&#39;mbqi&#39;</span><span class="p">,</span>
+    <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;z3api&#39;</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mi">60</span>
+<span class="p">)</span>
+
+<span class="c1"># Solve the verification problem</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">prover</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">is_safe</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;System is safe&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invariant: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">invariant</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;System is unsafe or unknown&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration-options">
+<h2>Configuration Options<a class="headerlink" href="#configuration-options" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>qi_strategy</strong>: Strategy for quantifier instantiation (‘mbqi’, ‘ematching’, ‘combined’, ‘auto’)</p></li>
+<li><p><strong>solver</strong>: SMT solver to use (‘z3api’, ‘smtlib2’, ‘cvc5’)</p></li>
+<li><p><strong>timeout</strong>: Timeout in seconds for the verification process</p></li>
+<li><p><strong>verbose</strong>: Enable verbose output for debugging</p></li>
+<li><p><strong>dump_file</strong>: Optional file to dump SMT-LIB2 representation</p></li>
+</ul>
+</section>
+<section id="future-improvements">
+<h2>Future Improvements<a class="headerlink" href="#future-improvements" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Integration with more SMT solvers</p></li>
+<li><p>Advanced quantifier instantiation strategies</p></li>
+<li><p>Integration with counterexample-guided approaches</p></li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<aside class="footnote brackets" id="id1" role="note">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<ol class="upperalpha simple" start="12">
+<li><p>de Moura and N. Bjørner, “Z3: An efficient SMT solver,” in TACAS, 2008.</p></li>
+</ol>
+</aside>
+<aside class="footnote brackets" id="id2" role="note">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<ol class="upperalpha simple">
+<li><p>Reynolds and C. Tinelli, “Model-based quantifier instantiation for induction,” in CADE, 2015.</p></li>
+</ol>
+</aside>
+<aside class="footnote brackets" id="id3" role="note">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<ol class="upperalpha simple" start="12">
+<li><p>de Moura and N. Bjørner, “Efficient E-matching for SMT solvers,” in CADE, 2007.</p></li>
+</ol>
+</aside>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Quantifier Instantiation (QI)</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#algorithm">Algorithm</a></li>
+<li><a class="reference internal" href="#supported-strategies">Supported Strategies</a></li>
+<li><a class="reference internal" href="#supported-solvers">Supported Solvers</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#configuration-options">Configuration Options</a></li>
+<li><a class="reference internal" href="#future-improvements">Future Improvements</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="bdd.html"
+                          title="previous chapter">BDD-based Symbolic Model Checking</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="qe.html"
+                          title="next chapter">Quantifier Elimination (QE)</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/qi.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="qe.html" title="Quantifier Elimination (QE)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="bdd.html" title="BDD-based Symbolic Model Checking"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Quantifier Instantiation (QI)</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, rainoftime.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
+    </div>
+  </body>
+</html>

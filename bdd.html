@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>BDD-based Symbolic Model Checking &#8212; EFMC Documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quantifier Instantiation (QI)" href="qi.html" />
+    <link rel="prev" title="Playing wiht Program Verification with EFMC" href="verification-tutorial.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="qi.html" title="Quantifier Instantiation (QI)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="verification-tutorial.html" title="Playing wiht Program Verification with EFMC"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">BDD-based Symbolic Model Checking</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="bdd-based-symbolic-model-checking">
+<h1>BDD-based Symbolic Model Checking<a class="headerlink" href="#bdd-based-symbolic-model-checking" title="Permalink to this heading">¶</a></h1>
+<p>The BDD (Binary Decision Diagram) module implements symbolic model checking for Boolean programs using Z3’s Boolean reasoning capabilities. This prover performs both forward and backward reachability analysis to verify safety properties.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
+<p>BDD-based symbolic model checking is a technique that uses Binary Decision Diagrams to represent and manipulate Boolean functions efficiently. In EFMC, this is implemented using Z3’s Boolean reasoning capabilities rather than traditional BDD libraries.</p>
+</section>
+<section id="algorithm">
+<h2>Algorithm<a class="headerlink" href="#algorithm" title="Permalink to this heading">¶</a></h2>
+<p>The BDD prover implements two main approaches:</p>
+<p><strong>Forward Reachability Analysis:</strong>
+1. Start with the initial states
+2. Iteratively compute the image (successor states) using the transition relation
+3. Continue until a fixpoint is reached or the maximum number of iterations is exceeded
+4. Check if the computed reachable states satisfy the safety property</p>
+<p><strong>Backward Reachability Analysis:</strong>
+1. Start with the negation of the safety property (bad states)
+2. Iteratively compute the pre-image (predecessor states) using the transition relation
+3. Continue until a fixpoint is reached or the maximum number of iterations is exceeded
+4. Check if the initial states are contained in the computed bad states</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
+<p>The BDD prover can be used as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">efmc.engines.bdd</span><span class="w"> </span><span class="kn">import</span> <span class="n">BDDProver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">efmc.sts</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransitionSystem</span>
+
+<span class="c1"># Create transition system</span>
+<span class="n">sts</span> <span class="o">=</span> <span class="n">TransitionSystem</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="c1"># Create BDD prover with forward analysis</span>
+<span class="n">prover</span> <span class="o">=</span> <span class="n">BDDProver</span><span class="p">(</span><span class="n">sts</span><span class="p">,</span> <span class="n">use_forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># Solve the verification problem</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">prover</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">is_safe</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;System is safe&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invariant: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">invariant</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;System is unsafe or unknown&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration-options">
+<h2>Configuration Options<a class="headerlink" href="#configuration-options" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>use_forward</strong>: Boolean flag to choose between forward (True) and backward (False) analysis</p></li>
+<li><p><strong>max_iterations</strong>: Maximum number of iterations for fixpoint computation (default: 1000)</p></li>
+</ul>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Currently uses Z3’s Boolean reasoning rather than dedicated BDD libraries</p></li>
+</ul>
+</section>
+<section id="future-improvements">
+<h2>Future Improvements<a class="headerlink" href="#future-improvements" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Integration with dedicated BDD libraries (e.g., CUDD) for better performance</p></li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<aside class="footnote brackets" id="id1" role="note">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<ol class="upperalpha simple" start="5">
+<li><ol class="upperalpha simple" start="13">
+<li><p>Clarke, O. Grumberg, and D. A. Peled, “Model Checking,” MIT Press, 1999.</p></li>
+</ol>
+</li>
+</ol>
+</aside>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">BDD-based Symbolic Model Checking</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#algorithm">Algorithm</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#configuration-options">Configuration Options</a></li>
+<li><a class="reference internal" href="#limitations">Limitations</a></li>
+<li><a class="reference internal" href="#future-improvements">Future Improvements</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="verification-tutorial.html"
+                          title="previous chapter">Playing wiht Program Verification with EFMC</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="qi.html"
+                          title="next chapter">Quantifier Instantiation (QI)</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/bdd.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="qi.html" title="Quantifier Instantiation (QI)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="verification-tutorial.html" title="Playing wiht Program Verification with EFMC"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">EFMC Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">BDD-based Symbolic Model Checking</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2024, rainoftime.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.0.
+    </div>
+  </body>
+</html>
