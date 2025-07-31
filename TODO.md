@@ -6,6 +6,7 @@ Here are a few topics for further exploration:
 - Bugs and Issues
 - New Features
 - Optimizations
+- Properties
 
 ## 1. Dataset
 
@@ -51,7 +52,7 @@ We have two choices:
 
 - NRA or LRA: templates + exists-forall solving
 - QF_NRA: templates + Farkas' Lemma (for removing universal quantifiers)
-  (For evaluation, we can add UF to NRA/LRA)
+
 
 #### For Bit-Vector Semantics
 
@@ -77,3 +78,8 @@ Currently, the encoding is not very flexible. For example, we may use the templa
 ### Various Forms of Simplifications (Slicing, etc.)
 
 For example, the queries from 2018.NeurIPS_Code2Inv may have many variables (e.g., 12). However, most of them are not changed, and the final desired invariant may only need a few of them. Currently, the encoding used by the `efsmt_solver` is somewhat inefficient.
+
+## 4. Properties
+
+- K-safety
+- ...

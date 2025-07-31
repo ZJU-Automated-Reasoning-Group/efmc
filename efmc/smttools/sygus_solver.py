@@ -663,15 +663,4 @@ def synthesize_function(func: z3.FuncDeclRef, constraints: List[z3.BoolRef],
 
 if __name__ == "__main__":
     print("SyGuS Solver Module")
-    print("==================")
-    print()
-    print("This module provides functionality for syntax-guided synthesis using CVC5.")
-    print("It supports synthesis for:")
-    print("  - Integer and Boolean functions")
-    print("  - Bit-vector functions")
-    print("  - String functions")
-    print()
     print("For examples and tests, see test_sygus.py")
-    print()
-    print("Note: To use CVC5 for actual synthesis, you need to have CVC5 installed.")
-    print("The synthesis will fail if CVC5 is not available or if synthesis fails.")
