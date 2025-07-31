@@ -67,8 +67,13 @@ class InductiveGeneralizer:
         """Strengthen invariant by excluding counterexample state"""
         state_constraints = []
         for v in self.sts.variables:
-            if v in cti:
-                state_constraints.append(v == cti[v])
+            try:
+                val = cti.eval(v)
+                if val is not None:
+                    state_constraints.append(v == val)
+            except:
+                # Skip variables that don't have values in the model
+                pass
 
         state = z3.And(*state_constraints) if state_constraints else z3.BoolVal(True)
         return z3.simplify(z3.And(inv, z3.Not(state)))
@@ -77,8 +82,13 @@ class InductiveGeneralizer:
         """Weaken invariant to include counterexample state"""
         state_constraints = []
         for v in self.sts.variables:
-            if v in cti:
-                state_constraints.append(v == cti[v])
+            try:
+                val = cti.eval(v)
+                if val is not None:
+                    state_constraints.append(v == val)
+            except:
+                # Skip variables that don't have values in the model
+                pass
 
         state = z3.And(*state_constraints) if state_constraints else z3.BoolVal(True)
         return z3.simplify(z3.Or(inv, state))

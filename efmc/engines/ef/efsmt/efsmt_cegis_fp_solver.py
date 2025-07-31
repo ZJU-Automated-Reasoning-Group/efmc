@@ -59,11 +59,16 @@ def _synthesize_candidate(x: List[z3.ExprRef], y: List[z3.ExprRef], phi: z3.Expr
     solver.add(synthesis_formula)
     
     result = solver.check()
-    if result == z3.sat:
-        model = solver.model()
-        for var in x:
-            if var in model:
-                candidate[var] = model[var]
+            if result == z3.sat:
+            model = solver.model()
+            for var in x:
+                try:
+                    val = model.eval(var)
+                    if val is not None:
+                        candidate[var] = val
+                except:
+                    # Skip variables that don't have values in the model
+                    pass
         return "sat"
     return "unsat" if result == z3.unsat else "unknown"
 

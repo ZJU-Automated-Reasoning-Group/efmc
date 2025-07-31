@@ -170,8 +170,13 @@ class KInductionProverInc:
                         logger.info("State %d:", i)
                         for var in self.sts.variables:
                             var_at_time = self.at_time(var, i)
-                            if var_at_time in model:
-                                logger.info("  %s = %s", var, model[var_at_time])
+                            try:
+                                val = model.eval(var_at_time)
+                                if val is not None:
+                                    logger.info("  %s = %s", var, val)
+                            except:
+                                # Skip variables that don't have values in the model
+                                pass
                 
                 logger.info("unsafe")
                 return VerificationResult(False, None, model, is_unsafe=True)
