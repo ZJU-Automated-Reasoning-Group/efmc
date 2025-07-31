@@ -47,6 +47,10 @@ math_exec = config.mathsat_exec
 caqe_exec = config.caqe_exec
 q3b_exec = config.q3b_exec
 
+g_bin_solver_timeout = config.bin_solver_timeout
+g_verifier_args = config.verifier_args
+g_efsmt_args = config.efsmt_args
+
 if __name__ == "__main__":
     print(config.project_root_dir)
     for name in EFMCConfig._solvers:
