@@ -1,7 +1,7 @@
 """
 This module contains the code for the CEGIS-based algorithm for EFSMT.
 """
-from typing import List
+from typing import List, Optional, Set
 import logging
 import z3
 from efmc.smttools.pysmt_solver import PySMTSolver

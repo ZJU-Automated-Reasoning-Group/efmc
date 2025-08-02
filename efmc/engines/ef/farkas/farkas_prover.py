@@ -46,9 +46,9 @@ class FarkasProver:
     def _setup_solver(self) -> z3.Solver:
         """Set up Z3 solver with appropriate logic and timeout."""
         if self.sts.has_real:
-            solver = z3.SolverFor("QF_LRA")
+            solver = z3.SolverFor("QF_NRA")
         elif self.sts.has_int:
-            solver = z3.SolverFor("QF_LIA")
+            solver = z3.SolverFor("QF_NIA")
         else:
             solver = z3.Solver()
         

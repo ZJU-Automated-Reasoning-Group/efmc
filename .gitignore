@@ -1,34 +1,27 @@
+ultimate
 com.sh
 .coverage
 .vscode
-paper
 *.time 
 *.out
 *.res
 *egg-info*
-rebase.sh
 docs/build
 tmp_files/*
-!data/Regression/chc_bv
 bin_solvers/*
 !bin_solvers/download.py
 !bin_solvers/download.sh
-scripts/tmptest.py
-scripts/tmpbench.py
 tmp.py
 Result/*
 .DS_Store
-.pytest_cache
-efsmt/.pytest_cache
+*pytest_cache*
 *.qdimacs
 *.dot
 venv
-*__pycache__/
 *.qdimacs
 
 # for binary solvers (download pre-built binaries, or download the code and build)
 deps/
-
 doc/
 
 # Directories, log, ..

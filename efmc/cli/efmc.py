@@ -17,7 +17,7 @@ import psutil
 
 from efmc.frontends import parse_sygus, parse_chc
 from efmc.sts import TransitionSystem
-from efmc.efmc_config import g_verifier_args, update_config_from_globals
+from efmc.efmc_config import g_verifier_args
 
 from efmc.engines.ef import EFProver
 from efmc.engines.kinduction import KInductionProver
@@ -410,8 +410,6 @@ def main():
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
 
-    update_config_from_globals()
-
     runner = EFMCRunner()
 
     if g_verifier_args.lang == "chc":
@@ -422,11 +420,11 @@ def main():
         file_extension = os.path.splitext(g_verifier_args.file)[1].lower()
         if file_extension == '.smt2':
             runner.verify_chc(g_verifier_args.file)
-        elif file_extension == '.sy':
+        elif file_extension == '.sy' or file_extension == '.sl':
             runner.verify_sygus(g_verifier_args.file)
         else:
             logging.error(f"Unsupported file extension: {file_extension}")
-            logging.info("Supported extensions: .smt2 (CHC), .sy (SyGuS)")
+            logging.info("Supported extensions: .smt2 (CHC), .sy/sl (SyGuS)")
             sys.exit(1)
 
 
