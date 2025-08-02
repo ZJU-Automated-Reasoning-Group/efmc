@@ -83,3 +83,9 @@ For example, the queries from 2018.NeurIPS_Code2Inv may have many variables (e.g
 
 - K-safety
 - ...
+
+## Tutorials
+
+Refer to the following books:
+- https://github.com/uds-se/debuggingbook
+- https://github.com/uds-se/fuzzingbook

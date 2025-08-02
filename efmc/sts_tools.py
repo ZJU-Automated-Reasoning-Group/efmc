@@ -2,7 +2,7 @@
 
 from typing import List, Dict, Any, Optional
 import z3
-from .sts import TransitionSystem
+from efmc.sts import TransitionSystem
 
 
 def simulate_transition_system(ts: TransitionSystem, steps: int = 10, 
@@ -102,7 +102,4 @@ def _check_post_violation(ts: TransitionSystem, solver: z3.Solver,
     return result 
 
 def compile_transition_system(ts: TransitionSystem) -> str:
-    """Compile transition system to C code with a loop, pre- and post-conditions."""
-    raise NotImplementedError("Not implemented")    
- 
-  
+    raise NotImplementedError("Not implemented")

@@ -119,15 +119,7 @@ class InductiveGeneralizer:
 
     def generalize_by_craig_interpolation(self, A: z3.ExprRef, B: z3.ExprRef) -> Optional[z3.ExprRef]:
         """Use Craig interpolation to find separating formula"""
-        try:
-            s = z3.Solver()
-            s.add(A, B)
-            if s.check() == z3.sat:
-                return None
-            return z3.Interpolant(A, B)
-        except Exception as e:
-            self.logger.warning(f"Interpolation failed: {e}")
-            return None
+        raise NotImplementedError
 
     def learn_invariant(self, max_iterations: int = 100) -> Optional[z3.ExprRef]:
         """Learn inductive invariant using counterexample-guided refinement"""

@@ -74,11 +74,6 @@ class TestInductiveGeneralizer(TestCase):
         self.assertIsNotNone(generalized)
         self.assertTrue(z3.is_expr(generalized))
         
-        # Test Craig interpolation
-        A, B = x > 0, x < 10
-        interpolant = self.generalizer.generalize_by_craig_interpolation(A, B)
-        self.assertTrue(interpolant is None or z3.is_expr(interpolant))
-
     def test_learn_invariant(self):
         """Test invariant learning."""
         inv = self.generalizer.learn_invariant(max_iterations=10)
