@@ -1,6 +1,7 @@
 """Bit-vector Zone Domain
 """
 import itertools
+from typing import List, Optional
 
 from efmc.engines.ef.templates.abstract_template import *
 from efmc.utils.bv_utils import Signedness
@@ -29,10 +30,10 @@ class BitVecZoneTemplate(Template):
         assert (self.arity >= 2)
         assert (len(self.sts.prime_variables) >= 2)
 
-        self.zones = []
+        self.zones: List[z3.ExprRef] = []
 
-        self.wrap_around_cnts_vars = []  # for preventing under/under flow in the tempalte exprs
-        self.wrap_around_cnts_prime_vars = []
+        self.wrap_around_cnts_vars: List[z3.ExprRef] = []  # for preventing under/under flow in the tempalte exprs
+        self.wrap_around_cnts_prime_vars: List[z3.ExprRef] = []
         signed = True if self.signedness == Signedness.SIGNED else False
 
         for x, y in list(itertools.combinations(self.sts.variables, 2)):
@@ -42,7 +43,7 @@ class BitVecZoneTemplate(Template):
             if self.obj_no_underflow:
                 self.wrap_around_cnts_vars.append(z3.BVSubNoUnderflow(x, y, signed=signed))
 
-        self.prime_zones = []
+        self.prime_zones: List[z3.ExprRef] = []
         for px, py in list(itertools.combinations(self.sts.prime_variables, 2)):
             self.prime_zones.append(px - py)
 
@@ -51,17 +52,17 @@ class BitVecZoneTemplate(Template):
             if self.obj_no_underflow:
                 self.wrap_around_cnts_prime_vars.append(z3.BVSubNoUnderflow(px, py, signed=signed))
 
-        self.template_vars = []  # vector of vector
+        self.template_vars: List[List[z3.ExprRef]] = []  # vector of vector
         self.template_index = 0  # number of templates
 
         self.add_template_vars()
 
         # pre_compute to reduce redundant calling
-        self.template_cnt_init_and_post = None
-        self.template_cnt_trans = None
+        self.template_cnt_init_and_post: Optional[z3.ExprRef] = None
+        self.template_cnt_trans: Optional[z3.ExprRef] = None
         self.add_template_cnts()
 
-    def add_template_vars(self):
+    def add_template_vars(self) -> None:
         # follow interval, but use self.zones
 
         for i in range(len(self.zones)):
@@ -74,13 +75,13 @@ class BitVecZoneTemplate(Template):
             self.template_vars.append(tvars)
         # raise NotImplementedError
 
-    def get_additional_cnts_for_template_vars(self):
+    def get_additional_cnts_for_template_vars(self) -> z3.ExprRef:
         return z3.BoolVal(True)
 
-    def add_template_cnts(self):
+    def add_template_cnts(self) -> None:
         # TODO: test correctness
-        cnts = []
-        cnts_prime = []
+        cnts: List[z3.ExprRef] = []
+        cnts_prime: List[z3.ExprRef] = []
 
         # Add constraints for x - y, x - z, ...
         for i in range(len(self.zones)):
@@ -112,12 +113,12 @@ class BitVecZoneTemplate(Template):
 
         # raise NotImplementedError
 
-    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
+    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool = False) -> z3.ExprRef:
         """
         Build the inductive invariant corresponding to a model, which is obtained by
          solving the exists-forall formula encoding the verification condition
         """
-        cnts = []
+        cnts: List[z3.ExprRef] = []
         for i in range(len(self.zones)):
             if use_prime_variables:
                 term = self.prime_zones[i]
@@ -153,11 +154,11 @@ class DisjunctiveBitVecZoneTemplate(Template):
         self.sts = sts
         self.arity = len(self.sts.variables)
 
-        self.wrap_around_cnts_vars = []  # for preventing under/under flow in the tempalte exprs
-        self.wrap_around_cnts_prime_vars = []
+        self.wrap_around_cnts_vars: List[z3.ExprRef] = []  # for preventing under/under flow in the tempalte exprs
+        self.wrap_around_cnts_prime_vars: List[z3.ExprRef] = []
         signed = True if self.signedness == Signedness.SIGNED else False
 
-        self.zones = []  # x - y, x - z, y - z, ...
+        self.zones: List[z3.ExprRef] = []  # x - y, x - z, y - z, ...
         for x, y in list(itertools.combinations(self.sts.variables, 2)):
             self.zones.append(x - y)
             if self.obj_no_overflow:
@@ -165,7 +166,7 @@ class DisjunctiveBitVecZoneTemplate(Template):
             if self.obj_no_underflow:
                 self.wrap_around_cnts_vars.append(z3.BVSubNoUnderflow(x, y, signed=signed))
 
-        self.prime_zones = []
+        self.prime_zones: List[z3.ExprRef] = []
         for px, py in list(itertools.combinations(self.sts.prime_variables, 2)):
             self.prime_zones.append(px - py)
             if self.obj_no_overflow:
@@ -173,7 +174,7 @@ class DisjunctiveBitVecZoneTemplate(Template):
             if self.obj_no_underflow:
                 self.wrap_around_cnts_prime_vars.append(z3.BVSubNoUnderflow(px, py, signed=signed))
 
-        self.template_vars = []  # vector of vector
+        self.template_vars: List[List[List[z3.ExprRef]]] = []  # vector of vector
         self.template_index = 0  # number of templates
 
         self.num_disjunctions = kwargs.get("num_disjunctions", 2)
@@ -181,16 +182,16 @@ class DisjunctiveBitVecZoneTemplate(Template):
         self.add_template_vars()
 
         # pre-compute to reduce redundant calling
-        self.template_cnt_init_and_post = None
-        self.template_cnt_trans = None
+        self.template_cnt_init_and_post: Optional[z3.ExprRef] = None
+        self.template_cnt_trans: Optional[z3.ExprRef] = None
         self.add_template_cnts()
 
-    def add_template_vars(self):
+    def add_template_vars(self) -> None:
         """
         Add several groups of template vars
         """
         for i in range(self.num_disjunctions):
-            vars_for_dis = []
+            vars_for_dis: List[List[z3.ExprRef]] = []
             for j in range(len(self.zones)):
                 term = self.zones[j]
                 term_vars = get_variables(term)
@@ -203,24 +204,24 @@ class DisjunctiveBitVecZoneTemplate(Template):
             self.template_vars.append(vars_for_dis)
         # print(self.template_vars)
 
-    def get_additional_cnts_for_template_vars(self):
+    def get_additional_cnts_for_template_vars(self) -> z3.ExprRef:
         """
         This implementation does not need additional ones?
         """
         raise z3.BoolVal(True)
 
-    def add_template_cnts(self):
+    def add_template_cnts(self) -> None:
         """
         Add cnts for init and post assertions (a trick)
         """
-        cnt_init_and_post_dis = []
-        cnt_trans_dis = []
+        cnt_init_and_post_dis: List[z3.ExprRef] = []
+        cnt_trans_dis: List[z3.ExprRef] = []
 
         for i in range(self.num_disjunctions):
             # Invariant: len(self.template_vars) = self.num_disjunctions
             vars_for_ith_disjunct = self.template_vars[i]
-            cnt_init_post = []  # For sts.variables
-            cnt_trans = []  # For sts.prime_variables
+            cnt_init_post: List[z3.ExprRef] = []  # For sts.variables
+            cnt_trans: List[z3.ExprRef] = []  # For sts.prime_variables
             for j in range(len(self.zones)):
                 term = self.zones[j]  # e.g., x - y
                 term_prime = self.prime_zones[j]  # e.g., x' - y'
@@ -256,15 +257,15 @@ class DisjunctiveBitVecZoneTemplate(Template):
         # print(self.template_cnt_init_and_post)
         # print(self.template_cnt_trans)
 
-    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
+    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool = False) -> z3.ExprRef:
         """
         Build an invariant from a model (fixing the values of the template vars)
         """
-        cnts_dis = []
+        cnts_dis: List[z3.ExprRef] = []
         for i in range(self.num_disjunctions):
             # Invariant: len(self.template_vars) = self.num_disjunctions
             vars_for_ith_disjunct = self.template_vars[i]
-            cnts = []  # constraints for one disjunct
+            cnts: List[z3.ExprRef] = []  # constraints for one disjunct
             for j in range(len(self.zones)):
                 if use_prime_variables:
                     term = self.prime_zones[j]

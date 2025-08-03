@@ -10,7 +10,7 @@ TODO:
 import logging
 import time
 from functools import lru_cache
-from typing import Optional
+from typing import Optional, List, Tuple, Dict, Any
 
 import z3
 
@@ -25,27 +25,27 @@ logger = logging.getLogger(__name__)
 class KInductionProver:
     """Non-incremental k-induction prover."""
 
-    def __init__(self, system: TransitionSystem, show_model=False):
+    def __init__(self, system: TransitionSystem, show_model: bool = False):
         self.sts = system
         self.show_model = show_model
         self.use_aux_invariant = False
-        self.aux_invariant = None
+        self.aux_invariant: Optional[z3.ExprRef] = None
 
         # Variable type handling
-        self.var_types = {
+        self.var_types: Dict[str, bool] = {
             'bv': system.has_bv,
             'int': system.has_int,
             'real': system.has_real,
             'bool': system.has_bool
         }
-        self.bv_size = system.variables[0].size() if self.var_types['bv'] else None
+        self.bv_size: Optional[int] = system.variables[0].size() if self.var_types['bv'] else None
 
         # Initialize cached structures
         self.init_0 = z3.substitute(self.sts.init, self.get_subs(0))
-        self.unrolled_system = []
-        self.k_hypothesis = []
+        self.unrolled_system: List[z3.ExprRef] = []
+        self.k_hypothesis: List[z3.ExprRef] = []
 
-    def _create_var(self, name: str):
+    def _create_var(self, name: str) -> z3.ExprRef:
         """Create variable based on system type"""
         if self.var_types['bv']:
             return z3.BitVec(name, self.bv_size)
@@ -58,14 +58,14 @@ class KInductionProver:
         else:
             raise NotImplementedError("Unsupported variable type")
 
-    def at_time(self, var, t: int):
+    def at_time(self, var: z3.ExprRef, t: int) -> z3.ExprRef:
         """Create SMT variable representing var at time t"""
         return self._create_var(f"{str(var)}@{t}")
 
     @lru_cache(maxsize=None)
-    def get_subs(self, i):
+    def get_subs(self, i: int) -> List[Tuple[z3.ExprRef, z3.ExprRef]]:
         """Build substitutions from x to x@i and x' to x@(i+1)"""
-        subs = []
+        subs: List[Tuple[z3.ExprRef, z3.ExprRef]] = []
         for j, var in enumerate(self.sts.variables):
             subs.extend([
                 (var, self.at_time(var, i)),
@@ -73,16 +73,16 @@ class KInductionProver:
             ])
         return subs
 
-    def get_unrolling(self, k):
+    def get_unrolling(self, k: int) -> z3.ExprRef:
         """Get transition unrolling T(0,1) & T(1,2) & ... & T(k-1,k)"""
         while len(self.unrolled_system) <= k:
             i = len(self.unrolled_system)
             self.unrolled_system.append(z3.substitute(self.sts.trans, self.get_subs(i)))
         return z3.And(*self.unrolled_system[:k])
 
-    def get_simple_path(self, k):
+    def get_simple_path(self, k: int) -> z3.ExprRef:
         """Generate simple path constraint - each state must be different"""
-        constraints = []
+        constraints: List[z3.ExprRef] = []
         for i in range(k):
             for j in range(i + 1, k + 1):
                 state_diff = [self.at_time(var, i) != self.at_time(var, j) 
@@ -90,14 +90,14 @@ class KInductionProver:
                 constraints.append(z3.Or(*state_diff))
         return z3.And(*constraints) if constraints else z3.BoolVal(True)
 
-    def get_k_hypothesis(self, k: int):
+    def get_k_hypothesis(self, k: int) -> z3.ExprRef:
         """Get k-induction hypothesis: P(0) & P(1) & ... & P(k)"""
         while len(self.k_hypothesis) <= k:
             i = len(self.k_hypothesis)
             self.k_hypothesis.append(z3.substitute(self.sts.post, self.get_subs(i)))
         return z3.And(*self.k_hypothesis[:k + 1])
 
-    def get_aux_invariants(self, k: int):
+    def get_aux_invariants(self, k: int) -> z3.ExprRef:
         """Get auxiliary invariants for strengthening"""
         if not self.use_aux_invariant or self.aux_invariant is None:
             return z3.BoolVal(True)
@@ -106,7 +106,7 @@ class KInductionProver:
                    for i in range(k + 1)]
         return z3.And(*aux_invs)
 
-    def get_bmc_formula(self, k: int):
+    def get_bmc_formula(self, k: int) -> z3.ExprRef:
         """Build BMC formula for step k"""
         return z3.And(
             self.init_0, 
@@ -114,7 +114,7 @@ class KInductionProver:
             z3.Not(z3.substitute(self.sts.post, self.get_subs(k)))
         )
 
-    def get_k_induction_formula(self, k: int):
+    def get_k_induction_formula(self, k: int) -> z3.ExprRef:
         """Build complete k-induction formula"""
         return z3.And(
             self.get_k_hypothesis(k),
@@ -124,7 +124,7 @@ class KInductionProver:
             self.get_aux_invariants(k + 1)
         )
 
-    def _setup_aux_invariant(self):
+    def _setup_aux_invariant(self) -> None:
         """Setup auxiliary invariant if needed"""
         if not self.use_aux_invariant:
             return
@@ -147,41 +147,38 @@ class KInductionProver:
         
         logger.info("Checking property %s...", str(self.sts.post))
         
-        for b in range(k):
-            # Check timeout
-            if timeout and time.time() - start_time > timeout:
-                logger.info("Timeout reached after %d seconds", timeout)
-                return VerificationResult(False, None, None, is_unknown=True, is_timeout=True)
-
-            # BMC check
-            logger.debug("   [BMC]    Checking bound %d...", b + 1)
+        # Try BMC first
+        for step in range(1, k + 1):
+            logger.info(f"BMC step {step}")
+            bmc_formula = self.get_bmc_formula(step)
+            
             s = z3.Solver()
-            s.add(self.get_bmc_formula(b))
+            if timeout:
+                s.set("timeout", timeout * 1000)
+            s.add(bmc_formula)
             
             if s.check() == z3.sat:
-                logger.info("--> Bug found at step %d", b + 1)
-                model = s.model()
-                
+                logger.info(f"Property violation found at BMC step {step}")
                 if self.show_model:
-                    logger.info("Model (counterexample):")
-                    for i in range(b + 2):
-                        logger.info("State %d:", i)
-                        for var in self.sts.variables:
-                            var_at_time = self.at_time(var, i)
-                            if var_at_time in model:
-                                logger.info("  %s = %s", var, model[var_at_time])
-                
-                logger.info("unsafe")
-                return VerificationResult(False, None, model, is_unsafe=True)
-
-            # K-induction check
-            logger.debug("   [K-IND]  Checking bound %d...", b + 1)
-            f_kind = self.get_k_induction_formula(b)
+                    model = s.model()
+                    logger.info(f"Counterexample: {model}")
+                return VerificationResult(False, None, is_unsafe=True)
+        
+        # Try k-induction
+        for step in range(1, k + 1):
+            logger.info(f"K-induction step {step}")
+            ki_formula = self.get_k_induction_formula(step)
             
-            if is_unsat(f_kind):
-                logger.info("--> The system is proved safe at %d", b + 1)
-                logger.info("safe")
-                return VerificationResult(True, self.sts.post)
-
-        logger.info("unknown")
-        return VerificationResult(False, None, None, is_unknown=True)
+            s = z3.Solver()
+            if timeout:
+                s.set("timeout", timeout * 1000)
+            s.add(ki_formula)
+            
+            if s.check() == z3.unsat:
+                logger.info(f"Property proven safe with k-induction step {step}")
+                # Extract invariant from the proof
+                invariant = self.get_k_hypothesis(step)
+                return VerificationResult(True, invariant)
+        
+        logger.info("Could not prove or disprove the property")
+        return VerificationResult(False, None, is_unknown=True)

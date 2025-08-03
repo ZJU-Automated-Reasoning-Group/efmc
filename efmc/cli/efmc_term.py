@@ -2,7 +2,11 @@
 """
 EFMC-Term: CLI for termination/non-termination proving (bit-vector programs).
 """
-import argparse, logging, sys
+import argparse
+import logging
+import sys
+from typing import Dict, Any
+
 from efmc.frontends import parse_chc, parse_sygus
 from efmc.sts import TransitionSystem
 from efmc.engines.ef.termination import (
@@ -11,7 +15,7 @@ from efmc.engines.ef.termination import (
     analyze_termination
 )
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="EFMC-Term: Termination/Non-Termination Prover for Bit-Vector Programs")
     p.add_argument('--file', type=str, required=True, help='Input file to verify')
     p.add_argument('--lang', type=str, choices=['chc', 'sygus', 'auto'], default='auto', help='Input language format')
@@ -30,7 +34,7 @@ def parse_arguments():
     p.add_argument('--print-vc', action='store_true')
     return p.parse_args()
 
-def print_result(result):
+def print_result(result: Dict[str, Any]) -> None:
     if result.get('termination_proven'):
         print("Result: TERMINATION PROVEN")
         if result.get('ranking_function') is not None:
@@ -46,7 +50,7 @@ def print_result(result):
         if result.get('errors'):
             print("Errors:", *result['errors'], sep='\n  - ')
 
-def build_transition_system(args):
+def build_transition_system(args: argparse.Namespace) -> TransitionSystem:
     if args.lang == 'chc' or (args.lang == 'auto' and args.file.endswith('.smt2')):
         all_vars, init, trans, post = parse_chc(args.file, to_real_type=False)
     elif args.lang == 'sygus' or (args.lang == 'auto' and args.file.endswith('.sl')):
@@ -58,7 +62,7 @@ def build_transition_system(args):
         sts.set_signedness(args.signedness)
     return sts
 
-def run_mode(args, sts, prover_kwargs):
+def run_mode(args: argparse.Namespace, sts: TransitionSystem, prover_kwargs: Dict[str, Any]) -> None:
     if args.mode == 'termination':
         ok, ranking_func, template_used = prove_termination_with_ranking_functions(
             sts, template_names=args.ranking_template, timeout=args.timeout, **prover_kwargs)
@@ -84,7 +88,7 @@ def run_mode(args, sts, prover_kwargs):
                 result = {'termination_proven': False, 'non_termination_proven': False, 'errors': ["Could not prove termination or non-termination"]}
     print_result(result)
 
-def main():
+def main() -> None:
     args = parse_arguments()
     logging.basicConfig(level=getattr(logging, args.log_level), format='%(asctime)s - %(levelname)s - %(message)s')
     sts = build_transition_system(args)

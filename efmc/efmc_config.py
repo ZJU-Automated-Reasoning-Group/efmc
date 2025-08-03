@@ -1,9 +1,10 @@
 from pathlib import Path
+from typing import Dict, Optional
 
 
 class EFMCConfig:
-    _instance = None
-    _solvers = {
+    _instance: Optional['EFMCConfig'] = None
+    _solvers: Dict[str, str] = {
         "z3": "z3",
         "cvc5": "cvc5",
         "btor": "boolector",
@@ -14,21 +15,21 @@ class EFMCConfig:
         "q3b": "q3b"
     }
 
-    def __new__(cls):
+    def __new__(cls) -> 'EFMCConfig':
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialize()
         return cls._instance
 
-    def _initialize(self):
-        self.project_root_dir = str(Path(__file__).parent.parent)
+    def _initialize(self) -> None:
+        self.project_root_dir: str = str(Path(__file__).parent.parent)
         bin_dir = Path(self.project_root_dir) / "bin_solvers" / "bin"
         for name, fname in self._solvers.items():
             path = bin_dir / fname
             setattr(self, f"{name}_exec", str(path) if path.exists() else None)
-        self.bin_solver_timeout = 30
-        self.verifier_args = None
-        self.efsmt_args = None
+        self.bin_solver_timeout: int = 30
+        self.verifier_args: Optional[str] = None
+        self.efsmt_args: Optional[str] = None
 
     def check_available(self, solver_name: str) -> bool:
         exec_path = getattr(self, f"{solver_name}_exec", None)

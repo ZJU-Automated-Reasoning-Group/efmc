@@ -7,6 +7,7 @@ from efmc.engines.ef.templates.abstract_template import *
 from efmc.sts import TransitionSystem
 from efmc.utils.bv_utils import Signedness
 from efmc.utils import big_and, big_or
+from typing import List, Optional
 
 
 class BitVecAffineTemplate(Template):
@@ -36,7 +37,7 @@ class BitVecAffineTemplate(Template):
         self.obj_no_overflow = kwargs.get("no_overflow", False)
         self.obj_no_underflow = kwargs.get("no_underflow", False)
 
-        self.template_vars = []  # vector of vector
+        self.template_vars: List[List[z3.ExprRef]] = []  # vector of vector
 
         self.template_index = 0
 
@@ -52,11 +53,11 @@ class BitVecAffineTemplate(Template):
         self.add_template_vars()  # init self.template_vars
 
         # pre-compute to reduce redundant calling
-        self.template_cnt_init_and_post = None
-        self.template_cnt_trans = None
+        self.template_cnt_init_and_post: Optional[z3.ExprRef] = None
+        self.template_cnt_trans: Optional[z3.ExprRef] = None
         self.add_template_cnts()  # init the above constraints
 
-    def add_template_vars(self):
+    def add_template_vars(self) -> None:
         """
         Initialize self.template_vars
 
@@ -78,12 +79,12 @@ class BitVecAffineTemplate(Template):
             self.template_vars.append(tvars)
         # print(self.template_vars)
 
-    def add_template_cnts(self):
+    def add_template_cnts(self) -> None:
         """
         For initializing self.template_cnt_init_and_post and self.template_cnt_trans
         """
-        cnts_init_post = []  # For sts.variables
-        cnts_trans = []  # For sts.prime_variables
+        cnts_init_post: List[z3.ExprRef] = []  # For sts.variables
+        cnts_trans: List[z3.ExprRef] = []  # For sts.prime_variables
         for i in range(self.template_index):  # num. of templates
             term_init_post = self.template_vars[i][0]
             term_trans = self.template_vars[i][0]
@@ -105,13 +106,13 @@ class BitVecAffineTemplate(Template):
         self.template_cnt_init_and_post = big_and(cnts_init_post)
         self.template_cnt_trans = big_and(cnts_trans)
 
-    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False) -> z3.ExprRef:
+    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool = False) -> z3.ExprRef:
         """
         Build an invariant from a model, i.e., fixing the values of the template vars
         :param model the model used for building expr
         :param use_prime_variables deciding using x, y or x!, y!
         """
-        cnts = []
+        cnts: List[z3.ExprRef] = []
         for i in range(self.template_index):  # num. of templates
             term = model[self.template_vars[i][0]]
             for j in range(1, self.arity + 1):
@@ -157,7 +158,7 @@ class DisjunctiveBitVecAffineTemplate(Template):
         self.sts = sts
         self.arity = len(self.sts.variables)
 
-        self.template_vars = []  # vector of vector
+        self.template_vars: List[List[z3.ExprRef]] = []  # vector of vector
         self.template_index = 0
 
         #  number of linear inequalities (NOTE: interval, zone, and octagon domains do not need this)
@@ -172,11 +173,11 @@ class DisjunctiveBitVecAffineTemplate(Template):
         self.add_template_vars()  # init self.template_vars
 
         # pre-compute to reduce redundant calling
-        self.template_cnt_init_and_post = None
-        self.template_cnt_trans = None
+        self.template_cnt_init_and_post: Optional[z3.ExprRef] = None
+        self.template_cnt_trans: Optional[z3.ExprRef] = None
         self.add_template_cnts()  # init the above constraints
 
-    def add_template_vars(self):
+    def add_template_vars(self) -> None:
         """
         Initialize self.template_vars
         E.g., assume that self.sts.variables are [x, y], and self.num_disjunctions = 2.
@@ -198,11 +199,11 @@ class DisjunctiveBitVecAffineTemplate(Template):
             self.template_vars.append(vars_for_dis)
         # print(self.template_vars)
 
-    def add_template_cnts(self):
+    def add_template_cnts(self) -> None:
         """ For initializing self.template_cnt_init_and_post and self.template_cnt_trans
         """
-        cnt_init_and_post_dis = []
-        cnt_trans_dis = []
+        cnt_init_and_post_dis: List[z3.ExprRef] = []
+        cnt_trans_dis: List[z3.ExprRef] = []
 
         for i in range(self.num_disjunctions):  # num. of disjunctions
             # d1_0 + x*d1_1 + y*p1_2  == 0 OR
@@ -226,13 +227,13 @@ class DisjunctiveBitVecAffineTemplate(Template):
         self.template_cnt_init_and_post = big_or(cnt_init_and_post_dis)
         self.template_cnt_trans = big_or(cnt_trans_dis)
 
-    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables=False):
+    def build_invariant_expr(self, model: z3.ModelRef, use_prime_variables: bool = False) -> z3.ExprRef:
         """
         Build an invariant from a model, i.e., fixing the values of the template vars
         :param model the model used for building expr
         :param use_prime_variables deciding using x, y or x!, y!
         """
-        cnts = []
+        cnts: List[z3.ExprRef] = []
         for i in range(self.num_disjunctions):  # num. of disjunctions
             term = model[self.template_vars[i][0]]
             for j in range(1, self.arity + 1):

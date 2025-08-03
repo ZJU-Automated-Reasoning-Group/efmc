@@ -2,10 +2,11 @@
 Utilities for Z3 uninterpreted functions (UF).
 """
 from __future__ import print_function
-from typing import Callable, Optional
+from typing import Callable, Optional, Dict, Any
 import z3
 
-def visitor(exp, seen):
+
+def visitor(exp: z3.ExprRef, seen: Dict[z3.ExprRef, bool]):
     """Yield all subexpressions in a Z3 expression."""
     if exp in seen: return
     seen[exp] = True

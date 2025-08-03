@@ -1,27 +1,27 @@
 """
-Houdini algorithm for invariant inference
+Houdini-based invariant inference engine.
 
-Implementation based on Flanagan and Leino: "Houdini, an Annotation Assistant for ESC/Java".
-Modified from https://github.com/sosy-lab/java-smt/blob/d05b4c8eeb3424be20cc1d9553eaffae81898857/src/org/sosy_lab/java_smt/example/HoudiniApp.java
+Houdini is a counterexample-guided inductive generalization algorithm
+that finds the maximal inductive subset of a given set of candidate lemmas.
 """
+
 import logging
-from typing import List, Optional
-import z3
 import time
+from typing import List, Dict, Optional
+
+import z3
 
 from efmc.sts import TransitionSystem
+from efmc.utils.verification_utils import VerificationResult
 from efmc.utils.z3_expr_utils import get_variables
-from efmc.utils.verification_utils import VerificationResult, check_invariant
-
-logger = logging.getLogger(__name__)
 
 
-def get_selector_var(idx: int):
+def get_selector_var(idx: int) -> z3.ExprRef:
     """Create a temp symbol using the given index"""
     return z3.Bool("SEL_{}".format(idx))
 
 
-def prime(exp: z3.ExprRef):
+def prime(exp: z3.ExprRef) -> z3.ExprRef:
     """Replace all symbols in the formula with their primed version"""
     variables = get_variables(exp)
     substitutions = []
@@ -43,11 +43,11 @@ class HoudiniProver:
         self.sts = system
         self.logger = logging.getLogger(__name__)
 
-    def houdini(self, lemmas: List[z3.ExprRef], timeout=None):
+    def houdini(self, lemmas: List[z3.ExprRef], timeout: Optional[int] = None) -> Optional[Dict[int, z3.ExprRef]]:
         """Find the maximal inductive subset for the given lemmas"""
-        annotated = []
-        annotated_primes = []
-        indexed = {}
+        annotated: List[z3.ExprRef] = []
+        annotated_primes: List[z3.ExprRef] = []
+        indexed: Dict[int, z3.ExprRef] = {}
         
         start_time = time.time()
         self.logger.info(f"Starting Houdini with {len(lemmas)} lemmas" + 
@@ -117,9 +117,9 @@ class HoudiniProver:
         self.logger.info("Could not find inductive invariant")
         return VerificationResult(False, None, is_unknown=True)
 
-    def generate_candidate_lemmas(self):
+    def generate_candidate_lemmas(self) -> List[z3.ExprRef]:
         """Generate candidate lemmas for invariant inference"""
-        lemmas = [self.sts.post]
+        lemmas: List[z3.ExprRef] = [self.sts.post]
 
         # Add existing invariants if available
         if hasattr(self.sts, 'invariants') and self.sts.invariants:
@@ -163,7 +163,30 @@ class HoudiniProver:
         return result
 
 
-def demo_houdini():
+def check_invariant(sts: TransitionSystem, inv: z3.ExprRef, inv_prime: z3.ExprRef) -> bool:
+    """Check if invariant is valid"""
+    s = z3.Solver()
+    
+    # Check initiation: init => inv
+    s.push()
+    s.add(sts.init)
+    s.add(z3.Not(inv))
+    if s.check() != z3.unsat:
+        s.pop()
+        return False
+    s.pop()
+    
+    # Check consecution: inv ∧ trans => inv'
+    s.push()
+    s.add(inv)
+    s.add(sts.trans)
+    s.add(z3.Not(inv_prime))
+    result = s.check() == z3.unsat
+    s.pop()
+    return result
+
+
+def demo_houdini() -> None:
     """Demo using a simple transition system"""
     x = z3.Int("x")
     x_prime = z3.Int("x_p")

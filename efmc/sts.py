@@ -2,7 +2,7 @@
 Transition system (Abstraction of programs)
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union, Tuple
 import z3
 from efmc.utils import ctx_simplify
 
@@ -14,27 +14,31 @@ class TransitionSystem(object):
     Supports: integers, reals, bit-vectors, booleans, floating-point, and arrays.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Core components
-        self.variables = []  # Current state variables
-        self.prime_variables = []  # Next state variables  
-        self.all_variables = []  # variables + prime_variables
-        self.trans = None  # Transition relation
-        self.init = None  # Initial condition
-        self.post = None  # Post condition
-        self.invariants = []  # Additional invariants/lemmas
-        self.initialized = False
+        self.variables: List[z3.ExprRef] = []  # Current state variables
+        self.prime_variables: List[z3.ExprRef] = []  # Next state variables  
+        self.all_variables: List[z3.ExprRef] = []  # variables + prime_variables
+        self.trans: Optional[z3.ExprRef] = None  # Transition relation
+        self.init: Optional[z3.ExprRef] = None  # Initial condition
+        self.post: Optional[z3.ExprRef] = None  # Post condition
+        self.invariants: List[z3.ExprRef] = []  # Additional invariants/lemmas
+        self.initialized: bool = False
         
         # Type flags
-        self.has_bv = self.has_int = self.has_real = False
-        self.has_array = self.has_bool = self.has_fp = False
-        self.signedness = "unsigned"
+        self.has_bv: bool = False
+        self.has_int: bool = False
+        self.has_real: bool = False
+        self.has_array: bool = False
+        self.has_bool: bool = False
+        self.has_fp: bool = False
+        self.signedness: str = "unsigned"
 
         # Handle keyword arguments if provided
         if kwargs:
             self._init_from_kwargs(**kwargs)
 
-    def _init_from_kwargs(self, **kwargs):
+    def _init_from_kwargs(self, **kwargs: Any) -> None:
         """Initialize the transition system from keyword arguments."""
         allowed_keys = {'variables', 'prime_variables', 'init', 'trans', 'post', 'invariants'}
         for key, value in kwargs.items():
@@ -47,7 +51,7 @@ class TransitionSystem(object):
         self._detect_types()
         self.initialized = True
 
-    def _detect_types(self):
+    def _detect_types(self) -> None:
         """Detect variable types from the first variable."""
         if not self.variables:
             return
@@ -68,7 +72,7 @@ class TransitionSystem(object):
         else:
             raise NotImplementedError(f"Unsupported variable type: {sample_var.sort()}")
 
-    def set_signedness(self, ty: str):
+    def set_signedness(self, ty: str) -> None:
         assert self.has_bv
         if ty == "signed":
             self.signedness = "signed"
@@ -77,18 +81,18 @@ class TransitionSystem(object):
         else:
             raise NotImplementedError
 
-    def add_post(self, exp):
+    def add_post(self, exp: z3.ExprRef) -> None:
         """Update/initialize set.post (to be verified)"""
         self.post = exp
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         print(self.all_variables)
         print(self.init)
         print(self.trans)
         print(self.post)
         return " "
 
-    def from_z3_cnts(self, ts: List):
+    def from_z3_cnts(self, ts: List[z3.ExprRef]) -> None:
         """Initialize from Z3 constraints list [variables, init, trans, post]"""
         self.all_variables, self.init, self.trans, self.post = ts
         
@@ -103,7 +107,7 @@ class TransitionSystem(object):
         self._detect_types()
         self.initialized = True
 
-    def analyze_and_simplify(self):
+    def analyze_and_simplify(self) -> None:
         """Simplify the problem?"""
         self.trans = ctx_simplify(self.trans)  # ctx_simplify can be slow
 
@@ -172,6 +176,6 @@ class TransitionSystem(object):
         logic = self._get_logic_string()
         return f"(set-logic {logic})\n{z3_expr.sexpr()}\n(check-sat)\n"
     
-    def to_z3_cnts(self) -> List:
+    def to_z3_cnts(self) -> List[z3.ExprRef]:
         return self.all_variables, self.init, self.trans, self.post
     

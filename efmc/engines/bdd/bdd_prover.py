@@ -55,14 +55,14 @@ class BDDProver:
         self.not_post_formula = z3.Not(self.sts.post)
 
         # Create substitution maps
-        self.prime_to_current = {}
-        self.current_to_prime = {}
+        self.prime_to_current: Dict[z3.ExprRef, z3.ExprRef] = {}
+        self.current_to_prime: Dict[z3.ExprRef, z3.ExprRef] = {}
 
         for p, c in zip(self.sts.prime_variables, self.sts.variables):
             self.prime_to_current[p] = c
             self.current_to_prime[c] = p
 
-    def _substitute_prime_with_current(self, formula):
+    def _substitute_prime_with_current(self, formula: z3.ExprRef) -> z3.ExprRef:
         """
         Substitute prime variables with current variables in a formula.
         
@@ -75,7 +75,7 @@ class BDDProver:
         substitutions = [(p, self.prime_to_current[p]) for p in self.prime_to_current]
         return z3.substitute(formula, substitutions)
 
-    def _substitute_current_with_prime(self, formula):
+    def _substitute_current_with_prime(self, formula: z3.ExprRef) -> z3.ExprRef:
         """
         Substitute current variables with prime variables in a formula.
         
@@ -88,7 +88,7 @@ class BDDProver:
         substitutions = [(c, self.current_to_prime[c]) for c in self.current_to_prime]
         return z3.substitute(formula, substitutions)
 
-    def _image(self, states_formula):
+    def _image(self, states_formula: z3.ExprRef) -> z3.ExprRef:
         """
         Compute the image (successor states) of a set of states.
         
@@ -104,7 +104,7 @@ class BDDProver:
         else:
             return self._image_bool(states_formula)
 
-    def _image_bool(self, states_formula):
+    def _image_bool(self, states_formula: z3.ExprRef) -> z3.ExprRef:
         """
         Compute the image for Boolean systems.
         
@@ -126,14 +126,14 @@ class BDDProver:
             return z3.BoolVal(False)
 
         # Get all models that satisfy the conjunction
-        result_states = []
+        result_states: List[z3.ExprRef] = []
 
         # Keep finding models until we can't find any more
         while s.check() == z3.sat:
             model = s.model()
 
             # Extract the values of prime variables
-            prime_values = []
+            prime_values: List[z3.ExprRef] = []
             for var in self.sts.prime_variables:
                 if model.get_interp(var) is not None:
                     prime_values.append(var == model.get_interp(var))
@@ -146,7 +146,7 @@ class BDDProver:
                 result_states.append(current_state)
 
             # Block this model
-            block = []
+            block: List[z3.ExprRef] = []
             for var in self.sts.prime_variables:
                 if model.get_interp(var) is not None:
                     block.append(var != model.get_interp(var))
@@ -163,7 +163,7 @@ class BDDProver:
         # Combine all states
         return z3.Or(result_states)
 
-    def _image_bv(self, states_formula):
+    def _image_bv(self, states_formula: z3.ExprRef) -> z3.ExprRef:
         """
         Compute the image for bit-vector systems.
         
@@ -185,14 +185,14 @@ class BDDProver:
             return z3.BoolVal(False)
 
         # Get all models that satisfy the conjunction
-        result_states = []
+        result_states: List[z3.ExprRef] = []
 
         # Keep finding models until we can't find any more
         while s.check() == z3.sat:
             model = s.model()
 
             # Extract the values of prime variables
-            prime_values = []
+            prime_values: List[z3.ExprRef] = []
             for var in self.sts.prime_variables:
                 if model.get_interp(var) is not None:
                     prime_values.append(var == model.get_interp(var))
@@ -205,7 +205,7 @@ class BDDProver:
                 result_states.append(current_state)
 
             # Block this model
-            block = []
+            block: List[z3.ExprRef] = []
             for var in self.sts.prime_variables:
                 if model.get_interp(var) is not None:
                     block.append(var != model.get_interp(var))
@@ -222,7 +222,7 @@ class BDDProver:
         # Combine all states
         return z3.Or(result_states)
 
-    def _pre_image(self, states_formula):
+    def _pre_image(self, states_formula: z3.ExprRef) -> z3.ExprRef:
         """
         Compute the pre-image (predecessor states) of a set of states.
         
@@ -238,7 +238,7 @@ class BDDProver:
         else:
             return self._pre_image_bool(states_formula)
 
-    def _pre_image_bool(self, states_formula):
+    def _pre_image_bool(self, states_formula: z3.ExprRef) -> z3.ExprRef:
         """
         Compute the pre-image for Boolean systems.
         
@@ -263,14 +263,14 @@ class BDDProver:
             return z3.BoolVal(False)
 
         # Get all models that satisfy the conjunction
-        result_states = []
+        result_states: List[z3.ExprRef] = []
 
         # Keep finding models until we can't find any more
         while s.check() == z3.sat:
             model = s.model()
 
             # Extract the values of current variables
-            current_values = []
+            current_values: List[z3.ExprRef] = []
             for var in self.sts.variables:
                 if model.get_interp(var) is not None:
                     current_values.append(var == model.get_interp(var))
@@ -281,7 +281,7 @@ class BDDProver:
                 result_states.append(state_formula)
 
             # Block this model
-            block = []
+            block: List[z3.ExprRef] = []
             for var in self.sts.variables:
                 if model.get_interp(var) is not None:
                     block.append(var != model.get_interp(var))
@@ -298,7 +298,7 @@ class BDDProver:
         # Combine all states
         return z3.Or(result_states)
 
-    def _pre_image_bv(self, states_formula):
+    def _pre_image_bv(self, states_formula: z3.ExprRef) -> z3.ExprRef:
         """
         Compute the pre-image for bit-vector systems.
         
@@ -323,14 +323,14 @@ class BDDProver:
             return z3.BoolVal(False)
 
         # Get all models that satisfy the conjunction
-        result_states = []
+        result_states: List[z3.ExprRef] = []
 
         # Keep finding models until we can't find any more
         while s.check() == z3.sat:
             model = s.model()
 
             # Extract the values of current variables
-            current_values = []
+            current_values: List[z3.ExprRef] = []
             for var in self.sts.variables:
                 if model.get_interp(var) is not None:
                     current_values.append(var == model.get_interp(var))
@@ -341,7 +341,7 @@ class BDDProver:
                 result_states.append(state_formula)
 
             # Block this model
-            block = []
+            block: List[z3.ExprRef] = []
             for var in self.sts.variables:
                 if model.get_interp(var) is not None:
                     block.append(var != model.get_interp(var))
@@ -358,7 +358,7 @@ class BDDProver:
         # Combine all states
         return z3.Or(result_states)
 
-    def _is_contained(self, formula1, formula2):
+    def _is_contained(self, formula1: z3.ExprRef, formula2: z3.ExprRef) -> bool:
         """
         Check if formula1 implies formula2 (formula1 ⊆ formula2).
         
@@ -374,7 +374,7 @@ class BDDProver:
         s.add(z3.And(formula1, z3.Not(formula2)))
         return s.check() == z3.unsat
 
-    def _is_equal(self, formula1, formula2):
+    def _is_equal(self, formula1: z3.ExprRef, formula2: z3.ExprRef) -> bool:
         """
         Check if formula1 is equivalent to formula2.
         
@@ -388,7 +388,7 @@ class BDDProver:
         # formula1 = formula2 iff (formula1 ⊆ formula2) and (formula2 ⊆ formula1)
         return self._is_contained(formula1, formula2) and self._is_contained(formula2, formula1)
 
-    def _is_sat(self, formula):
+    def _is_sat(self, formula: z3.ExprRef) -> bool:
         """
         Check if a formula is satisfiable.
         

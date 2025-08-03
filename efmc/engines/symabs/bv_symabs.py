@@ -5,7 +5,7 @@ It supports interval, zone, and octagon abstractions.
 
 import itertools
 from timeit import default_timer as symabs_timer
-from typing import List
+from typing import List, Optional
 
 import z3
 
@@ -17,7 +17,7 @@ from efmc.utils.z3opt_utils import box_optimize
 # import argparse
 
 
-def get_bv_size(x: z3.ExprRef):
+def get_bv_size(x: z3.ExprRef) -> int:
     """get bv size"""
     if z3.is_bv(x):
         return x.sort().size()
@@ -29,7 +29,7 @@ class BVSymbolicAbstraction:
     def __init__(self):
         self.initialized = False
         self.formula = z3.BoolVal(True)
-        self.vars = []
+        self.vars: List[z3.ExprRef] = []
         self.interval_abs_as_fml = z3.BoolVal(True)
         self.zone_abs_as_fml = z3.BoolVal(True)
         self.octagon_abs_as_fml = z3.BoolVal(True)
@@ -47,7 +47,7 @@ class BVSymbolicAbstraction:
         self.signed = False
         # set_param("verbose", 15)
 
-    def do_simplification(self):
+    def do_simplification(self) -> None:
         """
         Simplify the formula using Z3 tactics.
         If the formula is initialized and simplification is enabled, 
@@ -71,7 +71,7 @@ class BVSymbolicAbstraction:
         else:
             print("error: not initialized")
 
-    def init_from_file(self, fname: str):
+    def init_from_file(self, fname: str) -> None:
         try:
             fvec = z3.parse_smt2_file(fname)
             self.formula = z3.And(fvec)
@@ -85,7 +85,7 @@ class BVSymbolicAbstraction:
             print("error when initialization")
             print(ex)
 
-    def init_from_fml(self, fml: z3.BoolRef):
+    def init_from_fml(self, fml: z3.BoolRef) -> None:
         try:
             self.formula = fml
             for var in get_variables(self.formula):
@@ -96,7 +96,7 @@ class BVSymbolicAbstraction:
             print("error when initialization")
             print(ex)
 
-    def min_once(self, exp: z3.ExprRef):
+    def min_once(self, exp: z3.ExprRef) -> Optional[z3.ExprRef]:
         """
         Minimize exp
         """
@@ -108,8 +108,9 @@ class BVSymbolicAbstraction:
             m = sol.model()
             return m.eval(exp, True)
             # return m.eval(exp).as_long()
+        return None
 
-    def max_once(self, exp: z3.ExprRef):
+    def max_once(self, exp: z3.ExprRef) -> Optional[z3.ExprRef]:
         """
         Maximize exp
         """
@@ -122,8 +123,9 @@ class BVSymbolicAbstraction:
             # print(m)
             return m.eval(exp, True)
             # return m.eval(exp).as_long()
+        return None
 
-    def min_max_many(self, multi_queries: List[z3.ExprRef]):
+    def min_max_many(self, multi_queries: List[z3.ExprRef]) -> z3.ExprRef:
         """
         Minimize and maximize the given multi_queries.
         Returns the conjunction of the minimized and maximized expressions.
@@ -133,7 +135,7 @@ class BVSymbolicAbstraction:
         min_res, max_res = box_optimize(self.formula, minimize=multi_queries, maximize=multi_queries, timeout=30000)
         # TODO: the res of handler.xx() is not a BitVec val, but Int?
         # TODO: what if it is a value large than the biggest integer of the size (is it possible? e.g., due to overflow)
-        cnts = []
+        cnts: List[z3.ExprRef] = []
         for i in range(len(multi_queries)):
             vmin = min_res[i]
             vmax = max_res[i]
@@ -146,20 +148,20 @@ class BVSymbolicAbstraction:
                 cnts.append(z3.And(z3.UGE(multi_queries[i], vmin_bvval), z3.ULE(multi_queries[i], vmax_bvval)))
         return z3.And(cnts)
 
-    def interval_abs(self):
+    def interval_abs(self) -> None:
         """
         Perform interval abstraction on the formula.
         Compute the minimum and maximum values for each variable in the formula.
         Store the result in self.interval_abs_as_fml.
         """
         if self.compact_opt:
-            multi_queries = []
+            multi_queries: List[z3.ExprRef] = []
             for var in self.vars:
                 multi_queries.append(var)
             self.interval_abs_as_fml = self.min_max_many(multi_queries)
             # print(self.interval_abs_as_fml)
         else:
-            cnts = []
+            cnts: List[z3.ExprRef] = []
             for i in range(len(self.vars)):
                 vmin = self.min_once(self.vars[i])
                 vmax = self.max_once((self.vars[i]))
@@ -170,7 +172,7 @@ class BVSymbolicAbstraction:
                 print(self.vars[i], "[", vmin, ", ", vmax, "]")
             self.interval_abs_as_fml = z3.And(cnts)
 
-    def zone_abs(self):
+    def zone_abs(self) -> None:
         """
         Perform zone abstraction on the formula.
         Compute the minimum and maximum values for each pair of variables in the formula.
@@ -178,8 +180,8 @@ class BVSymbolicAbstraction:
         """
         zones = list(itertools.combinations(self.vars, 2))
         if self.compact_opt:
-            multi_queries = []
-            wrap_around_cnts = []
+            multi_queries: List[z3.ExprRef] = []
+            wrap_around_cnts: List[z3.ExprRef] = []
             for v1, v2 in zones:
                 if v1.sort().size() == v2.sort().size():
                     multi_queries.append(v1 - v2)
@@ -194,9 +196,9 @@ class BVSymbolicAbstraction:
             self.zone_abs_as_fml = self.min_max_many(multi_queries)
             # print(self.zone_abs_as_fml)
         else:
-            zone_cnts = []
-            objs = []
-            wrap_around_cnts = []
+            zone_cnts: List[z3.ExprRef] = []
+            objs: List[z3.ExprRef] = []
+            wrap_around_cnts: List[z3.ExprRef] = []
             for v1, v2 in zones:
                 if v1.sort().size() == v2.sort().size():
                     objs.append(v1 - v2)
@@ -219,7 +221,7 @@ class BVSymbolicAbstraction:
 
             self.zone_abs_as_fml = z3.And(zone_cnts)
 
-    def octagon_abs(self):
+    def octagon_abs(self) -> None:
         """
         Perform octagon abstraction on the formula.
         Compute the minimum and maximum values for each pair of variables in the formula,
@@ -227,8 +229,8 @@ class BVSymbolicAbstraction:
         """
         octagons = list(itertools.combinations(self.vars, 2))
         if self.compact_opt:
-            multi_queries = []
-            wrap_around_cnts = []
+            multi_queries: List[z3.ExprRef] = []
+            wrap_around_cnts: List[z3.ExprRef] = []
 
             for var in self.vars:
                 # need this?
@@ -251,9 +253,9 @@ class BVSymbolicAbstraction:
             self.octagon_abs_as_fml = self.min_max_many(multi_queries)
             # print(self.zone_abs_as_fml)
         else:
-            oct_cnts = []
-            objs = []
-            wrap_around_cnts = []
+            oct_cnts: List[z3.ExprRef] = []
+            objs: List[z3.ExprRef] = []
+            wrap_around_cnts: List[z3.ExprRef] = []
 
             for var in self.vars:
                 # need this?
@@ -284,7 +286,7 @@ class BVSymbolicAbstraction:
             self.zone_abs_as_fml = z3.And(oct_cnts)
 
 
-def feat_test():
+def feat_test() -> None:
     x = z3.BitVec("x", 8)
     y = z3.BitVec("y", 8)
     fml = z3.And(z3.UGT(x, 0), z3.UGT(y, 0), z3.ULT(x, 10), z3.ULT(y, 10))
@@ -294,7 +296,7 @@ def feat_test():
     sa.zone_abs()
 
 
-def feat_test_counting():
+def feat_test_counting() -> None:
     x = z3.BitVec("x", 8)
     y = z3.BitVec("y", 8)
     z = z3.BitVec("z", 8)
@@ -337,7 +339,7 @@ def feat_test_counting():
         '''
 
 
-def test():
+def test() -> None:
     # test_multi_opt()
     feat_test_counting('../test/t1.smt2')
 

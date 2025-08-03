@@ -77,7 +77,7 @@ def build_sygus_cnt(funcs: List[z3.FuncDeclRef], cnts: List[z3.BoolRef], variabl
     return cnt
 
 
-def replace_func_with_template(formula, func_to_rep, template):
+def replace_func_with_template(formula: z3.ExprRef, func_to_rep: z3.FuncDeclRef, template: z3.ExprRef) -> z3.ExprRef:
     """
     Replace an uninterpreted function with a concrete template in a formula.
     
@@ -86,7 +86,7 @@ def replace_func_with_template(formula, func_to_rep, template):
     :param template: Template to replace the uninterpreted function with
     :return: Modified formula with the uninterpreted function replaced by the template
     """
-    def update(exp):
+    def update(exp: z3.ExprRef) -> Optional[z3.ExprRef]:
         if z3.is_app(exp) and z3.eq(exp.decl(), func_to_rep):
             args = [exp.arg(i) for i in range(exp.num_args())]
             return z3.substitute_vars(template, *args)
@@ -95,7 +95,7 @@ def replace_func_with_template(formula, func_to_rep, template):
     return modify(formula, update)
 
 
-def replace_fun_with_synthesized_one(formula, func_to_rep, func_def):
+def replace_fun_with_synthesized_one(formula: z3.ExprRef, func_to_rep: z3.FuncDeclRef, func_def: z3.ExprRef) -> z3.ExprRef:
     """
     Replace an uninterpreted function with a concrete template in a formula.
     

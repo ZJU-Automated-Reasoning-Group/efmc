@@ -23,7 +23,7 @@ class PDRProver:
         self.sts = system
         self.verbose = False
 
-    def set_verbose(self, verbose: bool):
+    def set_verbose(self, verbose: bool) -> None:
         """Set verbose mode"""
         self.verbose = verbose
 
@@ -100,11 +100,8 @@ class PDRProver:
                 if self.verbose:
                     print("unknown")
                 return VerificationResult(False, None, None, is_unknown=True)
-        except z3.Z3Exception as e:
-            elapsed_time = time.time() - start
+                
+        except Exception as e:
             if self.verbose:
-                print(f"PDR time: {elapsed_time:.2f}s")
-                print(f"Z3 exception: {e}")
-            
-            # If we get a timeout or other Z3 exception, return unknown
+                print(f"PDR failed: {e}")
             return VerificationResult(False, None, None, is_unknown=True)

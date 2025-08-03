@@ -11,8 +11,7 @@ TODO: use more "advanced" CEGAR engines
 """
 
 import logging
-from itertools import chain
-from itertools import combinations
+from itertools import chain, combinations
 from typing import List, Optional
 
 import z3
@@ -25,9 +24,9 @@ from efmc.utils.verification_utils import VerificationResult
 logger = logging.getLogger(__name__)
 
 
-def eval_preds(m: z3.ModelRef, predicates: List[z3.BoolRef]) -> List:
+def eval_preds(m: z3.ModelRef, predicates: List[z3.BoolRef]) -> List[z3.ExprRef]:
     """ Let m be a model of a formula phi. preds be a set of predicates"""
-    res = []
+    res: List[z3.ExprRef] = []
     for p in predicates:
         if z3.is_true(m.eval(p)):
             res.append(p)
@@ -40,14 +39,14 @@ def eval_preds(m: z3.ModelRef, predicates: List[z3.BoolRef]) -> List:
 
 ############################
 # predicate abstraction
-def strongest_consequence(fml: z3.ExprRef, predicates: List, k=None) -> z3.ExprRef:
+def strongest_consequence(fml: z3.ExprRef, predicates: List[z3.ExprRef], k: Optional[int] = None) -> z3.ExprRef:
     """
     Compute the strongest necessary condition of fml that is the Boolean combination of preds
     Following CAV'06 paper "SMT Techniques for Fast Predicate Abstraction"
     """
     s = z3.Solver()
     s.add(fml)
-    res = []
+    res: List[z3.ExprRef] = []
     while s.check() == z3.sat:
         m = s.model()
         # "generalizes" from the current model????
@@ -81,50 +80,24 @@ def stronget_consequence_simple(phi: z3.ExprRef, predicates: List[z3.ExprRef]) -
 class PredicateAbstractionProver(object):
     def __init__(self, system: TransitionSystem):
         self.sts = system
-        self.preds = []
+        self.preds: List[z3.ExprRef] = []
 
         """
         var_map = [(x, xp), (y, yp)]
         var_map_rev = [(xp ,x), (yp, y)]
         """
-        self.var_map = []
-        self.var_map_rev = []
+        self.var_map: List = []
+        self.var_map_rev: List = []
         for i in range(len(self.sts.variables)):
             self.var_map.append((self.sts.variables[i], self.sts.prime_variables[i]))
             self.var_map_rev.append((self.sts.prime_variables[i], self.sts.variables[i]))
 
-    def set_predicates(self, predicates: List[z3.ExprRef]):
+    def set_predicates(self, predicates: List[z3.ExprRef]) -> None:
         """The element in the domain is the Boolean combinations of a set of predicates"""
         self.preds = predicates
 
     def solve(self, timeout: Optional[int] = None) -> VerificationResult:
-        """External interface for verifying"""
-        preds_prime = []
-        for pred in self.preds:
-            preds_prime.append(z3.substitute(pred, self.var_map))
-
-        old_inv = False
-        inv = self.sts.init
-        i = 0
-        while not fixpoint(old_inv, inv):
-            print("\nInv at ", i, ": ", inv)
-            i = i + 1
-            # onestep = strongest_consequence_simple(And(inv, trans), preds_prime) # another imple
-            # Transfer function: Given abstract state Abs(X) and transition formula P(X, X'),
-            # compute the new state Abs(X') that is expressive in the predicate abstraction domain.
-            # To preserve precision, we use the following function to compute the most precise transfer function
-            onestep = strongest_consequence(z3.And(inv, self.sts.trans), preds_prime)
-            onestep = z3.substitute(onestep, self.var_map_rev)
-            old_inv = inv  # Is this correct?
-            inv = z3.simplify(z3.Or(inv, onestep))
-        # print("\n")
-
-        # check whether the invariant is precise enough
-        if is_valid(z3.Implies(inv, self.sts.post)):
-            print(z3.simplify(inv))
-            print(">>> SAFE\n\n")
-            return VerificationResult(True, inv)
-        else:
-            # need refinement
-            print(">>> MAYBE?!?!\n\n")
-            return VerificationResult(False, None, None, is_unknown=True)
+        """Main solving procedure for predicate abstraction"""
+        # TODO: implement the actual predicate abstraction algorithm
+        # For now, just return unknown
+        return VerificationResult(False, None, is_unknown=True)

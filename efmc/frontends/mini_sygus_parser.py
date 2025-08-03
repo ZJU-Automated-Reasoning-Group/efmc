@@ -25,12 +25,12 @@ class SyGuSParsingError(Exception):
     pass
 
 
-def input_to_list(string: str) -> [str]:
+def input_to_list(string: str) -> List[str]:
     """
     Parse a .sl file into a list of S-Expressions.
     """
     n: int = 0
-    result: [str] = []
+    result: List[str] = []
     s: str = ""
     for c in string:
         if c == "(":
@@ -129,7 +129,7 @@ def get_terms_prods(cmd):
     return terminals, productions
 
 
-def get_grammar(lines: [str]):
+def get_grammar(lines: List[str]):
     s_exprs = []
     for line in lines:
         s_exprs.append(parse_sexpression(line))
@@ -165,7 +165,7 @@ class SyGusInVParser:
 
         self.init_symbols(inputs)
 
-    def to_sexpr_misc(self, lines: [str]):
+    def to_sexpr_misc(self, lines: List[str]):
         """
         E.g.,
         ['and', ['=', 'x', 1], ['=', 'y', 1]]
@@ -187,7 +187,7 @@ class SyGusInVParser:
         res.append(")")
         return res
 
-    def to_sexpr(self, lines: [str]):
+    def to_sexpr(self, lines: List[str]):
         return " ".join(self.to_sexpr_misc(lines))
 
     def init_symbols(self, inputs: str):

@@ -37,19 +37,19 @@ class NewTransitionSystem:
 
         return var
 
-    def add_invariant(self, inv: z3.ExprRef):
+    def add_invariant(self, inv: z3.ExprRef) -> None:
         """Add an invariant"""
         self.invariants.append(inv)
 
-    def set_init(self, init: z3.ExprRef):
+    def set_init(self, init: z3.ExprRef) -> None:
         """Set initial states condition"""
         self.init = init
 
-    def set_trans(self, trans: z3.ExprRef):
+    def set_trans(self, trans: z3.ExprRef) -> None:
         """Set transition relation"""
         self.trans = trans
 
-    def set_post(self, post: z3.ExprRef):
+    def set_post(self, post: z3.ExprRef) -> None:
         """Set post-condition (property to verify)"""
         self.post = post
 

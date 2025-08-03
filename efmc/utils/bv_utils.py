@@ -21,7 +21,7 @@ def zero_extension(formula: z3.BitVecRef, bit_places: int) -> z3.BitVecRef:
     return formula
 
 
-def one_extension(formula: z3.BitVecRef, bit_places: int):
+def one_extension(formula: z3.BitVecRef, bit_places: int) -> z3.BitVecRef:
     """Set the rest of bits on the left to 1.
     """
     complement = BitVecVal(0, formula.size() - bit_places) - 1
@@ -94,7 +94,7 @@ def get_signedness(formula: z3.BitVecRef) -> Signedness:
     # get all variables in the formula
     variables = get_variables(formula)
 
-    def check_signedness_recursive(expr):
+    def check_signedness_recursive(expr: z3.ExprRef) -> Signedness:
         if z3.is_const(expr):
             return Signedness.UNKNOWN
 
