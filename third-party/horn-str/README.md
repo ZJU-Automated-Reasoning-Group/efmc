@@ -1,0 +1,1 @@
+https://arg-git.informatik.uni-kl.de/pub/string-chc-lib
