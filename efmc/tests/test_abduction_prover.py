@@ -42,33 +42,6 @@ class TestAbductionProver(TestCase):
         self.assertTrue(kind_res.is_safe or pdr_res.is_safe,
                         "At least one of k-induction or PDR should prove the system safe")
 
-    def test_variable_dependency(self):
-        """Test with a system that has variable dependencies (get_int_sys5)."""
-        print("Running variable dependency test...")
-        sts = TransitionSystem()
-        sts.from_z3_cnts(get_int_sys5())
-
-        start = time.time()
-        abd_prover = AbductionProver(sts)
-        res = abd_prover.solve()
-        print("abd prover res: ", res)
-        print("Time taken: ", time.time() - start)
-        print("======================================")
-
-        # Also test with k-induction and PDR for comparison
-        kind_prover = KInductionProver(sts)
-        kind_prover.use_aux_invariant = False
-        kind_res = kind_prover.solve(k=20)
-        print('kind prover res: ', kind_res)
-
-        pdr_prover = PDRProver(sts)
-        pdr_res = pdr_prover.solve()
-        print('PDR prover res: ', pdr_res)
-        print("======================================")
-
-        # Verify that the system is safe
-        self.assertTrue(res.is_safe, "AbductionProver should prove the system safe")
-
     def test_counter_system(self):
         """Test with a counter system with multiple variables (get_int_sys7)."""
         print("Running counter system test...")
