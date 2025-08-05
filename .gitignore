@@ -1,5 +1,4 @@
-ultimate
-com.sh
+coverage.xml
 .coverage
 .vscode
 *.time 
@@ -254,6 +253,3 @@ TSWLatexianTemp*
 *.pyc
 *.pyo
 \#*\#
-
-venv_new
-venv_old
