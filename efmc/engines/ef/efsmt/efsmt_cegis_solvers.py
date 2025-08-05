@@ -22,15 +22,13 @@ def simple_cegis_efsmt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
     :param timeout: The timeout for the solver
     :return: The solution
     """
-    from pysmt.logics import QF_BV, QF_LIA, QF_LRA, QF_FP, AUTO
+    from pysmt.logics import QF_BV, QF_LIA, QF_LRA, AUTO
     if "IA" in logic:
         qf_logic = QF_LIA
     elif "RA" in logic:
         qf_logic = QF_LRA
     elif "BV" in logic:
         qf_logic = QF_BV
-    elif "FP" in logic:
-        qf_logic = QF_FP
     else:
         qf_logic = AUTO
     sol = PySMTSolver()

@@ -38,6 +38,8 @@ class QuantifierInstantiationProver:
             return "AUFLIRA"
         elif self.sts.has_bv:
             return "UFBV"
+        elif self.sts.has_fp:
+            return "UFFP"
         else:
             raise NotImplementedError("Unsupported variable types")
 

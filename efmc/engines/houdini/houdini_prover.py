@@ -12,28 +12,8 @@ from typing import List, Dict, Optional
 import z3
 
 from efmc.sts import TransitionSystem
-from efmc.utils.verification_utils import VerificationResult
-from efmc.utils.z3_expr_utils import get_variables
-
-
-def get_selector_var(idx: int) -> z3.ExprRef:
-    """Create a temp symbol using the given index"""
-    return z3.Bool("SEL_{}".format(idx))
-
-
-def prime(exp: z3.ExprRef) -> z3.ExprRef:
-    """Replace all symbols in the formula with their primed version"""
-    variables = get_variables(exp)
-    substitutions = []
-    for v in variables:
-        sort = v.sort()
-        if z3.is_bv_sort(sort):
-            substitutions.append((v, z3.BitVec(f"{v}_p", sort.size())))
-        elif sort == z3.RealSort():
-            substitutions.append((v, z3.Real(f"{v}_p")))
-        else:  # default to Int
-            substitutions.append((v, z3.Int(f"{v}_p")))
-    return z3.substitute(exp, substitutions)
+from efmc.utils.verification_utils import VerificationResult, check_invariant
+from efmc.engines.houdini.houdini_templates import get_selector_var, generate_basic_lemmas
 
 
 class HoudiniProver:
@@ -95,7 +75,8 @@ class HoudiniProver:
         start_time = time.time()
         
         # Check if post-condition is already inductive
-        if self.check_inductive(self.sts.post):
+        post_primed = z3.substitute(self.sts.post, list(zip(self.sts.variables, self.sts.prime_variables)))
+        if check_invariant(self.sts, self.sts.post, post_primed):
             self.logger.info("Post-condition is already inductive")
             return VerificationResult(True, self.sts.post)
 
@@ -119,96 +100,17 @@ class HoudiniProver:
 
     def generate_candidate_lemmas(self) -> List[z3.ExprRef]:
         """Generate candidate lemmas for invariant inference"""
-        lemmas: List[z3.ExprRef] = [self.sts.post]
-
-        # Add existing invariants if available
+        # Get existing invariants if available
+        existing_invariants = None
         if hasattr(self.sts, 'invariants') and self.sts.invariants:
-            lemmas.extend(self.sts.invariants)
-
-        # Add bounds for integer variables
-        for var in self.sts.variables:
-            if var.sort() == z3.IntSort():
-                lemmas.append(var >= 0)
-
-        # Add relationships between variables
-        for i, var1 in enumerate(self.sts.variables):
-            for var2 in self.sts.variables[i + 1:]:
-                if var1.sort() == var2.sort():
-                    lemmas.extend([var1 <= var2, var1 >= var2])
-
+            existing_invariants = self.sts.invariants
+        
+        # Use the centralized lemma generation function
+        lemmas = generate_basic_lemmas(
+            self.sts.variables, 
+            self.sts.post, 
+            existing_invariants
+        )
+        
         self.logger.info(f"Generated {len(lemmas)} candidate lemmas")
         return lemmas
-
-    def check_inductive(self, formula: z3.ExprRef) -> bool:
-        """Check if a formula is inductive"""
-        s = z3.Solver()
-        primed = z3.substitute(formula, list(zip(self.sts.variables, self.sts.prime_variables)))
-
-        # Check: Init => formula
-        s.push()
-        s.add(self.sts.init)
-        s.add(z3.Not(formula))
-        if s.check() != z3.unsat:
-            s.pop()
-            return False
-        s.pop()
-
-        # Check: formula ∧ trans => formula'
-        s.push()
-        s.add(formula)
-        s.add(self.sts.trans)
-        s.add(z3.Not(primed))
-        result = s.check() == z3.unsat
-        s.pop()
-        return result
-
-
-def check_invariant(sts: TransitionSystem, inv: z3.ExprRef, inv_prime: z3.ExprRef) -> bool:
-    """Check if invariant is valid"""
-    s = z3.Solver()
-    
-    # Check initiation: init => inv
-    s.push()
-    s.add(sts.init)
-    s.add(z3.Not(inv))
-    if s.check() != z3.unsat:
-        s.pop()
-        return False
-    s.pop()
-    
-    # Check consecution: inv ∧ trans => inv'
-    s.push()
-    s.add(inv)
-    s.add(sts.trans)
-    s.add(z3.Not(inv_prime))
-    result = s.check() == z3.unsat
-    s.pop()
-    return result
-
-
-def demo_houdini() -> None:
-    """Demo using a simple transition system"""
-    x = z3.Int("x")
-    x_prime = z3.Int("x_p")
-
-    sts = TransitionSystem()
-    sts.init = x == 0
-    sts.trans = x_prime == x + 1
-    sts.post = x >= 0
-    sts.variables = [x]
-    sts.prime_variables = [x_prime]
-    sts.all_variables = [x, x_prime]
-    sts.initialized = True
-
-    prover = HoudiniProver(sts)
-    result = prover.solve(timeout=10)
-    
-    status = "TIMED OUT" if result.timed_out else "SAFE" if result.is_safe else "UNSAFE" if result.is_unsafe else "UNKNOWN"
-    print(f"Simple demo: {status}")
-    if result.is_safe:
-        print(f"Invariant: {result.invariant}")
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    demo_houdini()

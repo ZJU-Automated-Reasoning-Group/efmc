@@ -4,7 +4,6 @@ For calling SMT (that support quantified formulas) and QBF solvers
 The available APIs:
 - solve_with_bin_qbf: solve QBF via bin QBF solvers
 - solve_with_bin_smt: solve SMT via bin SMT solvers
-- solve_with_bin_smt_v2: solve SMT via bin SMT solvers (v2)
 """
 
 import os
@@ -146,35 +145,6 @@ def solve_with_bin_smt(logic: str, x: List[z3.ExprRef], y: List[z3.ExprRef], phi
         if os.path.isfile(tmp_filename):
             os.remove(tmp_filename)
 
-
-def solve_with_bin_smt_v2(logic: str, y, phi: z3.ExprRef, solver_name: str):
-    """Call bin SMT solvers using SMTLIBSolver (string-based communication)"""
-    smt2string = f"(set-logic {logic})\n"
-    sol = z3.Solver()
-    sol.add(z3.ForAll(y, phi))
-    smt2string += sol.to_smt2()
-    
-    # Get solver command
-    solver_cmds = {
-        "z3": z3_exec,
-        "cvc5": f"{cvc5_exec} -q --produce-models"
-    }
-    bin_cmd = solver_cmds.get(solver_name, z3_exec)
-    
-    bin_solver = SMTLIBSolver(bin_cmd)
-    start = time.time()
-    res = bin_solver.check_sat_from_scratch(smt2string)
-    
-    if res == "sat":
-        print("External solver success time: ", time.time() - start)
-    elif res == "unsat":
-        print("External solver fails time: ", time.time() - start)
-    else:
-        print("Seems timeout or error in the external solver")
-        print(res)
-    
-    bin_solver.stop()
-    return res
 
 
 if __name__ == "__main__":

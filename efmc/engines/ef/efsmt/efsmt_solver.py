@@ -2,6 +2,13 @@
 """
 The uniformed interface for solving Exists-ForAll problems over bit-vectors.
 
+Approaches:
+- 1. Quantifier instantiation: Direct solving with SMT solvers that support quantifiers
+- 2. Bit-blasting: Translation to QBF, BDD, or SAT, and solving with QBF solvers, BDD solvers, or SAT solvers
+- 3. CEGIS: CEGIS-based iterative approach (using a SMT oracle for deciding quantifier-free formulas)
+
+FIXME: if we call a binary solver, it would be hard to obtain a z3 model (for building the invariant)
+
 Solver options:
 - "z3": Use Z3 SMT solver (call the binary solver)
 - "cvc5": Use CVC5 SMT solver (call the binary solver)
@@ -15,10 +22,6 @@ Solver options:
 - "sat": Use SAT-based approach (call the binary solver)
 - ...?
 
-Approaches:
-- 1. Quantifier instantiation: Direct solving with SMT solvers that support quantifiers
-- 2. Bit-blasting: Translation to QBF, BDD, or SAT, and solving with QBF solvers, BDD solvers, or SAT solvers
-- 3. CEGIS: CEGIS-based iterative approach (using a SMT oracle for deciding quantifier-free formulas)
 """
 
 import logging
@@ -29,8 +32,9 @@ import z3
 
 from efmc.engines.ef.efsmt.efsmt_bin_solvers import solve_with_bin_smt, solve_with_bin_qbf
 from efmc.engines.ef.efsmt.efsmt_cegis_solvers import simple_cegis_efsmt
+from efmc.engines.ef.efsmt.efsmt_cegis_fp_solver import simple_cegis_efsmt_fp
 from efmc.engines.ef.efsmt.efbv_to_bool import EFBVFormulaTranslator
-from efmc.engines.ef.efsmt.efsmt_sat_solver import solve_with_sat_solver
+from efmc.utils.pysat_solver_utils import solve_with_sat_solver
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +59,9 @@ class EFSMTSolver:
         # For other SMT solvers, we need to use the pysmt-install command to install
         self.pysmt_solver = kwargs.get("pysmt_solver", "z3")
 
+    def get_model(self):
+        return "get_model is not implemented"
+    
     def set_tactic(self, name: str):
         raise NotImplementedError
 
@@ -200,8 +207,6 @@ class EFSMTSolver:
         forall_vars_tuple = tuple(self.forall_vars)
 
         # Create the quantified formula
-        # quantified_formula = z3.Exists(exists_vars_tuple, 
-        #                              z3.ForAll(forall_vars_tuple, self.phi))
         quantified_formula = z3.ForAll(forall_vars_tuple, self.phi)
 
         # Add the formula to the solver
@@ -224,8 +229,14 @@ class EFSMTSolver:
         NOTE: Currently, we use pySMT for the implementation
         """
         print("Simple, sequential, CEGIS-style EFSMT!")
-        z3_res = simple_cegis_efsmt(self.logic, self.exists_vars, self.forall_vars, self.phi,
-                                    pysmt_solver=self.pysmt_solver)
+        
+        # Use FP-specific CEGIS solver for FP logic
+        if self.logic == "FP":
+            z3_res = simple_cegis_efsmt_fp(self.logic, self.exists_vars, self.forall_vars, self.phi,
+                                           maxloops=None, profiling=False, timeout=None)
+        else:
+            z3_res = simple_cegis_efsmt(self.logic, self.exists_vars, self.forall_vars, self.phi,
+                                        pysmt_solver=self.pysmt_solver)
         return z3_res
 
     def solve_with_z3_qbf(self) -> str:

@@ -1,9 +1,11 @@
 """
-This module contains the code for the SAT solver for EFSMT.
-NOTE: the filename might be misleading. To sovle EFSMT problems with the SAT solver "directly", we need to translate the problem into a CNF formula.
+This module contains the code for the SAT solver 
+
+
+Current, it is used to solve EFSMT problems with the SAT solver "directly", we need to translate the problem into a CNF formula.
 
 A possible way to solve EFSMT problems with the SAT solver is as follows:
-1. Translate the EFSMT problem into a QBF formula.
+1. Translate the EFSMT problem into a QBF formula. (TODO)
 2. Translate the QBF formula into a CNF formula via quantifier elimination.
 3. Solve the CNF formula using a SAT solver.
 

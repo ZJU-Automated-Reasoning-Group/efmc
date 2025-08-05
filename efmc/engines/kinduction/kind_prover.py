@@ -36,9 +36,11 @@ class KInductionProver:
             'bv': system.has_bv,
             'int': system.has_int,
             'real': system.has_real,
-            'bool': system.has_bool
+            'bool': system.has_bool,
+            'fp': system.has_fp
         }
         self.bv_size: Optional[int] = system.variables[0].size() if self.var_types['bv'] else None
+        self.fp_sort: Optional[z3.FPSortRef] = system.variables[0].sort() if self.var_types['fp'] else None
 
         # Initialize cached structures
         self.init_0 = z3.substitute(self.sts.init, self.get_subs(0))
@@ -55,6 +57,8 @@ class KInductionProver:
             return z3.Real(name)
         elif self.var_types['bool']:
             return z3.Bool(name)
+        elif self.var_types['fp']:
+            return z3.FP(name, self.fp_sort)
         else:
             raise NotImplementedError("Unsupported variable type")
 

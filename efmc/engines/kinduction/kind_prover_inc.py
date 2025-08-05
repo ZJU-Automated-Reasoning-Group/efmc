@@ -34,9 +34,11 @@ class KInductionProverInc:
             'bv': system.has_bv,
             'int': system.has_int, 
             'real': system.has_real,
-            'bool': system.has_bool
+            'bool': system.has_bool,
+            'fp': system.has_fp
         }
         self.bv_size = system.variables[0].sort().size() if self.var_types['bv'] else None
+        self.fp_sort = system.variables[0].sort() if self.var_types['fp'] else None
 
         # Create solvers
         self.solver_bmc = z3.Solver()
@@ -60,6 +62,8 @@ class KInductionProverInc:
             return z3.Real(name)
         elif self.var_types['bool']:
             return z3.Bool(name)
+        elif self.var_types['fp']:
+            return z3.FP(name, self.fp_sort)
         else:
             raise NotImplementedError("Unsupported variable type")
 
