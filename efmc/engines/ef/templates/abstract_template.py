@@ -122,3 +122,17 @@ class Template(ABC):
             Else, the expression should be in terms of the original variables.
         """
         pass
+
+    def build_invariant(self, model: z3.ModelRef) -> z3.ExprRef:
+        """Build an invariant from a model using current state variables.
+        
+        This is a convenience method that calls build_invariant_expr with
+        use_prime_variables=False.
+        
+        Args:
+            model: Z3 model containing variable assignments
+            
+        Returns:
+            Z3 expression representing the invariant in terms of current state variables
+        """
+        return self.build_invariant_expr(model, use_prime_variables=False)

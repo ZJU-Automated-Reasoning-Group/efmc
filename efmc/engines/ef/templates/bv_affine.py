@@ -1,8 +1,10 @@
-"""FIXME: this file is not used yet
+"""Affine relation domain (linear equality) over bit-vectors
 
-Affine relation domain over bit-vectors
+This module provides template classes for affine relations over bit-vectors.
+It includes both conjunctive and disjunctive variants for invariant generation.
 
 """
+
 from efmc.engines.ef.templates.abstract_template import *
 from efmc.sts import TransitionSystem
 from efmc.utils.bv_utils import Signedness
@@ -132,36 +134,39 @@ class BitVecAffineTemplate(Template):
 
 class DisjunctiveBitVecAffineTemplate(Template):
     """
-    TODO: There are several different variants. Some references
+    Disjunctive affine relation domain over bit-vectors
+    This class represents a template for disjunctive affine relations over bit-vectors.
+    It can be used to generate invariants for transition systems with bit-vector variables.
+
+    References:
       - Matt elder et al., Abstract domains of affine relations, TOPLAS'14
       - Olm and Seidl, Precise interprocedural analysis through linear algebra, POPL'04
-       - King and Sondergaard,
-         Inferring congruence equations using SAT, CAV'08
-         Automatic abstraction for congruences, VMCAI'10
+      - King and Sondergaard, Inferring congruence equations using SAT, CAV'08
+      - Automatic abstraction for congruences, VMCAI'10
     """
 
     def __init__(self, sts: TransitionSystem, **kwargs):
         self.template_type = TemplateType.BV_DISJUNCTIVE_AFFINE
+
+        self.sts = sts
+        self.arity = len(self.sts.variables)
 
         if sts.signedness == "signed":
             self.signedness = Signedness.SIGNED
         elif sts.signedness == "unsigned":
             self.signedness = Signedness.UNSIGNED
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"Unsupported signedness: {sts.signedness}")
 
         self.num_disjunctions = kwargs.get("num_disjunctions", 2)
 
         self.obj_no_overflow = kwargs.get("no_overflow", False)
         self.obj_no_underflow = kwargs.get("no_underflow", False)
 
-        self.sts = sts
-        self.arity = len(self.sts.variables)
-
         self.template_vars: List[List[z3.ExprRef]] = []  # vector of vector
         self.template_index = 0
 
-        #  number of linear inequalities (NOTE: interval, zone, and octagon domains do not need this)
+        #  number of linear equalities (NOTE: interval, zone, and octagon domains do not need this)
         #  thus, the following field is polyhedron/affine-specific
         self.num_templates = 1
 
@@ -182,7 +187,7 @@ class DisjunctiveBitVecAffineTemplate(Template):
         Initialize self.template_vars
         E.g., assume that self.sts.variables are [x, y], and self.num_disjunctions = 2.
          Then, we will add two templates
-            d1_0 + x*d1_1 + y*p1_2  == 0
+            d1_0 + x*d1_1 + y*d1_2  == 0
                    OR
             d2_0 + x*d2_1 + y*d2_2  == 0
          NOTE: we always use self.num_templates = 1 by default. So, we do not consider
@@ -206,7 +211,7 @@ class DisjunctiveBitVecAffineTemplate(Template):
         cnt_trans_dis: List[z3.ExprRef] = []
 
         for i in range(self.num_disjunctions):  # num. of disjunctions
-            # d1_0 + x*d1_1 + y*p1_2  == 0 OR
+            # d1_0 + x*d1_1 + y*d1_2  == 0 OR
             # d2_0 + x*d2_1 + y*d2_2  == 0
             term_init_post = self.template_vars[i][0]  # For sts.variables, e.g., d1_0
             term_trans = self.template_vars[i][0]  # For sts.prime_variables, e.g., d1_0
