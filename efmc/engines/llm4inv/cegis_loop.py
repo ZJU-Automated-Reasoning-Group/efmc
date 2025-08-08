@@ -1,9 +1,9 @@
 """
 Simplified CEGIS Loop for LLM4Inv
 
-1. Uses LLM to propose template structures
-2. Uses SMT solver to complete templates (fill holes)
-3. If completion fails, extracts counterexamples and refines templates
+1. Uses LLM to propose concrete invariant candidates
+2. Checks each candidate for validity using SMT solver
+3. If candidate fails, extracts counterexamples and refines approach
 4. Iterates until a valid invariant is found or budget exhausted
 """
 
@@ -13,9 +13,7 @@ from typing import List, Optional, Tuple, Dict, Any
 import z3
 
 from efmc.sts import TransitionSystem
-from efmc.utils.verification_utils import VerificationResult
-from .template_dsl import TemplateInvariant
-from .template_completion import TemplateCompletion
+from efmc.utils.verification_utils import VerificationResult, check_invariant
 from .llm_interface import LLMInterface
 
 logger = logging.getLogger(__name__)
@@ -25,31 +23,30 @@ class CEGISLoop:
     """
     Simplified CEGIS loop for LLM-guided invariant synthesis.
     
-    This class coordinates the iterative process of template generation,
-    completion, and refinement using counterexample-guided inductive synthesis.
+    This class coordinates the iterative process of concrete invariant generation
+    and verification using counterexample-guided inductive synthesis.
     """
     
     def __init__(self, sts: TransitionSystem, **kwargs):
         self.sts = sts
         self.max_iterations = kwargs.get('max_iterations', 10)
-        self.max_templates_per_iteration = kwargs.get('max_templates_per_iteration', 3)
+        self.max_candidates_per_iteration = kwargs.get('max_candidates_per_iteration', 5)
         self.timeout = kwargs.get('timeout', 600)
         self.bit_width = kwargs.get('bit_width', 32)
         
         # Initialize components
         self.llm_interface = LLMInterface(sts, **kwargs)
-        self.template_completion = TemplateCompletion(sts, **kwargs)
         
         # State tracking
-        self.failed_templates = []
+        self.failed_candidates = []
         self.counterexamples = []
         
         # Statistics
         self.stats = {
             'total_iterations': 0,
             'successful_iterations': 0,
-            'total_templates_generated': 0,
-            'successful_completions': 0,
+            'total_candidates_generated': 0,
+            'successful_candidates': 0,
             'total_time': 0,
             'llm_time': 0,
             'smt_time': 0,
@@ -103,68 +100,58 @@ class CEGISLoop:
     def _cegis_iteration(self, program_code: str, iteration: int) -> Optional[z3.ExprRef]:
         """Single iteration of the CEGIS loop"""
         
-        # Generate templates using LLM
+        # Generate concrete candidates using LLM
         llm_start = time.time()
         
         counterexample_str = self._format_counterexamples() if self.counterexamples else ""
         
-        if iteration == 0:
-            # First iteration: generate fresh templates
-            templates = self.llm_interface.generate_templates(program_code, counterexample_str)
-        else:
-            # Subsequent iterations: refine based on failures
-            failed_template_strs = [self._template_to_string(t) for t in self.failed_templates[-3:]]  # Last 3 failures
-            templates = self.llm_interface.refine_templates(failed_template_strs, counterexample_str)
+        candidates = self.llm_interface.generate_concrete_invariants(
+            program_code=program_code,
+            failed_candidates=self.failed_candidates[-5:] if self.failed_candidates else [],  # Last 5 failures
+            max_candidates=self.max_candidates_per_iteration,
+        )
         
         self.stats['llm_time'] += time.time() - llm_start
-        self.stats['total_templates_generated'] += len(templates)
+        self.stats['total_candidates_generated'] += len(candidates)
         
-        if not templates:
-            logger.warning(f"No templates generated in iteration {iteration + 1}")
+        if not candidates:
+            logger.warning(f"No candidates generated in iteration {iteration + 1}")
             return None
         
-        logger.info(f"Generated {len(templates)} templates in iteration {iteration + 1}")
+        logger.info(f"Generated {len(candidates)} candidates in iteration {iteration + 1}")
         
-        # Try to complete each template
-        for i, template in enumerate(templates):
-            logger.info(f"Attempting completion of template {i + 1}/{len(templates)}")
+        # Try to verify each candidate
+        for i, (cand_str, cand_expr) in enumerate(candidates):
+            logger.info(f"Checking candidate {i + 1}/{len(candidates)}: {cand_str}")
             
             smt_start = time.time()
             
-            # Use traces from counterexamples if available
-            traces = self._extract_traces_from_counterexamples()
-            invariant = self.template_completion.complete_template(template, traces)
-            
-            self.stats['smt_time'] += time.time() - smt_start
-            
-            if invariant is not None:
-                self.stats['successful_completions'] += 1
-                logger.info(f"Template completion successful: {invariant}")
-                return invariant
+            # Check if candidate is a valid invariant
+            if check_invariant(self.sts, cand_expr, cand_expr):
+                self.stats['smt_time'] += time.time() - smt_start
+                self.stats['successful_candidates'] += 1
+                logger.info(f"Candidate verification successful: {cand_str}")
+                return cand_expr
             else:
-                # Template completion failed, record failure
-                self.failed_templates.append(template)
+                self.stats['smt_time'] += time.time() - smt_start
+                # Candidate failed, record failure
+                self.failed_candidates.append(cand_str)
                 
-                # Extract counterexamples from failed completion
-                counterexamples = self._extract_counterexamples(template)
+                # Extract counterexamples from failed candidate
+                counterexamples = self._extract_counterexamples(cand_expr)
                 self.counterexamples.extend(counterexamples)
                 self.stats['counterexample_count'] += len(counterexamples)
         
         return None
     
-    def _extract_counterexamples(self, failed_template: TemplateInvariant) -> List[Tuple[z3.ModelRef, z3.ModelRef]]:
-        """Extract counterexamples from failed template completion"""
+    def _extract_counterexamples(self, failed_candidate: z3.ExprRef) -> List[Tuple[z3.ModelRef, z3.ModelRef]]:
+        """Extract counterexamples from failed candidate"""
         # This is a simplified version - in practice, we'd need to run
         # bounded model checking or similar to find concrete counterexamples
         
         # For now, return empty list as counterexample extraction
         # would require integration with BMC or similar tools
         return []
-    
-    def _extract_traces_from_counterexamples(self) -> List[Tuple[z3.ModelRef, z3.ModelRef]]:
-        """Convert counterexamples to execution traces"""
-        # Convert stored counterexamples to trace format
-        return self.counterexamples
     
     def _format_counterexamples(self) -> str:
         """Format counterexamples for LLM consumption"""
@@ -182,25 +169,15 @@ class CEGISLoop:
         
         return "\n".join(formatted)
     
-    def _template_to_string(self, template: TemplateInvariant) -> str:
-        """Convert template back to string representation"""
-        atom_strs = []
-        for atom in template.atoms:
-            # Simplified string conversion
-            atom_strs.append(f"{atom.atom_type.name}_atom")
-        
-        connector = " && " if template.conjunction else " || "
-        return connector.join(atom_strs)
-    
     def _update_approach(self):
         """Update synthesis approach based on counterexamples"""
         # Simple approach: limit the number of stored counterexamples
         if len(self.counterexamples) > 10:
             self.counterexamples = self.counterexamples[-10:]  # Keep last 10
         
-        # Limit failed templates
-        if len(self.failed_templates) > 5:
-            self.failed_templates = self.failed_templates[-5:]  # Keep last 5
+        # Limit failed candidates
+        if len(self.failed_candidates) > 10:
+            self.failed_candidates = self.failed_candidates[-10:]  # Keep last 10
     
     def get_statistics(self) -> Dict[str, Any]:
         """Get CEGIS loop statistics"""
@@ -212,16 +189,16 @@ class CEGISLoop:
         else:
             stats['success_rate'] = 0.0
         
-        if self.stats['total_templates_generated'] > 0:
-            stats['template_success_rate'] = self.stats['successful_completions'] / self.stats['total_templates_generated']
+        if self.stats['total_candidates_generated'] > 0:
+            stats['candidate_success_rate'] = self.stats['successful_candidates'] / self.stats['total_candidates_generated']
         else:
-            stats['template_success_rate'] = 0.0
+            stats['candidate_success_rate'] = 0.0
         
         return stats
     
     def reset(self):
         """Reset the CEGIS loop state"""
-        self.failed_templates.clear()
+        self.failed_candidates.clear()
         self.counterexamples.clear()
         
         # Reset statistics

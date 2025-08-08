@@ -29,6 +29,7 @@ from efmc.engines.abduction.abduction_prover import AbductionProver
 from efmc.engines.bdd.bdd_prover import BDDProver
 from efmc.engines.predabs.predabs_prover import PredicateAbstractionProver
 from efmc.engines.symabs.symabs_prover import SymbolicAbstractionProver
+# from efmc.engines.llm4inv import LLM4InvProver
 from efmc.utils.verification_utils import VerificationResult
 
 # Available templates
@@ -202,7 +203,8 @@ class EFMCRunner:
             "abduction": self.run_abduction,
             "bdd": self.run_bdd,
             "predabs": self.run_predabs,
-            "symabs": self.run_symabs
+            "symabs": self.run_symabs,
+            "llm4inv": self.run_llm4inv,
         }
 
         if g_verifier_args.engine not in engine_map:
@@ -284,6 +286,14 @@ class EFMCRunner:
         result = symabs_prover.solve()
         self.print_verification_result(result)
 
+    def run_llm4inv(self, sts: TransitionSystem) -> None:
+        """Run the simplified LLM4Inv guess-and-check engine"""
+        raise NotImplementedError("LLM4Inv is not implemented yet")
+        self.logger.info("Starting LLM4Inv (guess-and-check) verification...")
+        prover = LLM4InvProver(sts)
+        result = prover.solve()
+        self.print_verification_result(result)
+
 
 def parse_arguments():
     """Parse command line arguments"""
@@ -296,7 +306,7 @@ def parse_arguments():
     input_group.add_argument('--lang', type=str, choices=['chc', 'sygus', 'auto'],
                              default='auto', help='Input language format')
     input_group.add_argument('--engine', type=str,
-                             choices=['ef', 'pdr', 'kind', 'qe', 'qi', 'houdini', 'abduction', 'bdd', 'predabs', 'symabs'],
+                             choices=['ef', 'pdr', 'kind', 'qe', 'qi', 'houdini', 'abduction', 'bdd', 'predabs', 'symabs', 'llm4inv'],
                              default='ef', help='Verification engine to use')
     input_group.add_argument('--log-level', type=str,
                              choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],

@@ -1,9 +1,11 @@
 coverage.xml
+coverage_report
 .coverage
 .vscode
 *.time 
 *.out
 *.res
+.idea
 *egg-info*
 docs/build
 tmp_files/*
