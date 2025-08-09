@@ -76,6 +76,45 @@ class BaseKSafetyProver:
         self.trace_variables = trace_vars
         return trace_vars
 
+    def _make_step_variables(self, bound: int) -> Dict[int, Dict[int, List[z3.ExprRef]]]:
+        """Create variables indexed by trace and time step.
+
+        Returns:
+            A mapping: trace_idx -> step -> [vars_for_that_step_in_same_order_as self.sts.variables]
+        """
+        step_vars: Dict[int, Dict[int, List[z3.ExprRef]]] = {}
+        for trace_idx in range(self.k):
+            step_vars[trace_idx] = {}
+            for step in range(bound + 1):
+                vars_at_step: List[z3.ExprRef] = []
+                for var in self.sts.variables:
+                    var_name = str(var)
+                    var_sort = var.sort()
+                    if z3.is_bv_sort(var_sort):
+                        new_var = z3.BitVec(f"{var_name}_{trace_idx}_{step}", var_sort.size())
+                    elif var_sort == z3.RealSort():
+                        new_var = z3.Real(f"{var_name}_{trace_idx}_{step}")
+                    elif var_sort == z3.IntSort():
+                        new_var = z3.Int(f"{var_name}_{trace_idx}_{step}")
+                    else:
+                        new_var = z3.Bool(f"{var_name}_{trace_idx}_{step}")
+                    vars_at_step.append(new_var)
+                step_vars[trace_idx][step] = vars_at_step
+        return step_vars
+
+    def _substitute_property_at_step(self, step_vars: Dict[int, Dict[int, List[z3.ExprRef]]], step: int) -> z3.ExprRef:
+        """Return the relational property with trace variables mapped to the given time step."""
+        if self.relational_property is None:
+            raise ValueError("Relational property must be set before substitution")
+
+        # Ensure we have base trace variables created to know the placeholders used in property
+        base_trace_vars = self.trace_variables or self.create_trace_variables()
+        subst_pairs = []
+        for trace_idx in range(self.k):
+            for i, _ in enumerate(self.sts.variables):
+                subst_pairs.append((base_trace_vars[trace_idx][i], step_vars[trace_idx][step][i]))
+        return z3.substitute(self.relational_property, subst_pairs)
+
     def create_k_safety_formula(self) -> z3.ExprRef:
         """Create the k-safety verification formula."""
         if self.relational_property is None:
@@ -106,11 +145,58 @@ class BaseKSafetyProver:
         self.verification_formula = verification_formula
         return verification_formula
 
+    def create_unrolled_k_safety_formula(self, bound: int) -> z3.ExprRef:
+        """Create a time-unrolled k-safety verification formula up to the given bound.
+
+        The formula encodes:
+            (for each trace: init at step 0 and transitions for steps 0..bound-1)
+            -> relational_property at step = bound
+        """
+        if self.relational_property is None:
+            raise ValueError("Relational property must be set before creating k-safety formula")
+
+        # Create per-trace per-step variables
+        step_vars = self._make_step_variables(bound)
+
+        # Collect init, trans, and invariant conditions across traces/steps
+        conditions = []
+
+        for trace_idx in range(self.k):
+            # init at step 0
+            init_subst = [(self.sts.variables[i], step_vars[trace_idx][0][i]) for i in range(len(self.sts.variables))]
+            conditions.append(z3.substitute(self.sts.init, init_subst))
+
+            # invariants at step 0..bound, if any
+            if getattr(self.sts, "invariants", None):
+                for step in range(bound + 1):
+                    inv_subst = [(self.sts.variables[i], step_vars[trace_idx][step][i]) for i in range(len(self.sts.variables))]
+                    for inv in self.sts.invariants:
+                        conditions.append(z3.substitute(inv, inv_subst))
+
+            # transitions for steps 0..bound-1
+            for step in range(bound):
+                trans_subst = []
+                for i in range(len(self.sts.variables)):
+                    # current
+                    trans_subst.append((self.sts.variables[i], step_vars[trace_idx][step][i]))
+                    # next
+                    trans_subst.append((self.sts.prime_variables[i], step_vars[trace_idx][step + 1][i]))
+                conditions.append(z3.substitute(self.sts.trans, trans_subst))
+
+        antecedent = z3.And(*conditions) if conditions else z3.BoolVal(True)
+
+        # Property at step = bound
+        property_at_bound = self._substitute_property_at_step(step_vars, bound)
+        verification_formula = z3.Implies(antecedent, property_at_bound)
+        self.verification_formula = verification_formula
+        return verification_formula
+
     def bounded_model_checking(self, bound: int) -> VerificationResult:
         """Perform bounded model checking for k-safety verification."""
         self.logger.info(f"Performing BMC for k-safety with bound {bound}")
         
-        formula = self.create_k_safety_formula()
+        # Use time-unrolled encoding
+        formula = self.create_unrolled_k_safety_formula(bound)
         solver = z3.Solver()
         solver.add(z3.Not(formula))  # Check for violations
         solver.set("timeout", self.timeout * 1000)
@@ -166,83 +252,36 @@ class BaseKSafetyProver:
 
     def _create_k_induction_base_case(self, k_bound: int) -> z3.ExprRef:
         """Create the base case for k-induction."""
-        trace_vars = self.create_trace_variables()
-        
-        # Create k steps for each trace
-        steps = []
-        for step in range(k_bound + 1):
-            step_conditions = []
-            
-            for trace_idx in range(self.k):
-                # Create variables for this step and trace
-                step_vars = {}
-                for i, var in enumerate(self.sts.variables):
-                    var_name = str(var)
-                    var_sort = var.sort()
-                    
-                    if z3.is_bv_sort(var_sort):
-                        step_vars[var] = z3.BitVec(f"{var_name}_{trace_idx}_{step}", var_sort.size())
-                    elif var_sort == z3.RealSort():
-                        step_vars[var] = z3.Real(f"{var_name}_{trace_idx}_{step}")
-                    elif var_sort == z3.IntSort():
-                        step_vars[var] = z3.Int(f"{var_name}_{trace_idx}_{step}")
-                    else:
-                        step_vars[var] = z3.Bool(f"{var_name}_{trace_idx}_{step}")
-                
-                # Add initial condition for step 0
-                if step == 0:
-                    init_subst = [(var, step_vars[var]) for var in self.sts.variables]
-                    init_condition = z3.substitute(self.sts.init, init_subst)
-                    step_conditions.append(init_condition)
-                else:
-                    # Add transition condition
-                    trans_subst = []
-                    for i, var in enumerate(self.sts.variables):
-                        trans_subst.append((var, step_vars[var]))
-                        # Add primed variables for next step
-                        if z3.is_bv_sort(var.sort()):
-                            primed_var = z3.BitVec(f"{str(var)}_{trace_idx}_{step-1}_p", var.sort().size())
-                        elif var.sort() == z3.RealSort():
-                            primed_var = z3.Real(f"{str(var)}_{trace_idx}_{step-1}_p")
-                        elif var.sort() == z3.IntSort():
-                            primed_var = z3.Int(f"{str(var)}_{trace_idx}_{step-1}_p")
-                        else:
-                            primed_var = z3.Bool(f"{str(var)}_{trace_idx}_{step-1}_p")
-                        trans_subst.append((self.sts.prime_variables[i], primed_var))
-                    
-                    trans_condition = z3.substitute(self.sts.trans, trans_subst)
-                    step_conditions.append(trans_condition)
-            
-            steps.append(z3.And(*step_conditions))
-        
-        # The base case is: all steps → property
-        base_antecedent = z3.And(*steps)
-        
-        # Substitute the property with step variables
-        property_subst = []
-        for trace_idx in range(self.k):
-            for i, var in enumerate(self.sts.variables):
-                var_name = str(var)
-                var_sort = var.sort()
-                
-                if z3.is_bv_sort(var_sort):
-                    prop_var = z3.BitVec(f"{var_name}_{trace_idx}_{k_bound}", var_sort.size())
-                elif var_sort == z3.RealSort():
-                    prop_var = z3.Real(f"{var_name}_{trace_idx}_{k_bound}")
-                elif var_sort == z3.IntSort():
-                    prop_var = z3.Int(f"{var_name}_{trace_idx}_{k_bound}")
-                else:
-                    prop_var = z3.Bool(f"{var_name}_{trace_idx}_{k_bound}")
-                
-                property_subst.append((trace_vars[trace_idx][i], prop_var))
-        
-        property_at_k = z3.substitute(self.relational_property, property_subst)
-        return z3.Implies(base_antecedent, property_at_k)
+        # Base case is exactly the unrolled safety property up to k_bound
+        return self.create_unrolled_k_safety_formula(k_bound)
 
     def _create_k_induction_inductive_step(self, k_bound: int) -> z3.ExprRef:
-        """Create the inductive step for k-induction."""
-        # Simplified version - returns placeholder
-        return z3.BoolVal(True)
+        """Create the inductive step for k-induction.
+
+        Encode: from any k_bound-step path, if property holds at steps 0..k_bound-1,
+        then it holds at step k_bound.
+        """
+        # Build step variables 0..k_bound for each trace
+        step_vars = self._make_step_variables(k_bound)
+
+        constraints = []
+        for trace_idx in range(self.k):
+            # link transitions 0..k_bound-1
+            for step in range(k_bound):
+                trans_subst = []
+                for i in range(len(self.sts.variables)):
+                    trans_subst.append((self.sts.variables[i], step_vars[trace_idx][step][i]))
+                    trans_subst.append((self.sts.prime_variables[i], step_vars[trace_idx][step + 1][i]))
+                constraints.append(z3.substitute(self.sts.trans, trans_subst))
+
+        # Assume property at steps 0..k_bound-1
+        prop_assumptions = []
+        for step in range(k_bound):
+            prop_assumptions.append(self._substitute_property_at_step(step_vars, step))
+
+        antecedent = z3.And(*(constraints + prop_assumptions)) if (constraints or prop_assumptions) else z3.BoolVal(True)
+        conseq = self._substitute_property_at_step(step_vars, k_bound)
+        return z3.Implies(antecedent, conseq)
 
     def solve(self, timeout: Optional[int] = None) -> VerificationResult:
         """Main solving procedure for k-safety verification."""

@@ -12,10 +12,20 @@ that relate multiple execution traces. Examples include:
 from .base_prover import BaseKSafetyProver
 from .non_interference import NonInterferenceProver
 from .determinism import DeterminismProver
+from .symmetry import SymmetryProver
+from .differential_privacy import DifferentialPrivacyProver
+from .equivalence import EquivalenceProver
+from .refinement import RefinementProver
+from .hyperltl import HyperLTLProver
 
 __all__ = [
     'BaseKSafetyProver',
     'NonInterferenceProver',
-    'DeterminismProver'
+    'DeterminismProver',
+    'SymmetryProver',
+    'DifferentialPrivacyProver',
+    'EquivalenceProver',
+    'RefinementProver',
+    'HyperLTLProver'
 ]
 

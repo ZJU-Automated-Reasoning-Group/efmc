@@ -84,6 +84,14 @@ For example, the queries from 2018.NeurIPS_Code2Inv may have many variables (e.g
 - K-safety
 - ...
 
+
+## 5. Research Topics
+
+- K-induction for K-safety/relational verification
+- Template-based verification for floating points programs
+- Bit-level templates for constraint-based invariant inference
+
+
 ## Tutorials
 
 Refer to the following books:

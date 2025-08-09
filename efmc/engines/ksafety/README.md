@@ -17,6 +17,20 @@
 - Formula: ∀t1, t2. (inputs1 = inputs2) → (outputs1 = outputs2)
 - Implementation: Compares two execution traces with identical inputs and verifies outputs are identical
 
+Additionally, the engine now supports:
+
+### Symmetry (Input Permutation)
+
+- Purpose: Verify that under a permutation of inputs, outputs are permuted accordingly
+- Formula: ∀t1, t2. perm_in(inputs1) = inputs2 → perm_out(outputs1) = outputs2
+- API: `SymmetryProver.verify_input_permutation_symmetry(input_perm, output_perm)`
+
+### Epsilon-Sensitivity (Deterministic DP analogue)
+
+- Purpose: Ensure bounded change in outputs under bounded change in inputs
+- Formula: ∀t1, t2. |inputs1 - inputs2| ≤ δ → |outputs1 - outputs2| ≤ ε
+- API: `DifferentialPrivacyProver.verify_epsilon_sensitivity(input_vars, output_vars, adjacency_bounds, epsilon)`
+
 
 ## Properties Not Implemented 
 
@@ -24,19 +38,39 @@
 ### Program Equivalence/Refinement
 
 - Purpose: Verify that two program versions are equivalent or that one refines the other
-- Types:
-  + Functional Equivalence: ∀t1, t2. (inputs1 = inputs2) → (outputs1 = outputs2)
-  + Behavioral Refinement: One program's behavior is a subset of another's
-  + Semantic Equivalence: Programs compute the same function
+- Functional Equivalence (implemented via two-system BMC): for same inputs, outputs match at bound B
+- API: `EquivalenceProver.verify_functional_equivalence(input_vars, output_vars, inputs_equal_all_steps=True)`
+- Refinement (current equals equivalence for deterministic outputs): `RefinementProver.verify_refinement(...)`
 
 ### Symmetry Properties
 
-- Purpose: Verify that system behavior is invariant under certain transformations
-- Examples:
-  + Input Permutation Symmetry: ∀t1, t2. permute(inputs1) = inputs2 → permute(outputs1) = outputs2
-  + Parameter Symmetry: Swapping parameters produces equivalent results
-  + Geometric Symmetries: Rotational, translational, or reflection symmetries
+Note: Basic input-permutation symmetry is implemented. Other symmetry classes (parameter, geometric) are TBD.
 
+
+## Engine Enhancements 
+
+- Time-unrolled BMC: BMC now unrolls transitions up to bound B and checks property at step B
+- k-induction: Added a proper inductive step (assume property holds for steps < k, prove at k)
+
+### HyperLTL-like formulas (bounded)
+
+- Minimal DSL and prover to express relational temporal properties across k traces
+- Operators: G, F, X, U with bounded semantics
+- API: `HyperLTLProver.set_formula(phi)` then `solve()` with `method="bounded_model_checking"`
+- Example usage:
+
+```python
+from efmc.engines.ksafety import HyperLTLProver
+from efmc.engines.ksafety.hyperltl import Var, Atom, G, Implies
+
+phi = Implies(
+    G(Atom('==', Var('high',0), Var('high',1))),
+    G(Atom('==', Var('low',0), Var('low',1)))
+)
+prover = HyperLTLProver(sts, k=2, method='bounded_model_checking', max_bound=10)
+prover.set_formula(phi)
+res = prover.solve()
+```
 
 ## More 
 

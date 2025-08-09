@@ -54,21 +54,22 @@ class NonInterferenceProver(BaseKSafetyProver):
         # Create the non-interference property
         # For non-interference: if high inputs are the same, then low outputs should be the same
         trace_vars = self.create_trace_variables()
-        
-        # Find high and low variables
-        high_variables = [var for var in self.sts.variables if str(var) in high_vars]
-        low_variables = [var for var in self.sts.variables if str(var) in low_vars]
-        
-        # Create the non-interference property
-        # ∀t1, t2. (high1 = high2) → (low1 = low2)
-        high_equality = z3.And(*[trace_vars[0][i] == trace_vars[1][i] 
-                                 for i, var in enumerate(self.sts.variables) 
-                                 if var in high_variables])
-        
-        low_equality = z3.And(*[trace_vars[0][i] == trace_vars[1][i] 
-                                for i, var in enumerate(self.sts.variables) 
-                                if var in low_variables])
-        
+
+        high_set = set(high_vars)
+        low_set = set(low_vars)
+
+        high_eq_terms = []
+        low_eq_terms = []
+        for i, var in enumerate(self.sts.variables):
+            name = str(var)
+            if name in high_set:
+                high_eq_terms.append(trace_vars[0][i] == trace_vars[1][i])
+            if name in low_set:
+                low_eq_terms.append(trace_vars[0][i] == trace_vars[1][i])
+
+        high_equality = z3.And(*high_eq_terms) if high_eq_terms else z3.BoolVal(True)
+        low_equality = z3.And(*low_eq_terms) if low_eq_terms else z3.BoolVal(True)
+
         non_interference_property = z3.Implies(high_equality, low_equality)
         
         self.set_relational_property(non_interference_property)
