@@ -1,5 +1,5 @@
-from veripy.parser import syntax
-from veripy.typecheck.types import to_ast_type
+from efmc.veripy.parser import syntax
+from efmc.veripy.typecheck.types import to_ast_type
 
 ArithOps = syntax.ArithOps
 CompOps = syntax.CompOps

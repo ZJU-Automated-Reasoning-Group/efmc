@@ -31,7 +31,8 @@ REQUIRED = [
     'meson>=0.64',
     'pytest==7.3.2',
     'pytest-cov==5.0.0',
-    'requests==2.32.3'
+    'requests==2.32.3',
+    'pyparsing==3.2.3'
 ]
 
 # The rest you shouldn't have to touch too much :)

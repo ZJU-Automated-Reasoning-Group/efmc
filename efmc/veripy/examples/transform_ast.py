@@ -1,7 +1,7 @@
 from z3.z3 import Z3
-from veripy.verify import invariant, parse_func_types
-from veripy import *
-from veripy.prettyprint import pretty_print
+from efmc.veripy.verify import invariant, parse_func_types
+from efmc.veripy import *
+from efmc.veripy.prettyprint import pretty_print
 from typing import List
 import inspect
 import ast

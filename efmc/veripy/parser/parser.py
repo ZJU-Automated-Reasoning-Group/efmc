@@ -1,7 +1,7 @@
 import sys
 from functools import reduce, wraps
 from pyparsing import *
-from veripy.parser.ast_builder import *
+from efmc.veripy.parser.ast_builder import *
 
 ParserElement.enablePackrat()
 

@@ -1,15 +1,15 @@
-import parser
+import efmc.veripy.parser
 import inspect
 import ast
-import veripy
-from veripy import *
-from veripy import invariant
+import efmc.veripy
+from efmc.veripy import *
+from efmc.veripy import invariant
 from typing import List
 
-veripy.enable_verification()
-veripy.scope('test')
+efmc.veripy.enable_verification()
+efmc.veripy.scope('test')
 
-veripy.scope('loops')
+efmc.veripy.scope('loops')
 
 @verify(
     requires=['n >= 0'], 
@@ -67,7 +67,7 @@ def test_func2(a : int, b : int) -> int:
         i = i - 1
     return ans
 
-veripy.scope('if-then-else')
+efmc.veripy.scope('if-then-else')
 
 @verify(
     ensures=[
@@ -111,7 +111,7 @@ def absolute_value(x : int) -> int:
         ans = -x
     return ans
 
-veripy.scope('summation')
+efmc.veripy.scope('summation')
 
 @verify(
     requires=[
@@ -131,7 +131,7 @@ def Summation(n : int) -> int:
         i = i + 1
     return ans
 
-veripy.scope('mod')
+efmc.veripy.scope('mod')
 
 @verify(
     requires=['n >= 0'],
@@ -142,7 +142,7 @@ def test_mod(n) -> bool:
     ans = (m == 0)
     return ans
 
-veripy.scope('quantifiers')
+efmc.veripy.scope('quantifiers')
 @verify(
     ensures=['forall x : int :: x > 0 ==> n + x > n']
 )
@@ -182,7 +182,7 @@ def de_morgan() -> None:
 def make_intuitionists_mad() -> None:
     pass
 
-veripy.scope('lists')
+efmc.veripy.scope('lists')
 
 @verify(
     requires=['len(xs) > 0'],
@@ -194,5 +194,5 @@ def simpl_array_operations(xs: List[int]) -> int:
     return ans
 
 # veripy.verify_all()
-veripy.do_verification('summation')
+efmc.veripy.do_verification('summation')
 # veripy.do_verification('lists', ignore_err=False)

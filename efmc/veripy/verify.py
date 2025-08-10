@@ -2,13 +2,13 @@ import ast
 import z3
 import inspect
 from typing import List, Tuple, TypeVar
-from veripy.parser.syntax import *
-from veripy.parser.parser import parse_assertion, parse_expr
+from efmc.veripy.parser.syntax import *
+from efmc.veripy.parser.parser import parse_assertion, parse_expr
 from functools import wraps
-from veripy.transformer import *
+from efmc.veripy.transformer import *
 from functools import reduce
-from veripy.prettyprint import pretty_print
-from veripy import typecheck as tc
+from efmc.veripy.prettyprint import pretty_print
+from efmc.veripy import typecheck as tc
 
 class VerificationStore:
     def __init__(self):

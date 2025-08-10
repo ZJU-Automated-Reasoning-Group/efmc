@@ -1,4 +1,4 @@
-from veripy.parser.syntax import *
+from efmc.veripy.parser.syntax import *
 
 
 def print_line(level, content):

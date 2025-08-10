@@ -1,10 +1,10 @@
-import veripy
-from veripy import *
-from veripy import invariant
+import efmc.veripy
+from efmc.veripy import *
+from efmc.veripy import invariant
 from typing import List
 
-veripy.enable_verification()
-veripy.scope('demo')
+efmc.veripy.enable_verification()
+efmc.veripy.scope('demo')
 
 @verify(
     requires=['n >= 0'], 
@@ -19,4 +19,4 @@ def counter(n) -> int:
         y = y - 1
     return x
 
-veripy.verify_all()
+efmc.veripy.verify_all()

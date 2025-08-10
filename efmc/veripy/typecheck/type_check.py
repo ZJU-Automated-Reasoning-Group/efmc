@@ -1,8 +1,8 @@
 from typing import List
-from veripy.parser.syntax import *
-from veripy.typecheck.types import *
-from veripy.built_ins import FUNCTIONS
-from veripy.log import log
+from efmc.veripy.parser.syntax import *
+from efmc.veripy.typecheck.types import *
+from efmc.veripy.built_ins import FUNCTIONS
+from efmc.veripy.log import log
 import typing_utils
 
 def type_check_stmt(sigma : dict, func_sigma : dict, stmt : Stmt):

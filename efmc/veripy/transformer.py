@@ -1,9 +1,9 @@
 import ast
 import z3
-from veripy.parser.syntax import *
-from veripy.parser.parser import parse_assertion
-from veripy.built_ins import BUILT_INS, FUNCTIONS
-from veripy.typecheck.types import *
+from efmc.veripy.parser.syntax import *
+from efmc.veripy.parser.parser import parse_assertion
+from efmc.veripy.built_ins import BUILT_INS, FUNCTIONS
+from efmc.veripy.typecheck.types import *
 from functools import reduce
 from typing import List
 
