@@ -18,6 +18,7 @@ BINOP_DICT = {
     '>'  : CompOps.Gt,
     '==' : CompOps.Eq,
     '!=' : CompOps.Neq,
+    'in' : CompOps.In,
 
     'and' : BoolOps.And,
     'or'  : BoolOps.Or,
@@ -92,13 +93,18 @@ class ProcessSubscript(ASTBuilder):
                 store.append(self.subscripts[0])
                 self.subscripts = self.subscripts[1:]
             if len(store) == 3:
-                subscript = syntax.Slice(store[0], store[2])
+                # lower : upper (no step)
+                lo = store[0].makeAST()
+                hi = store[2].makeAST()
+                subscript = syntax.Slice(lo, hi, None)
             elif len(store) == 2:
                 fst, snd = store
                 if fst == ':':
-                    subscript = syntax.Slilce(None, snd.makeAST())
+                    # : upper
+                    subscript = syntax.Slice(None, snd.makeAST(), None)
                 else:
-                    subscript = syntax.Slice(fst.makeAST(), None)
+                    # lower :
+                    subscript = syntax.Slice(fst.makeAST(), None, None)
             else:
                 subscript = store[0].makeAST()
             if result is None:
@@ -118,6 +124,9 @@ class ProcessFnCall(ASTBuilder):
         func_name = func_name.makeAST()
         if func_name.name in UNOP_DICT:
             return syntax.UnOp(UNOP_DICT[func_name.name], args[0].makeAST())
+        # Special: old(e) becomes an Old node, later lowered to $old bindings
+        if func_name.name == 'old':
+            return syntax.Old(args[0].makeAST())
         return syntax.FunctionCall(func_name, [x.makeAST() for x in args], native=False)
 
 class ProcessQuantification(ASTBuilder):
@@ -125,7 +134,7 @@ class ProcessQuantification(ASTBuilder):
         self.value = tokens
     
     def makeAST(self):
-        import veripy.transformer as trans
+        from efmc.veripy import transformer as trans
         ty = None
         if len(self.value) == 3:
             quantifier, var, expr = self.value

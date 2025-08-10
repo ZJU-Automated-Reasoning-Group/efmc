@@ -32,7 +32,7 @@ REQUIRED = [
     'pytest==7.3.2',
     'pytest-cov==5.0.0',
     'requests==2.32.3',
-    'pyparsing==3.2.3'
+    'pyparsing'
 ]
 
 # The rest you shouldn't have to touch too much :)

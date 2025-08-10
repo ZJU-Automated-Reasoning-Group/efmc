@@ -17,6 +17,7 @@ class CompOps(Op, Enum):
     Le = '<='
     Gt = '>'
     Ge = '>='
+    In = 'in'
 
 class BoolOps(Op, Enum):
     And = 'and'
@@ -128,6 +129,15 @@ class FunctionCall(Expr):
     def variables(self):
         return set()
 
+class RecordField(Expr):
+    def __init__(self, obj: Expr, field: str):
+        self.obj = obj
+        self.field = field
+    def __repr__(self):
+        return f'(Field {self.obj}.{self.field})'
+    def variables(self):
+        return self.obj.variables()
+
 class Subscript(Expr):
     def __init__(self, var, subscript):
         self.var = var
@@ -138,6 +148,16 @@ class Subscript(Expr):
     
     def variables(self):
         return self.var.variables().union(self.subscript.variables())
+
+class Store(Expr):
+    def __init__(self, arr, idx, val):
+        self.arr = arr
+        self.idx = idx
+        self.val = val
+    def __repr__(self):
+        return f'(Store {self.arr} [{self.idx}] = {self.val})'
+    def variables(self):
+        return self.arr.variables().union(self.idx.variables()).union(self.val.variables())
 
 class Quantification(Expr):
     '''
@@ -151,6 +171,14 @@ class Quantification(Expr):
     
     def __repr__(self):
         return f'(∀{self.var} : {self.ty}. {self.expr})'
+
+class Old(Expr):
+    def __init__(self, expr: Expr):
+        self.expr = expr
+    def __repr__(self):
+        return f'(Old {self.expr})'
+    def variables(self):
+        return self.expr.variables()
 
 '''
 Translating ASTs

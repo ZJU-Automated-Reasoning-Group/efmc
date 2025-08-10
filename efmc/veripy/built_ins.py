@@ -1,2 +1,2 @@
-BUILT_INS = ('invariant', 'assume')
-FUNCTIONS = ('len',)
+BUILT_INS = ('invariant', 'assume', 'decreases')
+FUNCTIONS = ('len', 'old')

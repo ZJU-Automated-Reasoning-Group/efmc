@@ -24,7 +24,7 @@ MULT, DIV, MOD = map(Literal, ('*', '//', '%'))
 
 AND, OR, NOT, IMPLIES, IFF = map(Literal, ('and', 'or', 'not', '==>', '<==>'))
 
-LT, LE, GT, GE, EQ, NEQ = map(Literal, ('<', '<=', '>', '>=', '==', '!='))
+LT, LE, GT, GE, EQ, NEQ, IN = map(Literal, ('<', '<=', '>', '>=', '==', '!=', 'in'))
 
 '''
 In case of reusing the rules, make them lazily generated
@@ -64,6 +64,7 @@ def arith_comp_rules():
             (GE, 2, opAssoc.LEFT, ProcessBinOp),
             (EQ, 2, opAssoc.LEFT, ProcessBinOp),
             (NEQ, 2, opAssoc.LEFT, ProcessBinOp),
+            (IN, 2, opAssoc.LEFT, ProcessBinOp),
     ]
 
 @lazy
