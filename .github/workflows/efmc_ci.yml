@@ -52,6 +52,8 @@ jobs:
     - name: Install system dependencies (macOS)
       if: runner.os == 'macOS'
       run: |
+        # Uninstall cmake if it exists to avoid tap conflicts
+        brew uninstall cmake || true
         brew install \
           gmp \
           swig \

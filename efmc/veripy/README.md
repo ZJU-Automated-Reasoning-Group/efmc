@@ -22,3 +22,12 @@ Array support notes:
 - Use Python type hints `List[int]` to indicate arrays in specs and inference.
 - Indexing `xs[i]` and assignments `xs[i] = v` are modeled with SMT `Select`/`Store`.
 - Length `len(xs)` supported in assertions; rich list ops beyond indexing are WIP.
+
+# Related Work
+
+- https://github.com/marcoeilers/nagini: a static verification tool for Python using Viper
+- https://github.com/pschanely/CrossHair: a static verification tool for Python using symbolic execution
+- 
+
+
+- https://github.com/JensGM/Typhon
