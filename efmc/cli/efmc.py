@@ -8,10 +8,10 @@ import logging
 import os
 import signal
 import sys
-from pathlib import Path
+# from pathlib import Path
 import logging
 # import subprocess
-from threading import Timer
+# from threading import Timer
 from typing import List
 import psutil
 
@@ -22,15 +22,21 @@ from efmc.efmc_config import g_verifier_args
 from efmc.engines.ef import EFProver
 from efmc.engines.kinduction import KInductionProver
 from efmc.engines.pdr import PDRProver
-from efmc.engines.qe import QuantifierEliminationProver
+from efmc.engines.llm4inv import LLM4InvProver
+from efmc.utils.verification_utils import VerificationResult
+# for the less-used prover, I move them to the corresponding functions.
+# the followings only serve as "docs"
+""" 
 from efmc.engines.qi import QuantifierInstantiationProver
 from efmc.engines.houdini import HoudiniProver
-from efmc.engines.abduction.abduction_prover import AbductionProver
+from efmc.engines.abduction import AbductionProver
+from efmc.engines.qe import QuantifierEliminationProver
+from efmc.engines.predabs import PredicateAbstractionProver
+from efmc.engines.symabs import SymbolicAbstractionProver
 from efmc.engines.bdd.bdd_prover import BDDProver
-from efmc.engines.predabs.predabs_prover import PredicateAbstractionProver
 from efmc.engines.symabs.symabs_prover import SymbolicAbstractionProver
-# from efmc.engines.llm4inv import LLM4InvProver
-from efmc.utils.verification_utils import VerificationResult
+from efmc.engines.predabs.predabs_prover import PredicateAbstractionProver
+""" 
 
 # Available templates
 TEMPLATES = {
@@ -139,6 +145,7 @@ class EFMCRunner:
 
     def run_qi(self, sts: TransitionSystem) -> None:
         """Run the Quantifier Instantiation (QI) based verification"""
+        from efmc.engines.qi.qi_prover import QuantifierInstantiationProver
         qi_prover = QuantifierInstantiationProver(sts)
 
         # Set the QI strategy based on the command-line argument
@@ -160,6 +167,7 @@ class EFMCRunner:
 
     def run_qe(self, sts: TransitionSystem) -> None:
         """Run quantifier elimination based verification"""
+        from efmc.engines.qe.qe_prover import QuantifierEliminationProver
         qe_prover = QuantifierEliminationProver(sts)
         result = qe_prover.solve()
         self.print_verification_result(result)
@@ -216,6 +224,7 @@ class EFMCRunner:
 
     def run_houdini(self, sts: TransitionSystem) -> None:
         """Run Houdini-based invariant inference"""
+        from efmc.engines.houdini.houdini_prover import HoudiniProver
         houdini_prover = HoudiniProver(sts)
         result = houdini_prover.solve()
         self.print_verification_result(result)
@@ -223,6 +232,7 @@ class EFMCRunner:
     def run_abduction(self, sts: TransitionSystem) -> None:
         """Run abduction-based invariant inference"""
         self.logger.info("Starting abduction-based verification...")
+        from efmc.engines.abduction.abduction_prover import AbductionProver
         abduction_prover = AbductionProver(sts)
         if hasattr(g_verifier_args, 'abduction_max_iterations'):
             abduction_prover.max_iterations = g_verifier_args.abduction_max_iterations
@@ -233,6 +243,7 @@ class EFMCRunner:
 
     def run_bdd(self, sts: TransitionSystem) -> None:
         """Run BDD-based verification"""
+        from efmc.engines.bdd.bdd_prover import BDDProver
         self.logger.info("Starting BDD-based verification...")
         use_forward = True
         if hasattr(g_verifier_args, 'bdd_backward') and g_verifier_args.bdd_backward:
@@ -248,6 +259,7 @@ class EFMCRunner:
     def run_predabs(self, sts: TransitionSystem) -> None:
         """Run predicate abstraction-based verification"""
         self.logger.info("Starting predicate abstraction-based verification...")
+        from efmc.engines.predabs.predabs_prover import PredicateAbstractionProver
         predabs_prover = PredicateAbstractionProver(sts)
         
         # Set predicates if provided
@@ -277,6 +289,7 @@ class EFMCRunner:
     def run_symabs(self, sts: TransitionSystem) -> None:
         """Run symbolic abstraction-based verification"""
         self.logger.info("Starting symbolic abstraction-based verification...")
+        from efmc.engines.symabs.symabs_prover import SymbolicAbstractionProver
         symabs_prover = SymbolicAbstractionProver(sts)
         
         # Set domain if provided
@@ -288,7 +301,6 @@ class EFMCRunner:
 
     def run_llm4inv(self, sts: TransitionSystem) -> None:
         """Run the simplified LLM4Inv guess-and-check engine"""
-        raise NotImplementedError("LLM4Inv is not implemented yet")
         self.logger.info("Starting LLM4Inv (guess-and-check) verification...")
         prover = LLM4InvProver(sts)
         result = prover.solve()
@@ -297,7 +309,11 @@ class EFMCRunner:
 
 def parse_arguments():
     """Parse command line arguments"""
-    parser = argparse.ArgumentParser(description='EFMC - A Software Model Checker')
+    parser = argparse.ArgumentParser(
+        description='EFMC - A Software Model Checker',
+        usage='efmc --file FILE [options]',
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
 
     # Input and general options
     input_group = parser.add_argument_group('Input options')
@@ -372,6 +388,28 @@ def parse_arguments():
                             help='Use auxiliary invariants in k-induction')
     kind_group.add_argument('--kind-aux-inv-alg', dest='kind_aux_inv_alg', default='default', type=str,
                             help="Select the approach for generating auxiliary invariants. Options include: [top, int, houdini]")
+
+    # LLM4Inv options
+    llm4inv_group = parser.add_argument_group('LLM4Inv options')
+    llm4inv_group.add_argument('--llm4inv-max-candidates-per-iter', type=int, default=5,
+                              help='Maximum number of candidates for LLM4Inv (default: 5)')
+    llm4inv_group.add_argument('--llm4inv-provider', type=str, default='local',
+                              help='Provider for LLM4Inv: local, remote (default: local)')
+    llm4inv_group.add_argument('--llm4inv-local-provider', type=str, default='lm-studio',
+                              help='Local provider for LLM4Inv: lm-studio, vllm, sglang')
+    llm4inv_group.add_argument('--llm4inv-local-model', type=str, default='qwen/qwen3-coder-30b',
+                              help='Local model for LLM4Inv (default: qwen/qwen3-coder-30b)')
+    llm4inv_group.add_argument('--llm4inv-remote-model', type=str, default='deepseek-v3',
+                              help='Remote model for LLM4Inv: deepseek-v3, glm-4-flash, etc. (default: deepseek-v3)')
+    llm4inv_group.add_argument('--llm4inv-temperature', type=float, default=0.1,
+                              help='Temperature for LLM4Inv (default: 0.1)')
+    llm4inv_group.add_argument('--llm4inv-max-output-length', type=int, default=4096,
+                              help='Maximum output length for LLM4Inv (default: 4096)')
+    llm4inv_group.add_argument('--llm4inv-measure-cost', action='store_true', default=False,
+                              help='Measure cost for LLM4Inv (default: False)')
+    llm4inv_group.add_argument('--llm4inv-max-iterations', type=int, default=10,
+                              help='Maximum number of iterations for LLM4Inv (default: 10)')
+
 
     # Quantifier instantiation-based verification options
     qi_group = parser.add_argument_group('Quantifier instantiation-based verification options')

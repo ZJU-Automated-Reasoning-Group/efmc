@@ -32,7 +32,9 @@ REQUIRED = [
     'pytest==7.3.2',
     'pytest-cov==5.0.0',
     'requests==2.32.3',
-    'pyparsing'
+    'pyparsing',
+    'openai', 
+    'tiktoken'
 ]
 
 # The rest you shouldn't have to touch too much :)
@@ -113,10 +115,8 @@ setup(
     entry_points={
         'console_scripts': [
             'efmc=efmc.cli.efmc:main',
-            'efsmt=efmc.cli.efsmt:main',  
-            'efsmt_par=efmc.cli.efsmt_par:main',
-            'efmc-term=efmc.cli.efmc_term:main',
-            # Added EFSMT CLI entry point
+            'efsmt=efmc.cli.efsmt:main',
+            'polyhorn=efmc.cli.polyhorn:main',
         ],
     },
     

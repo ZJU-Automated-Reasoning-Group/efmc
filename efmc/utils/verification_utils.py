@@ -12,7 +12,7 @@ This module provides common data structures and functions for verification tasks
 
 import logging
 from dataclasses import dataclass
-from typing import Optional, TYPE_CHECKING, Any
+from typing import Optional, TYPE_CHECKING, Any, List, Tuple, Dict
 
 import z3
 
@@ -69,17 +69,6 @@ class SolverTimeout(Exception):
 def check_entailment(expr1: z3.ExprRef, expr2: z3.ExprRef, timeout: int = 10000) -> bool:
     """
     Check if expr1 entails expr2 using Z3 solver.
-
-    Args:
-        expr1: The expression that is assumed to hold
-        expr2: The expression that should be entailed by expr1
-        timeout: Solver timeout in milliseconds
-
-    Returns:
-        True if expr1 entails expr2, False otherwise
-
-    Raises:
-        SolverTimeout: If the solver times out
     """
     s = z3.Solver()
     s.set("timeout", timeout)
@@ -94,17 +83,6 @@ def check_entailment(expr1: z3.ExprRef, expr2: z3.ExprRef, timeout: int = 10000)
 def are_expressions_equivalent(expr1: z3.ExprRef, expr2: z3.ExprRef, timeout: int = 10000) -> bool:
     """
     Check if two Z3 expressions are logically equivalent.
-
-    Args:
-        expr1: First expression
-        expr2: Second expression
-        timeout: Solver timeout in milliseconds
-
-    Returns:
-        True if expressions are equivalent, False otherwise
-
-    Raises:
-        SolverTimeout: If the solver times out
     """
     s = z3.Solver()
     s.set("timeout", timeout)
@@ -125,12 +103,6 @@ def are_expressions_equivalent(expr1: z3.ExprRef, expr2: z3.ExprRef, timeout: in
 def get_counterexample(formula: z3.ExprRef):
     """
     Get a counterexample for the given formula.
-    
-    Args:
-        formula: The formula to find a counterexample for
-        
-    Returns:
-        A model satisfying the formula if one exists, None otherwise
     """
     s = z3.Solver()
     s.add(formula)
@@ -139,7 +111,7 @@ def get_counterexample(formula: z3.ExprRef):
     return None
 
 
-def check_invariant(sts: Any, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRef):
+def check_invariant(sts: Any, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRef) -> bool:
     """
     Check whether the generated invariant is correct.
     
@@ -194,3 +166,85 @@ def check_invariant(sts: Any, inv: z3.ExprRef, inv_in_prime_variables: z3.ExprRe
         logger.info("Invariant verification successful")
 
     return correct
+
+
+def verify_invariant_with_counterexamples(sts: Any, inv: z3.ExprRef) -> Tuple[bool, List[Tuple[z3.ModelRef, z3.ModelRef]]]:
+    """
+    Unified function for invariant verification and counterexample extraction.
+    
+    Verifies three conditions:
+    1. Initiation: init => inv
+    2. Inductiveness: inv && trans => inv'
+    3. Safety: inv => post (if not ignored)
+    
+    Args:
+        sts: The transition system
+        inv: The invariant to check
+        
+    Returns:
+        Tuple of (is_correct, counterexamples) where:
+        - is_correct: True if the invariant is correct, False otherwise
+        - counterexamples: List of (pre_state, post_state) model pairs for failed conditions
+    """
+    def extract_state_from_model(model: z3.ModelRef, use_prime: bool = False) -> Dict[z3.ExprRef, Any]:
+        """Extract state dictionary from model, optionally using primed variables."""
+        state = {}
+        for i, var in enumerate(sts.variables):
+            if use_prime and i < len(sts.prime_variables):
+                target_var = sts.prime_variables[i]
+            else:
+                target_var = var
+            if target_var.decl() in model:
+                state[var] = model[target_var.decl()]
+        return state
+    
+    def check_condition(condition: z3.ExprRef, error_msg: str, counterexample_formula: z3.ExprRef, 
+                       use_prime: bool = False) -> bool:
+        """Check a condition and extract counterexample if it fails."""
+        if not is_entail(condition, inv if not use_prime else primed_invariant):
+            logger.error(error_msg)
+            model = get_counterexample(counterexample_formula)
+            if model:
+                logger.error(f"Counterexample: {model}")
+                if use_prime:
+                    pre_state = extract_state_from_model(model, False)
+                    post_state = extract_state_from_model(model, True)
+                    if pre_state and post_state:
+                        counterexamples.append((pre_state, post_state))
+                else:
+                    state = extract_state_from_model(model)
+                    if state:
+                        counterexamples.append((state, None))
+            return False
+        return True
+    
+    counterexamples = []
+    correct = True
+    
+    # Create primed version of invariant for inductiveness check
+    substitution_map = [(var, sts.prime_variables[i]) for i, var in enumerate(sts.variables) 
+                       if i < len(sts.prime_variables)]
+    primed_invariant = z3.substitute(inv, substitution_map)
+    
+    # Check all three conditions
+    checks = [
+        (sts.init, "Initiation check failed", z3.And(sts.init, z3.Not(inv)), False),
+        (z3.And(sts.trans, inv), "Inductiveness check failed", 
+         z3.And(sts.trans, inv, z3.Not(primed_invariant)), True),
+    ]
+    
+    # Add safety check if not ignored
+    if not (hasattr(sts, 'ignore_post_cond') and sts.ignore_post_cond):
+        checks.append((inv, "Safety check failed", z3.And(inv, z3.Not(sts.post)), False))
+    
+    for condition, error_msg, counterexample_formula, use_prime in checks:
+        if not check_condition(condition, error_msg, counterexample_formula, use_prime):
+            correct = False
+    
+    # Log results
+    if not correct:
+        logger.debug(f"Init: {sts.init}\nTrans: {sts.trans}\nPost: {sts.post}\nInv: {inv}")
+    else:
+        logger.info("Invariant verification successful")
+    
+    return correct, counterexamples

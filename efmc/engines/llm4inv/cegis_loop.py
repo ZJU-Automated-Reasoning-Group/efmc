@@ -8,8 +8,9 @@ from typing import List, Optional, Tuple, Dict, Any
 import z3
 
 from efmc.sts import TransitionSystem
-from efmc.utils.verification_utils import check_invariant
+from efmc.utils.verification_utils import verify_invariant_with_counterexamples
 from efmc.engines.llm4inv.llm_interface import LLMInterface
+from efmc.engines.llm4inv.prompt_manager import InvariantPromptManager
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,12 @@ class LLMInvariantCEGIS:
         self.max_candidates_per_iteration = kwargs.get('max_candidates_per_iteration', 5)
         self.timeout = kwargs.get('timeout', 600)
         
+        # Initialize generic LLM interface
         self.llm_interface = LLMInterface(sts, **kwargs)
+        
+        # Initialize invariant-specific prompt manager
+        self.prompt_manager = InvariantPromptManager(sts, kwargs.get('bit_width'))
+        
         self.failed_candidates = []
         self.counterexamples = []
         self.stats = {'iterations': 0, 'candidates': 0, 'successful': 0, 'time': 0}
@@ -55,53 +61,31 @@ class LLMInvariantCEGIS:
     
     def _cegis_iteration(self, program_code: str) -> Optional[z3.ExprRef]:
         """Single iteration of the CEGIS loop"""
-        candidates = self.llm_interface.generate_concrete_invariants(
+        # Create prompt generator and response parser for this iteration
+        prompt_generator = self.prompt_manager.create_prompt_generator(
             program_code=program_code,
             failed_candidates=self.failed_candidates[-5:],
-            max_candidates=self.max_candidates_per_iteration,
+            max_candidates=self.max_candidates_per_iteration
+        )
+        response_parser = self.prompt_manager.create_response_parser()
+        
+        # Generate candidates using the generic interface
+        candidates = self.llm_interface.generate_candidates(
+            prompt_generator=prompt_generator,
+            response_parser=response_parser
         )
         
         self.stats['candidates'] += len(candidates)
         
         for cand_str, cand_expr in candidates:
-            if check_invariant(self.sts, cand_expr, cand_expr):
+            is_correct, counterexamples = verify_invariant_with_counterexamples(self.sts, cand_expr)
+            if is_correct:
                 return cand_expr
             
             self.failed_candidates.append(cand_str)
-            counterexamples = self._extract_counterexamples(cand_expr)
             self.counterexamples.extend(counterexamples)
         
         return None
-    
-    def _extract_counterexamples(self, failed_candidate: z3.ExprRef) -> List[Tuple[z3.ModelRef, z3.ModelRef]]:
-        """Extract counterexamples from failed candidate"""
-        counterexamples = []
-        solver = z3.Solver()
-        
-        # Check initial states
-        if self.sts.init is not None:
-            solver.push()
-            solver.add(z3.Not(failed_candidate), self.sts.init)
-            if solver.check() == z3.sat:
-                counterexamples.append((solver.model(), None))
-            solver.pop()
-        
-        # Check inductive step
-        if self.sts.trans is not None:
-            solver.push()
-            primed_invariant = z3.substitute(failed_candidate, 
-                [(var, var.prime()) for var in self.sts.variables])
-            solver.add(failed_candidate, self.sts.trans, z3.Not(primed_invariant))
-            
-            if solver.check() == z3.sat:
-                model = solver.model()
-                pre_state = {var: model[var] for var in self.sts.variables if var in model}
-                post_state = {var: model[var.prime()] for var in self.sts.variables if var.prime() in model}
-                if pre_state and post_state:
-                    counterexamples.append((pre_state, post_state))
-            solver.pop()
-        
-        return counterexamples
     
     def _update_approach(self):
         """Update synthesis approach based on counterexamples"""

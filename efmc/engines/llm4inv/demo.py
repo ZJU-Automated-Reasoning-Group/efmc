@@ -1,21 +1,19 @@
 """
 LLM4Inv Demo: Guess-and-Check Style Invariant Inference
-
-Example programs:
-1. Simple counter with overflow check
-2. Array bounds checking
 """
 
 import logging
 import time
 import z3
 from typing import Dict, Any
+import os
+import glob
 
 from efmc.sts import TransitionSystem
 from efmc.engines.llm4inv.llm4inv_prover import LLM4InvProver
+from efmc.frontends.chc_parser import CHCParser
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -172,4 +170,5 @@ def main():
 
 
 if __name__ == "__main__":
+    import sys
     main()

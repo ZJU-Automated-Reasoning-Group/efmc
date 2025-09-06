@@ -100,6 +100,7 @@ class LLMLocal:
                 model=self.offline_model_name,
                 messages=model_input,
                 temperature=self.temperature,
+                #max_tokens=self.max_output_length
             )
             return response.choices[0].message.content
 

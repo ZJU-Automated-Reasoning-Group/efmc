@@ -1,7 +1,7 @@
 PySMT==0.9.6
 z3-solver==4.13.0
 psutil~=7.0.0
-Cython~=0.29.34
+Cython~=0.29.34 # need this?
 python-sat==0.1.8.dev1
 pytest==7.3.2
 pytest-cov==5.0.0
@@ -9,5 +9,7 @@ pytest-timeout==2.1.0
 tqdm>=4.66.3
 requests==2.32.3
 pyparsing
+openai
+tiktoken
 # seaborn~=0.12.2
 # scikit-learn==1.2.2

@@ -13,17 +13,14 @@ import z3
 from efmc.sts import TransitionSystem
 from efmc.utils.verification_utils import VerificationResult
 from efmc.engines.llm4inv.cegis_loop import LLMInvariantCEGIS
+from efmc.engines.llm4inv.prompt_manager import extract_bit_width_from_sts
 
 logger = logging.getLogger(__name__)
 
 
 class LLM4InvProver:
     """
-    Lightweight interface for LLM-based invariant synthesis.
-    
-    This class provides a simple API that wraps the CEGIS loop implementation.
-    It's designed to be easy to use while leveraging the full power of the
-    counterexample-guided inductive synthesis approach.
+    LLM-based invariant synthesis.
     """
 
     def __init__(self, sts: TransitionSystem, **kwargs):
@@ -32,7 +29,7 @@ class LLM4InvProver:
         # Store configuration
         self.timeout = kwargs.get('timeout', 600)
         self.max_iterations = kwargs.get('max_iterations', 10)
-        self.bit_width = kwargs.get('bit_width', 32)
+        self.bit_width = kwargs.get('bit_width') or extract_bit_width_from_sts(sts)
         self.llm_model = kwargs.get('llm_model', 'deepseek-v3')
         
         # Initialize the CEGIS loop with the same configuration
@@ -43,15 +40,6 @@ class LLM4InvProver:
         self.solve_time = 0.0
     
     def solve(self, timeout: Optional[int] = None) -> VerificationResult:
-        """
-        Solve for an invariant using LLM-guided synthesis.
-        
-        Args:
-            timeout: Optional timeout override
-            
-        Returns:
-            VerificationResult with success status and invariant (if found)
-        """
         if timeout is not None:
             self.timeout = timeout
             self.cegis.timeout = timeout
