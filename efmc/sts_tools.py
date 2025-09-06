@@ -101,5 +101,8 @@ def _check_post_violation(ts: TransitionSystem, solver: z3.Solver,
     solver.pop()
     return result 
 
+
+
 def compile_transition_system(ts: TransitionSystem) -> str:
     raise NotImplementedError("Not implemented")
+
