@@ -12,11 +12,11 @@ LLM-SMT hybrid approach for invariant generation.
 """
 
 from .llm4inv_prover import LLM4InvProver
-from .cegis_loop import CEGISLoop
+from .cegis_loop import LLMInvariantCEGIS
 from .llm_interface import LLMInterface
 
 __all__ = [
     'LLM4InvProver',
-    'CEGISLoop',
+    'LLMInvariantCEGIS',
     'LLMInterface'
 ] 

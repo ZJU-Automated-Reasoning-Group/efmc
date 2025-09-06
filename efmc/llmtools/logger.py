@@ -21,7 +21,7 @@ class Logger:
         self.log_file_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Create a logger instance with a unique name based on the log file path
-        self.logger = logging.getLogger(f"RepoAuditLogger-{log_file_path}")
+        self.logger = logging.getLogger(f"Logger-{log_file_path}")
         self.logger.setLevel(log_level)
         # Clear any existing handlers to avoid duplicate output
         self.logger.handlers.clear()

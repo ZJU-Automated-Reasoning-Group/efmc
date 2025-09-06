@@ -2,7 +2,6 @@
 from openai import *
 from pathlib import Path
 from typing import Tuple
-from zhipuai import ZhipuAI
 import signal
 import sys
 import tiktoken
@@ -117,6 +116,7 @@ class LLM:
 
     def infer_with_glm_model(self, message):
         """Infer using the GLM model"""
+        from zhipuai import ZhipuAI
         api_key = os.environ.get("GLM_API_KEY")
         model_input = [
             {"role": "system", "content": self.systemRole},

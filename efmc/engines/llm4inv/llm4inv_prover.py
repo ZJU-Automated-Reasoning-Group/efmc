@@ -1,114 +1,81 @@
 """
-LLM4Inv Prover (simple guess-and-check)
+LLM4Inv Prover - Lightweight Interface
 
-This version implements a minimal loop:
-- Ask the LLM for concrete (hole-free) invariant candidates
-- Parse each candidate to a Z3 formula
-- Check inductiveness/safety via check_invariant
-- Return the first valid invariant
+This is a simplified interface that wraps the CEGIS loop for easy usage.
+It provides a clean API while delegating the actual synthesis work to LLMInvariantCEGIS.
 """
 
 import logging
-import time
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any
 
 import z3
 
 from efmc.sts import TransitionSystem
-from efmc.utils.verification_utils import VerificationResult, check_invariant
-from .llm_interface import LLMInterface
+from efmc.utils.verification_utils import VerificationResult
+from efmc.engines.llm4inv.cegis_loop import LLMInvariantCEGIS
 
 logger = logging.getLogger(__name__)
 
 
 class LLM4InvProver:
-    """Minimal LLM4Inv prover implementing a simple guess-and-check loop."""
+    """
+    Lightweight interface for LLM-based invariant synthesis.
+    
+    This class provides a simple API that wraps the CEGIS loop implementation.
+    It's designed to be easy to use while leveraging the full power of the
+    counterexample-guided inductive synthesis approach.
+    """
 
     def __init__(self, sts: TransitionSystem, **kwargs):
         self.sts = sts
-
-        # Core configuration
+        
+        # Store configuration
         self.timeout = kwargs.get('timeout', 600)
         self.max_iterations = kwargs.get('max_iterations', 10)
         self.bit_width = kwargs.get('bit_width', 32)
         self.llm_model = kwargs.get('llm_model', 'deepseek-v3')
-        self.max_candidates_per_iter = kwargs.get('max_candidates_per_iter', 5)
-
-        # Initialize components
-        self.llm_interface = LLMInterface(sts, model_name=self.llm_model, bit_width=self.bit_width)
-
-        # Statistics
-        self.solve_time = 0.0
+        
+        # Initialize the CEGIS loop with the same configuration
+        self.cegis = LLMInvariantCEGIS(sts, **kwargs)
+        
+        # Results
         self.result: Optional[VerificationResult] = None
-        self.tried_candidates: List[str] = []
+        self.solve_time = 0.0
     
     def solve(self, timeout: Optional[int] = None) -> VerificationResult:
+        """
+        Solve for an invariant using LLM-guided synthesis.
+        
+        Args:
+            timeout: Optional timeout override
+            
+        Returns:
+            VerificationResult with success status and invariant (if found)
+        """
         if timeout is not None:
             self.timeout = timeout
+            self.cegis.timeout = timeout
 
-        start_time = time.time()
-
-        logger.info("Starting LLM4Inv guess-and-check synthesis")
+        logger.info("Starting LLM4Inv synthesis via CEGIS loop")
+        
+        # Generate program description for the LLM
         program_description = self._generate_program_description()
-
-        deadline = start_time + self.timeout
-        failures_for_feedback: List[str] = []
-
-        try:
-            for iteration in range(self.max_iterations):
-                if time.time() > deadline:
-                    logger.warning("LLM4Inv: timeout reached")
-                    break
-
-                logger.info(f"Iteration {iteration + 1}/{self.max_iterations}")
-
-                candidates = self.llm_interface.generate_concrete_invariants(
-                    program_code=program_description,
-                    failed_candidates=failures_for_feedback,
-                    max_candidates=self.max_candidates_per_iter,
-                )
-
-                if not candidates:
-                    logger.info("No candidates generated; stopping.")
-                    break
-
-                for cand_str, cand_expr in candidates:
-                    if time.time() > deadline:
-                        logger.warning("LLM4Inv: timeout reached during candidate checking")
-                        break
-
-                    self.tried_candidates.append(cand_str)
-                    logger.debug(f"Checking candidate: {cand_str}")
-
-                    inv = cand_expr
-                    var_map = [
-                        (var, prime_var)
-                        for var, prime_var in zip(self.sts.variables, self.sts.prime_variables)
-                    ]
-                    inv_prime = z3.substitute(inv, var_map)
-
-                    if check_invariant(self.sts, inv, inv_prime):
-                        self.solve_time = time.time() - start_time
-                        logger.info(
-                            f"LLM4Inv synthesis successful in {self.solve_time:.2f}s after {iteration + 1} iterations"
-                        )
-                        self.result = VerificationResult(True, inv)
-                        return self.result
-
-                    failures_for_feedback.append(cand_str)
-
-            self.solve_time = time.time() - start_time
-            logger.info(
-                f"LLM4Inv synthesis failed after {self.solve_time:.2f}s and {self.max_iterations} iterations"
-            )
+        
+        # Use CEGIS loop for synthesis
+        invariant = self.cegis.synthesize_invariant(program_description)
+        
+        # Convert result to VerificationResult format
+        if invariant is not None:
+            self.result = VerificationResult(True, invariant)
+            logger.info(f"LLM4Inv synthesis successful: {invariant}")
+        else:
             self.result = VerificationResult(False, None)
-            return self.result
-
-        except Exception as e:
-            logger.error(f"LLM4Inv synthesis error: {e}")
-            self.solve_time = time.time() - start_time
-            self.result = VerificationResult(False, None)
-            return self.result
+            logger.warning("LLM4Inv synthesis failed")
+        
+        # Get timing from CEGIS loop
+        self.solve_time = self.cegis.stats.get('total_time', 0.0)
+        
+        return self.result
     
     def _generate_program_description(self) -> str:
         """Generate program description for LLM"""
@@ -131,6 +98,7 @@ class LLM4InvProver:
     
     def get_statistics(self) -> Dict[str, Any]:
         """Get comprehensive prover statistics"""
+        # Get base statistics
         stats = {
             'solve_time': self.solve_time,
             'timeout': self.timeout,
@@ -138,26 +106,36 @@ class LLM4InvProver:
             'bit_width': self.bit_width,
             'llm_model': self.llm_model,
             'success': self.result.is_safe if self.result else False,
-            'tried_candidates': len(self.tried_candidates)
         }
         
-        # Add LLM interface statistics
-        if hasattr(self.llm_interface, 'get_statistics'):
-            stats['llm_stats'] = self.llm_interface.get_statistics()
+        # Add CEGIS loop statistics
+        cegis_stats = self.cegis.get_statistics()
+        stats.update(cegis_stats)
         
         return stats
 
     def set_timeout(self, timeout: int):
+        """Set timeout for synthesis"""
         self.timeout = timeout
+        self.cegis.timeout = timeout
 
     def set_llm_model(self, model_name: str):
+        """Set LLM model for synthesis"""
         self.llm_model = model_name
-        self.llm_interface = LLMInterface(self.sts, model_name=self.llm_model, bit_width=self.bit_width)
+        # Recreate CEGIS loop with new model
+        kwargs = {
+            'timeout': self.timeout,
+            'max_iterations': self.max_iterations,
+            'bit_width': self.bit_width,
+            'llm_model': model_name
+        }
+        self.cegis = LLMInvariantCEGIS(self.sts, **kwargs)
 
     def reset(self):
-        self.solve_time = 0.0
+        """Reset the prover state"""
         self.result = None
-        self.tried_candidates.clear()
+        self.solve_time = 0.0
+        self.cegis.reset()
 
     def __str__(self) -> str:
         return f"LLM4InvProver(model={self.llm_model}, timeout={self.timeout})"
