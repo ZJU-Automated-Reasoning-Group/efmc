@@ -27,7 +27,7 @@ def create_counter_example() -> TransitionSystem:
     - Safety property: x <= 100
     """
     # Create bit-vector variables
-    x = z3.BitVec('x', 32)
+    x = z3.BitVec('x', 32)             
     x_prime = z3.BitVec('x!', 32)
     
     # Initial condition: x == 0
