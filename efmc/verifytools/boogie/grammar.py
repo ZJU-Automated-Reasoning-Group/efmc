@@ -1,5 +1,5 @@
 #pylint: disable=no-self-argument,unused-argument, multiple-statements
-from pyparsing import delimitedList,nums, ParserElement, operatorPrecedence, \
+from pyparsing import delimitedList,nums, ParserElement, infixNotation, \
         opAssoc, StringEnd
 from efmc.verifytools.common.parser import InfixExprParser
 from pyparsing import ZeroOrMore as ZoM,\
@@ -30,6 +30,8 @@ class BoogieParser(InfixExprParser):
   def onLocalVarDecl(s, prod, st, loc, toks): raise Exception("NYI")
   def onType(s, prod, st, loc, toks): raise Exception("NYI")
   def onLabeledStatement(s, prod, st, loc, toks): raise Exception("NYI")
+  def onWhile(s, prod, st, loc, toks): raise Exception("NYI")
+  def onBlock(s, prod, st, loc, toks): raise Exception("NYI")
 
   def __init__(s):
     s.LT = L("<")
@@ -140,7 +142,7 @@ class BoogieParser(InfixExprParser):
     #        csl(s.IdsType) + s.QSep + s.Expr  +  s.RPARN
 
     s.Atom = s.Primitive | s.Fun_App | s.Old | s.Id #| s.Quantified
-    s.ArithExpr = operatorPrecedence(s.Atom, [
+    s.ArithExpr = infixNotation(s.Atom, [
       (s.ArithUnOp, 1, opAssoc.RIGHT, \
            lambda st, loc, toks:  s.onUnaryOp(s.ArithUnOp, st, loc, toks[0])),
       (s.MulOp, 2, opAssoc.LEFT, \
@@ -159,7 +161,7 @@ class BoogieParser(InfixExprParser):
     s.RelExpr.setParseAction(
             lambda st, loc, toks: s.onNABinOp(s.RelExpr, st, loc, toks))
 
-    s.BoolExpr = operatorPrecedence((s.RelExpr | s.Atom), [
+    s.BoolExpr = infixNotation((s.RelExpr | s.Atom), [
       (s.BoolUnOp, 1, opAssoc.RIGHT, \
               lambda st, loc, toks:  s.onUnaryOp(s.BoolUnOp, st, loc, toks[0])),
       (s.AndOrOp, 2, opAssoc.LEFT, \
@@ -280,6 +282,10 @@ class BoogieParser(InfixExprParser):
 
     s.WhileStmt = s.WHILE + s.LPARN + s.WildcardExpr + s.RPARN + \
             ZoM(s.LoopInv) + s.BlockStmt
+    s.WhileStmt.setParseAction(
+            lambda st, loc, toks: s.onWhile(s.WhileStmt, st, loc, toks))
+    s.BlockStmt.setParseAction(
+            lambda st, loc, toks: s.onBlock(s.BlockStmt, st, loc, toks))
     s.BreakStmt = s.BREAK + O(s.Id) + S(s.SEMI)
 
     s.Stmt = s.AssertStmt \

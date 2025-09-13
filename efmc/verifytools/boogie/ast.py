@@ -3,7 +3,7 @@
 from functools import reduce
 from efmc.verifytools.boogie.grammar import BoogieParser
 from pyparsing import ParseResults
-from efmc.verifytools.boogie.ast import AstNode, replace, reduce_nodes
+from efmc.verifytools.common.ast import AstNode, replace, reduce_nodes
 
 def _strip(arg):
     if isinstance(arg, ParseResults):
@@ -67,6 +67,18 @@ class AstReturn(AstStmt):
 class AstGoto(AstStmt):
     def __init__(s, labels):  AstStmt.__init__(s, labels)
     def __str__(s): return "goto " + ",".join(map(str, s.labels)) + ";"
+
+class AstWhile(AstStmt):
+    def __init__(s, condition, invariants, body):  
+        AstStmt.__init__(s, condition, invariants, body)
+    def __str__(s): 
+        inv_str = "\n".join([f"  invariant {inv};" for inv in s.invariants]) if s.invariants else ""
+        return f"while ({s.condition})\n{inv_str}\n{s.body}"
+
+class AstBlock(AstStmt):
+    def __init__(s, stmts):  AstStmt.__init__(s, stmts)
+    def __str__(s): 
+        return "{\n" + "\n".join([f"  {stmt}" for stmt in s.stmts]) + "\n}"
 
 class AstUnExpr(AstNode):
     def __init__(s, op, expr):  AstNode.__init__(s, op, expr)
@@ -160,6 +172,24 @@ class AstBuilder(BoogieParser):
   def onHavoc(s, prod, st, loc, toks):
     assert (len(toks) > 0)
     return [ AstHavoc(toks) ]
+  def onWhile(s, prod, st, loc, toks):
+    # The grammar is: WHILE + LPARN + WildcardExpr + RPARN + ZoM(LoopInv) + BlockStmt
+    # But the parser includes the WHILE keyword in tokens, so:
+    # toks = ["while", condition, [invariants...], body]
+    
+    if len(toks) >= 3:
+        # Skip the "while" keyword (toks[0])
+        condition = toks[1]  # The condition expression
+        body = toks[-1]      # Last token is the body
+        invariants = toks[2:-1] if len(toks) > 3 else []  # Everything in between
+    else:
+        condition = AstTrue()
+        invariants = []
+        body = AstBlock([])
+    
+    return [ AstWhile(condition, invariants, body) ]
+  def onBlock(s, prod, st, loc, toks):
+    return [ AstBlock(toks) ]
   def onProgram(s, prod, st, loc, toks): 
     return [ AstProgram(toks) ]
   def onLocalVarDecl(s, prod, st, loc, toks): 
@@ -224,6 +254,20 @@ def stmt_read(ast):
         return expr_read(ast.rhs)
     elif isinstance(ast, AstHavoc):
         return set()
+    elif isinstance(ast, AstWhile):
+        # Read variables from condition and body
+        vars_read = expr_read(ast.condition)
+        if isinstance(ast.body, AstBlock):
+            for stmt in ast.body.stmts:
+                vars_read.update(stmt_read(stmt))
+        else:
+            vars_read.update(stmt_read(ast.body))
+        return vars_read
+    elif isinstance(ast, AstBlock):
+        vars_read = set()
+        for stmt in ast.stmts:
+            vars_read.update(stmt_read(stmt))
+        return vars_read
     else:
         raise Exception("Unknown statement: " + str(ast))
 
@@ -237,6 +281,20 @@ def stmt_changed(ast):
         return set(map(lambda x:  x.name, ast.ids))
     elif isinstance(ast, AstAssume) or isinstance(ast, AstAssert):
         return set([])
+    elif isinstance(ast, AstWhile):
+        # Variables changed in the while body
+        vars_changed = set()
+        if isinstance(ast.body, AstBlock):
+            for stmt in ast.body.stmts:
+                vars_changed.update(stmt_changed(stmt))
+        else:
+            vars_changed.update(stmt_changed(ast.body))
+        return vars_changed
+    elif isinstance(ast, AstBlock):
+        vars_changed = set()
+        for stmt in ast.stmts:
+            vars_changed.update(stmt_changed(stmt))
+        return vars_changed
     else:
         raise Exception("Unknown statement: " + str(ast))
 

@@ -12,7 +12,7 @@ import sys
 import atexit
 from signal import signal, SIGTERM, SIGINT
 
-ctxHolder = local();
+ctxHolder = local()
 
 
 def val_to_boogie(v):
@@ -38,30 +38,30 @@ def getCtx():
     global ctxHolder
     ctx = getattr(ctxHolder, "ctx", None)
     if (ctx == None):
-        ctx = z3.Context();
-        ctxHolder.ctx = ctx;
+        ctx = z3.Context()
+        ctxHolder.ctx = ctx
     return ctx
 
 
 class WrappedZ3Exception(BaseException):
     def __init__(s, value):
-        BaseException.__init__(s);
-        s._value = value;
+        BaseException.__init__(s)
+        s._value = value
 
 
 def wrapZ3Exc(f):
     def wrapped(*args, **kwargs):
         try:
-            return f(*args, **kwargs);
+            return f(*args, **kwargs)
         except z3.z3types.Z3Exception as e:
-            raise WrappedZ3Exception(e.value);
+            raise WrappedZ3Exception(e.value)
 
     return wrapped
 
 
 class Z3ServerInstance(object):
     def __init__(s):
-        s._solver = z3.Solver(ctx=getCtx());
+        s._solver = z3.Solver(ctx=getCtx()) 
 
     @Pyro4.expose
     @wrapZ3Exc
@@ -91,12 +91,12 @@ class Z3ServerInstance(object):
     @Pyro4.expose
     @wrapZ3Exc
     def pop(s):
-        s._solver.pop();
-        return 0;
+        s._solver.pop()
+        return 0
 
 
 def startAndWaitForZ3Instance():
-    q = PQueue();
+    q = PQueue()            
 
     def runDaemon(q):
         import os
@@ -106,62 +106,62 @@ def startAndWaitForZ3Instance():
 
         error("Redirecting child", os.getpid(), "streams to", out, err)
 
-        sys.stdout.close();
-        sys.stderr.close();
+        sys.stdout.close()
+        sys.stderr.close()
 
         sys.stdout = open(out, "w")
         sys.stderr = open(err, "w")
 
-        daemon = Pyro4.Daemon();
+        daemon = Pyro4.Daemon()
         uri = daemon.register(Z3ServerInstance)
         sys.stderr.write("Notify parent of my uri: " + str(uri) + "\n")
-        sys.stderr.flush();
+        sys.stderr.flush()
         q.put(uri)
         # Small window for racing
-        daemon.requestLoop();
+        daemon.requestLoop()    
 
     p = Process(target=runDaemon, args=(q,))
-    p.start();
-    uri = q.get();
+    p.start()
+    uri = q.get()
     return p, uri
 
 
 class Unknown(Exception):
     def __init__(s, q):
         Exception.__init__(s, str(q) + " returned unknown.")
-        s.query = q;
+        s.query = q
 
 
 class Crashed(Exception):
-    pass;
+    pass
 
 
 class Z3ProxySolver:
     def __init__(s, uri, proc):
-        s._uri = uri;
-        s._proc = proc;
-        s._remote = Pyro4.Proxy(uri);
+        s._uri = uri
+        s._proc = proc
+        s._remote = Pyro4.Proxy(uri)
         s._timeout = None
 
     def add(s, p):
-        dummy = z3.Solver(ctx=getCtx());
-        dummy.add(p);
-        strP = dummy.to_smt2();
+        dummy = z3.Solver(ctx=getCtx())
+        dummy.add(p)
+        strP = dummy.to_smt2()
         strP = strP.replace("(check-sat)\n", "");
         s._remote.add(strP)
-        return None;
+        return None
 
     def push(s):
-        s._remote.push();
+        s._remote.push()
         return None
 
     def pop(s):
-        s._remote.pop();
+        s._remote.pop()
         return None
 
     def check(s, timeout=None, comm=""):
         old_timeout = s._timeout
-        s._remote._pyroTimeout = timeout;
+        s._remote._pyroTimeout = timeout
         try:
             r = s._remote.check(comm)
         except Pyro4.errors.TimeoutError:
@@ -169,61 +169,61 @@ class Z3ProxySolver:
                              "Timedout. Restarting.\n")
             r = "unknown"
             s._restartRemote();
-        except Exception, e:
+        except Exception as e:
             sys.stdout.write("Got exception: " + str(e) + "\n")
             ecode = s._proc.exitcode
-            s._restartRemote();
+            s._restartRemote()
 
             if (ecode == -11):  # Retry Z3 segfaults
                 r = "crashed"
             else:
                 r = "unknown"
         finally:
-            s._remote._pyroTimeout = old_timeout;
+            s._remote._pyroTimeout = old_timeout
 
         if (r == "sat"):
-            return z3.sat;
+            return z3.sat
         elif (r == "unsat"):
-            return z3.unsat;
+            return z3.unsat
         elif (r == "unknown"):
             raise Unknown("storing query NYI in proxy solver")
         elif (r == "crashed"):
             raise Crashed()
         else:
-            raise Exception("bad reply to check: " + str(r));
+            raise Exception("bad reply to check: " + str(r))
 
     def model(s):
-        return s._remote.model();
+        return s._remote.model()
 
     def to_smt2(s, p):
-        dummy = z3.Solver(ctx=getCtx());
-        dummy.add(p);
-        strP = dummy.to_smt2();
-        strP = strP.replace("(check-sat)\n", "");
+        dummy = z3.Solver(ctx=getCtx())
+        dummy.add(p)
+        strP = dummy.to_smt2()
+        strP = strP.replace("(check-sat)\n", "")
         strP = strP.replace(
             "; benchmark generated from python API\n" + \
-            "(set-info :status unknown)\n", "");
+            "(set-info :status unknown)\n", "")
         return strP
 
     def _restartRemote(s):
         # Kill Old Process
-        s._proc.terminate();
-        s._proc.join();
+        s._proc.terminate()
+        s._proc.join()
         # Restart
         s._proc, s._uri = startAndWaitForZ3Instance()
-        s._remote = Pyro4.Proxy(s._uri);
-        s.push();
+        s._remote = Pyro4.Proxy(s._uri)
+        s.push()
 
 
-z3ProcessPoolCond = Condition();
-MAX_Z3_INSTANCES = 100;
+z3ProcessPoolCond = Condition()
+MAX_Z3_INSTANCES = 100
 ports = set(range(8100, 8100 + MAX_Z3_INSTANCES))
 z3ProcessPool = {}
 
 
 def _cleanupChildProcesses():
     for proxy in z3ProcessPool:
-        proxy._proc.terminate();
+        proxy._proc.terminate()
 
 
 atexit.register(_cleanupChildProcesses)
@@ -240,7 +240,7 @@ for signum in [SIGTERM, SIGINT]:
 
 def getSolver():
     try:
-        z3ProcessPoolCond.acquire();
+        z3ProcessPoolCond.acquire()
         # Repeatedly GC dead processes and see what free context we have
         # If we have none wait on the condition variable for request to
         # finish or processes to timeout and die.
@@ -249,7 +249,7 @@ def getSolver():
                     if (not busy)]
 
             if (len(free) == 0 and len(ports) == 0):
-                print "No free instances and no ports for new instances..."
+                print("No free instances and no ports for new instances...")
                 z3ProcessPoolCond.wait();
             else:
                 break;
@@ -257,20 +257,20 @@ def getSolver():
         # We either have a free z3 solver or a process died and freed
         # up a port for us to launch a new solver with.
         if (len(free) > 0):
-            # print "Assigning existing z3 proxy"
+            # print("Assigning existing z3 proxy")
             solver = free[randint(0, len(free) - 1)][0]
         else:
-            # print "Creating new z3 proxy"
+            # print("Creating new z3 proxy")
             p, uri = startAndWaitForZ3Instance()
             solver = Z3ProxySolver(uri, p)
 
-        z3ProcessPool[solver] = (True, False);
-        # print "z3ProcessPool has ", len(z3ProcessPool), "entries"
+        z3ProcessPool[solver] = (True, False)
+        # print("z3ProcessPool has ", len(z3ProcessPool), "entries")
     finally:
-        z3ProcessPoolCond.release();
+        z3ProcessPoolCond.release()
 
-    solver.push();
-    return solver;
+    solver.push()
+    return solver
 
 
 def releaseSolver(solver):
@@ -351,12 +351,12 @@ def counterexamples(pred, num, timeout=None, comm=""):
                 counterexes.append(env)
                 s.add(Not(env_to_expr(env)))
             except Crashed:
-                continue;
-            break;
+                continue
+            break
 
-        return counterexes;
+        return counterexes
     finally:
-        releaseSolver(s);
+        releaseSolver(s)
 
 
 def satisfiable(pred, timeout=None):
@@ -581,7 +581,7 @@ def z3_expr_to_boogie(expr):
                 pars = map(z3_expr_to_boogie, c)
                 func = ast.AstId(boogie_op)
                 fun = ast.AstFuncExpr(func, *pars)
-            except Exception, ex:
+            except Exception as ex:
                 error(ex.message)
             return fun
         else:
