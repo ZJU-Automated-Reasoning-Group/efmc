@@ -400,7 +400,7 @@ def parse_arguments():
 
     # K-induction options
     kind_group = parser.add_argument_group('K-induction options')
-    kind_group.add_argument('--kind-k', type=int, default=15,
+    kind_group.add_argument('--kind-k', type=int, default=30,
                             help='K value for k-induction')
     kind_group.add_argument('--kind-incremental', dest='kind_incremental', default=False, action='store_true',
                             help="Use incremental k-induction (default: False)")

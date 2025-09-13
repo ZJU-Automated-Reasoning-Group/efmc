@@ -157,7 +157,7 @@ class KInductionProverInc:
             self.use_aux_invariant = False
             logger.info("Trivial invariant generated, disabling auxiliary invariants")
 
-    def solve(self, k: int = 10, timeout: Optional[int] = None) -> VerificationResult:
+    def solve(self, k: int = 30, timeout: Optional[int] = None) -> VerificationResult:
         """Perform k-induction proof using incremental solving"""
         start_time = time.time()
         self._setup_aux_invariant()
@@ -237,7 +237,7 @@ def main():
     sts.from_z3_cnts([[x, y], [_p_x, _p_y], init, trans, post])
     
     prover = KInductionProverInc(sts, show_model=True)
-    result = prover.solve(k=10, timeout=60)
+    result = prover.solve(k=30, timeout=60)
     print(f"Result: {result}")
 
 

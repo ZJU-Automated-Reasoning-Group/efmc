@@ -157,7 +157,7 @@ class KInductionProver:
             self.use_aux_invariant = False
             logger.info("Trivial invariant generated, disabling auxiliary invariants")
 
-    def solve(self, k: int = 10, timeout: Optional[int] = None) -> VerificationResult:
+    def solve(self, k: int = 30, timeout: Optional[int] = None) -> VerificationResult:
         """Interleave BMC and K-induction to verify the property"""
         start_time = time.time()
         self._setup_aux_invariant()

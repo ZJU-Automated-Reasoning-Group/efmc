@@ -55,7 +55,7 @@ class DiffTester:
     def _get_default_engines(self) -> Dict[str, EngineConfig]:
         return {
             "pdr": EngineConfig("PDR", PDRProver, ["bool", "int", "real", "bv"], timeout=60),
-            "kind": EngineConfig("K-Induction", KInductionProver, ["bool", "int", "real", "bv"], k_value=10),
+            "kind": EngineConfig("K-Induction", KInductionProver, ["bool", "int", "real", "bv"], k_value=30),
             "bdd": EngineConfig("BDD", BDDProver, ["bool"]),
             "ef": EngineConfig("EF", EFProver, ["bool", "int", "real", "bv"], additional_params={"template_type": "interval"}),
             "qi": EngineConfig("QI", QuantifierInstantiationProver, ["bool", "int", "real", "bv"]),
@@ -90,7 +90,7 @@ class DiffTester:
         try:
             engine = engine_config.engine_class(system, **(engine_config.additional_params or {}))
             if engine_config.name == "K-Induction":
-                result = engine.solve(k=engine_config.k_value or 10)
+                result = engine.solve(k=engine_config.k_value or 30)
             elif engine_config.name == "PDR" and engine_config.timeout:
                 result = engine.solve(timeout=engine_config.timeout)
             else:
@@ -258,7 +258,7 @@ def main():
     parser.add_argument("--engines", nargs="+", help="Engines to test")
     parser.add_argument("--types", nargs="+", choices=["bool", "int", "real", "bv"], default=["bool", "int", "real", "bv"])
     parser.add_argument("--config", help="Config file path")
-    parser.add_argument("--k-value", type=int, default=10, help="K value for K-Induction")
+    parser.add_argument("--k-value", type=int, default=30, help="K value for K-Induction")
     parser.add_argument("--output", default="difftest_report.json", help="Output report file")
     parser.add_argument("--save-bugs", help="Directory to save problematic systems")
     parser.add_argument("--timeout", type=int, default=60, help="Timeout in seconds")

@@ -241,7 +241,7 @@ def run_all_configs(configs, benchmark_files, args, parallel=False):
 
 def main():
     parser = argparse.ArgumentParser(description="Run verifier with multiple configurations")
-    parser.add_argument("--bench-dir", required=True, help="Directory containing benchmark files")
+    parser.add_argument("--bench-dir", nargs='+', required=True, help="Directory(ies) containing benchmark files")
     parser.add_argument("--timeout", type=int, required=True, help="Timeout in seconds")
     parser.add_argument("--config", help="Configuration file in JSON format")
     parser.add_argument("--parallel", action="store_true", help="Run configurations in parallel")
@@ -252,7 +252,7 @@ def main():
     args = parser.parse_args()
     
     logger = setup_logging(getattr(logging, args.log_level))
-    logger.info(f"Starting EFMC verifier with bench-dir={args.bench_dir}, timeout={args.timeout}s")
+    logger.info(f"Starting EFMC verifier with bench-dir={', '.join(args.bench_dir)}, timeout={args.timeout}s")
     
     # Load configurations
     if args.config:
@@ -274,10 +274,10 @@ def main():
             # data/BV/LoopInvGen/chc/2016.SyGuS-Comp/64bits_unsigned/
             # VerifierConfig("kind", aux_inv=True, lang="chc"),
             VerifierConfig("pdr", lang="chc"),  # Added PDR engine
-            VerifierConfig("ef", template="bv_octagon", aux_inv=False, lang="chc"),
-            VerifierConfig("ef", template="knownbits", aux_inv=False, lang="chc"),
-            VerifierConfig("ef", template="knownbits", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"]),
-            VerifierConfig("ef", template="bv_interval", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"]),
+            VerifierConfig("ef", template="bv_octagon", lang="chc"),
+            VerifierConfig("ef", template="knownbits", lang="chc"),
+            VerifierConfig("ef", template="knownbits", lang="chc", additional_opts=["--prop-strengthen"]),
+            VerifierConfig("ef", template="bv_interval", lang="chc", additional_opts=["--prop-strengthen"]),
             # External solvers
             VerifierConfig("external", external_solver=eldarica_path) if os.path.exists(eldarica_path) else None
         ]}
@@ -285,15 +285,19 @@ def main():
         configs["default"] = [c for c in configs["default"] if c is not None]
         logger.info("Using default configurations")
     
-    # Get benchmark files
-    if not os.path.isdir(args.bench_dir):
-        logger.error(f"Benchmark directory does not exist: {args.bench_dir}")
-        sys.exit(1)
-        
-    benchmark_files = [os.path.join(args.bench_dir, f) for f in os.listdir(args.bench_dir) if f.endswith((".sl", ".smt2"))]
+    # Get benchmark files from all directories
+    benchmark_files = []
+    for bench_dir in args.bench_dir:
+        if not os.path.isdir(bench_dir):
+            logger.error(f"Benchmark directory does not exist: {bench_dir}")
+            sys.exit(1)
+            
+        dir_files = [os.path.join(bench_dir, f) for f in os.listdir(bench_dir) if f.endswith((".sl", ".smt2"))]
+        benchmark_files.extend(dir_files)
+        logger.info(f"Found {len(dir_files)} benchmark files in {bench_dir}")
     
     if not benchmark_files:
-        logger.warning(f"No .sl or .smt2 files found in {args.bench_dir}")
+        logger.warning(f"No .sl or .smt2 files found in any of the benchmark directories: {', '.join(args.bench_dir)}")
         sys.exit(1)
     
     logger.info(f"Found {len(benchmark_files)} benchmark files")
@@ -320,4 +324,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
