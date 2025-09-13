@@ -35,7 +35,8 @@ REQUIRED = [
     'pyparsing',
     'openai', 
     'tiktoken',
-    'frozendict'
+    'frozendict',
+    'Pyro4'
 ]
 
 # The rest you shouldn't have to touch too much :)

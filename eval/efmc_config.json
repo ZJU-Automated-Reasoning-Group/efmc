@@ -5,6 +5,11 @@
         "lang": "chc"
       },
       {
+        "engine": "kind",
+        "aux_inv": true,
+        "lang": "chc"
+      },
+      {
         "engine": "pdr",
         "lang": "chc"
       }
@@ -33,6 +38,12 @@
         "aux_inv": false,
         "lang": "chc",
         "additional_opts": ["--prop-strengthen"]
+      }
+    ],
+    "external_solvers": [
+      {
+        "engine": "external",
+        "external_solver": "bin_solvers/bin/eldarica"
       }
     ]
   }

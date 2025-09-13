@@ -12,5 +12,6 @@ pyparsing
 openai
 tiktoken
 frozendict
+Pyro4
 # seaborn~=0.12.2
 # scikit-learn==1.2.2

@@ -1,12 +1,3 @@
-"""
-Differential testing script for EFMC verification engines.
-
-Supports:
-- Loading test cases from CHC/SyGuS files or generating random systems
-- Testing multiple engines on different transition system types
-- Detecting potential bugs through result disagreements
-"""
-
 import os
 import glob
 import time
@@ -21,7 +12,6 @@ from efmc.utils.verification_utils import VerificationResult
 from efmc.tests.sts_generator import TransitionSystemGenerator
 from efmc.frontends import parse_chc, parse_sygus
 
-# Import engines
 from efmc.engines.pdr.pdr_prover import PDRProver
 from efmc.engines.kinduction.kind_prover import KInductionProver
 from efmc.engines.bdd.bdd_prover import BDDProver
@@ -67,8 +57,7 @@ class DiffTester:
             "pdr": EngineConfig("PDR", PDRProver, ["bool", "int", "real", "bv"], timeout=60),
             "kind": EngineConfig("K-Induction", KInductionProver, ["bool", "int", "real", "bv"], k_value=10),
             "bdd": EngineConfig("BDD", BDDProver, ["bool"]),
-            "ef": EngineConfig("EF", EFProver, ["bool", "int", "real", "bv"], 
-                             additional_params={"template_type": "interval"}),
+            "ef": EngineConfig("EF", EFProver, ["bool", "int", "real", "bv"], additional_params={"template_type": "interval"}),
             "qi": EngineConfig("QI", QuantifierInstantiationProver, ["bool", "int", "real", "bv"]),
             "houdini": EngineConfig("Houdini", HoudiniProver, ["bool", "int", "real", "bv"]),
             "abduction": EngineConfig("Abduction", AbductionProver, ["bool", "int", "real"]),
@@ -80,7 +69,6 @@ class DiffTester:
         try:
             with open(config_file, 'r') as f:
                 config = json.load(f)
-            
             for engine_name, engine_config in config.get("engines", {}).items():
                 if engine_name in self.engines:
                     for key, value in engine_config.items():
@@ -92,20 +80,15 @@ class DiffTester:
             logger.error(f"Failed to load config: {e}")
     
     def _get_system_type(self, system: TransitionSystem) -> str:
-        for attr, type_name in [("has_bool", "bool"), ("has_int", "int"), 
-                               ("has_real", "real"), ("has_bv", "bv")]:
+        for attr, type_name in [("has_bool", "bool"), ("has_int", "int"), ("has_real", "real"), ("has_bv", "bv")]:
             if getattr(system, attr):
                 return type_name
         return "unknown"
     
     def _run_engine(self, engine_config: EngineConfig, system: TransitionSystem) -> Tuple[VerificationResult, float, Optional[str]]:
         start_time = time.time()
-        error = None
-        result = None
-        
         try:
             engine = engine_config.engine_class(system, **(engine_config.additional_params or {}))
-            
             if engine_config.name == "K-Induction":
                 result = engine.solve(k=engine_config.k_value or 10)
             elif engine_config.name == "PDR" and engine_config.timeout:
@@ -113,32 +96,23 @@ class DiffTester:
             else:
                 result = engine.solve()
         except Exception as e:
-            error = str(e)
-            logger.error(f"Error running {engine_config.name}: {e}")
+            return None, time.time() - start_time, str(e)
         
         execution_time = time.time() - start_time
+        if engine_config.timeout and execution_time > engine_config.timeout:
+            result = VerificationResult(False, None, None, True) if not result else result
+            result.is_unknown = True
+            return result, execution_time, f"Timeout after {execution_time:.2f}s"
         
-        if (engine_config.timeout and execution_time > engine_config.timeout):
-            if result:
-                result.is_unknown = True
-            else:
-                result = VerificationResult(False, None, None, True)
-            error = f"Timeout after {execution_time:.2f}s"
-        
-        return result, execution_time, error
+        return result, execution_time, None
     
     def load_systems_from_directory(self, directory: str, file_type: str = "smt2") -> List[Tuple[str, TransitionSystem]]:
         systems = []
-        pattern = os.path.join(directory, f"*.{file_type}")
-        
-        for file_path in glob.glob(pattern):
+        for file_path in glob.glob(os.path.join(directory, f"*.{file_type}")):
             try:
                 file_name = os.path.basename(file_path)
-                
-                if file_type == "smt2":
-                    all_vars, init, trans, post = parse_chc(file_path, to_real_type=False)
-                else:
-                    all_vars, init, trans, post = parse_sygus(file_path, to_real_type=False)
+                parser = parse_chc if file_type == "smt2" else parse_sygus
+                all_vars, init, trans, post = parser(file_path, to_real_type=False)
                 
                 system = TransitionSystem()
                 system.from_z3_cnts([all_vars, init, trans, post])
@@ -154,7 +128,6 @@ class DiffTester:
     def generate_random_systems(self, count: int, types: List[str] = None) -> List[Tuple[str, TransitionSystem]]:
         systems = []
         types = types or ["bool", "int", "real", "bv"]
-        
         generators = {
             "bool": self.generator.gen_bool_program,
             "int": self.generator.gen_lia_program,
@@ -175,24 +148,18 @@ class DiffTester:
     
     def run_tests(self, systems: List[Tuple[str, TransitionSystem]], engines: List[str] = None):
         engines = engines or list(self.engines.keys())
-        
         for system_name, system in systems:
             self.systems_map[system_name] = system
             system_type = self._get_system_type(system)
             
             for engine_name in engines:
-                if engine_name not in self.engines:
+                if engine_name not in self.engines or system_type not in self.engines[engine_name].supported_types:
                     continue
                 
                 engine_config = self.engines[engine_name]
-                if system_type not in engine_config.supported_types:
-                    continue
-                
                 result, execution_time, error = self._run_engine(engine_config, system)
                 
-                self.test_results.append(TestResult(
-                    system_name, engine_config.name, result, execution_time, error
-                ))
+                self.test_results.append(TestResult(system_name, engine_config.name, result, execution_time, error))
                 
                 status = "unknown" if not result or result.is_unknown else ("safe" if result.is_safe else "unsafe")
                 logger.info(f"{engine_config.name} on {system_name}: {status} ({execution_time:.2f}s)")
@@ -215,7 +182,6 @@ class DiffTester:
             for result in results:
                 if result.error or not result.result:
                     continue
-                
                 if result.result.is_unknown:
                     unknown_engines.append(result.engine_name)
                 elif result.result.is_safe:
@@ -243,10 +209,8 @@ class DiffTester:
             test_name = bug["test_name"]
             if test_name in self.systems_map:
                 system = self.systems_map[test_name]
-                
                 with open(os.path.join(output_dir, f"{test_name}.smt2"), 'w') as f:
                     f.write(system.to_smt2())
-                
                 with open(os.path.join(output_dir, f"{test_name}_details.json"), 'w') as f:
                     json.dump(bug, f, indent=2)
         
@@ -254,7 +218,6 @@ class DiffTester:
     
     def generate_report(self, output_file: str = "difftest_report.json"):
         potential_bugs = self.analyze_results()
-        
         report = {
             "summary": {
                 "total_tests": len(set(r.test_name for r in self.test_results)),
@@ -262,15 +225,13 @@ class DiffTester:
                 "total_results": len(self.test_results),
                 "potential_bugs": len(potential_bugs)
             },
-            "results": [
-                {
-                    "test_name": r.test_name,
-                    "engine_name": r.engine_name,
-                    "status": "unknown" if not r.result or r.result.is_unknown else ("safe" if r.result.is_safe else "unsafe"),
-                    "execution_time": r.execution_time,
-                    "error": r.error
-                } for r in self.test_results
-            ],
+            "results": [{
+                "test_name": r.test_name,
+                "engine_name": r.engine_name,
+                "status": "unknown" if not r.result or r.result.is_unknown else ("safe" if r.result.is_safe else "unsafe"),
+                "execution_time": r.execution_time,
+                "error": r.error
+            } for r in self.test_results],
             "potential_bugs": potential_bugs
         }
         
@@ -295,13 +256,11 @@ def main():
     
     parser.add_argument("--file-type", choices=["smt2", "sl"], default="smt2")
     parser.add_argument("--engines", nargs="+", help="Engines to test")
-    parser.add_argument("--types", nargs="+", choices=["bool", "int", "real", "bv"], 
-                        default=["bool", "int", "real", "bv"])
+    parser.add_argument("--types", nargs="+", choices=["bool", "int", "real", "bv"], default=["bool", "int", "real", "bv"])
     parser.add_argument("--config", help="Config file path")
     parser.add_argument("--k-value", type=int, default=10, help="K value for K-Induction")
     parser.add_argument("--output", default="difftest_report.json", help="Output report file")
     parser.add_argument("--save-bugs", help="Directory to save problematic systems")
-    # FIXME, in this file, we run the engines via the Python API, so the timeout maynot work (even we set timeout Z3 and set a few checkpoints in the high-level engines.) Thus, we'd better not to use "too complex" systems
     parser.add_argument("--timeout", type=int, default=60, help="Timeout in seconds")
     
     args = parser.parse_args()

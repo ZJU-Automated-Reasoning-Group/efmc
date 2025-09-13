@@ -2,11 +2,18 @@
 
 Here are a few topics for further exploration:
 
+- Bugs
 - Dataset
-- Bugs and Issues
 - New Features
 - Optimizations
 - Properties
+
+## 0. Bugs?
+
+kind  and kind+aux_inv seems to be buggy
+
+- For `data/BV/LoopInvGen/chc/2016.SyGuS-Comp/64bits_unsigned/fig1_vars.sl_64bits_unsigned.smt2`, eldarica returns "unsafe" (`./bin_solvers/bin/eldarica -log -cex`), but kind returns "safe"!!
+
 
 ## 1. Dataset
 
@@ -15,6 +22,10 @@ If safe, it is better to provide the inductive invariant.
 If unsafe, it is better to provide the counterexample.
 
 Second, we need a regression system for tracking the correctness and performance of new features.
+
+一些问题
+- 在BV数据集中，有一些trival的输入（比如INIT就违反了？），需要过滤
+- 需要一次数据清理，记录SAFE的输入
 
 ## 2. New Features
 

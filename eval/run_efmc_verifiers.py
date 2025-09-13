@@ -9,6 +9,8 @@ import os
 import subprocess
 import sys
 import time
+import csv
+from datetime import datetime
 from typing import List, Dict
 from eval.eval_utils import kill_process_group, classify_result, detect_inconsistencies
 
@@ -20,24 +22,35 @@ def setup_logging(log_level=logging.INFO):
 
 class VerifierConfig:
     def __init__(self, engine: str, template: str = None, aux_inv: bool = False, 
-                 lang: str = "sygus", additional_opts: List[str] = None):
+                 lang: str = "sygus", additional_opts: List[str] = None, 
+                 external_solver: str = None):
         self.engine = engine
         self.template = template
         self.aux_inv = aux_inv
         self.lang = lang
         self.additional_opts = additional_opts or []
+        self.external_solver = external_solver
 
     def get_command_args(self) -> List[str]:
-        cmd = ["--engine", self.engine]
-        if self.template:
-            cmd.extend(["--template", self.template])
-        if self.aux_inv:
-            cmd.append("--kind-aux-inv")
-        cmd.extend(["--lang", self.lang, *self.additional_opts])
-        return cmd
+        if self.external_solver:
+            # For external solvers, return the solver path and its arguments
+            return [self.external_solver]
+        else:
+            # For EFMC internal engines
+            cmd = ["--engine", self.engine]
+            if self.template:
+                cmd.extend(["--template", self.template])
+            if self.aux_inv:
+                cmd.append("--kind-aux-inv")
+            cmd.extend(["--lang", self.lang, *self.additional_opts])
+            return cmd
 
     @property
     def config_id(self) -> str:
+        if self.external_solver:
+            solver_name = os.path.basename(self.external_solver)
+            return f"external_{solver_name}"
+        
         config_id = self.engine
         if self.template:
             config_id += f"_{self.template}"
@@ -56,7 +69,13 @@ def load_config(config_file: str) -> Dict[str, List[VerifierConfig]]:
 
 def run_verifier(verifier_path: str, config: VerifierConfig, input_file: str, timeout: int) -> tuple:
     start_time = time.time()
-    cmd = [verifier_path] + config.get_command_args() + ["--file", input_file]
+    
+    if config.external_solver:
+        # For external solvers, run them directly on the input file
+        cmd = config.get_command_args() + [input_file]
+    else:
+        # For EFMC internal engines
+        cmd = [verifier_path] + config.get_command_args() + ["--file", input_file]
     
     try:
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, 
@@ -89,6 +108,50 @@ def print_result(result):
     if stderr:
         print(f"Errors: {stderr}")
     sys.stdout.flush()
+
+
+def dump_results(results: List[tuple], output_dir: str = "eval_results"):
+    """Dump evaluation results to JSON and CSV files for later processing"""
+    os.makedirs(output_dir, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    # Prepare data for JSON dump
+    json_data = {
+        "timestamp": timestamp,
+        "total_runs": len(results),
+        "results": []
+    }
+    
+    for file, config_id, result_class, stdout, stderr, elapsed in results:
+        result_entry = {
+            "file": file,
+            "filename": os.path.basename(file),
+            "config_id": config_id,
+            "result": result_class,
+            "stdout": stdout,
+            "stderr": stderr,
+            "elapsed_time": elapsed
+        }
+        json_data["results"].append(result_entry)
+    
+    # Write JSON file
+    json_file = os.path.join(output_dir, f"results_{timestamp}.json")
+    with open(json_file, 'w') as f:
+        json.dump(json_data, f, indent=2)
+    
+    # Write CSV file
+    csv_file = os.path.join(output_dir, f"results_{timestamp}.csv")
+    with open(csv_file, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['file', 'filename', 'config_id', 'result', 'elapsed_time', 'stdout', 'stderr'])
+        for file, config_id, result_class, stdout, stderr, elapsed in results:
+            writer.writerow([file, os.path.basename(file), config_id, result_class, elapsed, stdout, stderr])
+    
+    print(f"\nResults dumped to:")
+    print(f"  JSON: {json_file}")
+    print(f"  CSV:  {csv_file}")
+    
+    return json_file, csv_file
 
 
 def summarize_results(results: List[tuple]):
@@ -184,6 +247,8 @@ def main():
     parser.add_argument("--parallel", action="store_true", help="Run configurations in parallel")
     parser.add_argument("--verifier", default="efmc", help="Path to the verifier executable")
     parser.add_argument("--log-level", default="INFO", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], help="Set the logging level")
+    parser.add_argument("--dump-results", action="store_true", help="Dump results to JSON and CSV files")
+    parser.add_argument("--output-dir", default="eval_results", help="Directory to save result files (default: eval_results)")
     args = parser.parse_args()
     
     logger = setup_logging(getattr(logging, args.log_level))
@@ -194,15 +259,30 @@ def main():
         configs = load_config(args.config)
         logger.info(f"Loaded custom configuration from {args.config}")
     else:
+        # Get the path to Eldarica solver
+        eldarica_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 
+                                    "bin_solvers", "bin", "eldarica")
+        
         configs = {"default": [
+            # EFMC internal engines
             VerifierConfig("ef", template="bv_interval", aux_inv=False, lang="chc"),
             VerifierConfig("kind", aux_inv=False, lang="chc"),
-            VerifierConfig("kind", aux_inv=True, lang="chc"),
+            # FIXME: kind  and kind+aux_inv seems to be buggy
+            # See data/BV/LoopInvGen/chc/2016.SyGuS-Comp/64bits_unsigned/fig1_vars.sl_64bits_unsigned.smt2
+            #  - eldarica returns "unsafe", but kind returns "safe"??
+
+            # data/BV/LoopInvGen/chc/2016.SyGuS-Comp/64bits_unsigned/
+            # VerifierConfig("kind", aux_inv=True, lang="chc"),
+            VerifierConfig("pdr", lang="chc"),  # Added PDR engine
             VerifierConfig("ef", template="bv_octagon", aux_inv=False, lang="chc"),
             VerifierConfig("ef", template="knownbits", aux_inv=False, lang="chc"),
             VerifierConfig("ef", template="knownbits", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"]),
-            VerifierConfig("ef", template="bv_interval", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"])
+            VerifierConfig("ef", template="bv_interval", aux_inv=False, lang="chc", additional_opts=["--prop-strengthen"]),
+            # External solvers
+            VerifierConfig("external", external_solver=eldarica_path) if os.path.exists(eldarica_path) else None
         ]}
+        # Remove None entries (when external solver doesn't exist)
+        configs["default"] = [c for c in configs["default"] if c is not None]
         logger.info("Using default configurations")
     
     # Get benchmark files
@@ -225,6 +305,11 @@ def main():
     print("FINAL SUMMARY")
     print("="*80)
     logger.info(f"Completed {len(results)} verification tasks")
+    
+    # Dump results if requested
+    if args.dump_results:
+        json_file, csv_file = dump_results(results, args.output_dir)
+        logger.info(f"Results saved to {json_file} and {csv_file}")
     
     inconsistencies = detect_inconsistencies(results)
     if inconsistencies:

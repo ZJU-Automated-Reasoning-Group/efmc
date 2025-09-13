@@ -111,12 +111,25 @@ class KInductionProver:
         return z3.And(*aux_invs)
 
     def get_bmc_formula(self, k: int) -> z3.ExprRef:
-        """Build BMC formula for step k"""
-        return z3.And(
-            self.init_0, 
-            self.get_unrolling(k), 
-            z3.Not(z3.substitute(self.sts.post, self.get_subs(k)))
-        )
+        """Build BMC formula for step k
+        
+        BMC checks if property can be violated within k steps:
+        - Step 0: init ∧ ¬post@0 (check initial state)
+        - Step k: init ∧ T^k ∧ ¬post@k (check after k transitions)
+        """
+        if k == 0:
+            # Check initial state only
+            return z3.And(
+                self.init_0,
+                z3.Not(z3.substitute(self.sts.post, self.get_subs(0)))
+            )
+        else:
+            # Check after k transitions
+            return z3.And(
+                self.init_0, 
+                self.get_unrolling(k), 
+                z3.Not(z3.substitute(self.sts.post, self.get_subs(k)))
+            )
 
     def get_k_induction_formula(self, k: int) -> z3.ExprRef:
         """Build complete k-induction formula"""
@@ -152,21 +165,34 @@ class KInductionProver:
         logger.info("Checking property %s...", str(self.sts.post))
         
         # Try BMC first
-        for step in range(1, k + 1):
+        for step in range(0, k + 1):
             logger.info(f"BMC step {step}")
             bmc_formula = self.get_bmc_formula(step)
+            
+            # Debug: log the BMC formula components for step 0 and 1
+            if step <= 1:
+                logger.debug(f"BMC step {step} components:")
+                logger.debug(f"  init_0: {self.init_0}")
+                if step > 0:
+                    logger.debug(f"  unrolling({step}): {self.get_unrolling(step)}")
+                logger.debug(f"  not(post@{step}): {z3.Not(z3.substitute(self.sts.post, self.get_subs(step)))}")
+                logger.debug(f"  full BMC formula: {bmc_formula}")
             
             s = z3.Solver()
             if timeout:
                 s.set("timeout", timeout * 1000)
             s.add(bmc_formula)
             
-            if s.check() == z3.sat:
+            result = s.check()
+            logger.debug(f"BMC step {step} result: {result}")
+            
+            if result == z3.sat:
                 logger.info(f"Property violation found at BMC step {step}")
+                # Always get the model for counterexample, regardless of show_model setting
+                model = s.model()
                 if self.show_model:
-                    model = s.model()
                     logger.info(f"Counterexample: {model}")
-                return VerificationResult(False, None, is_unsafe=True)
+                return VerificationResult(is_safe=False, invariant=None, counterexample=model, is_unsafe=True)
         
         # Try k-induction
         for step in range(1, k + 1):
@@ -181,9 +207,10 @@ class KInductionProver:
             result = s.check()
             if result == z3.unsat:
                 logger.info(f"Property proven safe with k-induction step {step}")
-                # Extract invariant from the proof
+                # Extract the k-inductive invariant from the proof
+                # This represents P(0) ∧ P(1) ∧ ... ∧ P(k-1) which is k-inductive
                 invariant = self.get_k_hypothesis(step)
-                return VerificationResult(True, invariant)
+                return VerificationResult(is_safe=True, invariant=invariant)
             else:
                 logger.debug(f"K-induction step {step} result: {result}")
                 if result == z3.sat and self.show_model:
@@ -192,4 +219,4 @@ class KInductionProver:
                 logger.debug(f"K-induction formula: {ki_formula}")
         
         logger.info("Could not prove or disprove the property")
-        return VerificationResult(False, None, is_unknown=True)
+        return VerificationResult(is_safe=False, invariant=None, is_unknown=True)

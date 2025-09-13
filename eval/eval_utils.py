@@ -37,12 +37,18 @@ def classify_result(config, retcode, stdout):
     stdout_lower = stdout.lower()
     
     # Check for explicit safe/unsafe in output
-    if "safe" in stdout_lower:
-        return "safe"
-    elif "unsafe" in stdout_lower:
+    # Priority: unsafe > safe (because unsafe is more definitive)
+    if "unsafe" in stdout_lower:
         return "unsafe"
+    elif "safe" in stdout_lower:
+        return "safe"
     elif "timeout" in stdout_lower:
         return "timeout"
+    # Handle Eldarica sat/unsat output (sat means safe, unsat means unsafe)
+    elif "unsat" in stdout_lower:
+        return "unsafe"
+    elif "sat" in stdout_lower and "unsat" not in stdout_lower:
+        return "safe"
     else:
         # what if the return code is 0, but no output?
         return "unknown"

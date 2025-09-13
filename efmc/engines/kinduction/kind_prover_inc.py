@@ -164,24 +164,24 @@ class KInductionProverInc:
         
         logger.info("Checking property %s...", str(self.sts.post))
 
-        for b in range(k):
+        for b in range(k + 1):  # Include step 0 for initial state check
             # Check timeout
             if timeout and time.time() - start_time > timeout:
                 logger.info("Timeout reached after %d seconds", timeout)
-                return VerificationResult(False, None, None, is_unknown=True, is_timeout=True)
+                return VerificationResult(is_safe=False, invariant=None, counterexample=None, is_unknown=True, timed_out=True)
 
             # BMC check
-            logger.debug("   [BMC]    Checking bound %d...", b + 1)
+            logger.debug("   [BMC]    Checking bound %d...", b)
             self.solver_bmc.push()
             self.solver_bmc.add(z3.Not(z3.substitute(self.sts.post, self.get_subs(b))))
             
             if self.solver_bmc.check() == z3.sat:
-                logger.info("--> Bug found at step %d", b + 1)
+                logger.info("--> Bug found at step %d", b)
                 model = self.solver_bmc.model()
                 
                 if self.show_model:
                     logger.info("Model (counterexample):")
-                    for i in range(b + 2):
+                    for i in range(b + 1):
                         logger.info("State %d:", i)
                         for var in self.sts.variables:
                             var_at_time = self.at_time(var, i)
@@ -194,33 +194,34 @@ class KInductionProverInc:
                                 pass
                 
                 logger.info("unsafe")
-                return VerificationResult(False, None, model, is_unsafe=True)
+                return VerificationResult(is_safe=False, invariant=None, counterexample=model, is_unsafe=True)
             
             self.solver_bmc.pop()
 
-            # K-induction check
-            logger.debug("   [K-IND]  Checking bound %d...", b + 1)
-            s_kind = z3.Solver()
-            ki_formula = self.get_k_induction_formula(b)
-            s_kind.add(ki_formula)
-            
-            result = s_kind.check()
-            if result == z3.unsat:
-                logger.info("--> The system is proved safe at %d", b + 1)
-                logger.info("safe")
-                return VerificationResult(True, self.sts.post)
-            else:
-                logger.debug("K-induction step %d result: %s", b + 1, result)
-                logger.debug("K-induction formula: %s", ki_formula)
+            # K-induction check (only for b > 0)
+            if b > 0:
+                logger.debug("   [K-IND]  Checking bound %d...", b)
+                s_kind = z3.Solver()
+                ki_formula = self.get_k_induction_formula(b)
+                s_kind.add(ki_formula)
+                
+                result = s_kind.check()
+                if result == z3.unsat:
+                    logger.info("--> The system is proved safe at %d", b)
+                    logger.info("safe")
+                    return VerificationResult(is_safe=True, invariant=self.sts.post)
+                else:
+                    logger.debug("K-induction step %d result: %s", b, result)
+                    logger.debug("K-induction formula: %s", ki_formula)
 
             # Add transition for next iteration
-            if b < k - 1:
+            if b < k:
                 trans_k = z3.substitute(self.sts.trans, self.get_subs(b))
                 self.solver_bmc.add(trans_k)
                 self.unrolled_system.append(trans_k)
 
         logger.info("unknown")
-        return VerificationResult(False, None, None, is_unknown=True)
+        return VerificationResult(is_safe=False, invariant=None, counterexample=None, is_unknown=True)
 
 
 def main():
