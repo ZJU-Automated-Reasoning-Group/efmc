@@ -15,7 +15,7 @@ import logging
 from typing import List
 import psutil
 
-from efmc.frontends import parse_sygus, parse_chc
+from efmc.frontends import parse_sygus, parse_chc, parse_boogie
 from efmc.sts import TransitionSystem
 from efmc.efmc_config import g_verifier_args
 
@@ -159,7 +159,14 @@ class EFMCRunner:
     def run_k_induction(self, sts: TransitionSystem) -> None:
         """Run k-induction verification"""
         self.logger.info("Starting k-induction...")
-        kind_prover = KInductionProver(sts)
+        
+        # Choose between incremental and non-incremental k-induction
+        if g_verifier_args.kind_incremental:
+            from efmc.engines.kinduction.kind_prover_inc import KInductionProverInc
+            kind_prover = KInductionProverInc(sts)
+        else:
+            kind_prover = KInductionProver(sts)
+            
         if g_verifier_args.kind_aux_inv:
             kind_prover.use_aux_invariant = True
         result = kind_prover.solve(int(g_verifier_args.kind_k))
@@ -193,6 +200,19 @@ class EFMCRunner:
 
         sts = TransitionSystem()
         sts.from_z3_cnts([all_vars, init, trans, post])
+
+        if sts.has_bv and g_verifier_args.signedness in ["signed", "unsigned"]:
+            sts.set_signedness(g_verifier_args.signedness)
+
+        self.run_verifier(sts)
+
+    def verify_boogie(self, filename: str) -> None:
+        """Verify Boogie format file"""
+        self.logger.info(f"Parsing Boogie file: {filename}")
+        
+        # Parse Boogie file and get transition system directly
+        sts = parse_boogie(filename, to_real_type=False)
+        self.logger.info("Boogie file parsing completed")
 
         if sts.has_bv and g_verifier_args.signedness in ["signed", "unsigned"]:
             sts.set_signedness(g_verifier_args.signedness)
@@ -319,7 +339,7 @@ def parse_arguments():
     input_group = parser.add_argument_group('Input options')
     input_group.add_argument('--file', type=str, required=True,
                              help='Input file to verify')
-    input_group.add_argument('--lang', type=str, choices=['chc', 'sygus', 'auto'],
+    input_group.add_argument('--lang', type=str, choices=['chc', 'sygus', 'boogie', 'auto'],
                              default='auto', help='Input language format')
     input_group.add_argument('--engine', type=str,
                              choices=['ef', 'pdr', 'kind', 'qe', 'qi', 'houdini', 'abduction', 'bdd', 'predabs', 'symabs', 'llm4inv'],
@@ -380,7 +400,7 @@ def parse_arguments():
 
     # K-induction options
     kind_group = parser.add_argument_group('K-induction options')
-    kind_group.add_argument('--kind-k', type=int, default=1,
+    kind_group.add_argument('--kind-k', type=int, default=15,
                             help='K value for k-induction')
     kind_group.add_argument('--kind-incremental', dest='kind_incremental', default=False, action='store_true',
                             help="Use incremental k-induction (default: False)")
@@ -464,15 +484,19 @@ def main():
         runner.verify_chc(g_verifier_args.file)
     elif g_verifier_args.lang == "sygus":
         runner.verify_sygus(g_verifier_args.file)
+    elif g_verifier_args.lang == "boogie":
+        runner.verify_boogie(g_verifier_args.file)
     else:  # the default value is "auto"
         file_extension = os.path.splitext(g_verifier_args.file)[1].lower()
         if file_extension == '.smt2':
             runner.verify_chc(g_verifier_args.file)
         elif file_extension == '.sy' or file_extension == '.sl':
             runner.verify_sygus(g_verifier_args.file)
+        elif file_extension == '.bpl':
+            runner.verify_boogie(g_verifier_args.file)
         else:
             logging.error(f"Unsupported file extension: {file_extension}")
-            logging.info("Supported extensions: .smt2 (CHC), .sy/sl (SyGuS)")
+            logging.info("Supported extensions: .smt2 (CHC), .sy/sl (SyGuS), .bpl (Boogie)")
             sys.exit(1)
 
 

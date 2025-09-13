@@ -89,27 +89,30 @@ class KInductionProverInc:
 
     def get_unrolling(self, k):
         """Get transition unrolling from 0 to k"""
-        while len(self.unrolled_system) <= k:
+        while len(self.unrolled_system) < k:
             i = len(self.unrolled_system)
             self.unrolled_system.append(z3.substitute(self.sts.trans, self.get_subs(i)))
-        return z3.And(*self.unrolled_system[:k])
+        return z3.And(*self.unrolled_system[:k]) if k > 0 else z3.BoolVal(True)
 
     def get_simple_path(self, k):
         """Generate simple path constraint for k-induction"""
+        if k <= 1:
+            return z3.BoolVal(True)  # No constraint needed for k <= 1
+        
         constraints = []
         for i in range(k):
-            for j in range(i + 1, k + 1):
+            for j in range(i + 1, k):
                 state_diff = [self.at_time(var, i) != self.at_time(var, j) 
                              for var in self.sts.variables]
                 constraints.append(z3.Or(*state_diff))
         return z3.And(*constraints) if constraints else z3.BoolVal(True)
 
     def get_k_hypothesis(self, k: int):
-        """Get k-induction hypothesis: P(0) & P(1) & ... & P(k)"""
-        while len(self.k_hypothesis) <= k:
+        """Get k-induction hypothesis: P(0) & P(1) & ... & P(k-1)"""
+        while len(self.k_hypothesis) < k:
             i = len(self.k_hypothesis)
             self.k_hypothesis.append(z3.substitute(self.sts.post, self.get_subs(i)))
-        return z3.And(*self.k_hypothesis[:k + 1])
+        return z3.And(*self.k_hypothesis[:k]) if k > 0 else z3.BoolVal(True)
 
     def get_aux_invariants(self, k: int):
         """Get auxiliary invariants for strengthening"""
@@ -122,13 +125,21 @@ class KInductionProverInc:
 
     def get_k_induction_formula(self, k: int):
         """Build complete k-induction formula"""
-        return z3.And(
-            self.get_k_hypothesis(k),
-            self.get_unrolling(k + 1),
-            z3.Not(z3.substitute(self.sts.post, self.get_subs(k + 1))),
-            self.get_simple_path(k + 1),
-            self.get_aux_invariants(k + 1)
-        )
+        if k == 0:
+            # Base case: init ∧ ¬P(0)
+            return z3.And(
+                self.init_0,
+                z3.Not(z3.substitute(self.sts.post, self.get_subs(k)))
+            )
+        else:
+            # Inductive case: P(0) ∧ ... ∧ P(k-1) ∧ T(0,1) ∧ ... ∧ T(k-1,k) ∧ ¬P(k)
+            return z3.And(
+                self.get_k_hypothesis(k),
+                self.get_unrolling(k),
+                z3.Not(z3.substitute(self.sts.post, self.get_subs(k))),
+                self.get_simple_path(k + 1),
+                self.get_aux_invariants(k + 1)
+            )
 
     def _setup_aux_invariant(self):
         """Setup auxiliary invariant if needed"""
@@ -190,12 +201,17 @@ class KInductionProverInc:
             # K-induction check
             logger.debug("   [K-IND]  Checking bound %d...", b + 1)
             s_kind = z3.Solver()
-            s_kind.add(self.get_k_induction_formula(b))
+            ki_formula = self.get_k_induction_formula(b)
+            s_kind.add(ki_formula)
             
-            if s_kind.check() == z3.unsat:
+            result = s_kind.check()
+            if result == z3.unsat:
                 logger.info("--> The system is proved safe at %d", b + 1)
                 logger.info("safe")
                 return VerificationResult(True, self.sts.post)
+            else:
+                logger.debug("K-induction step %d result: %s", b + 1, result)
+                logger.debug("K-induction formula: %s", ki_formula)
 
             # Add transition for next iteration
             if b < k - 1:

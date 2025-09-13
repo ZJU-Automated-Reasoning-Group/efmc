@@ -30,6 +30,14 @@ Besides, the `efsmt` tool support solving the ``exists-forall`` SMT problems.
 efsmt -h
 ~~~~
 
+In our transition system encoding, we intentionally abstract away (or "hide") the explicit loop guard. As a result, the constraints for the inductive invariant `Inv` differ slightly from those that directly involve the guard. Specifically, the verification conditions are:
+
+1. Init ⇒ Inv
+2. Inv ⇒ Inv'
+3. Inv ⇒ Post
+
+The main difference lies in the third condition: here, the "post-condition" refers to the inductive safety property that the invariant should imply, rather than the original post-condition in the program (that do not necessiarly invole the information about the loop guard).
+
 ## 2. The Main Verification Engines
 
 Currently, the users can choose various verification engines:

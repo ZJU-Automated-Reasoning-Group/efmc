@@ -11,5 +11,6 @@ requests==2.32.3
 pyparsing
 openai
 tiktoken
+frozendict
 # seaborn~=0.12.2
 # scikit-learn==1.2.2

@@ -95,11 +95,11 @@ class KInductionProver:
         return z3.And(*constraints) if constraints else z3.BoolVal(True)
 
     def get_k_hypothesis(self, k: int) -> z3.ExprRef:
-        """Get k-induction hypothesis: P(0) & P(1) & ... & P(k)"""
-        while len(self.k_hypothesis) <= k:
+        """Get k-induction hypothesis: P(0) & P(1) & ... & P(k-1)"""
+        while len(self.k_hypothesis) < k:
             i = len(self.k_hypothesis)
             self.k_hypothesis.append(z3.substitute(self.sts.post, self.get_subs(i)))
-        return z3.And(*self.k_hypothesis[:k + 1])
+        return z3.And(*self.k_hypothesis[:k]) if k > 0 else z3.BoolVal(True)
 
     def get_aux_invariants(self, k: int) -> z3.ExprRef:
         """Get auxiliary invariants for strengthening"""
@@ -123,7 +123,7 @@ class KInductionProver:
         return z3.And(
             self.get_k_hypothesis(k),
             self.get_unrolling(k),
-            z3.Not(z3.substitute(self.sts.post, self.get_subs(k + 1))),
+            z3.Not(z3.substitute(self.sts.post, self.get_subs(k))),
             self.get_simple_path(k + 1),
             self.get_aux_invariants(k + 1)
         )
@@ -178,11 +178,18 @@ class KInductionProver:
                 s.set("timeout", timeout * 1000)
             s.add(ki_formula)
             
-            if s.check() == z3.unsat:
+            result = s.check()
+            if result == z3.unsat:
                 logger.info(f"Property proven safe with k-induction step {step}")
                 # Extract invariant from the proof
                 invariant = self.get_k_hypothesis(step)
                 return VerificationResult(True, invariant)
+            else:
+                logger.debug(f"K-induction step {step} result: {result}")
+                if result == z3.sat and self.show_model:
+                    model = s.model()
+                    logger.debug(f"K-induction counterexample: {model}")
+                logger.debug(f"K-induction formula: {ki_formula}")
         
         logger.info("Could not prove or disprove the property")
         return VerificationResult(False, None, is_unknown=True)

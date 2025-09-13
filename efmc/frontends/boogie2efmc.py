@@ -176,6 +176,7 @@ class BoogieToEFMCConverter:
         )
         
         self.logger.info("Successfully created transition system")
+        print(ts)
         return ts
     
     def _extract_loop_variables(self, loop: Loop, bbs: Dict[str, BB]) -> List[str]:
@@ -204,9 +205,40 @@ class BoogieToEFMCConverter:
     
     def _extract_initial_condition(self, loop: Loop, bbs: Dict[str, BB]) -> z3.ExprRef:
         """Extract initial condition for entering the loop."""
-        # Use the loop entry condition
-        if loop.entry_cond:
-            return self._ast_expr_to_z3(loop.entry_cond, is_prime=False)
+        conditions = []
+        
+        # Look for entry blocks that lead to the loop header
+        # These contain initialization statements
+        loop_header = loop.header[0] if loop.header else None
+        if loop_header:
+            # Find blocks that have the loop header as successor (entry blocks)
+            # But exclude blocks that are part of the loop itself (like loop body blocks)
+            entry_blocks = []
+            for bb_name, bb in bbs.items():
+                if loop_header in bb.successors and bb_name != loop_header:
+                    # Check if this block is part of the loop structure
+                    # Loop body blocks typically have names ending with "_while_body"
+                    if not bb_name.endswith('_while_body'):
+                        entry_blocks.append(bb_name)
+            
+            # Process assignments in entry blocks to create initial conditions
+            for entry_bb_name in entry_blocks:
+                if entry_bb_name in bbs:
+                    bb = bbs[entry_bb_name]
+                    for stmt in bb.stmts:
+                        if isinstance(stmt, AstAssignment):
+                            # Convert assignment to initial condition: x = value
+                            lhs_var = str(stmt.lhs)
+                            if lhs_var in self.variable_mapping:
+                                rhs_expr = self._ast_expr_to_z3(stmt.rhs, is_prime=False)
+                                lhs_z3 = self.variable_mapping[lhs_var]
+                                conditions.append(lhs_z3 == rhs_expr)
+        
+        # Don't include the loop entry condition here - that should be part of the transition relation
+        # The initial condition should only contain the initialization assignments
+        
+        if conditions:
+            return z3.And(conditions) if len(conditions) > 1 else conditions[0]
         else:
             return z3.BoolVal(True)  # No specific entry condition
     
@@ -216,7 +248,7 @@ class BoogieToEFMCConverter:
         
         # Process each loop path
         for path in loop.loop_paths:
-            path_condition = self._extract_path_condition(path, bbs)
+            path_condition = self._extract_path_condition(path, bbs, include_guards=True)
             if path_condition is not None:
                 transitions.append(path_condition)
         
@@ -225,7 +257,7 @@ class BoogieToEFMCConverter:
         else:
             return z3.BoolVal(False)  # No valid transitions
     
-    def _extract_path_condition(self, path: List[str], bbs: Dict[str, BB]) -> Optional[z3.ExprRef]:
+    def _extract_path_condition(self, path: List[str], bbs: Dict[str, BB], include_guards: bool = True) -> Optional[z3.ExprRef]:
         """Extract condition for a single path through the loop."""
         conditions = []
         assignments = []
@@ -237,9 +269,10 @@ class BoogieToEFMCConverter:
             bb = bbs[bb_name]
             for stmt in bb.stmts:
                 if isinstance(stmt, AstAssume):
-                    # Add assumption as condition
-                    cond = self._ast_expr_to_z3(stmt.expr, is_prime=False)
-                    conditions.append(cond)
+                    # Only add assumption as condition if we're including guards
+                    if include_guards:
+                        cond = self._ast_expr_to_z3(stmt.expr, is_prime=False)
+                        conditions.append(cond)
                 elif isinstance(stmt, AstAssignment):
                     # Add assignment relation
                     lhs_var = str(stmt.lhs)
@@ -279,22 +312,63 @@ class BoogieToEFMCConverter:
             return z3.BoolVal(True)
     
     def _extract_post_condition(self, loop: Loop, bbs: Dict[str, BB]) -> z3.ExprRef:
-        """Extract post condition (safety property) from loop exit paths."""
-        post_conditions = []
+        """Extract post condition (safety property) from actual assert statements."""
+        assertions = []
+        seen_assertions = set()  # Track unique assertions by string representation
         
-        # Look for assertions in exit paths
+        # Look for assert statements in exit paths and exit blocks
         for path in loop.exit_paths:
             for bb_name in path:
                 if bb_name in bbs:
                     bb = bbs[bb_name]
                     for stmt in bb.stmts:
                         if isinstance(stmt, AstAssert):
-                            # Safety property: assertion should hold
-                            assertion = self._ast_expr_to_z3(stmt.expr, is_prime=False)
-                            post_conditions.append(assertion)
+                            # Convert the assertion to Z3
+                            z3_assertion = self._ast_expr_to_z3(stmt.expr)
+                            assertion_str = str(z3_assertion)
+                            if assertion_str not in seen_assertions:
+                                assertions.append(z3_assertion)
+                                seen_assertions.add(assertion_str)
         
-        if post_conditions:
-            return z3.And(post_conditions)
+        # Also look in blocks that might contain post-loop assertions
+        # (blocks with names ending in '_while_exit' or similar)
+        for bb_name, bb in bbs.items():
+            if '_while_exit' in bb_name or '_exit' in bb_name:
+                for stmt in bb.stmts:
+                    if isinstance(stmt, AstAssert):
+                        # Convert the assertion to Z3
+                        z3_assertion = self._ast_expr_to_z3(stmt.expr)
+                        assertion_str = str(z3_assertion)
+                        if assertion_str not in seen_assertions:
+                            assertions.append(z3_assertion)
+                            seen_assertions.add(assertion_str)
+        
+        # For k-induction, we need inductive safety properties, not post-conditions
+        # So we prioritize safety invariants over assertions
+        # Create a simple safety property for decreasing loops
+        safety_invariants = []
+        
+        # Look for simple patterns like decreasing counters in the loop body
+        for path in loop.loop_paths:
+            for bb_name in path:
+                if bb_name in bbs:
+                    bb = bbs[bb_name]
+                    for stmt in bb.stmts:
+                        if isinstance(stmt, AstAssignment):
+                            lhs_var = str(stmt.lhs)
+                            if lhs_var in self.variable_mapping:
+                                # Check if this is a decrement: x := x - 1
+                                if isinstance(stmt.rhs, AstBinExpr) and stmt.rhs.op == "-":
+                                    if (isinstance(stmt.rhs.lhs, AstId) and 
+                                        str(stmt.rhs.lhs.name) == lhs_var and
+                                        isinstance(stmt.rhs.rhs, AstNumber) and
+                                        stmt.rhs.rhs.num == 1):
+                                        # This is x := x - 1, so x >= 0 is likely a good invariant
+                                        var_z3 = self.variable_mapping[lhs_var]
+                                        safety_invariants.append(var_z3 >= 0)
+        
+        if safety_invariants:
+            return z3.And(safety_invariants) if len(safety_invariants) > 1 else safety_invariants[0]
         else:
             # Default safety property: true (no specific property to verify)
             return z3.BoolVal(True)

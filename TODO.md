@@ -24,21 +24,15 @@ Currently, we have limited support for frontends and types of transition systems
 
 We need to improve the frontend to enhance applicability:
 
-- C to SyGuS
-- C to CHC (Eldarica, Linear-Arbitrary support)
+- C to CHC (Supported by using Eldarica, Linear-Arbitrary)
+- Boogie to TransitionSystem (A demo implemented)
 - C to TransitionSystem
 - Btor?
-- Boogie
 - VMT (Verification Modolo THeories)
 - MCMT(?)
 - Lustre
 - Simulink
-- Floating points
 - ...?
-
-Related work:
-
-- The CoSA model checker supports many kinds of inputs (it relies on pySMT and is not maintained anymore) [CoSA](https://github.com/cristian-mattarei/CoSA)
 
 ### Template-based (Constraint-based) Invariant Inference
 
@@ -90,7 +84,6 @@ For example, the queries from 2018.NeurIPS_Code2Inv may have many variables (e.g
 - K-induction for K-safety/relational verification
 - Template-based verification for floating points programs
 - Bit-level templates for constraint-based invariant inference
-
 
 ## Tutorials
 

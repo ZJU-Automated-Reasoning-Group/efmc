@@ -34,7 +34,8 @@ REQUIRED = [
     'requests==2.32.3',
     'pyparsing',
     'openai', 
-    'tiktoken'
+    'tiktoken',
+    'frozendict'
 ]
 
 # The rest you shouldn't have to touch too much :)
