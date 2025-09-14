@@ -36,7 +36,8 @@ REQUIRED = [
     'openai', 
     'tiktoken',
     'frozendict',
-    'Pyro4'
+    'Pyro4',
+    'lark'
 ]
 
 # The rest you shouldn't have to touch too much :)
