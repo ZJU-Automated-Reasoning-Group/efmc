@@ -12,7 +12,7 @@ import time
 import csv
 from datetime import datetime
 from typing import List, Dict
-from eval.eval_utils import kill_process_group, classify_result, detect_inconsistencies
+from efmc.utils.eval_utils import kill_process_group, classify_result, detect_inconsistencies
 
 
 def setup_logging(log_level=logging.INFO):

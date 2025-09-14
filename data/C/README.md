@@ -21,7 +21,7 @@
 - https://github.com/FSE2022benchmarks/termination
 - https://doi.org/10.6084/m9.figshare.14509467 (diffy_cav21)
 
-- Towards General Loop Invariant Generation: A Benchmark of Programs with Memory Manipulation. Chang Liu∗ , Xiwei Wu∗ , Yuan Feng, Qinxiang Cao , Junchi Yan.  https://arxiv.org/pdf/2311.10483
+- Towards General Loop Invariant Generation: A Benchmark of Programs with Memory Manipulation. Chang Liu∗ , Xiwei Wu∗ , Yuan Feng, Qinxiang Cao , Junchi Yan.  https://arxiv.org/pdf/2311.10483  https://github.com/Thinklab-SJTU/LIG-MM
 
 **Middle-sized Programs**
 
