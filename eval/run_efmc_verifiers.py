@@ -278,6 +278,10 @@ def main():
             VerifierConfig("ef", template="knownbits", lang="chc"),
             VerifierConfig("ef", template="knownbits", lang="chc", additional_opts=["--prop-strengthen"]),
             VerifierConfig("ef", template="bv_interval", lang="chc", additional_opts=["--prop-strengthen"]),
+            # Bit-level template
+            VerifierConfig("ef", template="bv_pattern", lang="chc"),
+            VerifierConfig("ef", template="bv_rotation", lang="chc"),
+            VerifierConfig("ef", template="bv_xor_parity", lang="chc"),
             # External solvers
             VerifierConfig("external", external_solver=eldarica_path) if os.path.exists(eldarica_path) else None
         ]}

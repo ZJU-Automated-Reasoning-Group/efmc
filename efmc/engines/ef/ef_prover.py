@@ -91,7 +91,13 @@ class EFProver:
             "bv_poly": lambda: BitVecPolyhedronTemplate(self.sts),
             "power_bv_poly": lambda: DisjunctiveBitVecPolyhedronTemplate(self.sts, **kwargs),
             "knownbits": lambda: KnownBitsTemplate(self.sts),
-            "bitpredabs": lambda: BitPredAbsTemplate(self.sts)
+            "bitpredabs": lambda: BitPredAbsTemplate(self.sts),
+            "bv_pattern": lambda:BitVecPatternTemplate(self.sts),
+            "bv_rotation": lambda:BitVecRotationTemplate(self.sts),
+            "bv_xor_parity": lambda:BitVecXorParityTemplate(self.sts),
+            "power_bv_pattern": lambda:DisjunctiveBitVecPatternTemplate(self.sts, **kwargs),
+            "power_bv_rotation": lambda:DisjunctiveBitVecRotationTemplate(self.sts, **kwargs),
+            "power_bv_xor_parity": lambda:DisjunctiveBitVecXorParityTemplate(self.sts, **kwargs)
         }
 
     def _get_int_template_map(self, kwargs):

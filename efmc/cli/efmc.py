@@ -51,7 +51,10 @@ TEMPLATES = {
         "bv_zone", "power_bv_zone",
         "bv_octagon", "power_bv_octagon",
         "bv_poly", "power_bv_poly",
-        "knownbits", "bitpredabs"
+        "knownbits", "bitpredabs",
+        "bv_pattern","power_bv_pattern",
+        "bv_xor_parity","power_bv_xor_parity",
+        "power_bv_rotation","bv_rotation",
     ],
     'floating_point': [
         "fp_interval", "fp_poly"
@@ -111,6 +114,7 @@ class EFMCRunner:
         if g_verifier_args.template == "auto":
             g_verifier_args.template = default_template
         elif g_verifier_args.template not in available_templates:
+            print("aaaaaaaaaaaaaaaaaaa")
             self.logger.error(f"Unsupported template: {g_verifier_args.template}")
             self.logger.info(f"Available templates: {available_templates}")
             sys.exit(1)

@@ -61,6 +61,14 @@ class TemplateType(Enum):
     BV_BITS_PREDICATE_ABSTRACTION = auto()
     BV_ENHANCED_PATTERN = auto()
 
+    #Bit-level domains
+    BV_PATTERN = auto()
+    BV_ROTATION = auto()
+    BV_XOR_PARITY = auto()
+    BV_DISJUNCTIVE_XOR_PARITY = auto()
+    BV_DISJUNCTIVE_PATTERN = auto()
+    BV_DISJUNCTIVE_ROTATION = auto()
+
     @classmethod
     def is_disjunctive(cls, template_type: 'TemplateType') -> bool:
         """Check if the template type is disjunctive."""
