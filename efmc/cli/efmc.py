@@ -51,7 +51,10 @@ TEMPLATES = {
         "bv_zone", "power_bv_zone",
         "bv_octagon", "power_bv_octagon",
         "bv_poly", "power_bv_poly",
-        "knownbits", "bitpredabs"
+        "knownbits", "bitpredabs",
+        "bv_pattern","power_bv_pattern",
+        "bv_xor_parity","power_bv_xor_parity",
+        "power_bv_rotation","bv_rotation",
     ],
     'floating_point': [
         "fp_interval", "fp_poly"

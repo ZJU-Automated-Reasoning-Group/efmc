@@ -26,6 +26,11 @@ from .bv_affine import BitVecAffineTemplate, DisjunctiveBitVecAffineTemplate
 from .bv_polyhedron import BitVecPolyhedronTemplate, DisjunctiveBitVecPolyhedronTemplate
 from .bv_bitwise import KnownBitsTemplate, BitPredAbsTemplate
 
+# Bit-level templates
+from .bv_pattern import BitVecPatternTemplate,DisjunctiveBitVecPatternTemplate
+from .bv_rotation import BitVecRotationTemplate,DisjunctiveBitVecRotationTemplate
+from .bv_xor_parity import BitVecXorParityTemplate,DisjunctiveBitVecXorParityTemplate
+
 # Bit-vector ranking function templates for termination verification
 from .bv_ranking import (
     BitVecLinearRankingTemplate,
