@@ -82,3 +82,4 @@ Primary contributors to this project:
 - JasonJ2021
 - WindOctober
 - Zahrinas
+- Zveneodm

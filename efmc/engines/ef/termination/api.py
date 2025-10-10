@@ -1,5 +1,5 @@
 """
-Convenience functions for termination analysis.
+High-level API for termination analysis.
 """
 
 import logging
@@ -124,4 +124,5 @@ def analyze_termination(sts: TransitionSystem,
         logger.error(error_msg)
         results["errors"].append(error_msg)
     
-    return results 
+    return results
+

@@ -6,7 +6,7 @@ This package provides template-based termination and non-termination verificatio
 
 from .result_types import TerminationResult, NonTerminationResult
 from .termination_prover import TerminationProver
-from .convenience_functions import (
+from .api import (
     prove_termination_with_ranking_functions,
     prove_non_termination_with_recurrence_sets,
     analyze_termination

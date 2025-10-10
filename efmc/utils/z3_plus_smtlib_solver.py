@@ -3,7 +3,7 @@ from enum import Enum
 from typing import List
 import subprocess
 from threading import Timer
-
+import time
 import z3
 
 from efmc.smttools.smtlib_solver import SmtlibProc
@@ -25,11 +25,21 @@ def terminate(process, is_timeout):
     if process.poll() is None:
         try:
             process.terminate()
+            # Wait briefly for graceful termination
+            for _ in range(10):
+                if process.poll() is not None:
+                    break
+                time.sleep(0.1)
+            # Force kill if still running
+            if process.poll() is None:
+                process.kill()
             is_timeout[0] = True
-        except Exception:
-            # print("error for interrupting")
-            # print(ex)
-            pass
+        except Exception as ex:
+            try:
+                process.kill()
+            except Exception:
+                pass
+            is_timeout[0] = True
 
 
 def solve_with_bin_solver(cmd, timeout=300):
