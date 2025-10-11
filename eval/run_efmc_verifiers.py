@@ -281,7 +281,7 @@ def main():
             # Bit-level template
             VerifierConfig("ef", template="bv_pattern", lang="chc"),
             VerifierConfig("ef", template="bv_rotation", lang="chc"),
-            VerifierConfig("ef", template="bv_xor_parity", lang="chc"),
+            VerifierConfig("ef", template="bv_xor_parity", lang="chc",additional_opts=["--prop-strengthen","--strengthen-templates","bv_interval"]),
             # External solvers
             VerifierConfig("external", external_solver=eldarica_path) if os.path.exists(eldarica_path) else None
         ]}
