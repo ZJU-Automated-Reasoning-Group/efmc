@@ -26,7 +26,8 @@ Contains demonstration Constraint Horn Clauses (CHC) files (in SMT-LIB2 format) 
 
 Related work
 
-- SAS 20: Counterexample- and Simulation-Guided
+
+- FP/pine-benchmarks: SAS 20: Counterexample- and Simulation-Guided
 Floating-Point Loop Invariant Synthesis. 
 https://github.com/izycheva/pine
 
