@@ -10,6 +10,8 @@ NOTE:
 import logging
 import time
 from typing import Optional
+from efmc.utils import big_and
+from efmc.utils import big_or
 
 import z3
 
@@ -36,12 +38,22 @@ class EFProver:
         self.print_vc = False
         self.seed = kwargs.get("seed", 1)
         self.prop_strengthening = kwargs.get("prop_strengthen", False)
+        self.prop_strengthening_templates = kwargs.get("strengthen_templates","")
         self.abs_refine = kwargs.get("abs_refine", False)
         self.solver = kwargs.get("solver", "z3api")
         self.validate_invariant = kwargs.get("validate_invariant", False)
         self.no_overflow = kwargs.get("no_overflow", False)
         self.no_underflow = kwargs.get("no_underflow", False)
         self.pysmt_solver = kwargs.get("pysmt_solver", "z3")
+        self.num_disjunctions = kwargs.get("num_disjunctions",2)
+        # split the input into list if not empty str
+        if self.prop_strengthening_templates != "":
+            if self.prop_strengthening:
+                self.prop_strengthening_templates = self.prop_strengthening_templates.split(',')
+                print("Use templates", self.prop_strengthening_templates,"for property strengthening")
+            else:
+                print("ERROR: Enable --prop-strengthen first")
+                exit(-1)
 
         print(f"Prevent over/under flow: {self.no_overflow}, {self.no_underflow}")
 
@@ -220,24 +232,38 @@ class EFProver:
         """Generate constraints for property strengthening mode"""
         var_map = list(zip(self.sts.variables, self.sts.prime_variables))
         post_in_prime = z3.substitute(self.sts.post, var_map)
+        self.induction = [self.ct]
+        
+        if self.prop_strengthening_templates != "":
+            for template_name in self.prop_strengthening_templates:
+                self.induction.append(self._create_template(template_name, self.num_disjunctions))
 
         constraints = [
-            z3.Implies(self.sts.init, z3.And(self.sts.post, self.ct.template_cnt_init_and_post)),
+            z3.Implies(self.sts.init, z3.And(self.sts.post, big_and([j.template_cnt_init_and_post for j in self.induction]))),
             z3.Implies(
-                z3.And(self.sts.post, self.ct.template_cnt_init_and_post, self.sts.trans),
-                z3.And(post_in_prime, self.ct.template_cnt_trans)
+                z3.And(self.sts.post, big_and([j.template_cnt_init_and_post for j in self.induction]), self.sts.trans),
+                z3.And(post_in_prime, big_and([j.template_cnt_trans for j in self.induction]))
             )
         ]
-        
+
         if not self.ignore_post_cond:
             constraints.append(
-                z3.Implies(z3.And(self.sts.post, self.ct.template_cnt_init_and_post), self.sts.post)
+                z3.Implies(z3.And(self.sts.post, big_and([j.template_cnt_init_and_post for j in self.induction])), self.sts.post)
             )
-        
+
+        constraint_types = {
+            TemplateType.INTERVAL, TemplateType.DISJUNCTIVE_INTERVAL,
+            TemplateType.ZONE, TemplateType.OCTAGON, TemplateType.FLOAT
+        }
+
+        for i in range(len(self.induction)-1):
+            if self.induction[i+1].template_type in constraint_types:
+                constraints.append(self.induction[i+1].get_additional_cnts_for_template_vars())
         return constraints
 
     def _generate_standard_constraints(self):
         """Generate standard verification constraints"""
+        self.induction=[self.ct]
         constraints = [
             z3.Implies(self.sts.init, self.ct.template_cnt_init_and_post),
             z3.Implies(
@@ -280,7 +306,8 @@ class EFProver:
         if check_res == z3.sat:
             print("sat")
             model = s.model()
-            invariant = self.ct.build_invariant(model)
+            invariant = big_and([t.build_invariant(model) for t in self.induction])
+            #invariant = self.ct.build_invariant(model)
             return VerificationResult(True, invariant)
         else:
             print("unknown")

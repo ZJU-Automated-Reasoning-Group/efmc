@@ -126,7 +126,9 @@ class EFMCRunner:
             validate_invariant=g_verifier_args.validate_invariant,
             no_overflow=g_verifier_args.prevent_over_under_flows > 0 if sts.has_bv else False,
             no_underflow=g_verifier_args.prevent_over_under_flows > 0 if sts.has_bv else False,
-            pysmt_solver=g_verifier_args.pysmt_solver
+            pysmt_solver=g_verifier_args.pysmt_solver,
+            strengthen_templates=g_verifier_args.strengthen_templates,
+            num_disjunctions=g_verifier_args.num_disjunctions
         )
 
         # Set template and solver
@@ -354,7 +356,7 @@ def parse_arguments():
     # Template-based verification options
     template_group = parser.add_argument_group('Template-based verification options')
     template_group.add_argument('--template', type=str, default="auto",
-                                help='Template for invariant generation. For integer/real: interval, power_interval, zone, octagon, affine, power_affine, poly, power_poly. For bitvector: bv_interval, power_bv_interval, bv_zone, power_bv_zone, bv_octagon, power_bv_octagon, bv_poly, power_bv_poly. For floating-point: fp_interval, fp_poly')
+                                help='Template for invariant generation. For integer/real: interval, power_interval, zone, octagon, affine, power_affine, poly, power_poly. For bitvector: bv_interval, power_bv_interval, bv_zone, power_bv_zone, bv_octagon, power_bv_octagon, bv_poly, power_bv_poly, bv_pattern, bv_xor_parity, bv_rotation. For floating-point: fp_interval, fp_poly')
     template_group.add_argument('--num-disjunctions', type=int, default=1,
                                 help='Number of disjunctions in template')
     template_group.add_argument('--prop-strengthen', action='store_true',
@@ -363,7 +365,8 @@ def parse_arguments():
                                 help='Enable abstraction refinement')
     template_group.add_argument('--validate-invariant', action='store_true',
                                 help='Validate generated invariants')
-
+    template_group.add_argument('--strengthen-templates',type=str,default="",
+                                help='Add some templates to strengthen the present template')
     # Solver options
     # currently, only affect the ef engine?
     solver_group = parser.add_argument_group('Solver options')
