@@ -30,7 +30,8 @@ Related work
 - FP/pine-benchmarks: SAS 20: Counterexample- and Simulation-Guided
 Floating-Point Loop Invariant Synthesis. 
 https://github.com/izycheva/pine
-
+- (TBD) Invariant Generation for Floating-Point Programs via Constraint Solving
+Xuran Cai, Liqian Chen, Hongfei Fu. https://arxiv.org/pdf/2507.15017v1
 
 ## INT (Integer Benchmarks)
 Contains integer arithmetic benchmark files:

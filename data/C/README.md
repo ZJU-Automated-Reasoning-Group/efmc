@@ -1,7 +1,14 @@
 # Benchmarks for C Verification
 
 
-## Resources
+## invSDP: Non-Linear Invariant Inverence
+
+- TOPLAS, Synthesizing Invariants for Polynomial Programs by Semidefinite Programming
+https://dl.acm.org/doi/10.1145/3708559
+https://github.com/EcstasyH/invSDP
+
+
+## Other Resources
 
 (Many have reundancies)
 
@@ -10,7 +17,7 @@
 - SyGUS-COMP: 里面的invariant track
 - CHC-COMP: 用CHC格式描述
 - https://gitlab.com/sosy-lab/benchmarking/sv-benchmarks/-/tree/svcomp23/c/
-- https://github.com/SoftWiser-group/Clause2Inv
+- Clause2Inv: https://github.com/SoftWiser-group/Clause2Inv
 - Code2Inv: https://github.com/PL-ML/code2inv
 - CLN2INV: https://github.com/gryan11/cln2inv
 - LoopInvGen: https://github.com/SaswatPadhi/LoopInvGen
@@ -30,8 +37,3 @@
 - Some some tracks of SV-COMP (e.g., device drivers?)
 
 
-## invSDP: Non-Linear Invariant Inverence
-
-- TOPLAS, Synthesizing Invariants for Polynomial Programs by Semidefinite Programming
-https://dl.acm.org/doi/10.1145/3708559
-https://github.com/EcstasyH/invSDP
