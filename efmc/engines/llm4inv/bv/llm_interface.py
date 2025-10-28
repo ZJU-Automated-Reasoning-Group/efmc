@@ -10,10 +10,10 @@ from typing import List, Dict, Any, Optional, Tuple, Callable
 import z3
 
 from efmc.llmtools.llm_utils import LLM
-from efmc.llmtools.LLM_local import LLMLocal
+from efmc.llmtools.llm_local import LLMLocal
 from efmc.llmtools.logger import Logger
 from efmc.sts import TransitionSystem
-from efmc.engines.llm4inv.prompt_manager import extract_bit_width_from_sts
+from .prompt_manager import extract_bit_width_from_sts
 
 logger = logging.getLogger(__name__)
 

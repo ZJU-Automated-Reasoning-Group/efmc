@@ -9,8 +9,8 @@ import z3
 
 from efmc.sts import TransitionSystem
 from efmc.utils.verification_utils import verify_invariant_with_counterexamples
-from efmc.engines.llm4inv.llm_interface import LLMInterface
-from efmc.engines.llm4inv.prompt_manager import InvariantPromptManager
+from .llm_interface import LLMInterface
+from .prompt_manager import InvariantPromptManager
 
 logger = logging.getLogger(__name__)
 

@@ -10,7 +10,7 @@ import os
 import glob
 
 from efmc.sts import TransitionSystem
-from efmc.engines.llm4inv.llm4inv_prover import LLM4InvProver
+from .llm4inv_prover import LLM4InvProver
 from efmc.frontends.chc_parser import CHCParser
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
