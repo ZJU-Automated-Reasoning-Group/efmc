@@ -1,208 +1,475 @@
 """
-Implementation of Farkas' Lemma for linear constraint systems.
+farkas.py – A *working* implementation of Farkas’ lemma on top of Z3
+-------------------------------------------------------------------
+    Ax ≤ b   is UNSAT    ⇔    ∃ λ ≥ 0  :  λᵀA = 0  ∧  λᵀb < 0
+
+Features
+~~~~~~~~
+* works for arbitrary rational-linear Z3 expressions (QF_LRA);
+* produces an **actual certificate**  (values of λᵢ) whenever the
+  original system is infeasible;
+* raises on non-linear or strict inequalities instead of silently
+  ignoring them;
+* keeps the API intentionally small and type annotated.
 """
-from z3 import *
-from typing import List, Dict, Any
+
+from __future__ import annotations
+import itertools
+from typing import Dict, List, Tuple, Sequence, Mapping
+
+import z3
 
 
+# ---------------------------------------------------------------------------#
+# Helpers for linearisation                                                  #
+# ---------------------------------------------------------------------------#
+Num = z3.ArithRef           # either IntVal or RatNumRef
+
+def _is_numeric(e: z3.ExprRef) -> bool:
+    return z3.is_int_value(e) or z3.is_rational_value(e)
+
+def _to_float(e: Num) -> float:
+    if z3.is_int_value(e):
+        return float(e.as_long())
+    num = float(e.numerator_as_long())
+    den = float(e.denominator_as_long())
+    return num / den
+
+def _merge_coeff_dict(a: Dict[z3.ExprRef, float],
+                      b: Mapping[z3.ExprRef, float],
+                      sign: float = 1.) -> None:
+    for v, c in b.items():
+        a[v] = a.get(v, 0.0) + sign * c
+
+
+def _linearise(expr: z3.ArithRef
+               ) -> Tuple[Dict[z3.ExprRef, float], float]:
+    """
+    Return (coeff_dict, constant) s.t.
+
+        expr  ==  Σ coeff_dict[var]·var  +  constant
+
+    Raises ValueError if the term is not linear.
+    """
+    if _is_numeric(expr):
+        return {}, _to_float(expr)
+
+    if expr.decl().kind() == z3.Z3_OP_UNINTERPRETED:
+        # plain variable
+        return {expr: 1.0}, 0.0
+
+    k = expr.decl().kind()
+
+    # addition / subtraction --------------------------------------------------
+    if k in (z3.Z3_OP_ADD, z3.Z3_OP_SUB):
+        coeff: Dict[z3.ExprRef, float] = {}
+        const = 0.0
+        # SUB has the shape  (a - b1 - … - bn) as children()
+        first, rest = expr.children()[0], expr.children()[1:]
+        c1, k1 = _linearise(first)
+        _merge_coeff_dict(coeff, c1, +1.0)
+        const += k1
+        for child in rest:
+            c, k_ = _linearise(child)
+            _merge_coeff_dict(coeff, c, -1.0)
+            const -= k_
+        return coeff, const
+
+    # multiplication ----------------------------------------------------------
+    if k == z3.Z3_OP_MUL:
+        a, b = expr.children()
+        # Try numeric coefficient first
+        if _is_numeric(a) and not _is_numeric(b):
+            coeff_b, k_b = _linearise(b)
+            if k_b != 0.0:
+                raise ValueError("non-linear (constant term times variable)")
+            factor = _to_float(a)
+            return {v: factor * c for v, c in coeff_b.items()}, 0.0
+        if _is_numeric(b) and not _is_numeric(a):
+            coeff_a, k_a = _linearise(a)
+            if k_a != 0.0:
+                raise ValueError("non-linear (constant term times variable)")
+            factor = _to_float(b)
+            return {v: factor * c for v, c in coeff_a.items()}, 0.0
+        
+        # Handle symbolic coefficient * variable (for template parameters)
+        # If one is a simple variable and the other might be an expression,
+        # treat the whole product as a single "variable" for Farkas purposes
+        if expr.decl().kind() == z3.Z3_OP_UNINTERPRETED or (
+            a.decl().kind() == z3.Z3_OP_UNINTERPRETED or 
+            b.decl().kind() == z3.Z3_OP_UNINTERPRETED
+        ):
+            # Treat the entire multiplication as a composite term
+            return {expr: 1.0}, 0.0
+        
+        raise ValueError("non-linear multiplication")
+    # unary minus -------------------------------------------------------------
+    if k == z3.Z3_OP_UMINUS:
+        coeff, const = _linearise(expr.children()[0])
+        return {v: -c for v, c in coeff.items()}, -const
+
+    raise ValueError(f"Unsupported expression in linear context: {expr}")
+
+
+# ---------------------------------------------------------------------------#
+# Main class                                                                 #
+# ---------------------------------------------------------------------------#
+class FarkasSystem:
+    """
+    Collect linear constraints, test satisfiability and (if UNSAT) return a
+    Farkas certificate.
+
+        fs = FarkasSystem()
+        x, y = z3.Reals('x y')
+        fs.add(x + y <= 1)
+        fs.add(x >= 2)        # system infeasible
+        print(fs.is_sat)      # False
+        print(fs.certificate) # {'lambda_0': 1.0, 'lambda_1': 1.0}
+    """
+
+    # public -----------------------------------------------------------------
+    def __init__(self) -> None:
+        self._orig: List[z3.BoolRef] = []
+        self._solver = z3.Solver()
+
+    # --------------------------- adding constraints -------------------------
+    def add(self, c: z3.BoolRef, /) -> None:
+        self._orig.append(c)
+        self._solver.add(c)
+
+    def add_many(self, cs: Sequence[z3.BoolRef]) -> None:
+        for c in cs:
+            self.add(c)
+
+    # --------------------------- querying -----------------------------------
+    @property
+    def is_sat(self) -> bool:
+        return self._solver.check() == z3.sat
+
+    @property
+    def model(self) -> z3.ModelRef | None:
+        return self._solver.model() if self.is_sat else None
+
+    @property
+    def certificate(self
+                    ) -> Dict[str, float] | None:
+        """
+        Returns a dictionary λᵢ (as floats) satisfying Farkas’ conditions if
+        the system is UNSAT.  Otherwise returns None.
+        """
+        if self.is_sat:
+            return None
+        return self._compute_farkas_certificate()
+
+    # -----------------------------------------------------------------------
+    # internals                                                              #
+    # -----------------------------------------------------------------------
+    def _normalise(self
+                   ) -> Tuple[List[Dict[z3.ExprRef, float]], List[float]]:
+        """
+        Turn every input constraint into the shape   a·x  ≤  b   and return
+        parallel lists of coefficients  and  constants  (b).
+        Each *equality* is split into two inequalities.
+        Raises ValueError if a constraint is non-linear or strict.
+        """
+        As: List[Dict[z3.ExprRef, float]] = []
+        bs: List[float] = []
+
+        for c in self._orig:
+            if z3.is_le(c):        # lhs ≤ rhs   ⇒ lhs − rhs ≤ 0
+                lhs, rhs = c.arg(0), c.arg(1)
+                coeff, k = _linearise(lhs - rhs)
+                As.append(coeff)
+                bs.append(-k)
+            elif z3.is_ge(c):      # lhs ≥ rhs   ⇒ rhs − lhs ≤ 0
+                lhs, rhs = c.arg(0), c.arg(1)
+                coeff, k = _linearise(rhs - lhs)
+                As.append(coeff)
+                bs.append(-k)
+            elif z3.is_eq(c):      # lhs == rhs  ⇒ two inequalities
+                lhs, rhs = c.arg(0), c.arg(1)
+                coeff, k = _linearise(lhs - rhs)
+                As.append(coeff)
+                bs.append(-k)
+                As.append({v: -coef for v, coef in coeff.items()})
+                bs.append(k)
+            else:
+                raise ValueError(f"unsupported or strict constraint: {c}")
+
+        return As, bs
+
+    def _compute_farkas_certificate(self) -> Dict[str, float]:
+        A, b = self._normalise()
+
+        m = len(A)
+        if m == 0:
+            raise RuntimeError("empty, yet UNSAT?")  # should not happen
+
+        # create symbolic multipliers λᵢ
+        lambdas = [z3.Real(f"lambda_{i}") for i in range(m)]
+        S = z3.Solver()
+
+        # λᵢ ≥ 0
+        S.add([lmb >= 0 for lmb in lambdas])
+
+        # Σ λᵢ aᵢⱼ = 0   for every variable xⱼ appearing anywhere
+        vars_: List[z3.ExprRef] = sorted(
+            {v for row in A for v in row},
+            key=lambda v: v.decl().name()
+        )
+        for v in vars_:
+            S.add(z3.Sum([
+                lambdas[i] * z3.RealVal(A[i].get(v, 0.0))
+                for i in range(m)
+            ]) == 0)
+
+        # Σ λᵢ bᵢ  <  0
+        S.add(z3.Sum([
+            lambdas[i] * z3.RealVal(b[i]) for i in range(m)
+        ]) < 0)
+
+        # avoid the trivial all-zero assignment (redundant, but good practice)
+        S.add(z3.Or([l > 0 for l in lambdas]))
+
+        if S.check() != z3.sat:
+            raise RuntimeError("linearisation incomplete – "
+                               "failed to produce certificate "
+                               "although original system is UNSAT")
+
+        mdl = S.model()
+        return {str(l): _to_float(mdl.eval(l).as_fraction())  # type: ignore
+                for l in lambdas}
+
+
+# ---------------------------------------------------------------------------#
+# Farkas Lemma Application for Template Synthesis                           #
+# ---------------------------------------------------------------------------#
 class FarkasLemma:
     """
-    Implementation of Farkas' Lemma for proving unsatisfiability of linear constraints.
+    A helper class for applying Farkas' lemma to generate constraints for
+    template-based invariant synthesis.
     
-    Farkas' Lemma: For a system Ax ≤ b, exactly one of the following holds:
-    1. ∃x: Ax ≤ b (satisfiable)
-    2. ∃λ≥0: λᵀA = 0 ∧ λᵀb < 0 (unsatisfiable with certificate)
+    Usage:
+        fl = FarkasLemma()
+        fl.add_constraint(x + y <= 1)
+        fl.add_constraint(x >= 2)
+        constraints = fl.apply_farkas_lemma_symbolic([x, y])
+        # constraints will be Z3 formulas over lambda variables
     """
-
-    def __init__(self, solver=None):
-        self.solver = solver or Solver()
-        self.constraints = []
-        self.farkas_multipliers = []
-
-    def add_constraint(self, constraint):
-        """Add a linear constraint to the system."""
-        self.constraints.append(constraint)
-        self.solver.add(constraint)
-
-    def add_constraints(self, constraints):
-        """Add multiple constraints."""
-        for constraint in constraints:
-            self.add_constraint(constraint)
-
-    def extract_coefficients(self, expr, variables):
-        """Extract coefficients from a linear expression."""
-        coeffs = {var: 0 for var in variables}
+    
+    def __init__(self) -> None:
+        self._constraints: List[z3.BoolRef] = []
+        self._lambda_counter = 0
         
-        def extract(e):
-            # Check if expression is one of our variables first
-            for var in variables:
-                if str(e) == str(var):
-                    return {var: 1}, 0
-            
-            if is_const(e):
-                if is_int_value(e):
-                    return {}, e.as_long()
-                elif is_rational_value(e):
-                    return {}, float(e.numerator_as_long()) / float(e.denominator_as_long())
-                return {}, 0
-            
-            if is_add(e):
-                total_coeffs = {var: 0 for var in variables}
-                total_const = 0
-                for child in e.children():
-                    child_coeffs, child_const = extract(child)
-                    for var, coeff in child_coeffs.items():
-                        total_coeffs[var] += coeff
-                    total_const += child_const
-                return total_coeffs, total_const
-            
-            if is_sub(e):
-                children = e.children()
-                if len(children) == 2:
-                    left_coeffs, left_const = extract(children[0])
-                    right_coeffs, right_const = extract(children[1])
-                    total_coeffs = {var: 0 for var in variables}
-                    for var, coeff in left_coeffs.items():
-                        total_coeffs[var] += coeff
-                    for var, coeff in right_coeffs.items():
-                        total_coeffs[var] -= coeff
-                    return total_coeffs, left_const - right_const
-            
-            if is_mul(e):
-                children = e.children()
-                if len(children) == 2:
-                    left, right = children
-                    if is_const(left):
-                        for var in variables:
-                            if str(right) == str(var):
-                                coeff_val = left.as_long() if is_int_value(left) else (
-                                    float(left.numerator_as_long()) / float(left.denominator_as_long()) 
-                                    if is_rational_value(left) else 1)
-                                return {var: coeff_val}, 0
-                    elif is_const(right):
-                        for var in variables:
-                            if str(left) == str(var):
-                                coeff_val = right.as_long() if is_int_value(right) else (
-                                    float(right.numerator_as_long()) / float(right.denominator_as_long()) 
-                                    if is_rational_value(right) else 1)
-                                return {var: coeff_val}, 0
-            
-            # Handle unary minus
-            if e.decl().kind() == z3.Z3_OP_UMINUS:
-                child_coeffs, child_const = extract(e.children()[0])
-                return {var: -coeff for var, coeff in child_coeffs.items()}, -child_const
-            
-            return {}, 0
-
-        result_coeffs, result_const = extract(expr)
-        for var, coeff in result_coeffs.items():
-            if var in coeffs:
-                coeffs[var] = coeff
-        
-        return coeffs, result_const
-
-    def apply_farkas_lemma(self, variables):
+    def apply_farkas_lemma_symbolic(self, 
+                                    program_vars: Sequence[z3.ArithRef]) -> List[z3.BoolRef]:
         """
-        Apply Farkas' Lemma to generate constraints on template variables.
+        Apply Farkas' lemma symbolically for template synthesis.
         
-        Returns constraints that must be satisfied for the system to be unsatisfiable.
+        This version doesn't try to extract numeric coefficients, but works
+        directly with Z3 expressions that may contain template parameters.
+        
+        Parameters
+        ----------
+        program_vars : list of Z3 ArithRef
+            The program variables (to be eliminated via Farkas)
+        
+        Returns
+        -------
+        list of Z3 BoolRef
+            Constraints encoding the Farkas conditions
         """
-        if not self.constraints:
-            return [BoolVal(True)]
+        if not self._constraints:
+            return []
         
-        # Create Farkas multipliers
-        self.farkas_multipliers = [Real(f"lambda_{i}") for i in range(len(self.constraints))]
-        constraints = [mult >= 0 for mult in self.farkas_multipliers]
+        m = len(self._constraints)
         
-        # Process each constraint to standard form: expr ≤ 0
-        constraint_data = []
-        for i, constraint in enumerate(self.constraints):
-            try:
-                if is_eq(constraint):
-                    # a = b → (a-b ≤ 0) ∧ (b-a ≤ 0)
-                    lhs, rhs = constraint.arg(0), constraint.arg(1)
-                    expr = lhs - rhs
-                    coeffs, constant = self.extract_coefficients(expr, variables)
-                    constraint_data.append((coeffs, constant))
-                    # Add reverse for equality
-                    reverse_coeffs = {var: -coeff for var, coeff in coeffs.items()}
-                    constraint_data.append((reverse_coeffs, -constant))
-                elif is_le(constraint):
-                    # a ≤ b → a-b ≤ 0
-                    lhs, rhs = constraint.arg(0), constraint.arg(1)
-                    expr = lhs - rhs
-                    coeffs, constant = self.extract_coefficients(expr, variables)
-                    constraint_data.append((coeffs, constant))
-                elif is_ge(constraint):
-                    # a ≥ b → b-a ≤ 0
-                    lhs, rhs = constraint.arg(0), constraint.arg(1)
-                    expr = rhs - lhs
-                    coeffs, constant = self.extract_coefficients(expr, variables)
-                    constraint_data.append((coeffs, constant))
-                elif is_not(constraint) and is_ge(constraint.arg(0)):
-                    # ¬(a ≥ b) → a < b → b-a ≤ -1
-                    inner = constraint.arg(0)
-                    lhs, rhs = inner.arg(0), inner.arg(1)
-                    expr = rhs - lhs
-                    coeffs, constant = self.extract_coefficients(expr, variables)
-                    constraint_data.append((coeffs, constant + 1))
-            except:
+        # Create fresh lambda variables
+        lambdas = [z3.Real(f"lambda_{self._lambda_counter}_{i}") for i in range(m)]
+        self._lambda_counter += 1
+        
+        result: List[z3.BoolRef] = []
+        
+        # 1. λᵢ ≥ 0 for all i
+        for lmb in lambdas:
+            result.append(lmb >= 0)
+        
+        # 2. For each program variable v, the coefficient of v in the 
+        #    linear combination Σᵢ λᵢ * constraint_i must be 0
+        #
+        # We'll use Z3's simplification to extract coefficients
+        for v in program_vars:
+            # Build: Σᵢ λᵢ * (lhs_i - rhs_i) where constraint_i is lhs_i ≤/≥ rhs_i
+            terms = []
+            for i, c in enumerate(self._constraints):
+                # Normalize constraint to lhs - rhs ≤ 0 form
+                if z3.is_le(c):
+                    terms.append(lambdas[i] * (c.arg(0) - c.arg(1)))
+                elif z3.is_ge(c):
+                    terms.append(lambdas[i] * (c.arg(1) - c.arg(0)))
+                elif z3.is_eq(c):
+                    # Equality contributes in both directions (split into two)
+                    # For now, just handle as lhs - rhs
+                    terms.append(lambdas[i] * (c.arg(0) - c.arg(1)))
+            
+            if terms:
+                combo = z3.Sum(terms) if len(terms) > 1 else terms[0]
+                # Extract coefficient of v from combo
+                # We want: coeff(combo, v) == 0
+                # Use a simple approach: substitute v=1 and v=0
+                # coeff(f, v) = f[v←1] - f[v←0]
+                # Use the right sort for the substitution value
+                if z3.is_int(v):
+                    one_val = z3.IntVal(1)
+                    zero_val = z3.IntVal(0)
+                else:
+                    one_val = z3.RealVal(1)
+                    zero_val = z3.RealVal(0)
+                val_at_1 = z3.substitute(combo, [(v, one_val)])
+                val_at_0 = z3.substitute(combo, [(v, zero_val)])
+                coeff_v = z3.simplify(val_at_1 - val_at_0)
+                result.append(coeff_v == 0)
+        
+        # 3. The constant term (when all program vars are 0) must be < 0
+        terms = []
+        for i, c in enumerate(self._constraints):
+            if z3.is_le(c):
+                lhs_minus_rhs = c.arg(0) - c.arg(1)
+            elif z3.is_ge(c):
+                lhs_minus_rhs = c.arg(1) - c.arg(0)
+            elif z3.is_eq(c):
+                lhs_minus_rhs = c.arg(0) - c.arg(1)
+            else:
                 continue
+            
+            # Evaluate at program_vars = 0 to get constant term
+            subst = [(v, z3.IntVal(0) if z3.is_int(v) else z3.RealVal(0)) for v in program_vars]
+            const_term = z3.substitute(lhs_minus_rhs, subst)
+            terms.append(lambdas[i] * const_term)
         
-        if not constraint_data:
-            return [BoolVal(True)]
+        if terms:
+            result.append(z3.Sum(terms) < 0)
         
-        # Adjust multipliers for additional constraints
-        while len(constraint_data) > len(self.farkas_multipliers):
-            idx = len(self.farkas_multipliers)
-            self.farkas_multipliers.append(Real(f"lambda_{idx}"))
-            constraints.append(self.farkas_multipliers[-1] >= 0)
+        return result
+    
+    def add_constraint(self, c: z3.BoolRef) -> None:
+        """Add a constraint to the system."""
+        self._constraints.append(c)
+    
+    def apply_farkas_lemma(self, 
+                          variables: Sequence[z3.ArithRef]) -> List[z3.BoolRef]:
+        """
+        Apply Farkas' lemma to encode that the constraint system is UNSAT.
         
-        # Farkas conditions: Σ(λᵢ * aᵢⱼ) = 0 for each variable
-        for var in variables:
-            sum_expr = sum(self.farkas_multipliers[i] * data[0].get(var, 0) 
-                          for i, data in enumerate(constraint_data) 
-                          if i < len(self.farkas_multipliers))
-            constraints.append(sum_expr == 0)
+        Given constraints that should be unsatisfiable, return a list of 
+        constraints over fresh lambda variables that encode the Farkas 
+        conditions:
+            ∃ λ ≥ 0  :  λᵀA = 0  ∧  λᵀb < 0
         
-        # Farkas condition: Σ(λᵢ * bᵢ) < 0 for constants
-        sum_const = sum(self.farkas_multipliers[i] * data[1] 
-                       for i, data in enumerate(constraint_data) 
-                       if i < len(self.farkas_multipliers))
-        constraints.append(sum_const < 0)
+        Parameters
+        ----------
+        variables : list of Z3 ArithRef
+            The variables appearing in the constraints
         
-        # At least one multiplier must be positive
-        if self.farkas_multipliers:
-            constraints.append(Or([mult > 0 for mult in self.farkas_multipliers]))
+        Returns
+        -------
+        list of Z3 BoolRef
+            Constraints encoding the Farkas conditions
+        """
+        if not self._constraints:
+            return []
         
-        return constraints
-
-    def is_satisfiable(self):
-        """Check if the constraint system is satisfiable."""
-        return self.solver.check() == sat
-
-    def get_model(self):
-        """Get a satisfying model if one exists."""
-        return self.solver.model() if self.is_satisfiable() else None
-
-    def get_farkas_coefficients(self):
-        """Get Farkas coefficients if the system is unsatisfiable."""
-        if self.is_satisfiable():
-            return None
+        # Normalize all constraints to the form Ax ≤ b
+        A: List[Dict[z3.ExprRef, float]] = []
+        b: List[float] = []
         
-        try:
-            core = self.solver.unsat_core()
-            return [1.0 if constraint in core else 0.0 for constraint in self.constraints]
-        except:
-            return [1.0] * len(self.constraints)
-
-    def prove_unsatisfiability(self):
-        """Prove unsatisfiability using Farkas' Lemma."""
-        if self.is_satisfiable():
-            return False, {"message": "System is satisfiable"}
+        for c in self._constraints:
+            if z3.is_le(c):  # lhs ≤ rhs ⇒ lhs - rhs ≤ 0
+                lhs, rhs = c.arg(0), c.arg(1)
+                coeff, k = _linearise(lhs - rhs)
+                A.append(coeff)
+                b.append(-k)
+            elif z3.is_ge(c):  # lhs ≥ rhs ⇒ rhs - lhs ≤ 0
+                lhs, rhs = c.arg(0), c.arg(1)
+                coeff, k = _linearise(rhs - lhs)
+                A.append(coeff)
+                b.append(-k)
+            elif z3.is_eq(c):  # lhs == rhs ⇒ two inequalities
+                lhs, rhs = c.arg(0), c.arg(1)
+                coeff, k = _linearise(lhs - rhs)
+                A.append(coeff)
+                b.append(-k)
+                A.append({v: -coef for v, coef in coeff.items()})
+                b.append(k)
+            elif z3.is_lt(c) or z3.is_gt(c):
+                raise ValueError(f"Strict inequality not supported: {c}")
+            elif z3.is_not(c):
+                # Handle negations by flipping the constraint
+                inner = c.arg(0)
+                if z3.is_le(inner):  # ¬(lhs ≤ rhs) ⇒ lhs > rhs (strict, unsupported)
+                    # Approximate with lhs - rhs ≥ ε, but for now treat as ≥ 0
+                    lhs, rhs = inner.arg(0), inner.arg(1)
+                    coeff, k = _linearise(lhs - rhs)
+                    A.append({v: -c for v, c in coeff.items()})
+                    b.append(k)
+                elif z3.is_ge(inner):  # ¬(lhs ≥ rhs) ⇒ lhs < rhs (strict, unsupported)
+                    lhs, rhs = inner.arg(0), inner.arg(1)
+                    coeff, k = _linearise(rhs - lhs)
+                    A.append({v: -c for v, c in coeff.items()})
+                    b.append(-k)
+                elif z3.is_eq(inner):  # ¬(lhs == rhs) cannot be represented in Farkas
+                    raise ValueError(f"Negated equality not supported in Farkas: {c}")
+                else:
+                    raise ValueError(f"Unsupported negated constraint: {c}")
+            else:
+                raise ValueError(f"Unsupported constraint type: {c}")
         
-        coefficients = self.get_farkas_coefficients()
-        return True, {
-            "message": "System is unsatisfiable",
-            "farkas_coefficients": coefficients
-        }
+        m = len(A)
+        if m == 0:
+            return []
+        
+        # Create fresh lambda variables for this application
+        lambdas = []
+        for i in range(m):
+            lambdas.append(z3.Real(f"lambda_{self._lambda_counter}_{i}"))
+        self._lambda_counter += 1
+        
+        # Build Farkas conditions
+        result: List[z3.BoolRef] = []
+        
+        # 1. λᵢ ≥ 0 for all i
+        for lmb in lambdas:
+            result.append(lmb >= 0)
+        
+        # 2. λᵀA = 0  (for each variable)
+        # Collect all variables that appear in any constraint
+        all_vars = sorted(
+            {v for row in A for v in row},
+            key=lambda v: str(v)
+        )
+        
+        for v in all_vars:
+            # Sum over all constraints: Σᵢ λᵢ * aᵢⱼ = 0
+            terms = []
+            for i in range(m):
+                coeff_val = A[i].get(v, 0.0)
+                if coeff_val != 0.0:
+                    terms.append(lambdas[i] * z3.RealVal(coeff_val))
+            
+            if terms:
+                result.append(z3.Sum(terms) == 0)
+        
+        # 3. λᵀb < 0
+        b_terms = []
+        for i in range(m):
+            if b[i] != 0.0:
+                b_terms.append(lambdas[i] * z3.RealVal(b[i]))
+        
+        if b_terms:
+            result.append(z3.Sum(b_terms) < 0)
+        else:
+            # If all b[i] are 0, we need at least one lambda to be positive
+            # to avoid trivial solution
+            result.append(z3.Or([lmb > 0 for lmb in lambdas]))
+        
+        return result

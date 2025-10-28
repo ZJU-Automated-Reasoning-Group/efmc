@@ -7,7 +7,7 @@
 ;            x1' = 0.01*x0 + x1
 ; Safety: Verify boundedness of state variables
 
-(set-logic HORN)
+;(set-logic HORN)
 
 (declare-fun inv ((_ FloatingPoint 8 24) (_ FloatingPoint 8 24) (_ FloatingPoint 8 24)) Bool)
 
@@ -15,7 +15,7 @@
 (assert (forall ((x0 (_ FloatingPoint 8 24)) (x1 (_ FloatingPoint 8 24)) (in0 (_ FloatingPoint 8 24)))
          (=> (and (fp.eq x0 ((_ to_fp 8 24) RNE 0.0))
                   (fp.eq x1 ((_ to_fp 8 24) RNE 0.0))
-                  (fp.geq in0 ((_ to_fp 8 24) RNE (-1.0)))
+                  (fp.geq in0 ((_ to_fp 8 24) RNE (- 1.0)))
                   (fp.leq in0 ((_ to_fp 8 24) RNE 1.0)))
              (inv x0 x1 in0))))
 
@@ -28,7 +28,7 @@
                                                      (fp.mul RNE ((_ to_fp 8 24) RNE -0.05) x1))
                                      in0!))
                   (fp.eq x1! (fp.add RNE (fp.mul RNE ((_ to_fp 8 24) RNE 0.01) x0) x1))
-                  (fp.geq in0! ((_ to_fp 8 24) RNE (-1.0)))
+                  (fp.geq in0! ((_ to_fp 8 24) RNE (- 1.0)))
                   (fp.leq in0! ((_ to_fp 8 24) RNE 1.0)))
              (inv x0! x1! in0!))))
 
