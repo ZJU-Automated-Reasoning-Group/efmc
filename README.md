@@ -1,5 +1,9 @@
 # EFMC
 
+> [!IMPORTANT]
+> Active development of efmc has moved to the [`ZJU-PL/aria`](https://github.com/ZJU-PL/aria) repository, under [`aria/efmc`](https://github.com/ZJU-PL/aria/tree/master/aria/efmc). This repository is retained for historical/reference use.
+
+
 SMT-based Software Model Checking
 
 ## 1. Introduction
